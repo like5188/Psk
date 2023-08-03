@@ -1,0 +1,7 @@
+rootProject.name='Recovery'
+include ':recovery'
+include ':device'
+include ':LuckyEcgChart'
+include ':remotecontrol'
+include ':shangxiazhi'
+include ':common'

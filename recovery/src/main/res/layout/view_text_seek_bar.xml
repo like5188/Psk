@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="multiple"
+            type="androidx.databinding.ObservableInt" />
+    </data>
+
+    <merge
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
+
+        <TextView
+            android:id="@+id/tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#333333"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="xxx" />
+
+        <androidx.appcompat.widget.AppCompatSeekBar
+            android:id="@+id/seekBar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv" />
+
+        <ImageView
+            android:id="@+id/ivStart"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/ic_start"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/seekBar" />
+
+        <ImageView
+            android:id="@+id/ivDown"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="30dp"
+            android:src="@drawable/ic_rewind"
+            app:layout_constraintBottom_toBottomOf="@id/ivStart"
+            app:layout_constraintStart_toEndOf="@id/ivStart"
+            app:layout_constraintTop_toTopOf="@id/ivStart" />
+
+        <TextView
+            android:id="@+id/tvMultiples"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:text="@{`× ` + multiple}"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@id/ivStart"
+            app:layout_constraintStart_toEndOf="@id/ivDown"
+            app:layout_constraintTop_toTopOf="@id/ivStart"
+            tools:text="× 1" />
+
+        <ImageView
+            android:id="@+id/ivUp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="20dp"
+            android:src="@drawable/ic_fast_forward"
+            app:layout_constraintBottom_toBottomOf="@id/ivStart"
+            app:layout_constraintStart_toEndOf="@id/tvMultiples"
+            app:layout_constraintTop_toTopOf="@id/ivStart" />
+
+    </merge>
+
+</layout>

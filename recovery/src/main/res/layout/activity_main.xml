@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="?actionBarSize"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="星康安" />
+
+        <Button
+            android:id="@+id/btnAddMedicalOrder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="添加医嘱" />
+
+        <Button
+            android:id="@+id/btnMedicalOrderList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="医嘱列表" />
+
+    </LinearLayout>
+
+</layout>
