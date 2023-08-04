@@ -78,6 +78,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        // 当从游戏界面返回时，需要解绑游戏服务
+        gameController.destroy()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         gameController.destroy()

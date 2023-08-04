@@ -22,9 +22,9 @@ class GameController(private val context: Context) {
         }
 
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            Log.w(TAG, "onServiceConnected")
             //下面是通过代理的方式将iBinder转成IMyAidlInterface
             iGame = IGame.Stub.asInterface(service)
-            Log.w(TAG, "onServiceConnected iGame=$iGame")
         }
     }
 
@@ -46,7 +46,11 @@ class GameController(private val context: Context) {
     }
 
     fun destroy() {
-        context.unbindService(connection)
+        try {
+            Log.d(TAG, "unbindService")
+            context.unbindService(connection)
+        } catch (e: Exception) {
+        }
     }
 
     companion object {
