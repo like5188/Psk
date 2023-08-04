@@ -18,12 +18,13 @@ class GameController(private val context: Context) {
         override fun onServiceDisconnected(name: ComponentName?) {
             Log.w(TAG, "onServiceDisconnected")
             //本句话借用：Android系统在同service的连接意外丢失时调用这个．比如当service崩溃了或被强杀了．当客户端解除绑定时，这个方法不会被调用．
+            iGame = null
         }
 
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            Log.w(TAG, "onServiceConnected")
             //下面是通过代理的方式将iBinder转成IMyAidlInterface
             iGame = IGame.Stub.asInterface(service)
+            Log.w(TAG, "onServiceConnected iGame=$iGame")
         }
     }
 
@@ -41,7 +42,6 @@ class GameController(private val context: Context) {
         try {
             iGame?.setUnityValueModel(unityValueModel)
         } catch (e: Exception) {
-            e.printStackTrace()
         }
     }
 
