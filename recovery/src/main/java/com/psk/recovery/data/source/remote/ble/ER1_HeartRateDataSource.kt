@@ -38,7 +38,6 @@ class ER1_HeartRateDataSource(
                 if (bleResponse?.cmd == 0x03) {
                     val rtData = BtResponse.RtData(bleResponse.content)
                     val fs = rtData.wave.wFs
-                    println("ER1_HeartRateDataSource heartRate=${rtData.param.hr} fs=${fs?.size ?: 0} ${rtData.content.contentToString()}")
                     if (fs == null || fs.isEmpty()) {
                         return
                     }
