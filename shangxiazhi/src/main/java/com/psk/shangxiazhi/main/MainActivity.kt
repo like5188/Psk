@@ -10,6 +10,7 @@ import com.psk.common.util.showToast
 import com.psk.game.control.GameController
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.databinding.ActivityMainBinding
+import com.psk.shangxiazhi.util.startApp
 import com.twsz.twsystempre.UnityValueModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -36,9 +37,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        gameController.init()
         mBinding.ivAutonomyTraining.setOnClickListener {
             lifecycleScope.launch(Dispatchers.IO) {
+                // 启动游戏
+                startApp("com.twsz.twsystempre", "com.twsz.twsystempre.activity.GameActivity")
+                delay(3000)
+                gameController.connectGameService()
+                delay(1000)
                 while (isActive) {
                     delay(1000)
                     val unityValueModel = UnityValueModel(
