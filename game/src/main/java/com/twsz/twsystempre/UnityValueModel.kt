@@ -21,7 +21,6 @@ import android.os.Parcelable
  * @param existHeart    是否有心电仪
  * @param connectBLE    心电仪是否连接
  * @param heart         心率
- * @param scene         场景。1："country"；2："dust"；3："lasa"；4："sea"；
  */
 data class UnityValueModel(
     var model: Int = 0,
@@ -41,7 +40,6 @@ data class UnityValueModel(
     var existHeart: Int = 0,
     var connectBLE: Int = 0,
     var heart: String? = null,
-    var scene: String? = null
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
@@ -61,7 +59,6 @@ data class UnityValueModel(
         parcel.readInt(),
         parcel.readInt(),
         parcel.readString(),
-        parcel.readString()
     ) {
     }
 
@@ -83,7 +80,6 @@ data class UnityValueModel(
         parcel.writeInt(existHeart)
         parcel.writeInt(connectBLE)
         parcel.writeString(heart)
-        parcel.writeString(scene)
     }
 
     override fun describeContents(): Int {
