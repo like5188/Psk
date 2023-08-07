@@ -16,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
 import java.text.DecimalFormat
 
 /**
@@ -42,32 +43,41 @@ class MainActivity : AppCompatActivity() {
                 // 启动游戏
                 startApp("com.twsz.twsystempre", "com.twsz.twsystempre.activity.GameActivity")
                 delay(3000)
-                gameController.connectGameService()
-                delay(1000)
                 gameController.initGame("country", true)
                 delay(3000)
-                while (isActive) {
-                    delay(1000)
-                    val unityValueModel = UnityValueModel(
-                        model = 0,
-                        speed = 100,
-                        speedLevel = 5,
-                        time = "20230731",
-                        mileage = "11",
-                        cal = DecimalFormat("######0.00").format(10.0),
-                        resistance = 10,
-                        offset = -1,
-                        offsetValue = 20,
-                        spasm = 10,
-                        spasmLevel = 2,
-                        spasmFlag = 110,
-                        pause = 0,
-                        over = 0,
-                        existHeart = 1,
-                        connectBLE = 1,
-                        heart = (60..100).random().toString(),
-                    )
-                    gameController.updateGame(unityValueModel)
+                launch {
+                    while (isActive) {
+                        delay(1000)
+                        val unityValueModel = UnityValueModel(
+                            model = 0,
+                            speed = 100,
+                            speedLevel = 5,
+                            time = "20230731",
+                            mileage = "11",
+                            cal = DecimalFormat("######0.00").format(10.0),
+                            resistance = 10,
+                            offset = -1,
+                            offsetValue = 20,
+                            spasm = 10,
+                            spasmLevel = 2,
+                            spasmFlag = 110,
+                            pause = 0,
+                            over = 0,
+                            existHeart = 1,
+                            connectBLE = 1,
+                            heart = (60..100).random().toString(),
+                        )
+                        gameController.updateGame(unityValueModel)
+                    }
+                }
+                launch {
+                    while (isActive) {
+                        delay(1000L / 125)
+                        gameController.updateEcg(
+                            BigDecimal.valueOf((-128..127).random().toDouble()).setScale(5, BigDecimal.ROUND_HALF_DOWN).toFloat() / 150f,
+                            (60..100).random()
+                        )
+                    }
                 }
             }
         }
