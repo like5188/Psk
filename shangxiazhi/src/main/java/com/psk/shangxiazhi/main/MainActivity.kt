@@ -7,10 +7,10 @@ import androidx.lifecycle.lifecycleScope
 import com.like.common.util.startActivity
 import com.psk.common.CommonApplication
 import com.psk.common.util.showToast
-import com.psk.game.control.GameController
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.databinding.ActivityMainBinding
 import com.psk.shangxiazhi.util.startApp
+import com.twsz.twsystempre.GameController
 import com.twsz.twsystempre.UnityValueModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -64,7 +64,6 @@ class MainActivity : AppCompatActivity() {
                         existHeart = 1,
                         connectBLE = 1,
                         heart = (60..100).random().toString(),
-                        scene = "sea"
                     )
                     gameController.setUnityValueModel(unityValueModel)
                 }
