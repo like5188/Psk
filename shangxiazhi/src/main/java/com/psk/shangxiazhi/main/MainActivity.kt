@@ -44,6 +44,8 @@ class MainActivity : AppCompatActivity() {
                 delay(3000)
                 gameController.connectGameService()
                 delay(1000)
+                gameController.initGame("country", true)
+                delay(3000)
                 while (isActive) {
                     delay(1000)
                     val unityValueModel = UnityValueModel(
@@ -65,7 +67,7 @@ class MainActivity : AppCompatActivity() {
                         connectBLE = 1,
                         heart = (60..100).random().toString(),
                     )
-                    gameController.setUnityValueModel(unityValueModel)
+                    gameController.updateGame(unityValueModel)
                 }
             }
         }
