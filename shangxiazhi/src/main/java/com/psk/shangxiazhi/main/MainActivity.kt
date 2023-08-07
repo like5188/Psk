@@ -11,7 +11,7 @@ import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.databinding.ActivityMainBinding
 import com.psk.shangxiazhi.util.startApp
 import com.twsz.twsystempre.GameController
-import com.twsz.twsystempre.UnityValueModel
+import com.twsz.twsystempre.GameData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -46,11 +46,12 @@ class MainActivity : AppCompatActivity() {
                 gameController.initGame("country", true)
                 delay(3000)
                 launch {
+                    gameController.updateGameConnectionState(true)
                     while (isActive) {
                         delay(1000)
-                        val unityValueModel = UnityValueModel(
+                        val gameData = GameData(
                             model = 0,
-                            speed = 100,
+                            speed = (60..100).random(),
                             speedLevel = 5,
                             time = "20230731",
                             mileage = "11",
@@ -63,14 +64,12 @@ class MainActivity : AppCompatActivity() {
                             spasmFlag = 110,
                             pause = 0,
                             over = 0,
-                            existHeart = 1,
-                            connectBLE = 1,
-                            heart = (60..100).random().toString(),
                         )
-                        gameController.updateGame(unityValueModel)
+                        gameController.updateGame(gameData)
                     }
                 }
                 launch {
+                    gameController.updateEcgConnectionState(true)
                     while (isActive) {
                         delay(1000L / 125)
                         gameController.updateEcg(
