@@ -8,13 +8,16 @@ import com.psk.recovery.data.source.db.HeartRateDbDataSource
 import com.psk.recovery.data.source.db.MedicalOrderAndMonitorDevicesDbDataSource
 import com.psk.recovery.data.source.db.MedicalOrderDbDataSource
 import com.psk.recovery.data.source.db.MonitorDeviceDbDataSource
+import com.psk.recovery.data.source.db.ShangXiaZhiDbDataSource
 import com.psk.recovery.data.source.remote.IBloodOxygenDataSource
 import com.psk.recovery.data.source.remote.IBloodPressureDataSource
 import com.psk.recovery.data.source.remote.IHeartRateDataSource
+import com.psk.recovery.data.source.remote.IShangXiaZhiDataSource
 import com.psk.recovery.data.source.remote.ble.BP88B180704_BloodPressureDataSource
 import com.psk.recovery.data.source.remote.ble.ER1_HeartRateDataSource
 import com.psk.recovery.data.source.remote.ble.O2_BloodOxygenDataSource
 import com.psk.recovery.data.source.remote.ble.SCI311W_HeartRateDataSource
+import com.psk.recovery.data.source.remote.ble.XZX_ShangXiaZhiDataSource
 import com.psk.recovery.data.source.remote.mock.MockBloodOxygenDataSource
 import com.psk.recovery.data.source.remote.mock.MockBloodPressureDataSource
 import com.psk.recovery.data.source.remote.mock.MockHeartRateDataSource
@@ -47,6 +50,9 @@ val recoveryModule = module {
         HeartRateDbDataSource(get())
     }
     factory {
+        ShangXiaZhiDbDataSource(get())
+    }
+    factory {
         MedicalOrderDbDataSource(get())
     }
     factory {
@@ -67,6 +73,9 @@ val recoveryModule = module {
     factory<IHeartRateDataSource>(named("ER1")) {
         ER1_HeartRateDataSource(get())
     }
+    factory<IShangXiaZhiDataSource>(named("XZX")) {
+        XZX_ShangXiaZhiDataSource(get())
+    }
     factory<IBloodOxygenDataSource>(named("mock")) {
         MockBloodOxygenDataSource()
     }
@@ -79,7 +88,7 @@ val recoveryModule = module {
 
     //repository
     factory {
-        DeviceRepository(get(), get(), get(), get(), get(), get())
+        DeviceRepository(get(), get(), get(), get(), get(), get(), get())
     }
 
     //viewModel
@@ -101,6 +110,8 @@ val recoveryModule = module {
         com.psk.recovery.data.db.DatabaseManager.init(get())
         com.psk.recovery.data.db.DatabaseManager.db
     }
+
+    // Dao
     single {
         get<ServerDatabase>().bloodOxygenDao()
     }
@@ -109,6 +120,9 @@ val recoveryModule = module {
     }
     single {
         get<ServerDatabase>().heartRateDao()
+    }
+    single {
+        get<ServerDatabase>().shangXiaZhiDao()
     }
     single {
         get<ServerDatabase>().medicalOrderDao()
