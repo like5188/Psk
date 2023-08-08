@@ -5,10 +5,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.psk.recovery.data.model.ShangXiaZhi
 import com.psk.recovery.data.source.DeviceRepository
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.conflate
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
 
-@OptIn(FlowPreview::class)
 class ShangXiaZhiViewModel(
     private val deviceRepository: DeviceRepository,
 ) : ViewModel() {

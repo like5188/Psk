@@ -26,6 +26,7 @@ import com.psk.recovery.medicalorder.execute.ExecuteMedicalOrderViewModel
 import com.psk.recovery.medicalorder.execute.StartOrPauseManager
 import com.psk.recovery.medicalorder.history.HistoryMedicalOrderViewModel
 import com.psk.recovery.medicalorder.list.MedicalOrderListViewModel
+import com.psk.recovery.shangxiazhi.ShangXiaZhiViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -103,6 +104,9 @@ val recoveryModule = module {
     }
     viewModel {
         MedicalOrderListViewModel(get())
+    }
+    viewModel {
+        ShangXiaZhiViewModel(get())
     }
 
     //ServerDatabase
