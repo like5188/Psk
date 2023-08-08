@@ -20,11 +20,6 @@ class ShangXiaZhiViewModel(
     fun start() {
         getShangXiaZhi(deviceRepository.listenLatestShangXiaZhi(0))
         connectShangXiaZhi()
-        startFetchAndSaveJob()
-    }
-
-    private fun startFetchAndSaveJob() {
-        fetchShangXiaZhiAndSave()
     }
 
     private fun cancelFetchAndSaveJob() {
@@ -42,6 +37,7 @@ class ShangXiaZhiViewModel(
     private fun connectShangXiaZhi() {
         deviceRepository.connectShangXiaZhi(onConnected = {
             println("上下肢连接成功")
+            fetchShangXiaZhiAndSave()
         }) {
             println("上下肢连接失败")
         }
