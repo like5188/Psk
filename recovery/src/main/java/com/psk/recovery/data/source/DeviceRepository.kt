@@ -6,6 +6,7 @@ import com.psk.recovery.data.model.BloodPressure
 import com.psk.recovery.data.model.HeartRate
 import com.psk.recovery.data.model.MedicalOrder
 import com.psk.recovery.data.model.MonitorDevice
+import com.psk.recovery.data.model.ShangXiaZhi
 import com.psk.recovery.data.model.embedded.MedicalOrderAndMonitorDevice
 import com.psk.recovery.data.source.db.BloodOxygenDbDataSource
 import com.psk.recovery.data.source.db.BloodPressureDbDataSource
@@ -13,9 +14,11 @@ import com.psk.recovery.data.source.db.HeartRateDbDataSource
 import com.psk.recovery.data.source.db.MedicalOrderAndMonitorDevicesDbDataSource
 import com.psk.recovery.data.source.db.MedicalOrderDbDataSource
 import com.psk.recovery.data.source.db.MonitorDeviceDbDataSource
+import com.psk.recovery.data.source.db.ShangXiaZhiDbDataSource
 import com.psk.recovery.data.source.remote.IBloodOxygenDataSource
 import com.psk.recovery.data.source.remote.IBloodPressureDataSource
 import com.psk.recovery.data.source.remote.IHeartRateDataSource
+import com.psk.recovery.data.source.remote.IShangXiaZhiDataSource
 import kotlinx.coroutines.flow.Flow
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
@@ -27,6 +30,7 @@ class DeviceRepository(
     private val bloodOxygenDbDataSource: BloodOxygenDbDataSource,
     private val bloodPressureDbDataSource: BloodPressureDbDataSource,
     private val heartRateDbDataSource: HeartRateDbDataSource,
+    private val shangXiaZhiDbDataSource: ShangXiaZhiDbDataSource,
     private val medicalOrderDbDataSource: MedicalOrderDbDataSource,
     private val monitorDeviceDbDataSource: MonitorDeviceDbDataSource,
     private val medicalOrderAndMonitorDevicesDbDataSource: MedicalOrderAndMonitorDevicesDbDataSource,
@@ -39,6 +43,7 @@ class DeviceRepository(
 
     //    private val heartRateDataSource: IHeartRateDataSource = get(named("SCI311W"))
     private val heartRateDataSource: IHeartRateDataSource = get(named("ER1"))
+    private val shangXiaZhiDataSource: IShangXiaZhiDataSource = get(named("XZX"))
 
     fun connectBloodOxygen(
         onConnected: () -> Unit,
@@ -61,6 +66,13 @@ class DeviceRepository(
         heartRateDataSource.connect(onConnected, onDisconnected)
     }
 
+    fun connectShangXiaZhi(
+        onConnected: () -> Unit,
+        onDisconnected: (() -> Unit)? = null,
+    ) {
+        shangXiaZhiDataSource.connect(onConnected, onDisconnected)
+    }
+
     fun listenLatestBloodOxygen(startTime: Long): Flow<BloodOxygen> {
         return bloodOxygenDbDataSource.listenLatest(startTime)
     }
@@ -73,6 +85,10 @@ class DeviceRepository(
         return heartRateDbDataSource.listenLatest(startTime)
     }
 
+    fun listenLatestShangXiaZhi(startTime: Long): Flow<ShangXiaZhi> {
+        return shangXiaZhiDbDataSource.listenLatest(startTime)
+    }
+
     suspend fun getBloodOxygenByMedicalOrderId(medicalOrderId: Long): List<BloodOxygen>? {
         return bloodOxygenDbDataSource.getByMedicalOrderId(medicalOrderId)
     }
@@ -83,6 +99,10 @@ class DeviceRepository(
 
     suspend fun getHeartRateByMedicalOrderId(medicalOrderId: Long): List<HeartRate>? {
         return heartRateDbDataSource.getByMedicalOrderId(medicalOrderId)
+    }
+
+    suspend fun getShangXiaZhiByMedicalOrderId(medicalOrderId: Long): List<ShangXiaZhi>? {
+        return shangXiaZhiDbDataSource.getByMedicalOrderId(medicalOrderId)
     }
 
     suspend fun fetchBloodOxygenAndSave(medicalOrderId: Long) {
@@ -100,6 +120,12 @@ class DeviceRepository(
     suspend fun fetchHeartRateAndSave(medicalOrderId: Long) {
         heartRateDataSource.fetch(medicalOrderId).collect {
             heartRateDbDataSource.save(it)
+        }
+    }
+
+    suspend fun fetchShangXiaZhiAndSave(medicalOrderId: Long) {
+        shangXiaZhiDataSource.fetch(medicalOrderId).collect {
+            shangXiaZhiDbDataSource.save(it)
         }
     }
 
