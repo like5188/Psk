@@ -9,7 +9,6 @@ import com.psk.common.CommonApplication
 import com.psk.common.util.showToast
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.databinding.ActivityMainBinding
-import com.psk.shangxiazhi.util.startApp
 import com.twsz.twsystempre.GameController
 import com.twsz.twsystempre.GameData
 import kotlinx.coroutines.Dispatchers
@@ -41,9 +40,7 @@ class MainActivity : AppCompatActivity() {
         mBinding.ivAutonomyTraining.setOnClickListener {
             lifecycleScope.launch(Dispatchers.IO) {
                 // 启动游戏
-                startApp("com.twsz.twsystempre", "com.twsz.twsystempre.activity.GameActivity")
-                delay(3000)
-                gameController.initGame("country", true)
+                gameController.startGame("country", true)
                 delay(3000)
                 launch {
                     gameController.updateGameConnectionState(true)
