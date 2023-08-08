@@ -24,7 +24,7 @@ class ShangXiaZhiViewModel(
     }
 
     private fun startFetchAndSaveJob() {
-        fetchHeartRateAndSave()
+        fetchShangXiaZhiAndSave()
     }
 
     private fun cancelFetchAndSaveJob() {
@@ -55,9 +55,9 @@ class ShangXiaZhiViewModel(
         }
     }
 
-    private fun fetchHeartRateAndSave() {
+    private fun fetchShangXiaZhiAndSave() {
         fetchShangXiaZhiAndSaveJob = viewModelScope.launch(Dispatchers.IO) {
-            Log.d(TAG, "fetchHeartRateAndSave")
+            Log.d(TAG, "fetchShangXiaZhiAndSave")
             try {
                 deviceRepository.fetchShangXiaZhiAndSave(1)
             } catch (e: Exception) {
