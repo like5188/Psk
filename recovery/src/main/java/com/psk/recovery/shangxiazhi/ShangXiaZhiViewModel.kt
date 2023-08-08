@@ -18,9 +18,9 @@ class ShangXiaZhiViewModel(
     private var fetchShangXiaZhiAndSaveJob: Job? = null
 
     fun start() {
-        startFetchAndSaveJob()
         getShangXiaZhi(deviceRepository.listenLatestShangXiaZhi(0))
         connectShangXiaZhi()
+        startFetchAndSaveJob()
     }
 
     private fun startFetchAndSaveJob() {
