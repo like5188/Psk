@@ -26,6 +26,12 @@
             android:layout_height="wrap_content"
             android:text="医嘱列表" />
 
+        <Button
+            android:id="@+id/btnShangXiaZhi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="上下肢康复机测试" />
+
     </LinearLayout>
 
 </layout>

@@ -5,7 +5,6 @@ import com.psk.device.Device
 import com.psk.device.Protocol
 import com.psk.recovery.data.model.ShangXiaZhi
 import com.psk.recovery.data.source.remote.IShangXiaZhiDataSource
-import com.starcaretech.stardata.StarData
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.Unpooled
 import kotlinx.coroutines.flow.Flow
@@ -26,7 +25,6 @@ class XZX_ShangXiaZhiDataSource(
     override fun connect(onConnected: () -> Unit, onDisconnected: (() -> Unit)?) {
         bleManager.addDevices(device)
         bleManager.connect(true, onConnected = {
-            StarData.init()
             onConnected()
         }) {
             onDisconnected?.invoke()

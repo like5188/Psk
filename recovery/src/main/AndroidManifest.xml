@@ -34,6 +34,9 @@
         <activity
             android:name=".medicalorder.list.MedicalOrderListActivity"
             android:exported="false" />
+        <activity
+            android:name=".shangxiazhi.ShangXiaZhiActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
