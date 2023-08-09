@@ -17,7 +17,7 @@ data class ShangXiaZhi(
     val res: Int = 0,
     val intelligence: Byte = 0,
     val direction: Byte = 0,
-    val medicalOrderId: Long
+    val medicalOrderId: Long = 0
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
