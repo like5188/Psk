@@ -56,7 +56,7 @@ class XZX_ShangXiaZhiDataSource(
                     intelligence = intelligence,
                     direction = direction,
                 )
-                println(shangXiaZhi)
+                trySend(shangXiaZhi)
             }
 
             override fun onPause() {
