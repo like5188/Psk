@@ -1,26 +1,32 @@
 package com.psk.recovery.util
 
-import com.psk.recovery.data.db.database.ServerDatabase
-import com.psk.recovery.data.source.DeviceRepository
-import com.psk.recovery.data.source.db.BloodOxygenDbDataSource
-import com.psk.recovery.data.source.db.BloodPressureDbDataSource
-import com.psk.recovery.data.source.db.HeartRateDbDataSource
+import com.psk.device.BleManager
+import com.psk.device.data.db.DeviceDatabaseManager
+import com.psk.device.data.db.database.DeviceDatabase
+import com.psk.device.data.source.DeviceRepository
+import com.psk.device.data.source.db.BloodOxygenDbDataSource
+import com.psk.device.data.source.db.BloodPressureDbDataSource
+import com.psk.device.data.source.db.HeartRateDbDataSource
+import com.psk.device.data.source.db.ShangXiaZhiDbDataSource
+import com.psk.device.data.source.remote.IBloodOxygenDataSource
+import com.psk.device.data.source.remote.IBloodPressureDataSource
+import com.psk.device.data.source.remote.IHeartRateDataSource
+import com.psk.device.data.source.remote.IShangXiaZhiDataSource
+import com.psk.device.data.source.remote.ble.BP88B180704_BloodPressureDataSource
+import com.psk.device.data.source.remote.ble.ER1_HeartRateDataSource
+import com.psk.device.data.source.remote.ble.O2_BloodOxygenDataSource
+import com.psk.device.data.source.remote.ble.SCI311W_HeartRateDataSource
+import com.psk.device.data.source.remote.ble.XZX_ShangXiaZhiDataSource
+import com.psk.device.data.source.remote.mock.MockBloodOxygenDataSource
+import com.psk.device.data.source.remote.mock.MockBloodPressureDataSource
+import com.psk.device.data.source.remote.mock.MockHeartRateDataSource
+import com.psk.device.data.source.remote.mock.MockShangXiaZhiDataSource
+import com.psk.recovery.data.db.RecoveryDatabaseManager
+import com.psk.recovery.data.db.database.RecoveryDatabase
+import com.psk.recovery.data.source.RecoveryRepository
 import com.psk.recovery.data.source.db.MedicalOrderAndMonitorDevicesDbDataSource
 import com.psk.recovery.data.source.db.MedicalOrderDbDataSource
 import com.psk.recovery.data.source.db.MonitorDeviceDbDataSource
-import com.psk.recovery.data.source.db.ShangXiaZhiDbDataSource
-import com.psk.recovery.data.source.remote.IBloodOxygenDataSource
-import com.psk.recovery.data.source.remote.IBloodPressureDataSource
-import com.psk.recovery.data.source.remote.IHeartRateDataSource
-import com.psk.recovery.data.source.remote.IShangXiaZhiDataSource
-import com.psk.recovery.data.source.remote.ble.BP88B180704_BloodPressureDataSource
-import com.psk.recovery.data.source.remote.ble.ER1_HeartRateDataSource
-import com.psk.recovery.data.source.remote.ble.O2_BloodOxygenDataSource
-import com.psk.recovery.data.source.remote.ble.SCI311W_HeartRateDataSource
-import com.psk.recovery.data.source.remote.ble.XZX_ShangXiaZhiDataSource
-import com.psk.recovery.data.source.remote.mock.MockBloodOxygenDataSource
-import com.psk.recovery.data.source.remote.mock.MockBloodPressureDataSource
-import com.psk.recovery.data.source.remote.mock.MockHeartRateDataSource
 import com.psk.recovery.medicalorder.add.AddMedicalOrderViewModel
 import com.psk.recovery.medicalorder.execute.ExecuteMedicalOrderViewModel
 import com.psk.recovery.medicalorder.execute.StartOrPauseManager
@@ -86,15 +92,21 @@ val recoveryModule = module {
     factory<IHeartRateDataSource>(named("mock")) {
         MockHeartRateDataSource()
     }
+    factory<IShangXiaZhiDataSource>(named("mock")) {
+        MockShangXiaZhiDataSource()
+    }
 
     //repository
     factory {
-        DeviceRepository(get(), get(), get(), get(), get(), get(), get())
+        DeviceRepository(get(), get(), get(), get(), get(named("mock")), get(named("mock")), get(named("mock")), get(named("mock")))
+    }
+    factory {
+        RecoveryRepository(get(), get(), get())
     }
 
     //viewModel
     viewModel {
-        ExecuteMedicalOrderViewModel(get(), get())
+        ExecuteMedicalOrderViewModel(get(), get(), get())
     }
     viewModel {
         HistoryMedicalOrderViewModel(get())
@@ -111,30 +123,39 @@ val recoveryModule = module {
 
     //ServerDatabase
     single {
-        com.psk.recovery.data.db.DatabaseManager.init(get())
-        com.psk.recovery.data.db.DatabaseManager.db
+        DeviceDatabaseManager.init(get())
+        DeviceDatabaseManager.db
+    }
+    single {
+        RecoveryDatabaseManager.init(get())
+        RecoveryDatabaseManager.db
     }
 
     // Dao
     single {
-        get<ServerDatabase>().bloodOxygenDao()
+        get<DeviceDatabase>().bloodOxygenDao()
     }
     single {
-        get<ServerDatabase>().bloodPressureDao()
+        get<DeviceDatabase>().bloodPressureDao()
     }
     single {
-        get<ServerDatabase>().heartRateDao()
+        get<DeviceDatabase>().heartRateDao()
     }
     single {
-        get<ServerDatabase>().shangXiaZhiDao()
+        get<DeviceDatabase>().shangXiaZhiDao()
     }
     single {
-        get<ServerDatabase>().medicalOrderDao()
+        get<RecoveryDatabase>().medicalOrderDao()
     }
     single {
-        get<ServerDatabase>().monitorDeviceDao()
+        get<RecoveryDatabase>().monitorDeviceDao()
     }
     factory {
         StartOrPauseManager(get())
+    }
+
+    // BleManager
+    single {
+        BleManager(get())
     }
 }

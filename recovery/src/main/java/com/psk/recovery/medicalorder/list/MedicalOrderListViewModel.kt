@@ -1,12 +1,12 @@
 package com.psk.recovery.medicalorder.list
 
 import androidx.lifecycle.ViewModel
-import com.psk.recovery.data.source.DeviceRepository
+import com.psk.recovery.data.source.RecoveryRepository
 
 class MedicalOrderListViewModel(
-    private val deviceRepository: DeviceRepository,
+    private val recoveryRepository: RecoveryRepository,
 ) : ViewModel() {
 
-    fun getMedicalOrderAndMonitorDevicesResult(status: Int) = deviceRepository.getMedicalOrderAndMonitorDevicesResult(status)
+    fun getMedicalOrderAndMonitorDevicesResult(status: Int) = recoveryRepository.getMedicalOrderAndMonitorDevicesResult(status)
 
 }

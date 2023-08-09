@@ -1,7 +1,6 @@
 package com.psk.common.util
 
 import com.google.gson.Gson
-import com.psk.device.BleManager
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import java.text.SimpleDateFormat
@@ -15,10 +14,6 @@ import java.text.SimpleDateFormat
  * Date:
  */
 val commonModule = module {
-    // BleManager
-    single {
-        BleManager(get())
-    }
     // Gson
     single {
         Gson()

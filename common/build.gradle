@@ -67,6 +67,4 @@ dependencies {
 
     api 'org.koin:koin-androidx-viewmodel:2.2.2'
     api 'com.google.code.gson:gson:2.8.5'
-    api project(':device')
-    api project(':LuckyEcgChart')
 }

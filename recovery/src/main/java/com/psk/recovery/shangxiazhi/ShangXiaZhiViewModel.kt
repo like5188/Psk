@@ -3,8 +3,8 @@ package com.psk.recovery.shangxiazhi
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.psk.recovery.data.model.ShangXiaZhi
-import com.psk.recovery.data.source.DeviceRepository
+import com.psk.device.data.model.ShangXiaZhi
+import com.psk.device.data.source.DeviceRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

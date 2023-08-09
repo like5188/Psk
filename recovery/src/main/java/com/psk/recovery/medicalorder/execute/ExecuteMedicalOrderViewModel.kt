@@ -8,13 +8,14 @@ import androidx.lifecycle.viewModelScope
 import com.like.common.util.mvi.Event
 import com.psk.common.util.ToastEvent
 import com.psk.common.util.asFlow
-import com.psk.recovery.data.model.BloodOxygen
-import com.psk.recovery.data.model.BloodPressure
-import com.psk.recovery.data.model.HeartRate
+import com.psk.device.data.model.BloodOxygen
+import com.psk.device.data.model.BloodPressure
+import com.psk.device.data.model.HeartRate
+import com.psk.device.data.source.DeviceRepository
 import com.psk.recovery.data.model.MedicalOrder
 import com.psk.recovery.data.model.MonitorDevice
 import com.psk.recovery.data.model.embedded.MedicalOrderAndMonitorDevice
-import com.psk.recovery.data.source.DeviceRepository
+import com.psk.recovery.data.source.RecoveryRepository
 import com.seeker.luckychart.model.ECGPointValue
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -23,6 +24,7 @@ import kotlinx.coroutines.flow.*
 class ExecuteMedicalOrderViewModel(
     private val startOrPauseManager: StartOrPauseManager,
     private val deviceRepository: DeviceRepository,
+    private val recoveryRepository: RecoveryRepository,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ExecuteMedicalOrderUiState())
     val uiState = _uiState.asStateFlow()
@@ -115,7 +117,7 @@ class ExecuteMedicalOrderViewModel(
     private fun updateMedicalOrderRemainIntervalToDb(remainInterval: Long) {
         medicalOrder = medicalOrder.copy(remainInterval = remainInterval)
         viewModelScope.launch {
-            deviceRepository.updateMedicalOrders(medicalOrder)
+            recoveryRepository.updateMedicalOrders(medicalOrder)
         }
     }
 
@@ -127,7 +129,7 @@ class ExecuteMedicalOrderViewModel(
             startTime = System.currentTimeMillis() / 1000, status = 1
         )
         viewModelScope.launch {
-            deviceRepository.updateMedicalOrders(medicalOrder)
+            recoveryRepository.updateMedicalOrders(medicalOrder)
         }
     }
 
@@ -139,7 +141,7 @@ class ExecuteMedicalOrderViewModel(
             endTime = System.currentTimeMillis() / 1000, status = 2
         )
         viewModelScope.launch {
-            deviceRepository.updateMedicalOrders(medicalOrder)
+            recoveryRepository.updateMedicalOrders(medicalOrder)
         }
     }
 

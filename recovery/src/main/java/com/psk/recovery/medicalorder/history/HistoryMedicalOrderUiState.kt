@@ -2,8 +2,8 @@ package com.psk.recovery.medicalorder.history
 
 import com.like.common.util.mvi.Event
 import com.psk.common.util.ToastEvent
-import com.psk.recovery.data.model.BloodOxygen
-import com.psk.recovery.data.model.BloodPressure
+import com.psk.device.data.model.BloodOxygen
+import com.psk.device.data.model.BloodPressure
 import com.seeker.luckychart.model.ECGPointValue
 
 data class HistoryMedicalOrderUiState(
