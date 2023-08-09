@@ -129,6 +129,33 @@ class DeviceRepository(
         }
     }
 
+    suspend fun startShangXiaZhi() {
+        shangXiaZhiDataSource.start()
+    }
+
+    suspend fun stopShangXiaZhi() {
+        shangXiaZhiDataSource.stop()
+    }
+
+    suspend fun pauseShangXiaZhi() {
+        shangXiaZhiDataSource.pause()
+    }
+
+    /**
+     * @param passiveModule     被动模式
+     * @param timeInt           时间 5-30 min
+     * @param speedInt          速度 5-60 rpm
+     * @param spasmInt          痉挛等级 1-12
+     * @param resistanceInt     阻力 1-12
+     * @param intelligent       智能模式
+     * @param turn2             正转
+     */
+    suspend fun setShangXiaZhiParams(
+        passiveModule: Boolean, timeInt: Int, speedInt: Int, spasmInt: Int, resistanceInt: Int, intelligent: Boolean, turn2: Boolean
+    ) {
+        shangXiaZhiDataSource.setParams(passiveModule, timeInt, speedInt, spasmInt, resistanceInt, intelligent, turn2)
+    }
+
     suspend fun saveMedicalOrder(medicalOrder: MedicalOrder): Long {
         return medicalOrderDbDataSource.save(medicalOrder)
     }

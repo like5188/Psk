@@ -7,6 +7,8 @@ import com.psk.recovery.data.model.ShangXiaZhi
 import com.psk.recovery.data.source.remote.IShangXiaZhiDataSource
 import com.psk.recovery.util.ShangXiaZhiParser
 import com.psk.recovery.util.ShangXiaZhiReceiver
+import com.twsz.remotecommands.RemoteCommand
+import com.twsz.remotecommands.TrunkCommandData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 
@@ -71,6 +73,66 @@ class XZX_ShangXiaZhiDataSource(
         bleManager.setNotifyCallback(device)?.collect {
             shangXiaZhiParser.putData(it)
         }
+    }
+
+    override suspend fun start() {
+        bleManager.write(device, RemoteCommand.generateStartParam())
+    }
+
+    override suspend fun stop() {
+        bleManager.write(device, RemoteCommand.generateStopParam())
+    }
+
+    override suspend fun pause() {
+        bleManager.write(device, RemoteCommand.generatePauseParam())
+    }
+
+    override suspend fun setParams(
+        passiveModule: Boolean,
+        timeInt: Int,
+        speedInt: Int,
+        spasmInt: Int,
+        resistanceInt: Int,
+        intelligent: Boolean,
+        turn2: Boolean
+    ) {
+        //被动
+        val model = if (passiveModule) {
+            0x01.toByte()
+        } else {
+            0x02.toByte()
+        }
+
+        val time = timeInt.toByte()
+        val speed = (speedInt / 5).toByte()
+        val spasm = spasmInt.toByte()
+        val resistance = resistanceInt.toByte()
+
+        //智能
+        val intelligence = if (intelligent) {
+            0x00.toByte()
+        } else {
+            0x01.toByte()
+        }
+
+        val direction = if (turn2) {
+            0x00.toByte()
+        } else {
+            0x01.toByte()
+        }
+        bleManager.write(
+            device,
+            RemoteCommand.generateParam(TrunkCommandData().apply {
+                this.model = model
+                this.time = time
+                this.speed = speed
+                this.spasm = spasm
+                this.intelligence = intelligence
+                this.resistance = resistance
+                this.direction = direction
+                println("model=$model time=$time speed=$speed spasm=$spasm intelligence=$intelligence resistance=$resistance direction=$direction")
+            })
+        )
     }
 
 }
