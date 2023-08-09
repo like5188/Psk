@@ -36,10 +36,10 @@ class ShangXiaZhiViewModel(
 
     private fun connectShangXiaZhi() {
         deviceRepository.connectShangXiaZhi(onConnected = {
-            println("上下肢连接成功")
+            Log.w(TAG, "上下肢连接成功")
             fetchShangXiaZhiAndSave()
         }) {
-            println("上下肢连接失败")
+            Log.e(TAG, "上下肢连接失败")
         }
     }
 
