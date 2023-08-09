@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
         mBinding.ivAutonomyTraining.setOnClickListener {
             lifecycleScope.launch(Dispatchers.IO) {
                 // 启动游戏
-                gameController.startGame("country", true)
+                gameController.init("country", true)
                 delay(3000)
                 launch {
                     gameController.updateGameConnectionState(true)
@@ -59,21 +59,31 @@ class MainActivity : AppCompatActivity() {
                             spasm = 10,
                             spasmLevel = 2,
                             spasmFlag = 110,
-                            pause = 0,
-                            over = 0,
                         )
-                        gameController.updateGame(gameData)
+                        gameController.updateGameData(gameData)
                     }
                 }
                 launch {
                     gameController.updateEcgConnectionState(true)
                     while (isActive) {
                         delay(1000L / 125)
-                        gameController.updateEcg(
+                        gameController.updateEcgData(
                             BigDecimal.valueOf((-128..127).random().toDouble()).setScale(5, BigDecimal.ROUND_HALF_DOWN).toFloat() / 150f,
                             (60..100).random()
                         )
                     }
+                }
+                launch {
+                    delay(40000)
+                    gameController.pauseGame()
+                    delay(3000)
+                    gameController.startGame()
+                    delay(3000)
+                    gameController.pauseGame()
+                    delay(3000)
+                    gameController.startGame()
+                    delay(3000)
+                    gameController.overGame()
                 }
             }
         }
