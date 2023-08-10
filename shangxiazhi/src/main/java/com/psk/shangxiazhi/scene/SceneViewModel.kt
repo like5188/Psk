@@ -172,7 +172,13 @@ class SceneViewModel(
         fetchShangXiaZhiAndSaveJob = viewModelScope.launch(Dispatchers.IO) {
             Log.d(TAG, "fetchShangXiaZhiAndSave")
             try {
-                deviceRepository.fetchShangXiaZhiAndSave(1)
+                deviceRepository.fetchShangXiaZhiAndSave(1,
+                    onPause = {
+                        gameController.pauseGame()
+                    },
+                    onOver = {
+                        gameController.overGame()
+                    })
             } catch (e: Exception) {
             }
         }

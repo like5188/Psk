@@ -34,6 +34,12 @@ class XZX_ShangXiaZhiDataSource(
         }
     }
 
+    // 上下肢被暂停时回调
+    var onPause: (() -> Unit)? = null
+
+    // 上下肢被结束时回调
+    var onOver: (() -> Unit)? = null
+
     override suspend fun fetch(medicalOrderId: Long): Flow<ShangXiaZhi> = channelFlow {
         shangXiaZhiParser.setReceiver(object : ShangXiaZhiReceiver {
             override fun onReceive(
@@ -62,15 +68,16 @@ class XZX_ShangXiaZhiDataSource(
             }
 
             override fun onPause() {
-                println("onPause")
+                onPause?.invoke()
             }
 
             override fun onOver() {
-                println("onOver")
+                onOver?.invoke()
             }
 
         })
         bleManager.setNotifyCallback(device)?.collect {
+            println(it.contentToString())
             shangXiaZhiParser.putData(it)
         }
     }
