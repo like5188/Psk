@@ -40,7 +40,7 @@ class XZX_ShangXiaZhiDataSource(
     // 上下肢开始运行或者从暂停中恢复运行时回调
     var onStart: (() -> Unit)? = null
 
-    // 上下肢被暂停时回调
+    // 上下肢暂停时回调
     var onPause: (() -> Unit)? = null
 
     // 上下肢结束时回调
