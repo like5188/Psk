@@ -33,7 +33,7 @@ class SceneViewModel(
         scene: String? = "",
         existHeart: Boolean = false,
         passiveModule: Boolean = true,
-        timeInt: Int = 5,
+        timeInt: Int = 1,
         speedInt: Int = 20,
         spasmInt: Int = 3,
         resistanceInt: Int = 1,
