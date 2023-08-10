@@ -97,14 +97,8 @@ class SceneViewModel(
             flow.distinctUntilChanged().conflate().collect { value ->
                 Log.v(TAG, "getShangXiaZhi $value")
                 value ?: return@collect
-
-                val speedValue = value.speedLevel
-                //备注：速度额外+3
-                var speed = speedValue
-                if (speed != 0) {
-                    speed += 3
-                }
-
+                //转速
+                val speed = value.speedValue
                 //阻力
                 var resistance = 0
                 //模式
@@ -112,16 +106,16 @@ class SceneViewModel(
                 if (model == 1) {
                     resistance = 0
                     //被动里程
-                    mPassiveMil += speedValue * 0.5f * 1000 / 3600
+                    mPassiveMil += speed * 0.5f * 1000 / 3600
                     //卡路里
-                    totalCal += speedValue * 0.2f / 300
+                    totalCal += speed * 0.2f / 300
                 } else {
                     resistance = value.res
                     //主动里程
-                    mActiveMil += speedValue * 0.5f * 1000 / 3600
+                    mActiveMil += speed * 0.5f * 1000 / 3600
                     //卡路里
                     val resParam: Float = resistance * 1.00f / 3.0f
-                    totalCal += speedValue * 0.2f * resParam / 60
+                    totalCal += speed * 0.2f * resParam / 60
                 }
                 //里程
                 val mileage = decimalFormat.format((mActiveMil + mPassiveMil).toDouble())
