@@ -63,10 +63,11 @@ class SceneViewModel(
         intelligent: Boolean = true,
         turn2: Boolean = true
     ) {
-        gameController.registerGameCallback(gameCallback)
         viewModelScope.launch {
             //启动游戏
             gameController.init(scene, existHeart)
+            delay(5000)
+            gameController.registerGameCallback(gameCallback)
         }
         //监听上下肢数据
         getShangXiaZhi(deviceRepository.listenLatestShangXiaZhi(0))
