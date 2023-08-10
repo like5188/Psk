@@ -18,7 +18,6 @@ import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.text.DecimalFormat
-import java.util.concurrent.atomic.AtomicBoolean
 
 @OptIn(KoinApiExtension::class)
 class SceneViewModel(
@@ -27,7 +26,6 @@ class SceneViewModel(
 ) : ViewModel(), KoinComponent {
     private var fetchShangXiaZhiAndSaveJob: Job? = null
     private val decimalFormat by inject<DecimalFormat>()
-    private var isPause = AtomicBoolean(false)
 
     fun start(
         scene: String? = "",
@@ -99,11 +97,6 @@ class SceneViewModel(
             flow.distinctUntilChanged().conflate().collect { value ->
                 Log.v(TAG, "getShangXiaZhi $value")
                 value ?: return@collect
-
-                if (isPause.compareAndSet(true, false)) {
-                    gameController.startGame()
-                }
-
                 //转速
                 val speed = value.speedValue
                 //阻力
@@ -180,10 +173,11 @@ class SceneViewModel(
             Log.d(TAG, "fetchShangXiaZhiAndSave")
             try {
                 deviceRepository.fetchShangXiaZhiAndSave(1,
+                    onStart = {
+                        gameController.startGame()
+                    },
                     onPause = {
-                        if (isPause.compareAndSet(false, true)) {
-                            gameController.pauseGame()
-                        }
+                        gameController.pauseGame()
                     },
                     onOver = {
                         gameController.overGame()

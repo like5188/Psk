@@ -11,6 +11,7 @@ import com.twsz.remotecommands.RemoteCommand
 import com.twsz.remotecommands.TrunkCommandData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
+import java.util.concurrent.atomic.AtomicBoolean
 
 class XZX_ShangXiaZhiDataSource(
     private val bleManager: BleManager
@@ -34,10 +35,15 @@ class XZX_ShangXiaZhiDataSource(
         }
     }
 
+    private var isPause = AtomicBoolean(false)
+
+    // 上下肢开始运行或者从暂停中恢复运行时回调
+    var onStart: (() -> Unit)? = null
+
     // 上下肢被暂停时回调
     var onPause: (() -> Unit)? = null
 
-    // 上下肢被结束时回调
+    // 上下肢结束时回调
     var onOver: (() -> Unit)? = null
 
     override suspend fun fetch(medicalOrderId: Long): Flow<ShangXiaZhi> = channelFlow {
@@ -64,11 +70,16 @@ class XZX_ShangXiaZhiDataSource(
                     intelligence = intelligence,
                     direction = direction,
                 )
+                if (isPause.compareAndSet(true, false)) {
+                    onStart?.invoke()
+                }
                 trySend(shangXiaZhi)
             }
 
             override fun onPause() {
-                onPause?.invoke()
+                if (isPause.compareAndSet(false, true)) {
+                    onPause?.invoke()
+                }
             }
 
             override fun onOver() {
@@ -77,7 +88,6 @@ class XZX_ShangXiaZhiDataSource(
 
         })
         bleManager.setNotifyCallback(device)?.collect {
-            println(it.contentToString())
             shangXiaZhiParser.putData(it)
         }
     }
@@ -95,13 +105,7 @@ class XZX_ShangXiaZhiDataSource(
     }
 
     override suspend fun setParams(
-        passiveModule: Boolean,
-        timeInt: Int,
-        speedInt: Int,
-        spasmInt: Int,
-        resistanceInt: Int,
-        intelligent: Boolean,
-        turn2: Boolean
+        passiveModule: Boolean, timeInt: Int, speedInt: Int, spasmInt: Int, resistanceInt: Int, intelligent: Boolean, turn2: Boolean
     ) {
         //被动
         val model = if (passiveModule) {
@@ -128,8 +132,7 @@ class XZX_ShangXiaZhiDataSource(
             0x01.toByte()
         }
         bleManager.write(
-            device,
-            RemoteCommand.generateParam(TrunkCommandData().apply {
+            device, RemoteCommand.generateParam(TrunkCommandData().apply {
                 this.model = model
                 this.time = time
                 this.speed = speed

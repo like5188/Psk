@@ -104,8 +104,14 @@ class DeviceRepository(
         }
     }
 
-    suspend fun fetchShangXiaZhiAndSave(medicalOrderId: Long, onPause: (() -> Unit)? = null, onOver: (() -> Unit)? = null) {
+    suspend fun fetchShangXiaZhiAndSave(
+        medicalOrderId: Long,
+        onStart: (() -> Unit)? = null,
+        onPause: (() -> Unit)? = null,
+        onOver: (() -> Unit)? = null
+    ) {
         if (shangXiaZhiDataSource is XZX_ShangXiaZhiDataSource) {
+            shangXiaZhiDataSource.onStart = onStart
             shangXiaZhiDataSource.onPause = onPause
             shangXiaZhiDataSource.onOver = onOver
         }
