@@ -1,4 +1,4 @@
-rootProject.name='Recovery'
+rootProject.name='Psk'
 include ':recovery'
 include ':device'
 include ':LuckyEcgChart'
