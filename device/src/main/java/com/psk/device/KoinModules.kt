@@ -75,7 +75,7 @@ val deviceModule = module {
 
     //repository
     factory {
-        DeviceRepository(get(), get(), get(), get(), get(named("mock")), get(named("mock")), get(named("mock")), get(named("mock")))
+        DeviceRepository(get(), get(), get(), get(), get(named("mock")), get(named("mock")), get(named("mock")), get(named("XZX")))
     }
 
     //ServerDatabase

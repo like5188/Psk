@@ -7,7 +7,6 @@ import com.psk.recovery.R
 import com.psk.recovery.databinding.ActivityMainBinding
 import com.psk.recovery.medicalorder.add.AddMedicalOrderActivity
 import com.psk.recovery.medicalorder.list.MedicalOrderListActivity
-import com.psk.recovery.shangxiazhi.ShangXiaZhiActivity
 
 /**
  * 主界面
@@ -24,9 +23,6 @@ class MainActivity : AppCompatActivity() {
         }
         mBinding.btnMedicalOrderList.setOnClickListener {
             MedicalOrderListActivity.start(3)
-        }
-        mBinding.btnShangXiaZhi.setOnClickListener {
-            ShangXiaZhiActivity.start()
         }
     }
 

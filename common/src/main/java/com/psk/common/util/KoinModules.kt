@@ -19,6 +19,9 @@ val commonModule = module {
         Gson()
     }
     // SimpleDateFormat
+    single(named("yyyyMMdd")) {
+        SimpleDateFormat("yyyyMMdd")
+    }
     single(named("yyyy-MM-dd")) {
         SimpleDateFormat("yyyy-MM-dd")
     }
