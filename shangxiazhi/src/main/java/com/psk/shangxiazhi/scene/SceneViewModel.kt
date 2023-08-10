@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.psk.device.data.model.ShangXiaZhi
 import com.psk.device.data.source.DeviceRepository
+import com.twsz.twsystempre.GameCallback
 import com.twsz.twsystempre.GameController
 import com.twsz.twsystempre.GameData
 import kotlinx.coroutines.Dispatchers
@@ -21,11 +22,32 @@ import java.text.DecimalFormat
 
 @OptIn(KoinApiExtension::class)
 class SceneViewModel(
-    private val deviceRepository: DeviceRepository,
-    private val gameController: GameController
+    private val deviceRepository: DeviceRepository, private val gameController: GameController
 ) : ViewModel(), KoinComponent {
     private var fetchShangXiaZhiAndSaveJob: Job? = null
     private val decimalFormat by inject<DecimalFormat>()
+    private val gameCallback by lazy {
+        object : GameCallback.Stub() {
+            override fun onStart() {
+                viewModelScope.launch {
+                    deviceRepository.startShangXiaZhi()
+                }
+            }
+
+            override fun onPause() {
+                viewModelScope.launch {
+                    deviceRepository.pauseShangXiaZhi()
+                }
+            }
+
+            override fun onOver() {
+                viewModelScope.launch {
+                    deviceRepository.stopShangXiaZhi()
+                }
+            }
+
+        }
+    }
 
     fun start(
         scene: String? = "",
@@ -38,6 +60,7 @@ class SceneViewModel(
         intelligent: Boolean = true,
         turn2: Boolean = true
     ) {
+        gameController.registerGameCallback(gameCallback)
         viewModelScope.launch {
             //启动游戏
             gameController.init(scene, existHeart)
@@ -68,22 +91,11 @@ class SceneViewModel(
         }
     }
 
-    fun stopShangXiaZhi() {
-        viewModelScope.launch {
-            deviceRepository.stopShangXiaZhi()
-        }
-    }
-
-    fun pauseShangXiaZhi() {
-        viewModelScope.launch {
-            deviceRepository.pauseShangXiaZhi()
-        }
-    }
-
     fun destroy() {
         fetchShangXiaZhiAndSaveJob?.cancel()
         fetchShangXiaZhiAndSaveJob = null
         gameController.destroy()
+        gameController.unregisterGameCallback(gameCallback)
     }
 
     private fun getShangXiaZhi(flow: Flow<ShangXiaZhi?>) {
@@ -172,16 +184,13 @@ class SceneViewModel(
         fetchShangXiaZhiAndSaveJob = viewModelScope.launch(Dispatchers.IO) {
             Log.d(TAG, "fetchShangXiaZhiAndSave")
             try {
-                deviceRepository.fetchShangXiaZhiAndSave(1,
-                    onStart = {
-                        gameController.startGame()
-                    },
-                    onPause = {
-                        gameController.pauseGame()
-                    },
-                    onOver = {
-                        gameController.overGame()
-                    })
+                deviceRepository.fetchShangXiaZhiAndSave(1, onStart = {
+                    gameController.startGame()
+                }, onPause = {
+                    gameController.pauseGame()
+                }, onOver = {
+                    gameController.overGame()
+                })
             } catch (e: Exception) {
             }
         }
