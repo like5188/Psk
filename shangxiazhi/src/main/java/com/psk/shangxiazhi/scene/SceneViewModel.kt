@@ -75,11 +75,8 @@ class SceneViewModel(
                     TAG,
                     "设置参数：passiveModule=$passiveModule timeInt=$timeInt speedInt=$speedInt spasmInt=$spasmInt resistanceInt=$resistanceInt intelligent=$intelligent turn2=$turn2"
                 )
-                //设置上下肢参数
+                //设置上下肢参数，设置好后，如果是被动模式，上下肢会自动运行
                 deviceRepository.setShangXiaZhiParams(passiveModule, timeInt, speedInt, spasmInt, resistanceInt, intelligent, turn2)
-                delay(100)
-                //启动上下肢
-                deviceRepository.startShangXiaZhi()
                 delay(100)
                 //从上下肢获取数据并保存到数据库
                 fetchShangXiaZhiAndSave()

@@ -7,13 +7,23 @@ interface IShangXiaZhiDataSource : IRemoteDeviceDataSource {
 
     suspend fun fetch(medicalOrderId: Long): Flow<ShangXiaZhi>
 
+    /**
+     * 使上下肢恢复运行
+     */
     suspend fun start()
 
+    /**
+     * 使上下肢停止运行
+     */
     suspend fun stop()
 
+    /**
+     * 使上下肢暂停运行
+     */
     suspend fun pause()
 
     /**
+     * 设置上下肢参数，设置好后，如果是被动模式，上下肢会自动运行
      * @param passiveModule     被动模式
      * @param timeInt           时间 5-30 min
      * @param speedInt          速度 5-60 rpm
