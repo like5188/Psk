@@ -53,7 +53,7 @@ class SceneActivity : AppCompatActivity() {
     }
 
     private fun startGame(scene: String) {
-        mViewModel.start(scene, true, resistanceInt = 1, passiveModule = true, timeInt = 2)
+        mViewModel.start(scene, true, resistanceInt = 1, passiveModule = true, timeInt = 1)
     }
 
     override fun onDestroy() {
