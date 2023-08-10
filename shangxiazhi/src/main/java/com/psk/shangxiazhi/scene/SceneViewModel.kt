@@ -26,31 +26,6 @@ class SceneViewModel(
 ) : ViewModel(), KoinComponent {
     private var fetchShangXiaZhiAndSaveJob: Job? = null
     private val decimalFormat by inject<DecimalFormat>()
-    private val gameCallback by lazy {
-        object : GameCallback.Stub() {
-            override fun onStart() {
-                Log.v(TAG, "onStart")
-                viewModelScope.launch {
-                    deviceRepository.startShangXiaZhi()
-                }
-            }
-
-            override fun onPause() {
-                Log.v(TAG, "onPause")
-                viewModelScope.launch {
-                    deviceRepository.pauseShangXiaZhi()
-                }
-            }
-
-            override fun onOver() {
-                Log.v(TAG, "onOver")
-                viewModelScope.launch {
-                    deviceRepository.stopShangXiaZhi()
-                }
-            }
-
-        }
-    }
 
     fun start(
         scene: String? = "",
@@ -65,9 +40,29 @@ class SceneViewModel(
     ) {
         viewModelScope.launch {
             //启动游戏
-            gameController.init(scene, existHeart)
-            delay(5000)
-            gameController.registerGameCallback(gameCallback)
+            gameController.init(scene, existHeart, object : GameCallback.Stub() {
+                override fun onStart() {
+                    Log.v(TAG, "onStart")
+                    viewModelScope.launch {
+                        deviceRepository.startShangXiaZhi()
+                    }
+                }
+
+                override fun onPause() {
+                    Log.v(TAG, "onPause")
+                    viewModelScope.launch {
+                        deviceRepository.pauseShangXiaZhi()
+                    }
+                }
+
+                override fun onOver() {
+                    Log.v(TAG, "onOver")
+                    viewModelScope.launch {
+                        deviceRepository.stopShangXiaZhi()
+                    }
+                }
+
+            })
         }
         //监听上下肢数据
         getShangXiaZhi(deviceRepository.listenLatestShangXiaZhi(0))
@@ -99,7 +94,6 @@ class SceneViewModel(
         fetchShangXiaZhiAndSaveJob?.cancel()
         fetchShangXiaZhiAndSaveJob = null
         gameController.destroy()
-        gameController.unregisterGameCallback(gameCallback)
     }
 
     private fun getShangXiaZhi(flow: Flow<ShangXiaZhi?>) {
