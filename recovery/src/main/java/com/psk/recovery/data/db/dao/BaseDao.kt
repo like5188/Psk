@@ -2,11 +2,7 @@ package com.psk.recovery.data.db.dao
 
 import androidx.room.Delete
 import androidx.room.Insert
-import androidx.room.RawQuery
 import androidx.room.Update
-import androidx.sqlite.db.SimpleSQLiteQuery
-import androidx.sqlite.db.SupportSQLiteQuery
-import java.lang.reflect.ParameterizedType
 
 /*
  * 如果返回值类型为 Flow<>
@@ -18,12 +14,6 @@ import java.lang.reflect.ParameterizedType
  * 会出现构建错误：Observable query return type (LiveData, Flowable, DataSource, DataSourceFactory etc) can only be used with SELECT queries that directly or indirectly (via @Relation, for example) access at least one table. For @RawQuery, you should specify the list of tables to be observed via the observedEntities field.
  */
 abstract class BaseDao<T> {
-    private val tableName: String by lazy {
-        val clazz = (javaClass.superclass.genericSuperclass as ParameterizedType)
-            .actualTypeArguments[0] as Class<*>
-        clazz.simpleName
-    }
-
 
     /**
      * @Insert 方法的每个参数都必须是一个带有 @Entity 注解的 Room 数据实体类实例，或是数据实体类实例的集合，而且每个参数都指向一个数据库 调用 @Insert 方法时，Room 会将每个传递的实体实例插入到相应的数据库表中。
@@ -45,19 +35,5 @@ abstract class BaseDao<T> {
      */
     @Delete
     abstract suspend fun delete(vararg t: T): Int
-
-    /**
-     * 获取指定医嘱id的数据
-     */
-    suspend fun getByMedicalOrderId(medicalOrderId: Long): List<T>? {
-        val query = SimpleSQLiteQuery(
-            "SELECT * FROM $tableName WHERE medicalOrderId = ?",
-            arrayOf<Any>(medicalOrderId)
-        )
-        return getByMedicalOrderId(query)
-    }
-
-    @RawQuery
-    protected abstract suspend fun getByMedicalOrderId(query: SupportSQLiteQuery): List<T>?
 
 }
