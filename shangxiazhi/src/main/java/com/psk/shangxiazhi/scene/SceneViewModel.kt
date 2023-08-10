@@ -17,19 +17,15 @@ import kotlinx.coroutines.launch
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import org.koin.core.qualifier.named
 import java.text.DecimalFormat
-import java.text.SimpleDateFormat
-import java.util.Date
 
+@OptIn(KoinApiExtension::class)
 class SceneViewModel(
     private val deviceRepository: DeviceRepository,
     private val gameController: GameController
 ) : ViewModel(), KoinComponent {
     private var fetchShangXiaZhiAndSaveJob: Job? = null
-
-    @OptIn(KoinApiExtension::class)
-    private val sdf: SimpleDateFormat by inject(named("yyyyMMdd"))
+    private val decimalFormat by inject<DecimalFormat>()
 
     fun start(
         scene: String? = "",
@@ -92,23 +88,86 @@ class SceneViewModel(
 
     private fun getShangXiaZhi(flow: Flow<ShangXiaZhi?>) {
         viewModelScope.launch {
+            var mActiveMil = 0f// 主动里程数
+            var mPassiveMil = 0f// 被动里程数
+            var totalCal = 0f// 总卡路里
+            var isFirstSpasm = false// 是否第一次痉挛
+            var mFirstSpasmValue = 0// 第一次痉挛值
+            var spasm = 0// 痉挛值
             flow.distinctUntilChanged().conflate().collect { value ->
                 Log.v(TAG, "getShangXiaZhi $value")
                 value ?: return@collect
+
+                val speedValue = value.speedLevel
+                //备注：速度额外+3
+                var speed = speedValue
+                if (speed != 0) {
+                    speed += 3
+                }
+
+                //阻力
+                var resistance = 0
+                //模式
+                val model = value.model.toInt()
+                if (model == 1) {
+                    resistance = 0
+                    //被动里程
+                    mPassiveMil += speedValue * 0.5f * 1000 / 3600
+                    //卡路里
+                    totalCal += speedValue * 0.2f / 300
+                } else {
+                    resistance = value.res
+                    //主动里程
+                    mActiveMil += speedValue * 0.5f * 1000 / 3600
+                    //卡路里
+                    val resParam: Float = resistance * 1.00f / 3.0f
+                    totalCal += speedValue * 0.2f * resParam / 60
+                }
+                //里程
+                val mileage = decimalFormat.format((mActiveMil + mPassiveMil).toDouble())
+                //偏差值
+                var offset = value.offset
+                val offsetValue = if (offset == 0) {
+                    50
+                } else if (offset < 0) {
+                    if (offset < -15) {
+                        offset = -15
+                    }
+                    100 - Math.abs(offset) * 100 / 15
+                } else {
+                    if (offset > 15) {
+                        offset = 15
+                    }
+                    Math.abs(offset) * 100 / 15
+                }
+                //痉挛
+                var spasmFlag = 0
+                if (value.spasmNum < 100) {
+                    if (!isFirstSpasm) {
+                        isFirstSpasm = true
+                        mFirstSpasmValue = value.spasmNum
+                    }
+                    if (value.spasmNum - mFirstSpasmValue > spasm) {
+                        spasm = value.spasmNum - mFirstSpasmValue
+                        spasmFlag = 1
+                    } else {
+                        spasmFlag = 0
+                    }
+                }
                 gameController.updateGameData(
                     GameData(
-                        model = value.model.toInt(),
-                        speed = value.speedValue,
+                        model = model,
+                        speed = speed,
                         speedLevel = value.speedLevel,
-                        time = sdf.format(Date()),
-                        mileage = "11",
-                        cal = DecimalFormat("######0.00").format(10.0),
-                        resistance = 10,
-                        offset = value.offset,
-                        offsetValue = 20,
-                        spasm = value.spasmNum,
+                        time = "00:00",
+                        mileage = mileage,
+                        cal = decimalFormat.format(totalCal),
+                        resistance = resistance,
+                        offset = offset,
+                        offsetValue = offsetValue,
+                        spasm = spasm,
                         spasmLevel = value.spasmLevel,
-                        spasmFlag = 110,
+                        spasmFlag = spasmFlag,
                     )
                 )
             }

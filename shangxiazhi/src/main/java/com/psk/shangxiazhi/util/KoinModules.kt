@@ -7,6 +7,7 @@ import com.psk.shangxiazhi.scene.SceneViewModel
 import com.twsz.twsystempre.GameController
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
+import java.text.DecimalFormat
 
 /**
  * File Name: KoinModules.kt
@@ -34,5 +35,9 @@ val shangXiaZhiModule = module {
     //GameController
     single {
         GameController(get())
+    }
+    //DecimalFormat
+    single {
+        DecimalFormat("######0.00")
     }
 }
