@@ -60,9 +60,9 @@ public class ShangXiaZhiParser {
                             byte mModel = bytesTemp3[4];
                             int mSpeedLevel = bytesTemp3[5] & 0xFF;
                             int mSpeedValue = bytesTemp3[6] & 0xFF;
-                            if (mSpeedValue != 0) {
-                                mSpeedValue += 2;
-                            }
+//                            if (mSpeedValue != 0) {
+//                                mSpeedValue += 2;
+//                            }
                             int mOffset = bytesTemp3[7] & 0xFF;
                             int mSpasmNum = bytesTemp3[8] & 0xFF;
                             int mSpasmLevel = bytesTemp3[9] & 0xFF;
