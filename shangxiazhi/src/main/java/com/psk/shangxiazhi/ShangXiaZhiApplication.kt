@@ -6,6 +6,7 @@ import com.like.retrofit.RequestConfig
 import com.like.retrofit.interceptor.NetworkMonitorInterceptor
 import com.psk.common.BuildConfig
 import com.psk.common.CommonApplication
+import com.psk.device.deviceModule
 import com.psk.shangxiazhi.util.RetrofitUtils
 import com.psk.shangxiazhi.util.shangXiaZhiModule
 import org.koin.core.context.loadKoinModules
@@ -32,6 +33,7 @@ class ShangXiaZhiApplication : CommonApplication() {
     override fun onCreate() {
         super.onCreate()
         loadKoinModules(shangXiaZhiModule)
+        loadKoinModules(deviceModule)
 
         //初始化 Retrofit 工具类
         val requestConfig = RequestConfig(
