@@ -29,18 +29,21 @@ class SceneViewModel(
     private val gameCallback by lazy {
         object : GameCallback.Stub() {
             override fun onStart() {
+                Log.v(TAG, "onStart")
                 viewModelScope.launch {
                     deviceRepository.startShangXiaZhi()
                 }
             }
 
             override fun onPause() {
+                Log.v(TAG, "onPause")
                 viewModelScope.launch {
                     deviceRepository.pauseShangXiaZhi()
                 }
             }
 
             override fun onOver() {
+                Log.v(TAG, "onOver")
                 viewModelScope.launch {
                     deviceRepository.stopShangXiaZhi()
                 }
