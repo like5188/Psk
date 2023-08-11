@@ -25,6 +25,8 @@ interface IShangXiaZhiDataSource : IRemoteDeviceDataSource {
 
     /**
      * 设置上下肢参数，设置好后，如果是被动模式，上下肢会自动运行
+     * 被动模式下：可设置：时间、速度档位、痉挛等级、智能模式、正反转
+     * 主动模式下：可设置：时间、阻力等级、智能模式、正反转
      * @param passiveModule     被动模式
      * @param timeInt           时间 5-30 min
      * @param speedInt          速度 5-60 rpm
