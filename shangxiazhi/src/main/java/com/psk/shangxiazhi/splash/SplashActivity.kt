@@ -25,7 +25,6 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         mBinding
         lifecycleScope.launch {
-            delay(2000)
             if (SPUtils.getInstance().get(SP_LOGIN, false)) {
                 MainActivity.start()
             } else {
