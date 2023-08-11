@@ -1,4 +1,4 @@
-package com.psk.recovery.util
+package com.psk.common.util
 
 import android.os.CountDownTimer
 import androidx.annotation.MainThread

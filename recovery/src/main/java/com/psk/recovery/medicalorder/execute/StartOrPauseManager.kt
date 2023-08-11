@@ -1,8 +1,8 @@
 package com.psk.recovery.medicalorder.execute
 
 import androidx.annotation.MainThread
+import com.psk.common.util.SecondsTicker
 import com.psk.device.BleManager
-import com.psk.recovery.util.SecondsTicker
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
