@@ -9,6 +9,7 @@ import kotlinx.coroutines.isActive
 import kotlin.concurrent.thread
 
 class MockShangXiaZhiDataSource : IShangXiaZhiDataSource {
+    var offset = 0
     override fun isConnected(): Boolean {
         return true
     }
@@ -20,13 +21,16 @@ class MockShangXiaZhiDataSource : IShangXiaZhiDataSource {
                 model = 1,
                 speedLevel = (1..12).random(),
                 speedValue = (5..60).random(),
-                offset = 1,
+                offset = offset++,
                 spasmNum = 1,
                 spasmLevel = 1,
                 res = 1,
                 intelligence = 1,
                 direction = 1,
             )
+            if (offset > 30) {
+                offset = 0
+            }
             trySend(shangXiaZhi)
         }
     }
