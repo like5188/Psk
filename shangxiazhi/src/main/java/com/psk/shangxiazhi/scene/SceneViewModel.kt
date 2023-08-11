@@ -46,6 +46,18 @@ class SceneViewModel(
 
                 override fun onStart() {
                     Log.d(TAG, "onStart")
+                    viewModelScope.launch {
+                        while (!deviceRepository.isShangXiaZhiConnected()) {
+                            delay(200)
+                        }
+                        //监听上下肢数据
+                        getShangXiaZhi(deviceRepository.listenLatestShangXiaZhi(0))
+                        //从上下肢获取数据并保存到数据库
+                        fetchShangXiaZhiAndSave()
+                        delay(100)
+                        //设置上下肢参数，设置好后，如果是被动模式，上下肢会自动运行
+                        deviceRepository.setShangXiaZhiParams(passiveModule, timeInt, speedInt, spasmInt, resistanceInt, intelligent, turn2)
+                    }
                 }
 
                 override fun onResume() {
@@ -71,23 +83,10 @@ class SceneViewModel(
 
             })
         }
-        //监听上下肢数据
-        getShangXiaZhi(deviceRepository.listenLatestShangXiaZhi(0))
         //连接上下肢
         deviceRepository.connectShangXiaZhi(onConnected = {
             Log.w(TAG, "上下肢连接成功")
             gameController.updateGameConnectionState(true)
-            viewModelScope.launch {
-                Log.w(
-                    TAG,
-                    "设置参数：passiveModule=$passiveModule timeInt=$timeInt speedInt=$speedInt spasmInt=$spasmInt resistanceInt=$resistanceInt intelligent=$intelligent turn2=$turn2"
-                )
-                //设置上下肢参数，设置好后，如果是被动模式，上下肢会自动运行
-                deviceRepository.setShangXiaZhiParams(passiveModule, timeInt, speedInt, spasmInt, resistanceInt, intelligent, turn2)
-                delay(100)
-                //从上下肢获取数据并保存到数据库
-                fetchShangXiaZhiAndSave()
-            }
         }) {
             Log.e(TAG, "上下肢连接失败")
             gameController.updateGameConnectionState(false)
