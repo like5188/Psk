@@ -116,14 +116,16 @@ class SceneViewModel(
                 //阻力
                 var resistance = 0
                 //模式
-                val model = value.model.toInt()
-                if (model == 1) {
+                var model = value.model.toInt()
+                if (model == 0x01) {// 被动
+                    model = 1// 转换成游戏需要的 0：主动；1：被动
                     resistance = 0
                     //被动里程
                     mPassiveMil += speed * 0.5f * 1000 / 3600
                     //卡路里
                     totalCal += speed * 0.2f / 300
-                } else {
+                } else {// 主动
+                    model = 0
                     resistance = value.res
                     //主动里程
                     mActiveMil += speed * 0.5f * 1000 / 3600
@@ -133,21 +135,10 @@ class SceneViewModel(
                 }
                 //里程
                 val mileage = decimalFormat.format((mActiveMil + mPassiveMil).toDouble())
-                //偏差值
-                var offset = value.offset
-                val offsetValue = if (offset == 0) {
-                    50
-                } else if (offset < 0) {
-                    if (offset < -15) {
-                        offset = -15
-                    }
-                    100 - Math.abs(offset) * 100 / 15
-                } else {
-                    if (offset > 15) {
-                        offset = 15
-                    }
-                    Math.abs(offset) * 100 / 15
-                }
+                //偏差值：范围0~30 左偏：0~14     十六进制：0x00~0x0e 中：15 	     十六进制：0x0f 右偏：16~30   十六进制：0x10~0x1e
+                val offset = value.offset - 15// 转换成游戏需要的 负数：左；0：不偏移；正数：右；
+                // 转换成游戏需要的左边百分比 100~0
+                val offsetValue = 100 - value.offset * 100 / 30
                 //痉挛
                 var spasmFlag = 0
                 if (value.spasmNum < 100) {
