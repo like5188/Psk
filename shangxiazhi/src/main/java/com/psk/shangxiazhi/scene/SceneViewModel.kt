@@ -39,7 +39,7 @@ class SceneViewModel(
     ) {
         viewModelScope.launch {
             //启动游戏
-            gameController.init(scene, existHeart, object : GameCallback.Stub() {
+            gameController.initGame(scene, existHeart, object : GameCallback.Stub() {
                 override fun onLoading() {
                     Log.d(TAG, "onLoading")
                 }
