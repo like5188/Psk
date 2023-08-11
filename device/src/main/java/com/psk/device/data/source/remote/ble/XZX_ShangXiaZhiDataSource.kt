@@ -26,6 +26,10 @@ class XZX_ShangXiaZhiDataSource(
         ShangXiaZhiParser()
     }
 
+    override fun isConnected(): Boolean {
+        return bleManager.isConnected(device)
+    }
+
     override fun connect(onConnected: () -> Unit, onDisconnected: (() -> Unit)?) {
         bleManager.addDevices(device)
         bleManager.connect(true, onConnected = {
@@ -92,16 +96,16 @@ class XZX_ShangXiaZhiDataSource(
         }
     }
 
-    override suspend fun start() {
+    override suspend fun resume() {
         bleManager.write(device, RemoteCommand.generateStartParam())
-    }
-
-    override suspend fun stop() {
-        bleManager.write(device, RemoteCommand.generateStopParam())
     }
 
     override suspend fun pause() {
         bleManager.write(device, RemoteCommand.generatePauseParam())
+    }
+
+    override suspend fun over() {
+        bleManager.write(device, RemoteCommand.generateStopParam())
     }
 
     override suspend fun setParams(

@@ -9,6 +9,10 @@ import kotlinx.coroutines.isActive
 import kotlin.concurrent.thread
 
 class MockShangXiaZhiDataSource : IShangXiaZhiDataSource {
+    override fun isConnected(): Boolean {
+        return true
+    }
+
     override suspend fun fetch(medicalOrderId: Long): Flow<ShangXiaZhi> = channelFlow {
         while (isActive) {
             delay(1000)
@@ -27,16 +31,16 @@ class MockShangXiaZhiDataSource : IShangXiaZhiDataSource {
         }
     }
 
-    override suspend fun start() {
-        println("控制上下肢：start")
-    }
-
-    override suspend fun stop() {
-        println("控制上下肢：stop")
+    override suspend fun resume() {
+        println("控制上下肢：resume")
     }
 
     override suspend fun pause() {
         println("控制上下肢：pause")
+    }
+
+    override suspend fun over() {
+        println("控制上下肢：over")
     }
 
     override suspend fun setParams(

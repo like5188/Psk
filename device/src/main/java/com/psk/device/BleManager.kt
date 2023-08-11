@@ -61,6 +61,10 @@ class BleManager(private val context: Context) {
         }
     }
 
+    fun isConnected(device: Device): Boolean {
+        return connectManagers.getOrDefault(device, null)?.isConnected() == true
+    }
+
     /**
      * 连接指定地址的蓝牙设备。
      */

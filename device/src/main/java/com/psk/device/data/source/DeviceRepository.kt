@@ -54,6 +54,10 @@ class DeviceRepository(
         shangXiaZhiDataSource.connect(onConnected, onDisconnected)
     }
 
+    fun isShangXiaZhiConnected(): Boolean {
+        return shangXiaZhiDataSource.isConnected()
+    }
+
     fun listenLatestBloodOxygen(startTime: Long): Flow<BloodOxygen> {
         return bloodOxygenDbDataSource.listenLatest(startTime)
     }
@@ -120,16 +124,16 @@ class DeviceRepository(
         }
     }
 
-    suspend fun startShangXiaZhi() {
-        shangXiaZhiDataSource.start()
-    }
-
-    suspend fun stopShangXiaZhi() {
-        shangXiaZhiDataSource.stop()
+    suspend fun resumeShangXiaZhi() {
+        shangXiaZhiDataSource.resume()
     }
 
     suspend fun pauseShangXiaZhi() {
         shangXiaZhiDataSource.pause()
+    }
+
+    suspend fun overShangXiaZhi() {
+        shangXiaZhiDataSource.over()
     }
 
     /**

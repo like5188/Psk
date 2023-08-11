@@ -41,24 +41,32 @@ class SceneViewModel(
         viewModelScope.launch {
             //启动游戏
             gameController.init(scene, existHeart, object : GameCallback.Stub() {
+                override fun onLoading() {
+                    Log.d(TAG, "onLoading")
+                }
+
                 override fun onStart() {
-                    Log.v(TAG, "onStart")
+                    Log.d(TAG, "onStart")
+                }
+
+                override fun onResume() {
+                    Log.d(TAG, "onResume")
                     viewModelScope.launch {
-                        deviceRepository.startShangXiaZhi()
+                        deviceRepository.resumeShangXiaZhi()
                     }
                 }
 
                 override fun onPause() {
-                    Log.v(TAG, "onPause")
+                    Log.d(TAG, "onPause")
                     viewModelScope.launch {
                         deviceRepository.pauseShangXiaZhi()
                     }
                 }
 
                 override fun onOver() {
-                    Log.v(TAG, "onOver")
+                    Log.d(TAG, "onOver")
                     viewModelScope.launch {
-                        deviceRepository.stopShangXiaZhi()
+                        deviceRepository.overShangXiaZhi()
                     }
                 }
 

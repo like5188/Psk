@@ -4,23 +4,24 @@ import com.psk.device.data.model.ShangXiaZhi
 import kotlinx.coroutines.flow.Flow
 
 interface IShangXiaZhiDataSource : IRemoteDeviceDataSource {
+    fun isConnected(): Boolean
 
     suspend fun fetch(medicalOrderId: Long): Flow<ShangXiaZhi>
 
     /**
      * 使上下肢恢复运行
      */
-    suspend fun start()
-
-    /**
-     * 使上下肢停止运行
-     */
-    suspend fun stop()
+    suspend fun resume()
 
     /**
      * 使上下肢暂停运行
      */
     suspend fun pause()
+
+    /**
+     * 使上下肢停止运行
+     */
+    suspend fun over()
 
     /**
      * 设置上下肢参数，设置好后，如果是被动模式，上下肢会自动运行
