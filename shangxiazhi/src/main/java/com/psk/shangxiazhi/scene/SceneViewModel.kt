@@ -12,8 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.conflate
-import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
@@ -109,7 +108,8 @@ class SceneViewModel(
             var isFirstSpasm = false// 是否第一次痉挛
             var mFirstSpasmValue = 0// 第一次痉挛值
             var spasm = 0// 痉挛值
-            flow.distinctUntilChanged().conflate().collect { value ->
+            // 这里不能用 distinctUntilChanged、conflate 等操作符，因为需要根据所有数据来计算里程等。必须得到每次数据。
+            flow.buffer(Int.MAX_VALUE).collect { value ->
                 Log.v(TAG, "getShangXiaZhi $value")
                 value ?: return@collect
                 //转速

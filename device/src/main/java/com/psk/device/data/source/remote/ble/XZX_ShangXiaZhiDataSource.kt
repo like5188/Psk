@@ -92,7 +92,6 @@ class XZX_ShangXiaZhiDataSource(
 
         })
         bleManager.setNotifyCallback(device)?.collect {
-            println(it.contentToString())
             shangXiaZhiParser.putData(it)
         }
     }
