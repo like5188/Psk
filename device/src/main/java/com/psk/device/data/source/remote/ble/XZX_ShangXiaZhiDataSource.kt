@@ -25,6 +25,16 @@ class XZX_ShangXiaZhiDataSource(
     private val shangXiaZhiParser by lazy {
         ShangXiaZhiParser()
     }
+    var isPause = AtomicBoolean(false)
+
+    // 上下肢开始运行或者从暂停中恢复运行时回调
+    var onStart: (() -> Unit)? = null
+
+    // 上下肢暂停时回调
+    var onPause: (() -> Unit)? = null
+
+    // 上下肢结束时回调
+    var onOver: (() -> Unit)? = null
 
     override fun isConnected(): Boolean {
         return bleManager.isConnected(device)
@@ -38,17 +48,6 @@ class XZX_ShangXiaZhiDataSource(
             onDisconnected?.invoke()
         }
     }
-
-    private var isPause = AtomicBoolean(false)
-
-    // 上下肢开始运行或者从暂停中恢复运行时回调
-    var onStart: (() -> Unit)? = null
-
-    // 上下肢暂停时回调
-    var onPause: (() -> Unit)? = null
-
-    // 上下肢结束时回调
-    var onOver: (() -> Unit)? = null
 
     override suspend fun fetch(medicalOrderId: Long): Flow<ShangXiaZhi> = channelFlow {
         shangXiaZhiParser.setReceiver(object : ShangXiaZhiReceiver {
@@ -97,11 +96,15 @@ class XZX_ShangXiaZhiDataSource(
     }
 
     override suspend fun resume() {
-        bleManager.write(device, RemoteCommand.generateStartParam())
+        if (isPause.compareAndSet(true, false)) {
+            bleManager.write(device, RemoteCommand.generateStartParam())
+        }
     }
 
     override suspend fun pause() {
-        bleManager.write(device, RemoteCommand.generatePauseParam())
+        if (isPause.compareAndSet(false, true)) {
+            bleManager.write(device, RemoteCommand.generatePauseParam())
+        }
     }
 
     override suspend fun over() {
