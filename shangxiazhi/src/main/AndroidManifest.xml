@@ -35,7 +35,8 @@
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
             android:name=".scene.SceneActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="landscape" />
     </application>
 
 </manifest>
