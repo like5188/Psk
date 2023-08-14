@@ -44,4 +44,7 @@ interface IShangXiaZhiDataSource : IRemoteDeviceDataSource {
         intelligent: Boolean,
         turn2: Boolean
     )
+
+    fun isPause(): Boolean
+
 }

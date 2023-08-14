@@ -12,7 +12,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.buffer
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.conflate
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
@@ -51,7 +56,7 @@ class SceneViewModel(
                             delay(200)
                         }
                         //监听上下肢数据
-                        getShangXiaZhi(deviceRepository.listenLatestShangXiaZhi(0))
+                        getShangXiaZhi(timeInt, deviceRepository.listenLatestShangXiaZhi(0))
                         //从上下肢获取数据并保存到数据库
                         fetchShangXiaZhiAndSave()
                         delay(100)
@@ -99,7 +104,13 @@ class SceneViewModel(
         gameController.destroy()
     }
 
-    private fun getShangXiaZhi(flow: Flow<ShangXiaZhi?>) {
+    private fun getShangXiaZhi(timeInt: Int, flow: Flow<ShangXiaZhi?>) {
+        val timerFlow = (1..timeInt * 60).asFlow().onEach {
+            while (deviceRepository.isShangXiaZhiPause()) {
+                delay(1)
+            }
+            delay(1000)
+        }.conflate()
         viewModelScope.launch {
             var mActiveMil = 0f// 主动里程数
             var mPassiveMil = 0f// 被动里程数
@@ -108,15 +119,18 @@ class SceneViewModel(
             var mFirstSpasmValue = 0// 第一次痉挛值
             var spasm = 0// 痉挛值
             // 这里不能用 distinctUntilChanged、conflate 等操作符，因为需要根据所有数据来计算里程等。必须得到每次数据。
-            flow.buffer(Int.MAX_VALUE).collect { value ->
-                Log.v(TAG, "getShangXiaZhi $value")
-                value ?: return@collect
+            flow.buffer(Int.MAX_VALUE).zip(timerFlow) { shangXiaZhi, time ->
+                shangXiaZhi ?: return@zip
+                val min = time / 60
+                val sec = time % 60
+                val minStr = if (min < 10) "0$min" else "$min"
+                val secStr = if (sec < 10) "0$sec" else "$sec"
                 //转速
-                val speed = value.speedValue
+                val speed = shangXiaZhi.speedValue
                 //阻力
                 var resistance = 0
                 //模式
-                var model = value.model.toInt()
+                var model = shangXiaZhi.model.toInt()
                 if (model == 0x01) {// 被动
                     model = 1// 转换成游戏需要的 0：主动；1：被动
                     resistance = 0
@@ -126,7 +140,7 @@ class SceneViewModel(
                     totalCal += speed * 0.2f / 300
                 } else {// 主动
                     model = 0
-                    resistance = value.res
+                    resistance = shangXiaZhi.res
                     //主动里程
                     mActiveMil += speed * 0.5f * 1000 / 3600
                     //卡路里
@@ -136,18 +150,18 @@ class SceneViewModel(
                 //里程
                 val mileage = decimalFormat.format((mActiveMil + mPassiveMil).toDouble())
                 //偏差值：范围0~30 左偏：0~14     十六进制：0x00~0x0e 中：15 	     十六进制：0x0f 右偏：16~30   十六进制：0x10~0x1e
-                val offset = value.offset - 15// 转换成游戏需要的 负数：左；0：不偏移；正数：右；
+                val offset = shangXiaZhi.offset - 15// 转换成游戏需要的 负数：左；0：不偏移；正数：右；
                 // 转换成游戏需要的左边百分比 100~0
-                val offsetValue = 100 - value.offset * 100 / 30
+                val offsetValue = 100 - shangXiaZhi.offset * 100 / 30
                 //痉挛
                 var spasmFlag = 0
-                if (value.spasmNum < 100) {
+                if (shangXiaZhi.spasmNum < 100) {
                     if (!isFirstSpasm) {
                         isFirstSpasm = true
-                        mFirstSpasmValue = value.spasmNum
+                        mFirstSpasmValue = shangXiaZhi.spasmNum
                     }
-                    if (value.spasmNum - mFirstSpasmValue > spasm) {
-                        spasm = value.spasmNum - mFirstSpasmValue
+                    if (shangXiaZhi.spasmNum - mFirstSpasmValue > spasm) {
+                        spasm = shangXiaZhi.spasmNum - mFirstSpasmValue
                         spasmFlag = 1
                     } else {
                         spasmFlag = 0
@@ -157,19 +171,19 @@ class SceneViewModel(
                     GameData(
                         model = model,
                         speed = speed,
-                        speedLevel = value.speedLevel,
-                        time = "00:00",
+                        speedLevel = shangXiaZhi.speedLevel,
+                        time = "$minStr:$secStr",
                         mileage = mileage,
                         cal = decimalFormat.format(totalCal),
                         resistance = resistance,
                         offset = offset,
                         offsetValue = offsetValue,
                         spasm = spasm,
-                        spasmLevel = value.spasmLevel,
+                        spasmLevel = shangXiaZhi.spasmLevel,
                         spasmFlag = spasmFlag,
                     )
                 )
-            }
+            }.collect()
         }
     }
 

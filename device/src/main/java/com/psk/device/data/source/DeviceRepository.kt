@@ -151,4 +151,8 @@ class DeviceRepository(
         shangXiaZhiDataSource.setParams(passiveModule, timeInt, speedInt, spasmInt, resistanceInt, intelligent, turn2)
     }
 
+    fun isShangXiaZhiPause(): Boolean {
+        return shangXiaZhiDataSource.isPause()
+    }
+
 }

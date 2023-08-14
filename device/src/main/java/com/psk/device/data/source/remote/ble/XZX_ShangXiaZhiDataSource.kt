@@ -25,7 +25,7 @@ class XZX_ShangXiaZhiDataSource(
     private val shangXiaZhiParser by lazy {
         ShangXiaZhiParser()
     }
-    var isPause = AtomicBoolean(false)
+    private var isPause = AtomicBoolean(false)
 
     // 上下肢开始运行或者从暂停中恢复运行时回调
     var onStart: (() -> Unit)? = null
@@ -150,6 +150,10 @@ class XZX_ShangXiaZhiDataSource(
                 println("model=$model time=$time speed=$speed spasm=$spasm intelligence=$intelligence resistance=$resistance direction=$direction")
             })
         )
+    }
+
+    override fun isPause(): Boolean {
+        return isPause.get()
     }
 
 }

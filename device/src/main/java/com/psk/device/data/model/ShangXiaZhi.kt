@@ -1,6 +1,7 @@
 package com.psk.device.data.model
 
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 
 // 上下肢传递过来的数据
@@ -18,8 +19,10 @@ data class ShangXiaZhi(
     val res: Int = 0,//阻力：范围1~12           十六进制：0x01~0x0c
     val intelligence: Byte = 0,//智能： 0x40 表示 关闭 0x41 表示 打开
     val direction: Byte = 0,//正反转： 0x50 表示 反转 0x51 表示 正转
-    val medicalOrderId: Long = 0
+    val medicalOrderId: Long = 0,
 ) {
+    @Ignore
+    var curTime: String = ""//当前计时。用于游戏界面显示。其实上下肢没有返回这个数据，是自己计算的。
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is ShangXiaZhi) return false
@@ -33,6 +36,7 @@ data class ShangXiaZhi(
         if (res != other.res) return false
         if (intelligence != other.intelligence) return false
         if (direction != other.direction) return false
+        if (curTime != other.curTime) return false
 
         return true
     }
@@ -47,6 +51,7 @@ data class ShangXiaZhi(
         result = 31 * result + res
         result = 31 * result + intelligence
         result = 31 * result + direction
+        result = 31 * result + curTime.hashCode()
         return result
     }
 }
