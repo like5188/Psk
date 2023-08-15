@@ -25,7 +25,7 @@ class XZX_ShangXiaZhiDataSource(
     private val shangXiaZhiParser by lazy {
         ShangXiaZhiParser()
     }
-    private var isPause = AtomicBoolean(false)
+    private var isPause = AtomicBoolean(true)
 
     // 上下肢开始运行或者从暂停中恢复运行时回调
     var onStart: (() -> Unit)? = null
