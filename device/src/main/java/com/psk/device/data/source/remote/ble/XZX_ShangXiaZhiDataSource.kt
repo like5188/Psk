@@ -96,15 +96,11 @@ class XZX_ShangXiaZhiDataSource(
     }
 
     override suspend fun resume() {
-        if (isPause.compareAndSet(true, false)) {
-            bleManager.write(device, RemoteCommand.generateStartParam())
-        }
+        bleManager.write(device, RemoteCommand.generateStartParam())
     }
 
     override suspend fun pause() {
-        if (isPause.compareAndSet(false, true)) {
-            bleManager.write(device, RemoteCommand.generatePauseParam())
-        }
+        bleManager.write(device, RemoteCommand.generatePauseParam())
     }
 
     override suspend fun over() {
