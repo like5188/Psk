@@ -137,7 +137,6 @@ class XZX_ShangXiaZhiDataSource(
                 this.intelligence = intelligence
                 this.resistance = resistance
                 this.direction = direction
-                println("model=$model time=$time speed=$speed spasm=$spasm intelligence=$intelligence resistance=$resistance direction=$direction")
             })
         )
     }
