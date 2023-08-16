@@ -3,8 +3,6 @@ package com.psk.shangxiazhi.scene
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.like.common.util.mvi.Event
-import com.psk.common.util.ToastEvent
 import com.psk.common.util.asFlow
 import com.psk.device.data.model.HeartRate
 import com.psk.device.data.model.ShangXiaZhi
@@ -23,7 +21,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
@@ -120,7 +117,6 @@ class SceneViewModel(
             }
         }
     }
-
 
     private fun startFetchAndSaveJob() {
         fetchShangXiaZhiAndSave()
@@ -255,11 +251,8 @@ class SceneViewModel(
         fetchHeartRateAndSaveJob = viewModelScope.launch(Dispatchers.IO) {
             Log.d(TAG, "fetchHeartRateAndSave")
             try {
-                deviceRepository.fetchHeartRateAndSave(medicalOrder.id)
+                deviceRepository.fetchHeartRateAndSave(1)
             } catch (e: Exception) {
-                _uiState.update {
-                    it.copy(toastEvent = Event(ToastEvent(throwable = e)))
-                }
             }
         }
     }
