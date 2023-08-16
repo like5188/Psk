@@ -98,7 +98,8 @@ class SceneViewModel(
                         getHeartRate(deviceRepository.listenLatestHeartRate(curTime))
                     }
                     delay(100)
-                    startFetchAndSaveJob()
+                    fetchShangXiaZhiAndSave()
+                    fetchHeartRateAndSave()
                     delay(100)
                     //设置上下肢参数，设置好后，如果是被动模式，上下肢会自动运行
                     deviceRepository.setShangXiaZhiParams(passiveModule, timeInt, speedInt, spasmInt, resistanceInt, intelligent, turn2)
@@ -107,7 +108,7 @@ class SceneViewModel(
 
             override fun onResume() {
                 Log.d(TAG, "onResume")
-                startFetchAndSaveJob()
+                fetchHeartRateAndSave()
                 viewModelScope.launch {
                     deviceRepository.resumeShangXiaZhi()
                 }
@@ -115,7 +116,9 @@ class SceneViewModel(
 
             override fun onPause() {
                 Log.d(TAG, "onPause")
-                cancelFetchAndSaveJob()
+                // 注意：这里不能取消上下肢的任务。因为上下肢是靠命令来操作的，取消了就收不到命令了。
+                fetchHeartRateAndSaveJob?.cancel()
+                fetchHeartRateAndSaveJob = null
                 viewModelScope.launch {
                     deviceRepository.pauseShangXiaZhi()
                 }
@@ -123,7 +126,8 @@ class SceneViewModel(
 
             override fun onOver() {
                 Log.d(TAG, "onOver")
-                cancelFetchAndSaveJob()
+                fetchHeartRateAndSaveJob?.cancel()
+                fetchHeartRateAndSaveJob = null
                 viewModelScope.launch {
                     deviceRepository.overShangXiaZhi()
                 }
@@ -135,20 +139,11 @@ class SceneViewModel(
         }
     }
 
-    private fun startFetchAndSaveJob() {
-        fetchShangXiaZhiAndSave()
-        fetchHeartRateAndSave()
-    }
-
-    private fun cancelFetchAndSaveJob() {
+    fun destroy() {
         fetchShangXiaZhiAndSaveJob?.cancel()
         fetchShangXiaZhiAndSaveJob = null
         fetchHeartRateAndSaveJob?.cancel()
         fetchHeartRateAndSaveJob = null
-    }
-
-    fun destroy() {
-        cancelFetchAndSaveJob()
         gameController.destroy()
     }
 
