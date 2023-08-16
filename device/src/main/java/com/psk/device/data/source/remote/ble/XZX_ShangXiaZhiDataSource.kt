@@ -5,7 +5,7 @@ import com.psk.device.Device
 import com.psk.device.Protocol
 import com.psk.device.data.model.ShangXiaZhi
 import com.psk.device.data.source.remote.IShangXiaZhiDataSource
-import com.psk.device.util.ShangXiaZhiParser
+import com.psk.device.util.ShangXiaZhiDataParser
 import com.psk.device.util.ShangXiaZhiReceiver
 import com.twsz.remotecommands.RemoteCommand
 import com.twsz.remotecommands.TrunkCommandData
@@ -21,8 +21,8 @@ class XZX_ShangXiaZhiDataSource(
         "0000ffe3-0000-1000-8000-00805f9b34fb",
     )
     private val device = Device("00:1B:10:3A:01:2C", protocol)
-    private val shangXiaZhiParser by lazy {
-        ShangXiaZhiParser()
+    private val shangXiaZhiDataParser by lazy {
+        ShangXiaZhiDataParser()
     }
 
     // 上下肢开始运行或者从暂停中恢复运行时回调
@@ -48,7 +48,7 @@ class XZX_ShangXiaZhiDataSource(
     }
 
     override suspend fun fetch(medicalOrderId: Long): Flow<ShangXiaZhi> = channelFlow {
-        shangXiaZhiParser.setReceiver(object : ShangXiaZhiReceiver {
+        shangXiaZhiDataParser.receiver = object : ShangXiaZhiReceiver {
             override fun onReceive(
                 model: Byte,
                 speedLevel: Int,
@@ -71,6 +71,7 @@ class XZX_ShangXiaZhiDataSource(
                     intelligence = intelligence,
                     direction = direction,
                 )
+                println(shangXiaZhi)
                 onStart?.invoke()
                 trySend(shangXiaZhi)
             }
@@ -83,9 +84,10 @@ class XZX_ShangXiaZhiDataSource(
                 onOver?.invoke()
             }
 
-        })
+        }
         bleManager.setNotifyCallback(device)?.collect {
-            shangXiaZhiParser.putData(it)
+            println(it.contentToString())
+            shangXiaZhiDataParser.putData(it)
         }
     }
 
