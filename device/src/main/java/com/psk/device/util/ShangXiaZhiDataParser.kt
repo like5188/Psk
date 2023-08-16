@@ -10,18 +10,24 @@ class ShangXiaZhiDataParser {
             return
         }
         // 骑行数据长度为13；暂停或者停止命令长度为5；有可能两种都有，及长度为18。
-        if (data.size == 13) {
-            parseData(data)
-        } else if (data.size == 5) {
-            parsePauseOrStop(data)
-        } else if (data.size == 18) {
-            // src:源数组;srcPos:源数组要复制的起始位置;dest:目的数组;destPos:目的数组放置的起始位置;length:复制的长度.
-            val dat = ByteArray(13)
-            System.arraycopy(data, 0, dat, 0, 13)
-            parseData(dat)
-            val cmd = ByteArray(5)
-            System.arraycopy(data, 13, cmd, 0, 5)
-            parsePauseOrStop(cmd)
+        when (data.size) {
+            13 -> {
+                parseData(data)
+            }
+
+            5 -> {
+                parsePauseOrStop(data)
+            }
+
+            18 -> {
+                // src:源数组;srcPos:源数组要复制的起始位置;dest:目的数组;destPos:目的数组放置的起始位置;length:复制的长度.
+                val dat = ByteArray(13)
+                System.arraycopy(data, 0, dat, 0, 13)
+                parseData(dat)
+                val cmd = ByteArray(5)
+                System.arraycopy(data, 13, cmd, 0, 5)
+                parsePauseOrStop(cmd)
+            }
         }
     }
 
