@@ -1,5 +1,7 @@
 package com.psk.device.data.source
 
+import com.psk.device.BleManager
+import com.psk.device.Device
 import com.psk.device.data.model.BloodOxygen
 import com.psk.device.data.model.BloodPressure
 import com.psk.device.data.model.HeartRate
@@ -23,39 +25,31 @@ class DeviceRepository(
     private val bloodOxygenDataSource: IBloodOxygenDataSource,
     private val bloodPressureDataSource: IBloodPressureDataSource,
     private val heartRateDataSource: IHeartRateDataSource,
-    private val shangXiaZhiDataSource: IShangXiaZhiDataSource
+    private val shangXiaZhiDataSource: IShangXiaZhiDataSource,
+    private val bleManager: BleManager
 ) {
-
-    fun connectBloodOxygen(
-        onConnected: () -> Unit,
-        onDisconnected: (() -> Unit)? = null,
-    ) {
-        bloodOxygenDataSource.connect(onConnected, onDisconnected)
+    fun isAllDeviceConnected(): Boolean {
+        return bleManager.isAllDeviceConnected()
     }
 
-    fun connectBloodPressure(
-        onConnected: () -> Unit,
-        onDisconnected: (() -> Unit)? = null,
-    ) {
-        bloodPressureDataSource.connect(onConnected, onDisconnected)
+    fun connectAll(onConnected: (Device) -> Unit, onDisconnected: (Device) -> Unit) {
+        bleManager.connectAll(true, onConnected, onDisconnected)
     }
 
-    fun connectHeartRate(
-        onConnected: () -> Unit,
-        onDisconnected: (() -> Unit)? = null,
-    ) {
-        heartRateDataSource.connect(onConnected, onDisconnected)
+    fun enableBloodOxygen() {
+        bloodOxygenDataSource.enable()
     }
 
-    fun connectShangXiaZhi(
-        onConnected: () -> Unit,
-        onDisconnected: (() -> Unit)? = null,
-    ) {
-        shangXiaZhiDataSource.connect(onConnected, onDisconnected)
+    fun enableBloodPressure() {
+        bloodPressureDataSource.enable()
     }
 
-    fun isShangXiaZhiConnected(): Boolean {
-        return shangXiaZhiDataSource.isConnected()
+    fun enableHeartRate() {
+        heartRateDataSource.enable()
+    }
+
+    fun enableShangXiaZhi() {
+        shangXiaZhiDataSource.enable()
     }
 
     fun listenLatestBloodOxygen(startTime: Long): Flow<BloodOxygen> {

@@ -85,19 +85,24 @@ class ExecuteMedicalOrderViewModel(
             when (it.type) {
                 0 -> {
                     getBloodOxygen(deviceRepository.listenLatestBloodOxygen(curTime))
-                    connectBloodOxygen()
+                    deviceRepository.enableBloodOxygen()
                 }
 
                 1 -> {
                     getBloodPressure(deviceRepository.listenLatestBloodPressure(curTime))
-                    connectBloodPressure()
+                    deviceRepository.enableBloodPressure()
                 }
 
                 2 -> {
                     getHeartRate(deviceRepository.listenLatestHeartRate(curTime))
-                    connectHeartRate()
+                    deviceRepository.enableHeartRate()
                 }
             }
+        }
+        deviceRepository.connectAll(onConnected = {
+            startOrPauseManager.connectOne()
+        }) {
+            startOrPauseManager.disconnectOne()
         }
     }
 
@@ -200,18 +205,6 @@ class ExecuteMedicalOrderViewModel(
     @MainThread
     fun startOrPause() {
         startOrPauseManager.startOrPause()
-    }
-
-    private fun connectBloodOxygen() {
-        deviceRepository.connectBloodOxygen(startOrPauseManager::connectOne, startOrPauseManager::disconnectOne)
-    }
-
-    private fun connectBloodPressure() {
-        deviceRepository.connectBloodPressure(startOrPauseManager::connectOne, startOrPauseManager::disconnectOne)
-    }
-
-    private fun connectHeartRate() {
-        deviceRepository.connectHeartRate(startOrPauseManager::connectOne, startOrPauseManager::disconnectOne)
     }
 
     private fun getBloodOxygen(flow: Flow<BloodOxygen?>) {

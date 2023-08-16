@@ -2,6 +2,7 @@ package com.psk.device.data.source.remote.ble
 
 import com.psk.device.BleManager
 import com.psk.device.Device
+import com.psk.device.DeviceType
 import com.psk.device.Protocol
 import com.psk.device.data.model.BloodOxygen
 import com.psk.device.data.source.remote.IBloodOxygenDataSource
@@ -18,15 +19,10 @@ class O2_BloodOxygenDataSource(
             it[0] == 0x55.toByte()
         }
     ) { it.last() == BleCRC.calCRC8(it) }
-    private val device = Device("D5:92:D0:78:48:4E", protocol)
+    private val device = Device("D5:92:D0:78:48:4E", protocol, DeviceType.BloodOxygen)
 
-    override fun connect(onConnected: () -> Unit, onDisconnected: (() -> Unit)?) {
+    override fun enable() {
         bleManager.addDevices(device)
-        bleManager.connect(true, onConnected = {
-            onConnected()
-        }) {
-            onDisconnected?.invoke()
-        }
     }
 
     override suspend fun fetch(medicalOrderId: Long): BloodOxygen? {

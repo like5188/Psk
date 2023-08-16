@@ -2,6 +2,7 @@ package com.psk.device.data.source.remote.ble
 
 import com.psk.device.BleManager
 import com.psk.device.Device
+import com.psk.device.DeviceType
 import com.psk.device.Protocol
 import com.psk.device.data.model.HeartRate
 import com.psk.device.data.source.remote.IHeartRateDataSource
@@ -690,16 +691,11 @@ class SCI311W_HeartRateDataSource(
         "00000003-0000-1000-8000-00805f9b34fb",
         "00000002-0000-1000-8000-00805f9b34fb",
     )
-    private val device = Device("A0:02:19:00:02:19", protocol)
+    private val device = Device("A0:02:19:00:02:19", protocol, DeviceType.HeartRate)
 
-    override fun connect(onConnected: () -> Unit, onDisconnected: (() -> Unit)?) {
+    override fun enable() {
         bleManager.addDevices(device)
-        bleManager.connect(true, onConnected = {
-            StarData.init()
-            onConnected()
-        }) {
-            onDisconnected?.invoke()
-        }
+        StarData.init()
     }
 
     override suspend fun fetch(medicalOrderId: Long): Flow<HeartRate> = channelFlow {

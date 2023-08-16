@@ -6,12 +6,14 @@ import java.util.UUID
 /**
  * 设备信息
  *
- * @param address   设备地址
- * @param protocol  通讯协议
+ * @param address       设备地址
+ * @param protocol      通讯协议
+ * @param type          设备类型
  */
 data class Device(
     val address: String,
-    val protocol: Protocol
+    val protocol: Protocol,
+    val type: DeviceType
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -47,4 +49,11 @@ data class Protocol(
         isBeginOfPacket: ((ByteArray) -> Boolean)? = null,
         isFullPacket: ((ByteArray) -> Boolean)? = null,
     ) : this(serviceUUIDString.toUUID(), notifyUUIDString.toUUID(), writeUUIDString.toUUID(), isBeginOfPacket, isFullPacket)
+}
+
+/**
+ * 设备类型
+ */
+enum class DeviceType {
+    BloodOxygen, BloodPressure, HeartRate, ShangXiaZhi
 }

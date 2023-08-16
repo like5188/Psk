@@ -4,7 +4,6 @@ import com.psk.device.data.model.ShangXiaZhi
 import kotlinx.coroutines.flow.Flow
 
 interface IShangXiaZhiDataSource : IRemoteDeviceDataSource {
-    fun isConnected(): Boolean
 
     suspend fun fetch(medicalOrderId: Long): Flow<ShangXiaZhi>
 

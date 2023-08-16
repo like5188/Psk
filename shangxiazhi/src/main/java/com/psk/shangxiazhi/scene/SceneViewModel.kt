@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.psk.common.util.asFlow
+import com.psk.device.DeviceType
 import com.psk.device.data.model.HeartRate
 import com.psk.device.data.model.ShangXiaZhi
 import com.psk.device.data.source.DeviceRepository
@@ -46,75 +47,91 @@ class SceneViewModel(
         intelligent: Boolean = true,
         turn2: Boolean = true
     ) {
-        viewModelScope.launch {
-            //启动游戏
-            gameController.initGame(scene, existHeart, object : GameCallback.Stub() {
-                override fun onLoading() {
-                    Log.d(TAG, "onLoading")
+        val gameCallback = object : GameCallback.Stub() {
+            override fun onLoading() {
+                Log.d(TAG, "onLoading")
+                deviceRepository.enableShangXiaZhi()
+                if (existHeart) {
+                    deviceRepository.enableHeartRate()
                 }
-
-                override fun onStart() {
-                    Log.d(TAG, "onStart")
-                    viewModelScope.launch {
-                        while (!deviceRepository.isShangXiaZhiConnected()) {
-                            delay(200)
+                deviceRepository.connectAll(onConnected = {
+                    when (it.type) {
+                        DeviceType.ShangXiaZhi -> {
+                            Log.w(TAG, "上下肢连接成功")
+                            gameController.updateGameConnectionState(true)
                         }
-                        //监听上下肢数据
-                        val curTime = System.currentTimeMillis() / 1000
-                        getShangXiaZhi(deviceRepository.listenLatestShangXiaZhi(curTime))
-                        if (existHeart) {
-                            getHeartRate(deviceRepository.listenLatestHeartRate(curTime))
+
+                        DeviceType.HeartRate -> {
+                            Log.w(TAG, "心电仪连接成功")
+                            gameController.updateEcgConnectionState(true)
                         }
-                        startFetchAndSaveJob()
-                        delay(100)
-                        //设置上下肢参数，设置好后，如果是被动模式，上下肢会自动运行
-                        deviceRepository.setShangXiaZhiParams(passiveModule, timeInt, speedInt, spasmInt, resistanceInt, intelligent, turn2)
+
+                        else -> {}
+                    }
+                }) {
+                    when (it.type) {
+                        DeviceType.ShangXiaZhi -> {
+                            Log.e(TAG, "上下肢连接失败")
+                            gameController.updateGameConnectionState(false)
+                        }
+
+                        DeviceType.HeartRate -> {
+                            Log.e(TAG, "心电仪连接失败")
+                            gameController.updateEcgConnectionState(false)
+                        }
+
+                        else -> {}
                     }
                 }
-
-                override fun onResume() {
-                    Log.d(TAG, "onResume")
-                    startFetchAndSaveJob()
-                    viewModelScope.launch {
-                        deviceRepository.resumeShangXiaZhi()
-                    }
-                }
-
-                override fun onPause() {
-                    Log.d(TAG, "onPause")
-                    cancelFetchAndSaveJob()
-                    viewModelScope.launch {
-                        deviceRepository.pauseShangXiaZhi()
-                    }
-                }
-
-                override fun onOver() {
-                    Log.d(TAG, "onOver")
-                    cancelFetchAndSaveJob()
-                    viewModelScope.launch {
-                        deviceRepository.overShangXiaZhi()
-                    }
-                }
-
-            })
-        }
-        //连接上下肢
-        deviceRepository.connectShangXiaZhi(onConnected = {
-            Log.w(TAG, "上下肢连接成功")
-            gameController.updateGameConnectionState(true)
-        }) {
-            Log.e(TAG, "上下肢连接失败")
-            gameController.updateGameConnectionState(false)
-        }
-        if (existHeart) {
-            // 连接心电仪
-            deviceRepository.connectHeartRate(onConnected = {
-                Log.w(TAG, "心电仪连接成功")
-                gameController.updateEcgConnectionState(true)
-            }) {
-                Log.e(TAG, "心电仪连接失败")
-                gameController.updateEcgConnectionState(false)
             }
+
+            override fun onStart() {
+                Log.d(TAG, "onStart")
+                viewModelScope.launch {
+                    while (!deviceRepository.isAllDeviceConnected()) {
+                        delay(200)
+                    }
+                    //监听上下肢数据
+                    val curTime = System.currentTimeMillis() / 1000
+                    getShangXiaZhi(deviceRepository.listenLatestShangXiaZhi(curTime))
+                    if (existHeart) {
+                        getHeartRate(deviceRepository.listenLatestHeartRate(curTime))
+                    }
+                    delay(100)
+                    startFetchAndSaveJob()
+                    delay(100)
+                    //设置上下肢参数，设置好后，如果是被动模式，上下肢会自动运行
+                    deviceRepository.setShangXiaZhiParams(passiveModule, timeInt, speedInt, spasmInt, resistanceInt, intelligent, turn2)
+                }
+            }
+
+            override fun onResume() {
+                Log.d(TAG, "onResume")
+                startFetchAndSaveJob()
+                viewModelScope.launch {
+                    deviceRepository.resumeShangXiaZhi()
+                }
+            }
+
+            override fun onPause() {
+                Log.d(TAG, "onPause")
+                cancelFetchAndSaveJob()
+                viewModelScope.launch {
+                    deviceRepository.pauseShangXiaZhi()
+                }
+            }
+
+            override fun onOver() {
+                Log.d(TAG, "onOver")
+                cancelFetchAndSaveJob()
+                viewModelScope.launch {
+                    deviceRepository.overShangXiaZhi()
+                }
+            }
+
+        }
+        viewModelScope.launch {
+            gameController.initGame(scene, existHeart, gameCallback)
         }
     }
 

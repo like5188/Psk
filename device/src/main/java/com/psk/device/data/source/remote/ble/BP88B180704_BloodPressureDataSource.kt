@@ -2,6 +2,7 @@ package com.psk.device.data.source.remote.ble
 
 import com.psk.device.BleManager
 import com.psk.device.Device
+import com.psk.device.DeviceType
 import com.psk.device.Protocol
 import com.psk.device.data.model.BloodPressure
 import com.psk.device.data.source.remote.IBloodPressureDataSource
@@ -17,15 +18,10 @@ class BP88B180704_BloodPressureDataSource(
             it[0] == 0xAA.toByte()
         }
     ) { it.size == 20 }
-    private val device = Device("88:1B:99:0B:78:D3", protocol)
+    private val device = Device("88:1B:99:0B:78:D3", protocol, DeviceType.BloodPressure)
 
-    override fun connect(onConnected: () -> Unit, onDisconnected: (() -> Unit)?) {
+    override fun enable() {
         bleManager.addDevices(device)
-        bleManager.connect(true, onConnected = {
-            onConnected()
-        }) {
-            onDisconnected?.invoke()
-        }
     }
 
     override suspend fun fetch(medicalOrderId: Long): BloodPressure? {

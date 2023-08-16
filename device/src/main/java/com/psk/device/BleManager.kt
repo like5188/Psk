@@ -42,6 +42,19 @@ class BleManager(private val context: Context) {
     }
 
     /**
+     * 连接添加的所有蓝牙设备。
+     */
+    fun connectAll(autoConnect: Boolean, onConnected: (Device) -> Unit, onDisconnected: (Device) -> Unit) {
+        if (connectManagers.isEmpty()) {
+            onTip?.invoke(Normal("请先调用 addDevices 方法添加设备。"))
+            return
+        }
+        connectManagers.values.forEach {
+            it.connect(if (autoConnect) 3000L else 0L, onConnected, onDisconnected)
+        }
+    }
+
+    /**
      * 扫描蓝牙设备。
      */
     fun scan(): Flow<ScanResult> {
@@ -63,21 +76,6 @@ class BleManager(private val context: Context) {
 
     fun isConnected(device: Device): Boolean {
         return connectManagers.getOrDefault(device, null)?.isConnected() == true
-    }
-
-    /**
-     * 连接指定地址的蓝牙设备。
-     */
-    fun connect(
-        autoConnect: Boolean, onConnected: (Device) -> Unit, onDisconnected: (Device) -> Unit
-    ) {
-        if (connectManagers.isEmpty()) {
-            onTip?.invoke(Normal("请先调用 addDevices 方法添加设备。"))
-            return
-        }
-        connectManagers.values.forEach {
-            it.connect(if (autoConnect) 3000L else 0L, onConnected, onDisconnected)
-        }
     }
 
     fun setNotifyCallback(device: Device): Flow<ByteArray>? {

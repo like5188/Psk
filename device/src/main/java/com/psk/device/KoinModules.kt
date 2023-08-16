@@ -16,10 +16,6 @@ import com.psk.device.data.source.remote.ble.ER1_HeartRateDataSource
 import com.psk.device.data.source.remote.ble.O2_BloodOxygenDataSource
 import com.psk.device.data.source.remote.ble.SCI311W_HeartRateDataSource
 import com.psk.device.data.source.remote.ble.XZX_ShangXiaZhiDataSource
-import com.psk.device.data.source.remote.mock.MockBloodOxygenDataSource
-import com.psk.device.data.source.remote.mock.MockBloodPressureDataSource
-import com.psk.device.data.source.remote.mock.MockHeartRateDataSource
-import com.psk.device.data.source.remote.mock.MockShangXiaZhiDataSource
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
@@ -60,22 +56,20 @@ val deviceModule = module {
     factory<IShangXiaZhiDataSource>(named("XZX")) {
         XZX_ShangXiaZhiDataSource(get())
     }
-    factory<IBloodOxygenDataSource>(named("mock")) {
-        MockBloodOxygenDataSource()
-    }
-    factory<IBloodPressureDataSource>(named("mock")) {
-        MockBloodPressureDataSource()
-    }
-    factory<IHeartRateDataSource>(named("mock")) {
-        MockHeartRateDataSource()
-    }
-    factory<IShangXiaZhiDataSource>(named("mock")) {
-        MockShangXiaZhiDataSource()
-    }
 
     //repository
     factory {
-        DeviceRepository(get(), get(), get(), get(), get(named("mock")), get(named("mock")), get(named("mock")), get(named("XZX")))
+        DeviceRepository(
+            get(),
+            get(),
+            get(),
+            get(),
+            get(named("O2")),
+            get(named("BP88B180704")),
+            get(named("ER1")),
+            get(named("XZX")),
+            get()
+        )
     }
 
     //ServerDatabase
