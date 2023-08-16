@@ -3,6 +3,10 @@ package com.psk.shangxiazhi.scene
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.like.common.util.mvi.Event
+import com.psk.common.util.ToastEvent
+import com.psk.common.util.asFlow
+import com.psk.device.data.model.HeartRate
 import com.psk.device.data.model.ShangXiaZhi
 import com.psk.device.data.source.DeviceRepository
 import com.twsz.twsystempre.GameCallback
@@ -13,7 +17,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.buffer
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
@@ -25,6 +35,7 @@ class SceneViewModel(
     private val deviceRepository: DeviceRepository, private val gameController: GameController
 ) : ViewModel(), KoinComponent {
     private var fetchShangXiaZhiAndSaveJob: Job? = null
+    private var fetchHeartRateAndSaveJob: Job? = null
     private val decimalFormat by inject<DecimalFormat>()
 
     fun start(
@@ -52,9 +63,12 @@ class SceneViewModel(
                             delay(200)
                         }
                         //监听上下肢数据
-                        getShangXiaZhi(timeInt, deviceRepository.listenLatestShangXiaZhi(0))
-                        //从上下肢获取数据并保存到数据库
-                        fetchShangXiaZhiAndSave()
+                        val curTime = System.currentTimeMillis() / 1000
+                        getShangXiaZhi(deviceRepository.listenLatestShangXiaZhi(curTime))
+                        if (existHeart) {
+                            getHeartRate(deviceRepository.listenLatestHeartRate(curTime))
+                        }
+                        startFetchAndSaveJob()
                         delay(100)
                         //设置上下肢参数，设置好后，如果是被动模式，上下肢会自动运行
                         deviceRepository.setShangXiaZhiParams(passiveModule, timeInt, speedInt, spasmInt, resistanceInt, intelligent, turn2)
@@ -63,6 +77,7 @@ class SceneViewModel(
 
                 override fun onResume() {
                     Log.d(TAG, "onResume")
+                    startFetchAndSaveJob()
                     viewModelScope.launch {
                         deviceRepository.resumeShangXiaZhi()
                     }
@@ -70,6 +85,7 @@ class SceneViewModel(
 
                 override fun onPause() {
                     Log.d(TAG, "onPause")
+                    cancelFetchAndSaveJob()
                     viewModelScope.launch {
                         deviceRepository.pauseShangXiaZhi()
                     }
@@ -77,6 +93,7 @@ class SceneViewModel(
 
                 override fun onOver() {
                     Log.d(TAG, "onOver")
+                    cancelFetchAndSaveJob()
                     viewModelScope.launch {
                         deviceRepository.overShangXiaZhi()
                     }
@@ -92,15 +109,37 @@ class SceneViewModel(
             Log.e(TAG, "上下肢连接失败")
             gameController.updateGameConnectionState(false)
         }
+        if (existHeart) {
+            // 连接心电仪
+            deviceRepository.connectHeartRate(onConnected = {
+                Log.w(TAG, "心电仪连接成功")
+                gameController.updateEcgConnectionState(true)
+            }) {
+                Log.e(TAG, "心电仪连接失败")
+                gameController.updateEcgConnectionState(false)
+            }
+        }
+    }
+
+
+    private fun startFetchAndSaveJob() {
+        fetchShangXiaZhiAndSave()
+        fetchHeartRateAndSave()
+    }
+
+    private fun cancelFetchAndSaveJob() {
+        fetchShangXiaZhiAndSaveJob?.cancel()
+        fetchShangXiaZhiAndSaveJob = null
+        fetchHeartRateAndSaveJob?.cancel()
+        fetchHeartRateAndSaveJob = null
     }
 
     fun destroy() {
-        fetchShangXiaZhiAndSaveJob?.cancel()
-        fetchShangXiaZhiAndSaveJob = null
+        cancelFetchAndSaveJob()
         gameController.destroy()
     }
 
-    private fun getShangXiaZhi(timeInt: Int, flow: Flow<ShangXiaZhi?>) {
+    private fun getShangXiaZhi(flow: Flow<ShangXiaZhi?>) {
         viewModelScope.launch {
             var mActiveMil = 0f// 主动里程数
             var mPassiveMil = 0f// 被动里程数
@@ -185,6 +224,42 @@ class SceneViewModel(
                     gameController.overGame()
                 })
             } catch (e: Exception) {
+            }
+        }
+    }
+
+    private fun getHeartRate(flow: Flow<HeartRate?>) {
+        viewModelScope.launch {
+            flow.filterNotNull().flatMapConcat {
+                it.values.asFlow()
+            }.distinctUntilChanged().collect { value ->
+                gameController.updateHeartRateData(value)
+            }
+        }
+        viewModelScope.launch {
+            var count = 0
+            (0..3).asFlow()
+            flow.filterNotNull().flatMapConcat {
+                count = it.coorYValues.size
+                it.coorYValues.asFlow()
+            }.buffer(count).onEach {
+                // count 为心电数据采样率，即 1 秒钟采集 count 次数据。
+                delay(1000L / count)
+            }.collect { value ->
+                gameController.updateEcgData(value)
+            }
+        }
+    }
+
+    private fun fetchHeartRateAndSave() {
+        fetchHeartRateAndSaveJob = viewModelScope.launch(Dispatchers.IO) {
+            Log.d(TAG, "fetchHeartRateAndSave")
+            try {
+                deviceRepository.fetchHeartRateAndSave(medicalOrder.id)
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(toastEvent = Event(ToastEvent(throwable = e)))
+                }
             }
         }
     }

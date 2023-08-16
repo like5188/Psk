@@ -238,13 +238,8 @@ class ExecuteMedicalOrderViewModel(
 
     private fun getHeartRate(flow: Flow<HeartRate?>) {
         viewModelScope.launch {
-            var count = 0
             flow.filterNotNull().flatMapConcat {
-                count = it.values.size
                 it.values.asFlow()
-            }.buffer(count).onEach {
-                // count 为心电数据采样率，即 1 秒钟采集 count 次数据。
-                delay(1000L / count)
             }.distinctUntilChanged().collect { value ->
                 Log.v(TAG, "getHeartRate value=$value")
                 _uiState.update {
