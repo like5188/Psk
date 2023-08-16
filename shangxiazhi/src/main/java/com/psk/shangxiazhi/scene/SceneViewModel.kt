@@ -221,14 +221,22 @@ class SceneViewModel(
     }
 
     private fun fetchShangXiaZhiAndSave() {
+        if (fetchShangXiaZhiAndSaveJob != null) {
+            return
+        }
         fetchShangXiaZhiAndSaveJob = viewModelScope.launch(Dispatchers.IO) {
             Log.d(TAG, "fetchShangXiaZhiAndSave")
             try {
                 deviceRepository.fetchShangXiaZhiAndSave(1, onStart = {
+                    fetchHeartRateAndSave()
                     gameController.startGame()
                 }, onPause = {
+                    fetchHeartRateAndSaveJob?.cancel()
+                    fetchHeartRateAndSaveJob = null
                     gameController.pauseGame()
                 }, onOver = {
+                    fetchHeartRateAndSaveJob?.cancel()
+                    fetchHeartRateAndSaveJob = null
                     gameController.overGame()
                 })
             } catch (e: Exception) {
@@ -260,6 +268,9 @@ class SceneViewModel(
     }
 
     private fun fetchHeartRateAndSave() {
+        if (fetchHeartRateAndSaveJob != null) {
+            return
+        }
         fetchHeartRateAndSaveJob = viewModelScope.launch(Dispatchers.IO) {
             Log.d(TAG, "fetchHeartRateAndSave")
             try {

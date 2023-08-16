@@ -268,6 +268,9 @@ class ExecuteMedicalOrderViewModel(
     }
 
     private fun fetchBloodOxygenAndSave() {
+        if (fetchBloodOxygenAndSaveJob != null) {
+            return
+        }
         fetchBloodOxygenAndSaveJob = viewModelScope.launch(Dispatchers.IO) {
             while (isActive) {
                 Log.d(TAG, "fetchBloodOxygenAndSave")
@@ -278,6 +281,9 @@ class ExecuteMedicalOrderViewModel(
     }
 
     private fun fetchBloodPressureAndSave() {
+        if (fetchBloodPressureAndSaveJob != null) {
+            return
+        }
         fetchBloodPressureAndSaveJob = viewModelScope.launch(Dispatchers.IO) {
             while (isActive) {
                 Log.d(TAG, "fetchBloodPressureAndSave")
@@ -289,6 +295,9 @@ class ExecuteMedicalOrderViewModel(
     }
 
     private fun fetchHeartRateAndSave() {
+        if (fetchHeartRateAndSaveJob != null) {
+            return
+        }
         fetchHeartRateAndSaveJob = viewModelScope.launch(Dispatchers.IO) {
             Log.d(TAG, "fetchHeartRateAndSave")
             try {
