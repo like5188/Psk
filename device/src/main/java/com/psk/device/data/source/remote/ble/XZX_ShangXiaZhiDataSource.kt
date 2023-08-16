@@ -11,7 +11,6 @@ import com.twsz.remotecommands.RemoteCommand
 import com.twsz.remotecommands.TrunkCommandData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
-import java.util.concurrent.atomic.AtomicBoolean
 
 class XZX_ShangXiaZhiDataSource(
     private val bleManager: BleManager
@@ -25,7 +24,6 @@ class XZX_ShangXiaZhiDataSource(
     private val shangXiaZhiParser by lazy {
         ShangXiaZhiParser()
     }
-    private var isPause = AtomicBoolean(true)
 
     // 上下肢开始运行或者从暂停中恢复运行时回调
     var onStart: (() -> Unit)? = null
@@ -73,16 +71,12 @@ class XZX_ShangXiaZhiDataSource(
                     intelligence = intelligence,
                     direction = direction,
                 )
-                if (isPause.compareAndSet(true, false)) {
-                    onStart?.invoke()
-                }
+                onStart?.invoke()
                 trySend(shangXiaZhi)
             }
 
             override fun onPause() {
-                if (isPause.compareAndSet(false, true)) {
-                    onPause?.invoke()
-                }
+                onPause?.invoke()
             }
 
             override fun onOver() {
@@ -146,10 +140,6 @@ class XZX_ShangXiaZhiDataSource(
                 println("model=$model time=$time speed=$speed spasm=$spasm intelligence=$intelligence resistance=$resistance direction=$direction")
             })
         )
-    }
-
-    override fun isPause(): Boolean {
-        return isPause.get()
     }
 
 }

@@ -8,16 +8,12 @@ import com.psk.device.data.source.DeviceRepository
 import com.twsz.twsystempre.GameCallback
 import com.twsz.twsystempre.GameController
 import com.twsz.twsystempre.GameData
+import com.twsz.twsystempre.TrainScene
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.buffer
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.conflate
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
@@ -32,7 +28,7 @@ class SceneViewModel(
     private val decimalFormat by inject<DecimalFormat>()
 
     fun start(
-        scene: String? = "",
+        scene: TrainScene,
         existHeart: Boolean = false,
         passiveModule: Boolean = true,
         timeInt: Int = 5,
@@ -105,12 +101,6 @@ class SceneViewModel(
     }
 
     private fun getShangXiaZhi(timeInt: Int, flow: Flow<ShangXiaZhi?>) {
-        val timerFlow = (1..timeInt * 60).asFlow().onEach {
-            while (deviceRepository.isShangXiaZhiPause()) {
-                delay(1)
-            }
-            delay(1000)
-        }.conflate()
         viewModelScope.launch {
             var mActiveMil = 0f// 主动里程数
             var mPassiveMil = 0f// 被动里程数
@@ -119,12 +109,8 @@ class SceneViewModel(
             var mFirstSpasmValue = 0// 第一次痉挛值
             var spasm = 0// 痉挛值
             // 这里不能用 distinctUntilChanged、conflate 等操作符，因为需要根据所有数据来计算里程等。必须得到每次数据。
-            flow.buffer(Int.MAX_VALUE).zip(timerFlow) { shangXiaZhi, time ->
-                shangXiaZhi ?: return@zip
-                val min = time / 60
-                val sec = time % 60
-                val minStr = if (min < 10) "0$min" else "$min"
-                val secStr = if (sec < 10) "0$sec" else "$sec"
+            flow.buffer(Int.MAX_VALUE).collect { shangXiaZhi ->
+                shangXiaZhi ?: return@collect
                 //转速
                 val speed = shangXiaZhi.speedValue
                 //阻力
@@ -172,7 +158,7 @@ class SceneViewModel(
                         model = model,
                         speed = speed,
                         speedLevel = shangXiaZhi.speedLevel,
-                        time = "$minStr:$secStr",
+                        time = "00:00",
                         mileage = mileage,
                         cal = decimalFormat.format(totalCal),
                         resistance = resistance,
@@ -183,7 +169,7 @@ class SceneViewModel(
                         spasmFlag = spasmFlag,
                     )
                 )
-            }.collect()
+            }
         }
     }
 

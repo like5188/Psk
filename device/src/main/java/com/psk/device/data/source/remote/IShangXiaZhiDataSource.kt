@@ -45,6 +45,4 @@ interface IShangXiaZhiDataSource : IRemoteDeviceDataSource {
         turn2: Boolean
     )
 
-    fun isPause(): Boolean
-
 }

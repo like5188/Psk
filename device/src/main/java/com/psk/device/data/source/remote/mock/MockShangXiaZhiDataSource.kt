@@ -59,10 +59,6 @@ class MockShangXiaZhiDataSource : IShangXiaZhiDataSource {
         println("控制上下肢：setParams")
     }
 
-    override fun isPause(): Boolean {
-        return false
-    }
-
     override fun connect(onConnected: () -> Unit, onDisconnected: (() -> Unit)?) {
         thread {
             Thread.sleep(3000)

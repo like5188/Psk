@@ -10,6 +10,7 @@ import com.psk.common.util.showToast
 import com.psk.device.BleManager
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.databinding.ActivitySceneBinding
+import com.twsz.twsystempre.TrainScene
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -33,16 +34,16 @@ class SceneActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mBinding.iv0.setOnClickListener {
-            startGame("country")
+            startGame(TrainScene.country)
         }
         mBinding.iv1.setOnClickListener {
-            startGame("dust")
+            startGame(TrainScene.dust)
         }
         mBinding.iv2.setOnClickListener {
-            startGame("lasa")
+            startGame(TrainScene.lasa)
         }
         mBinding.iv3.setOnClickListener {
-            startGame("sea")
+            startGame(TrainScene.sea)
         }
         bleManager.onTip = {
             showToast(it.msg)
@@ -52,7 +53,7 @@ class SceneActivity : AppCompatActivity() {
         }
     }
 
-    private fun startGame(scene: String) {
+    private fun startGame(scene: TrainScene) {
         mViewModel.start(scene, true, resistanceInt = 1, passiveModule = true, timeInt = 2)
     }
 
