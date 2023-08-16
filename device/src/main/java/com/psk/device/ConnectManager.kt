@@ -44,14 +44,36 @@ internal class ConnectManager(private val context: Context, private val device: 
 
     fun setNotifyCallback(): Flow<ByteArray> =
         connectExecutor.setCharacteristicNotificationAndNotifyCallback(device.protocol.notifyUUID, device.protocol.serviceUUID).catch {
-            onTip?.invoke(Error("setNotifyCallback 失败：${it.message}"))
+            when (it) {
+                is BleExceptionCancelTimeout -> {
+                    // 提前取消超时(BleExceptionCancelTimeout)不做处理。因为这是调用 disconnect() 造成的，使用者可以直接在 disconnect() 方法结束后处理 UI 的显示，不需要此回调。
+                }
+
+                is BleExceptionBusy -> {
+                }
+
+                else -> {
+                    onTip?.invoke(Error("setNotifyCallback 失败：${it.message}"))
+                }
+            }
         }
 
     suspend fun write(cmd: ByteArray) {
         try {
             connectExecutor.writeCharacteristic(cmd, device.protocol.writeUUID, device.protocol.serviceUUID)
         } catch (e: BleException) {
-            onTip?.invoke(Error("write 失败：${e.message}"))
+            when (e) {
+                is BleExceptionCancelTimeout -> {
+                    // 提前取消超时(BleExceptionCancelTimeout)不做处理。因为这是调用 disconnect() 造成的，使用者可以直接在 disconnect() 方法结束后处理 UI 的显示，不需要此回调。
+                }
+
+                is BleExceptionBusy -> {
+                }
+
+                else -> {
+                    onTip?.invoke(Error("write 失败：${e.message}"))
+                }
+            }
         }
     }
 
@@ -73,7 +95,18 @@ internal class ConnectManager(private val context: Context, private val device: 
             isFullPacket = isFullPacket
         )
     } catch (e: BleException) {
-        onTip?.invoke(Error("writeAndWaitResult 失败：${e.message}"))
+        when (e) {
+            is BleExceptionCancelTimeout -> {
+                // 提前取消超时(BleExceptionCancelTimeout)不做处理。因为这是调用 disconnect() 造成的，使用者可以直接在 disconnect() 方法结束后处理 UI 的显示，不需要此回调。
+            }
+
+            is BleExceptionBusy -> {
+            }
+
+            else -> {
+                onTip?.invoke(Error("writeAndWaitResult 失败：${e.message}"))
+            }
+        }
         null
     }
 
