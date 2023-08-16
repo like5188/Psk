@@ -71,7 +71,6 @@ class XZX_ShangXiaZhiDataSource(
                     intelligence = intelligence,
                     direction = direction,
                 )
-                println(shangXiaZhi)
                 onStart?.invoke()
                 trySend(shangXiaZhi)
             }
@@ -86,7 +85,6 @@ class XZX_ShangXiaZhiDataSource(
 
         }
         bleManager.setNotifyCallback(device)?.collect {
-            println(it.contentToString())
             shangXiaZhiDataParser.putData(it)
         }
     }
