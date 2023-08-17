@@ -242,7 +242,6 @@ class ExecuteMedicalOrderViewModel(
         }
         viewModelScope.launch {
             var count = 0
-            (0..3).asFlow()
             flow.filterNotNull().flatMapConcat {
                 count = it.coorYValues.size
                 it.coorYValues.asFlow()
