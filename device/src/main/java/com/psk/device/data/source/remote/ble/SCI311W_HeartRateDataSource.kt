@@ -702,17 +702,17 @@ class SCI311W_HeartRateDataSource(
         StarData.setDataReceiver(object : DataReceiverSample() {
             override fun onDataPoints(list: List<DataPoint>) {
                 // DataPoint：心电数据点（采样率为125，1秒钟有125个点）。画波形使用这个就可以
-                if (list.isEmpty()) {
-                    return
-                }
                 // 心率值
-                val heartRate = list.last().heartRate
+                val heartRate = list.lastOrNull()?.heartRate ?: 0
                 // 心电图数据
-                val coorYValues = FloatArray(list.size)
-                list.forEachIndexed { index, dataPoint ->
-                    // setScale 四舍五入，2.35变成2.3，如果是5则向下舍
-                    coorYValues[index] =
-                        BigDecimal.valueOf(dataPoint.value.toDouble()).setScale(5, BigDecimal.ROUND_HALF_DOWN).toFloat() / 150f
+                val coorYValues = if (list.isNullOrEmpty()) {
+                    // 如果没有数据，就让心电图画y坐标为0的横线
+                    (0..124).map { 0f }.toFloatArray()
+                } else {
+                    list.map {
+                        // setScale 四舍五入，2.35变成2.3，如果是5则向下舍
+                        BigDecimal.valueOf(it.value.toDouble()).setScale(5, BigDecimal.ROUND_HALF_DOWN).toFloat() / 150f
+                    }.toFloatArray()
                 }
                 trySend(HeartRate(value = heartRate, coorYValues = coorYValues, medicalOrderId = medicalOrderId))
             }
