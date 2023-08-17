@@ -44,7 +44,6 @@ class ER1_HeartRateDataSource(
                     } else {
                         fs
                     }
-                    println(coorYValues.size)
                     trySend(HeartRate(value = heartRate, coorYValues = coorYValues, medicalOrderId = medicalOrderId))
                 }
             }
