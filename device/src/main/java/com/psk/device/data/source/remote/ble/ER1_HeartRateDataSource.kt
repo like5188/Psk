@@ -36,16 +36,15 @@ class ER1_HeartRateDataSource(
                     val rtData = BtResponse.RtData(bleResponse.content)
                     // 心率值
                     val heartRate = rtData.param.hr
-                    // 心电图数据(这里经过测试数据量是不固定的)
+                    // 心电图数据(这里经过测试数据量是不固定的，最大为128个)
                     val fs = rtData.wave.wFs
-                    println(fs?.size)
-                    if (fs == null || fs.isEmpty()) {
-                        return
+                    val coorYValues = if (fs == null || fs.isEmpty()) {
+                        // 如果没有数据，就让心电图画y坐标为0的横线
+                        (0..127).map { 0f }.toFloatArray()
+                    } else {
+                        fs
                     }
-                    val coorYValues = FloatArray(fs.size)
-                    fs.forEachIndexed { index, dataPoint ->
-                        coorYValues[index] = dataPoint
-                    }
+                    println(coorYValues.size)
                     trySend(HeartRate(value = heartRate, coorYValues = coorYValues, medicalOrderId = medicalOrderId))
                 }
             }
