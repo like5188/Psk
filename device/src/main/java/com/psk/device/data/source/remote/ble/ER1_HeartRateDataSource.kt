@@ -34,12 +34,13 @@ class ER1_HeartRateDataSource(
             override fun onReceived(bleResponse: BtResponse.BleResponse?) {
                 if (bleResponse?.cmd == 0x03) {
                     val rtData = BtResponse.RtData(bleResponse.content)
+                    // 心率值
+                    val heartRate = rtData.param.hr
+                    // 心电图数据
                     val fs = rtData.wave.wFs
                     if (fs == null || fs.isEmpty()) {
                         return
                     }
-                    // 心率值
-                    val heartRate = rtData.param.hr
                     val coorYValues = FloatArray(fs.size)
                     fs.forEachIndexed { index, dataPoint ->
                         coorYValues[index] = dataPoint
