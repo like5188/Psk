@@ -36,8 +36,9 @@ class ER1_HeartRateDataSource(
                     val rtData = BtResponse.RtData(bleResponse.content)
                     // 心率值
                     val heartRate = rtData.param.hr
-                    // 心电图数据
+                    // 心电图数据(这里经过测试数据量是不固定的)
                     val fs = rtData.wave.wFs
+                    println(fs?.size)
                     if (fs == null || fs.isEmpty()) {
                         return
                     }
