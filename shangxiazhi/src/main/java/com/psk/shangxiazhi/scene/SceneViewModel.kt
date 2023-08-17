@@ -263,7 +263,7 @@ class SceneViewModel(
                 // count 为心电数据采样率，即 1 秒钟采集 count 次数据。
                 delay(1000L / count)
             }.collect { value ->
-                gameController.updateEcgData(value)
+                gameController.updateEcgData(arrayOf(value).toFloatArray())
             }
         }
     }

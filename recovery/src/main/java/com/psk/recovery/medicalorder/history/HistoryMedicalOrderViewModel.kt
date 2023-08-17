@@ -184,7 +184,7 @@ class HistoryMedicalOrderViewModel(
         second: Long,
         needAnim: Boolean
     ): List<HistoryMedicalOrderUiState> {
-        val oldUiState = _uiState.value.copy(
+        var oldUiState = _uiState.value.copy(
             progress = allTimeLines.indexOf(second),
             curTimeString = sdf.format(second * 1000),
             bloodOxygen = bloodOxygenList?.lastOrNull {
@@ -201,20 +201,21 @@ class HistoryMedicalOrderViewModel(
         } else {
             // 每秒钟的数据量
             val count = heartRateList.firstOrNull {
-                it.values.isNotEmpty()
-            }?.values?.size ?: 0
+                it.coorYValues.isNotEmpty()
+            }?.coorYValues?.size ?: 0
             // 指定second的心率数据
             val heartRate = heartRateList.lastOrNull {
                 it.time == second
             }
             if (heartRate != null) {
-                val heartRates = heartRate.values
+                oldUiState = oldUiState.copy(
+                    heartRate = heartRate.value,
+                )
                 val coorYValues = heartRate.coorYValues
                 return if (needAnim) {
                     // 如果需要动画，就把每一秒的数据分开成count个数据发给UI，这样才能形成1秒中的动画
                     (0 until count).map {
                         oldUiState.copy(
-                            heartRate = heartRates[it],
                             ecgPointValue = createECGPointValue(coorYValues[it])
                         )
                     }
@@ -222,26 +223,26 @@ class HistoryMedicalOrderViewModel(
                     // 如果不需要动画，就把每一秒的数据一起发给UI
                     listOf(
                         oldUiState.copy(
-                            heartRate = heartRates.lastOrNull(),
                             ecgPointValues = coorYValues.map { createECGPointValue(it) }
                         )
                     )
                 }
             } else if (second == allTimeLines.first() || second == allTimeLines.last()) {
+                oldUiState = oldUiState.copy(
+                    heartRate = 0,
+                )
                 // 第一个和最后一个时间点的数据可以为null，
                 // 因为第一个时间点肯定没有数据，因为心率数据会在第1秒开始获取，第2秒得到的数据就是第1秒的；
                 // 最后一个时间点有可能是暂停后过段时间再结束的，也可能没有数据。
                 return if (needAnim) {
                     (0 until count).map {
                         oldUiState.copy(
-                            heartRate = 0,
                             ecgPointValue = createECGPointValue(0f)
                         )
                     }
                 } else {
                     listOf(
                         oldUiState.copy(
-                            heartRate = 0,
                             ecgPointValues = (0 until count).map { createECGPointValue(0f) }
                         )
                     )

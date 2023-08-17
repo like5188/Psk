@@ -1,5 +1,6 @@
 package com.psk.recovery.medicalorder.execute
 
+import android.graphics.Color
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -15,6 +16,7 @@ import com.psk.recovery.R
 import com.psk.recovery.data.model.embedded.MedicalOrderAndMonitorDevice
 import com.psk.recovery.databinding.ActivityExecuteMedicalOrderBinding
 import com.seeker.luckychart.annotation.UIMode
+import com.seeker.luckychart.model.ECGPointValue
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -78,9 +80,19 @@ class ExecuteMedicalOrderActivity : AppCompatActivity() {
             collectDistinctProperty(ExecuteMedicalOrderUiState::heartRate) {
                 mBinding.tvHeartRate.text = (it ?: 0).toString()
             }
-            collectDistinctProperty(ExecuteMedicalOrderUiState::ecgPointValue) {
-                it ?: return@collectDistinctProperty
-                mBinding.ecgChartView.updatePointsToRender(arrayOf(it))
+            // 这里不能使用 collectDistinctProperty，因为相同的也需要绘制出来。
+            collectProperty(ExecuteMedicalOrderUiState::coorYArray) {
+                it ?: return@collectProperty
+                mBinding.ecgChartView.updatePointsToRender(it.map {
+                    ECGPointValue().apply {
+                        this.coorY = it
+                        this.drawColor = Color.parseColor("#00FF00")
+                        this.index = 0
+                        this.isNewStart = false
+                        this.coorX = 0f
+                        this.type = 2
+                    }
+                }.toTypedArray())
             }
             collectDistinctProperty(ExecuteMedicalOrderUiState::time) {
                 mBinding.tvTime.text = it

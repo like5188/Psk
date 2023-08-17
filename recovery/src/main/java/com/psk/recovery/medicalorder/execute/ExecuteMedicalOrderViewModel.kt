@@ -1,6 +1,5 @@
 package com.psk.recovery.medicalorder.execute
 
-import android.graphics.Color
 import android.util.Log
 import androidx.annotation.MainThread
 import androidx.lifecycle.ViewModel
@@ -16,7 +15,6 @@ import com.psk.recovery.data.model.MedicalOrder
 import com.psk.recovery.data.model.MonitorDevice
 import com.psk.recovery.data.model.embedded.MedicalOrderAndMonitorDevice
 import com.psk.recovery.data.source.RecoveryRepository
-import com.seeker.luckychart.model.ECGPointValue
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
@@ -245,22 +243,13 @@ class ExecuteMedicalOrderViewModel(
             flow.filterNotNull().flatMapConcat {
                 count = it.coorYValues.size
                 it.coorYValues.asFlow()
-            }.map {
-                ECGPointValue().apply {
-                    this.coorY = it
-                    this.drawColor = Color.parseColor("#00FF00")
-                    this.index = 0
-                    this.isNewStart = false
-                    this.coorX = 0f
-                    this.type = 2
-                }
             }.buffer(count).onEach {
                 // count 为心电数据采样率，即 1 秒钟采集 count 次数据。
                 delay(1000L / count)
             }.collect { value ->
                 Log.v(TAG, "getECGPointValue value=$value")
                 _uiState.update {
-                    it.copy(ecgPointValue = value)
+                    it.copy(coorYArray = arrayOf(value).toFloatArray())
                 }
             }
         }
