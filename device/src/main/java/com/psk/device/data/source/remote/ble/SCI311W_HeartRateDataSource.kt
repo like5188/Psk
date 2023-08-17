@@ -707,6 +707,7 @@ class SCI311W_HeartRateDataSource(
                 }
                 // 心率值
                 val heartRate = list.last().heartRate
+                // 心电图数据
                 val coorYValues = FloatArray(list.size)
                 list.forEachIndexed { index, dataPoint ->
                     // setScale 四舍五入，2.35变成2.3，如果是5则向下舍
