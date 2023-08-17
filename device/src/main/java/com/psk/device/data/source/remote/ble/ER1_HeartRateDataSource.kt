@@ -39,13 +39,12 @@ class ER1_HeartRateDataSource(
                         return
                     }
                     // 心率值
-                    val heartRate = IntArray(fs.size)
+                    val heartRate = rtData.param.hr
                     val coorYValues = FloatArray(fs.size)
                     fs.forEachIndexed { index, dataPoint ->
-                        heartRate[index] = rtData.param.hr
                         coorYValues[index] = dataPoint
                     }
-                    trySend(HeartRate(values = heartRate, coorYValues = coorYValues, medicalOrderId = medicalOrderId))
+                    trySend(HeartRate(value = heartRate, coorYValues = coorYValues, medicalOrderId = medicalOrderId))
                 }
             }
         })

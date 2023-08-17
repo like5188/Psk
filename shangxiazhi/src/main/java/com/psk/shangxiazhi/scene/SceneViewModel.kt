@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinApiExtension
@@ -246,9 +247,10 @@ class SceneViewModel(
 
     private fun getHeartRate(flow: Flow<HeartRate?>) {
         viewModelScope.launch {
-            flow.filterNotNull().flatMapConcat {
-                it.values.asFlow()
+            flow.filterNotNull().map {
+                it.value
             }.distinctUntilChanged().collect { value ->
+                Log.v(TAG, "getHeartRate value=$value")
                 gameController.updateHeartRateData(value)
             }
         }

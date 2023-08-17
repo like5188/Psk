@@ -706,15 +706,14 @@ class SCI311W_HeartRateDataSource(
                     return
                 }
                 // 心率值
-                val heartRate = IntArray(list.size)
+                val heartRate = list.last().heartRate
                 val coorYValues = FloatArray(list.size)
                 list.forEachIndexed { index, dataPoint ->
-                    heartRate[index] = dataPoint.heartRate
                     // setScale 四舍五入，2.35变成2.3，如果是5则向下舍
                     coorYValues[index] =
                         BigDecimal.valueOf(dataPoint.value.toDouble()).setScale(5, BigDecimal.ROUND_HALF_DOWN).toFloat() / 150f
                 }
-                trySend(HeartRate(values = heartRate, coorYValues = coorYValues, medicalOrderId = medicalOrderId))
+                trySend(HeartRate(value = heartRate, coorYValues = coorYValues, medicalOrderId = medicalOrderId))
             }
 
             override fun onAlertSwitch(alertSwitch: AlertSwitch?) {

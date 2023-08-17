@@ -231,8 +231,8 @@ class ExecuteMedicalOrderViewModel(
 
     private fun getHeartRate(flow: Flow<HeartRate?>) {
         viewModelScope.launch {
-            flow.filterNotNull().flatMapConcat {
-                it.values.asFlow()
+            flow.filterNotNull().map {
+                it.value
             }.distinctUntilChanged().collect { value ->
                 Log.v(TAG, "getHeartRate value=$value")
                 _uiState.update {
