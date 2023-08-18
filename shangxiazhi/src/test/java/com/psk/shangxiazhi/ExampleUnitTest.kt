@@ -15,9 +15,9 @@ class ExampleUnitTest {
     fun addition_isCorrect() = runBlocking {
         withTimeout(1000) {
             var startTime = 0L
-            repeat(200) {
+            repeat(100) {
                 startTime = System.currentTimeMillis()
-                delay(1)
+                delay(100)
                 println("耗时：${System.currentTimeMillis() - startTime} $it")
             }
         }
