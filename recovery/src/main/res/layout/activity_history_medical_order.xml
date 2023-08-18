@@ -28,19 +28,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <androidx.constraintlayout.widget.Guideline
-                    android:id="@+id/guideline"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    app:layout_constraintGuide_begin="206dp" />
-
                 <TextView
                     android:id="@+id/tvHeartRate"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="40dp"
-                    app:layout_constraintEnd_toEndOf="@id/guideline"
+                    android:gravity="center"
+                    app:layout_constraintEnd_toStartOf="@id/tvBloodOxygen"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:text="112312312312312323" />
@@ -56,11 +50,12 @@
 
                 <TextView
                     android:id="@+id/tvBloodOxygen"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="40dp"
+                    android:gravity="center"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="@id/guideline"
+                    app:layout_constraintStart_toEndOf="@id/tvHeartRate"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:text="123" />
 
@@ -78,8 +73,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="40dp"
-                    app:layout_constraintEnd_toEndOf="@id/guideline"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="@id/tvHeartRate"
+                    app:layout_constraintStart_toStartOf="@id/tvHeartRate"
                     app:layout_constraintTop_toBottomOf="@id/tvHeartRateTag"
                     tools:text="123" />
 
@@ -97,8 +92,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="40dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="@id/guideline"
+                    app:layout_constraintEnd_toEndOf="@id/tvBloodOxygen"
+                    app:layout_constraintStart_toStartOf="@id/tvBloodOxygen"
                     app:layout_constraintTop_toBottomOf="@id/tvBloodOxygenTag"
                     tools:text="123" />
 
