@@ -16,13 +16,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
@@ -255,14 +253,11 @@ class SceneViewModel(
             }
         }
         viewModelScope.launch {
-            var count = 0
             flow.filterNotNull().flatMapConcat {
-                count = it.coorYValues.size
                 it.coorYValues.asFlow()
-            }.buffer(count).onEach {
-                // count 为心电数据采样率，即 1 秒钟采集 count 次数据。
-                delay(1000L / count)
-            }.collect { value ->
+            }.buffer(Int.MAX_VALUE).collect { value ->
+                // 注意：此处不能使用延迟，因为只要延迟，就算延迟1毫秒，实际上由于系统资源的调度损耗，延迟会达到平均10多毫秒，导致1秒钟实际上只能发射60多个数据（实际测试）。
+                // 这就导致远远达不到心电仪的采样率的100多，从而会导致数据堆积越来越多，导致界面看起来会延迟很严重。
                 gameController.updateEcgData(arrayOf(value).toFloatArray())
             }
         }
