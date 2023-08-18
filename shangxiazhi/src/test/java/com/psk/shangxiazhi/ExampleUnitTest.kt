@@ -13,6 +13,7 @@ import org.junit.Test
 class ExampleUnitTest {
     @Test
     fun addition_isCorrect() = runBlocking {
+        testDelay()
     }
 
     /**
@@ -24,7 +25,7 @@ class ExampleUnitTest {
             var startTime = 0L
             repeat(100) {
                 startTime = System.currentTimeMillis()
-                delay(1)
+                delay(30)
                 println("耗时：${System.currentTimeMillis() - startTime} $it")
             }
         }
