@@ -3,7 +3,6 @@ package com.psk.shangxiazhi.scene
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.psk.common.util.asFlow
 import com.psk.device.DeviceType
 import com.psk.device.data.model.HeartRate
 import com.psk.device.data.model.ShangXiaZhi
@@ -19,7 +18,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinApiExtension
@@ -253,13 +251,17 @@ class SceneViewModel(
             }
         }
         viewModelScope.launch {
-            flow.filterNotNull().flatMapConcat {
-                it.coorYValues.asFlow()
-            }.buffer(Int.MAX_VALUE).collect { value ->
-                // 注意：此处不能使用延迟，因为只要延迟，由于系统资源的调度损耗，延迟会比设置的值增加10多毫秒，所以延迟10多毫秒以下毫无意义，因为根本不可能达到。
+            flow.filterNotNull().map {
+                it.coorYValues
+            }.buffer(Int.MAX_VALUE).collect { coorYValues ->
+                // 注意：此处不能使用 onEach 进行每个数据的延迟，因为只要延迟，由于系统资源的调度损耗，延迟会比设置的值增加10多毫秒，所以延迟10多毫秒以下毫无意义，因为根本不可能达到。
                 // 这也导致1秒钟时间段内，就算延迟1毫秒，实际上延迟却会达到10多毫秒，导致最多只能发射60多个数据（实际测试）。
                 // 这就导致远远达不到心电仪的采样率的100多，从而会导致数据堆积越来越多，导致界面看起来会延迟很严重。
-                gameController.updateEcgData(arrayOf(value).toFloatArray())
+                coorYValues.toList().chunked(2).forEach {
+                    // 2个一组，120多的采样率，那么1秒钟发射60多个数据就好。
+                    delay(1)
+                    gameController.updateEcgData(it.toFloatArray())
+                }
             }
         }
     }
