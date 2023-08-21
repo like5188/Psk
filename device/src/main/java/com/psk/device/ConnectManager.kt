@@ -6,6 +6,7 @@ import com.like.ble.central.connect.executor.ConnectExecutorFactory
 import com.like.ble.exception.BleException
 import com.like.ble.exception.BleExceptionBusy
 import com.like.ble.exception.BleExceptionCancelTimeout
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 
@@ -21,9 +22,12 @@ internal class ConnectManager(private val context: Context, private val device: 
 
     @SuppressLint("MissingPermission")
     fun connect(
-        autoConnectInterval: Long, onConnected: (Device) -> Unit, onDisconnected: (Device) -> Unit
+        scope: CoroutineScope,
+        autoConnectInterval: Long,
+        onConnected: (Device) -> Unit,
+        onDisconnected: (Device) -> Unit
     ) {
-        connectExecutor.connect(autoConnectInterval, onConnected = { device, gattServiceList ->
+        connectExecutor.connect(scope, autoConnectInterval, onConnected = { device, gattServiceList ->
             onConnected(this.device.apply { name = device.name })
             onTip?.invoke(Normal("连接成功：${device.address}"))
         }) {

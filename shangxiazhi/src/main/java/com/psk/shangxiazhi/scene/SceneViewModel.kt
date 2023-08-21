@@ -65,7 +65,7 @@ class SceneViewModel(
                 if (existBloodPressure) {
                     deviceRepository.enableBloodPressure()
                 }
-                deviceRepository.connectAll(onConnected = {
+                deviceRepository.connectAll(viewModelScope, 3000L, onConnected = {
                     when (it.type) {
                         DeviceType.ShangXiaZhi -> {
                             Log.w(TAG, "上下肢连接成功")

@@ -96,9 +96,11 @@ class ExecuteMedicalOrderViewModel(
                 }
             }
         }
-        deviceRepository.connectAll(onConnected = {
-            startOrPauseManager.connectOne()
-        }) {
+        deviceRepository.connectAll(viewModelScope, 3000L,
+            onConnected = {
+                startOrPauseManager.connectOne()
+            }
+        ) {
             startOrPauseManager.disconnectOne()
         }
     }

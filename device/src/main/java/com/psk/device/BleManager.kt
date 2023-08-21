@@ -6,6 +6,7 @@ import com.like.ble.central.scan.result.ScanResult
 import com.like.ble.util.BleBroadcastReceiverManager
 import com.like.ble.util.PermissionUtils
 import com.like.ble.util.hexStringToByteArray
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 
 class BleManager(private val context: Context) {
@@ -44,13 +45,18 @@ class BleManager(private val context: Context) {
     /**
      * 连接添加的所有蓝牙设备。
      */
-    fun connectAll(autoConnect: Boolean, onConnected: (Device) -> Unit, onDisconnected: (Device) -> Unit) {
+    fun connectAll(
+        scope: CoroutineScope,
+        autoConnectInterval: Long,
+        onConnected: (Device) -> Unit,
+        onDisconnected: (Device) -> Unit
+    ) {
         if (connectManagers.isEmpty()) {
             onTip?.invoke(Normal("请先调用 addDevices 方法添加设备。"))
             return
         }
         connectManagers.values.forEach {
-            it.connect(if (autoConnect) 3000L else 0L, onConnected, onDisconnected)
+            it.connect(scope, autoConnectInterval, onConnected, onDisconnected)
         }
     }
 

@@ -15,6 +15,7 @@ import com.psk.device.data.source.remote.IBloodPressureDataSource
 import com.psk.device.data.source.remote.IHeartRateDataSource
 import com.psk.device.data.source.remote.IShangXiaZhiDataSource
 import com.psk.device.data.source.remote.ble.XZX_ShangXiaZhiDataSource
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 
 class DeviceRepository(
@@ -32,8 +33,13 @@ class DeviceRepository(
         return bleManager.isAllDeviceConnected()
     }
 
-    fun connectAll(onConnected: (Device) -> Unit, onDisconnected: (Device) -> Unit) {
-        bleManager.connectAll(true, onConnected, onDisconnected)
+    fun connectAll(
+        scope: CoroutineScope,
+        autoConnectInterval: Long,
+        onConnected: (Device) -> Unit,
+        onDisconnected: (Device) -> Unit
+    ) {
+        bleManager.connectAll(scope, autoConnectInterval, onConnected, onDisconnected)
     }
 
     fun enableBloodOxygen() {
