@@ -46,7 +46,7 @@ class SceneActivity : AppCompatActivity() {
             startGame(TrainScene.sea)
         }
         bleManager.onTip = {
-            showToast(it.msg)
+//            showToast(it.msg)
         }
         lifecycleScope.launch {
             bleManager.init(this@SceneActivity)

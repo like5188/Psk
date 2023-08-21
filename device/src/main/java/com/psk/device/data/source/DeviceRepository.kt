@@ -2,6 +2,7 @@ package com.psk.device.data.source
 
 import com.psk.device.BleManager
 import com.psk.device.Device
+import com.psk.device.DeviceType
 import com.psk.device.data.model.BloodOxygen
 import com.psk.device.data.model.BloodPressure
 import com.psk.device.data.model.HeartRate
@@ -29,17 +30,27 @@ class DeviceRepository(
     private val shangXiaZhiDataSource: IShangXiaZhiDataSource,
     private val bleManager: BleManager
 ) {
-    fun isAllDeviceConnected(): Boolean {
-        return bleManager.isAllDeviceConnected()
-    }
 
     fun connectAll(
-        scope: CoroutineScope,
-        autoConnectInterval: Long,
-        onConnected: (Device) -> Unit,
-        onDisconnected: (Device) -> Unit
+        scope: CoroutineScope, autoConnectInterval: Long, onConnected: (Device) -> Unit, onDisconnected: (Device) -> Unit
     ) {
         bleManager.connectAll(scope, autoConnectInterval, onConnected, onDisconnected)
+    }
+
+    fun isBloodOxygenConnected(): Boolean {
+        return bleManager.isConnected(DeviceType.BloodOxygen)
+    }
+
+    fun isBloodPressureConnected(): Boolean {
+        return bleManager.isConnected(DeviceType.BloodPressure)
+    }
+
+    fun isHeartRateConnected(): Boolean {
+        return bleManager.isConnected(DeviceType.HeartRate)
+    }
+
+    fun isShangXiaZhiConnected(): Boolean {
+        return bleManager.isConnected(DeviceType.ShangXiaZhi)
     }
 
     fun enableBloodOxygen() {
@@ -109,10 +120,7 @@ class DeviceRepository(
     }
 
     suspend fun fetchShangXiaZhiAndSave(
-        medicalOrderId: Long,
-        onStart: (() -> Unit)? = null,
-        onPause: (() -> Unit)? = null,
-        onOver: (() -> Unit)? = null
+        medicalOrderId: Long, onStart: (() -> Unit)? = null, onPause: (() -> Unit)? = null, onOver: (() -> Unit)? = null
     ) {
         if (shangXiaZhiDataSource is XZX_ShangXiaZhiDataSource) {
             shangXiaZhiDataSource.onStart = onStart

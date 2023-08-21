@@ -80,6 +80,12 @@ class BleManager(private val context: Context) {
         }
     }
 
+    fun isConnected(deviceType: DeviceType): Boolean {
+        return connectManagers.any {
+            it.key.type == deviceType && it.value.isConnected()
+        }
+    }
+
     fun isConnected(device: Device): Boolean {
         return connectManagers.getOrDefault(device, null)?.isConnected() == true
     }
