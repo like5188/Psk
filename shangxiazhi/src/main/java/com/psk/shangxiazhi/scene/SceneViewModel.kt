@@ -130,7 +130,7 @@ class SceneViewModel(
                     delay(100)
                     //设置上下肢参数，设置好后，如果是被动模式，上下肢会自动运行
                     deviceRepository.setShangXiaZhiParams(passiveModule, timeInt, speedInt, spasmInt, resistanceInt, intelligent, turn2)
-
+                    delay(100)
                     if (existHeart) {
                         launch(Dispatchers.IO) {
                             while (!deviceRepository.isHeartRateConnected()) {
