@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.like.common.util.mvi.Event
 import com.psk.common.util.ToastEvent
-import com.psk.common.util.asFlow
 import com.psk.device.data.model.BloodOxygen
 import com.psk.device.data.model.BloodPressure
 import com.psk.device.data.model.HeartRate
@@ -239,17 +238,20 @@ class ExecuteMedicalOrderViewModel(
             }
         }
         viewModelScope.launch {
-            var count = 0
-            flow.filterNotNull().flatMapConcat {
-                count = it.coorYValues.size
-                it.coorYValues.asFlow()
-            }.buffer(count).onEach {
-                // count 为心电数据采样率，即 1 秒钟采集 count 次数据。
-                delay(1000L / count)
-            }.collect { value ->
-                Log.v(TAG, "getECGPointValue value=$value")
-                _uiState.update {
-                    it.copy(coorYArray = arrayOf(value).toFloatArray())
+            flow.filterNotNull().map {
+                it.coorYValues
+            }.buffer(Int.MAX_VALUE).collect { coorYValues ->
+                Log.v(TAG, "getECGPointValue coorYValues=$coorYValues")
+                // 注意：此处不能使用 onEach 进行每个数据的延迟，因为只要延迟，由于系统资源的调度损耗，延迟会比设置的值增加10多毫秒，所以延迟10多毫秒以下毫无意义，因为根本不可能达到。
+                // 这也导致1秒钟时间段内，就算延迟1毫秒，实际上延迟却会达到10多毫秒，导致最多只能发射60多个数据（实际测试）。
+                // 这就导致远远达不到心电仪的采样率的100多，从而会导致数据堆积越来越多，导致界面看起来会延迟很严重。
+                coorYValues.toList().chunked(5).forEach { list ->
+                    // 5个一组，125多的采样率，那么1秒钟发射25组数据就好，平均每个数据需要延迟40毫秒。
+                    // 经测试，延迟10毫秒时，加上系统调度损耗，大概平均就在40毫秒左右。就能使得心电图显示平滑
+                    delay(10)
+                    _uiState.update {
+                        it.copy(coorYArray = list.toFloatArray())
+                    }
                 }
             }
         }

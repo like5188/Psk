@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.psk.device.DeviceType
+import com.psk.device.data.model.BloodOxygen
+import com.psk.device.data.model.BloodPressure
 import com.psk.device.data.model.HeartRate
 import com.psk.device.data.model.ShangXiaZhi
 import com.psk.device.data.source.DeviceRepository
@@ -16,9 +18,11 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.buffer
+import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
@@ -31,11 +35,15 @@ class SceneViewModel(
 ) : ViewModel(), KoinComponent {
     private var fetchShangXiaZhiAndSaveJob: Job? = null
     private var fetchHeartRateAndSaveJob: Job? = null
+    private var fetchBloodOxygenAndSaveJob: Job? = null
+    private var fetchBloodPressureAndSaveJob: Job? = null
     private val decimalFormat by inject<DecimalFormat>()
 
     fun start(
+        existHeart: Boolean,
+        existBloodOxygen: Boolean,
+        existBloodPressure: Boolean,
         scene: TrainScene,
-        existHeart: Boolean = false,
         passiveModule: Boolean = true,
         timeInt: Int = 5,
         speedInt: Int = 20,
@@ -51,6 +59,12 @@ class SceneViewModel(
                 if (existHeart) {
                     deviceRepository.enableHeartRate()
                 }
+                if (existBloodOxygen) {
+                    deviceRepository.enableBloodOxygen()
+                }
+                if (existBloodPressure) {
+                    deviceRepository.enableBloodPressure()
+                }
                 deviceRepository.connectAll(onConnected = {
                     when (it.type) {
                         DeviceType.ShangXiaZhi -> {
@@ -61,6 +75,16 @@ class SceneViewModel(
                         DeviceType.HeartRate -> {
                             Log.w(TAG, "心电仪连接成功")
                             gameController.updateEcgConnectionState(it.name, true)
+                        }
+
+                        DeviceType.BloodOxygen -> {
+                            Log.w(TAG, "血氧仪连接成功")
+                            gameController.updateBloodOxygenConnectionState(it.name, true)
+                        }
+
+                        DeviceType.BloodPressure -> {
+                            Log.w(TAG, "血压仪连接成功")
+                            gameController.updateBloodPressureConnectionState(it.name, true)
                         }
 
                         else -> {}
@@ -75,6 +99,16 @@ class SceneViewModel(
                         DeviceType.HeartRate -> {
                             Log.e(TAG, "心电仪连接失败")
                             gameController.updateEcgConnectionState(it.name, false)
+                        }
+
+                        DeviceType.BloodOxygen -> {
+                            Log.w(TAG, "血氧仪连接失败")
+                            gameController.updateBloodOxygenConnectionState(it.name, false)
+                        }
+
+                        DeviceType.BloodPressure -> {
+                            Log.w(TAG, "血压仪连接失败")
+                            gameController.updateBloodPressureConnectionState(it.name, false)
                         }
 
                         else -> {}
@@ -94,9 +128,17 @@ class SceneViewModel(
                     if (existHeart) {
                         getHeartRate(deviceRepository.listenLatestHeartRate(curTime))
                     }
+                    if (existBloodOxygen) {
+                        getBloodOxygen(deviceRepository.listenLatestBloodOxygen(curTime))
+                    }
+                    if (existBloodPressure) {
+                        getBloodPressure(deviceRepository.listenLatestBloodPressure(curTime))
+                    }
                     delay(100)
                     fetchShangXiaZhiAndSave()
                     fetchHeartRateAndSave()
+                    fetchBloodOxygenAndSave()
+                    fetchBloodPressureAndSave()
                     delay(100)
                     //设置上下肢参数，设置好后，如果是被动模式，上下肢会自动运行
                     deviceRepository.setShangXiaZhiParams(passiveModule, timeInt, speedInt, spasmInt, resistanceInt, intelligent, turn2)
@@ -106,6 +148,8 @@ class SceneViewModel(
             override fun onResume() {
                 Log.d(TAG, "onResume")
                 fetchHeartRateAndSave()
+                fetchBloodOxygenAndSave()
+                fetchBloodPressureAndSave()
                 viewModelScope.launch {
                     deviceRepository.resumeShangXiaZhi()
                 }
@@ -114,8 +158,7 @@ class SceneViewModel(
             override fun onPause() {
                 Log.d(TAG, "onPause")
                 // 注意：这里不能取消上下肢的任务。因为上下肢是靠命令来操作的，取消了就收不到命令了。
-                fetchHeartRateAndSaveJob?.cancel()
-                fetchHeartRateAndSaveJob = null
+                cancelFetchAndSaveJobExceptShangXiaZhi()
                 viewModelScope.launch {
                     deviceRepository.pauseShangXiaZhi()
                 }
@@ -123,8 +166,7 @@ class SceneViewModel(
 
             override fun onOver() {
                 Log.d(TAG, "onOver")
-                fetchHeartRateAndSaveJob?.cancel()
-                fetchHeartRateAndSaveJob = null
+                cancelFetchAndSaveJobExceptShangXiaZhi()
                 viewModelScope.launch {
                     deviceRepository.overShangXiaZhi()
                 }
@@ -132,16 +174,24 @@ class SceneViewModel(
 
         }
         viewModelScope.launch {
-            gameController.initGame(scene, existHeart, gameCallback)
+            gameController.initGame(existHeart, existBloodOxygen, existBloodPressure, scene, gameCallback)
         }
     }
 
     fun destroy() {
         fetchShangXiaZhiAndSaveJob?.cancel()
         fetchShangXiaZhiAndSaveJob = null
+        cancelFetchAndSaveJobExceptShangXiaZhi()
+        gameController.destroy()
+    }
+
+    private fun cancelFetchAndSaveJobExceptShangXiaZhi() {
         fetchHeartRateAndSaveJob?.cancel()
         fetchHeartRateAndSaveJob = null
-        gameController.destroy()
+        fetchBloodOxygenAndSaveJob?.cancel()
+        fetchBloodOxygenAndSaveJob = null
+        fetchBloodPressureAndSaveJob?.cancel()
+        fetchBloodPressureAndSaveJob = null
     }
 
     private fun getShangXiaZhi(flow: Flow<ShangXiaZhi?>) {
@@ -246,7 +296,6 @@ class SceneViewModel(
             flow.filterNotNull().map {
                 it.value
             }.distinctUntilChanged().collect { value ->
-                Log.v(TAG, "getHeartRate value=$value")
                 gameController.updateHeartRateData(value)
             }
         }
@@ -267,6 +316,22 @@ class SceneViewModel(
         }
     }
 
+    private fun getBloodOxygen(flow: Flow<BloodOxygen?>) {
+        viewModelScope.launch {
+            flow.distinctUntilChanged().conflate().collect { value ->
+                gameController.updateBloodOxygenData(value?.value ?: 0)
+            }
+        }
+    }
+
+    private fun getBloodPressure(flow: Flow<BloodPressure?>) {
+        viewModelScope.launch {
+            flow.distinctUntilChanged().conflate().collect { value ->
+                gameController.updateBloodPressureData(value?.sbp ?: 0, value?.dbp ?: 0)
+            }
+        }
+    }
+
     private fun fetchHeartRateAndSave() {
         if (fetchHeartRateAndSaveJob != null) {
             return
@@ -276,6 +341,33 @@ class SceneViewModel(
             try {
                 deviceRepository.fetchHeartRateAndSave(1)
             } catch (e: Exception) {
+            }
+        }
+    }
+
+    private fun fetchBloodOxygenAndSave() {
+        if (fetchBloodOxygenAndSaveJob != null) {
+            return
+        }
+        fetchBloodOxygenAndSaveJob = viewModelScope.launch(Dispatchers.IO) {
+            while (isActive) {
+                Log.d(TAG, "fetchBloodOxygenAndSave")
+                deviceRepository.fetchBloodOxygenAndSave(1)
+                delay(1000)
+            }
+        }
+    }
+
+    private fun fetchBloodPressureAndSave() {
+        if (fetchBloodPressureAndSaveJob != null) {
+            return
+        }
+        fetchBloodPressureAndSaveJob = viewModelScope.launch(Dispatchers.IO) {
+            while (isActive) {
+                Log.d(TAG, "fetchBloodPressureAndSave")
+                deviceRepository.fetchBloodPressureAndSave(1)
+                // 设备大概在3秒内可以多次获取同一次测量结果。
+                delay(1000)
             }
         }
     }
