@@ -34,6 +34,7 @@ class SceneActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mBinding.iv0.setOnClickListener {
+            // todo 选择设备
             startGame(TrainScene.country)
         }
         mBinding.iv1.setOnClickListener {
