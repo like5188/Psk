@@ -125,20 +125,19 @@ class SceneViewModel(
                     //监听上下肢数据
                     val curTime = System.currentTimeMillis() / 1000
                     getShangXiaZhi(deviceRepository.listenLatestShangXiaZhi(curTime))
+                    fetchShangXiaZhiAndSave()
                     if (existHeart) {
                         getHeartRate(deviceRepository.listenLatestHeartRate(curTime))
+                        fetchHeartRateAndSave()
                     }
                     if (existBloodOxygen) {
                         getBloodOxygen(deviceRepository.listenLatestBloodOxygen(curTime))
+                        fetchBloodOxygenAndSave()
                     }
                     if (existBloodPressure) {
                         getBloodPressure(deviceRepository.listenLatestBloodPressure(curTime))
+                        fetchBloodPressureAndSave()
                     }
-                    delay(100)
-                    fetchShangXiaZhiAndSave()
-                    fetchHeartRateAndSave()
-                    fetchBloodOxygenAndSave()
-                    fetchBloodPressureAndSave()
                     delay(100)
                     //设置上下肢参数，设置好后，如果是被动模式，上下肢会自动运行
                     deviceRepository.setShangXiaZhiParams(passiveModule, timeInt, speedInt, spasmInt, resistanceInt, intelligent, turn2)
@@ -147,9 +146,15 @@ class SceneViewModel(
 
             override fun onResume() {
                 Log.d(TAG, "onResume")
-                fetchHeartRateAndSave()
-                fetchBloodOxygenAndSave()
-                fetchBloodPressureAndSave()
+                if (existHeart) {
+                    fetchHeartRateAndSave()
+                }
+                if (existBloodOxygen) {
+                    fetchBloodOxygenAndSave()
+                }
+                if (existBloodPressure) {
+                    fetchBloodPressureAndSave()
+                }
                 viewModelScope.launch {
                     deviceRepository.resumeShangXiaZhi()
                 }
@@ -267,30 +272,6 @@ class SceneViewModel(
         }
     }
 
-    private fun fetchShangXiaZhiAndSave() {
-        if (fetchShangXiaZhiAndSaveJob != null) {
-            return
-        }
-        fetchShangXiaZhiAndSaveJob = viewModelScope.launch(Dispatchers.IO) {
-            Log.d(TAG, "fetchShangXiaZhiAndSave")
-            try {
-                deviceRepository.fetchShangXiaZhiAndSave(1, onStart = {
-                    fetchHeartRateAndSave()
-                    gameController.startGame()
-                }, onPause = {
-                    fetchHeartRateAndSaveJob?.cancel()
-                    fetchHeartRateAndSaveJob = null
-                    gameController.pauseGame()
-                }, onOver = {
-                    fetchHeartRateAndSaveJob?.cancel()
-                    fetchHeartRateAndSaveJob = null
-                    gameController.overGame()
-                })
-            } catch (e: Exception) {
-            }
-        }
-    }
-
     private fun getHeartRate(flow: Flow<HeartRate?>) {
         viewModelScope.launch {
             flow.filterNotNull().map {
@@ -328,6 +309,30 @@ class SceneViewModel(
         viewModelScope.launch {
             flow.distinctUntilChanged().conflate().collect { value ->
                 gameController.updateBloodPressureData(value?.sbp ?: 0, value?.dbp ?: 0)
+            }
+        }
+    }
+
+    private fun fetchShangXiaZhiAndSave() {
+        if (fetchShangXiaZhiAndSaveJob != null) {
+            return
+        }
+        fetchShangXiaZhiAndSaveJob = viewModelScope.launch(Dispatchers.IO) {
+            Log.d(TAG, "fetchShangXiaZhiAndSave")
+            try {
+                deviceRepository.fetchShangXiaZhiAndSave(1, onStart = {
+                    fetchHeartRateAndSave()
+                    gameController.startGame()
+                }, onPause = {
+                    fetchHeartRateAndSaveJob?.cancel()
+                    fetchHeartRateAndSaveJob = null
+                    gameController.pauseGame()
+                }, onOver = {
+                    fetchHeartRateAndSaveJob?.cancel()
+                    fetchHeartRateAndSaveJob = null
+                    gameController.overGame()
+                })
+            } catch (e: Exception) {
             }
         }
     }
