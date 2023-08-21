@@ -62,4 +62,9 @@ class SceneActivity : AppCompatActivity() {
         bleManager.onDestroy()
         mViewModel.destroy()
     }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        finish()
+    }
 }
