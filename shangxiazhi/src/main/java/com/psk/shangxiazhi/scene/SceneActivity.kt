@@ -46,6 +46,7 @@ class SceneActivity : AppCompatActivity() {
             startGame(TrainScene.sea)
         }
         bleManager.onTip = {
+            // 蓝牙相关的提示
 //            showToast(it.msg)
         }
         lifecycleScope.launch {
