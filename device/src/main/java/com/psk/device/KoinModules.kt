@@ -11,7 +11,7 @@ import com.psk.device.data.source.remote.IBloodOxygenDataSource
 import com.psk.device.data.source.remote.IBloodPressureDataSource
 import com.psk.device.data.source.remote.IHeartRateDataSource
 import com.psk.device.data.source.remote.IShangXiaZhiDataSource
-import com.psk.device.data.source.remote.ble.BP88B180704_BloodPressureDataSource
+import com.psk.device.data.source.remote.ble.BP_BloodPressureDataSource
 import com.psk.device.data.source.remote.ble.ER1_HeartRateDataSource
 import com.psk.device.data.source.remote.ble.O2_BloodOxygenDataSource
 import com.psk.device.data.source.remote.ble.SCI311W_HeartRateDataSource
@@ -45,8 +45,8 @@ val deviceModule = module {
     factory<IBloodOxygenDataSource>(named("O2")) {
         O2_BloodOxygenDataSource(get())
     }
-    factory<IBloodPressureDataSource>(named("BP88B180704")) {
-        BP88B180704_BloodPressureDataSource(get())
+    factory<IBloodPressureDataSource>(named("BP")) {
+        BP_BloodPressureDataSource(get())
     }
     factory<IHeartRateDataSource>(named("SCI311W")) {
         SCI311W_HeartRateDataSource(get())
@@ -69,7 +69,7 @@ val deviceModule = module {
             get(),
             get(),
             get(named("O2")),
-            get(named("BP88B180704")),
+            get(named("BP")),
             get(named("SCI311W")),
             get(named("XZX")),
             get()
