@@ -15,6 +15,9 @@ data class Device(
     val protocol: Protocol,
     val type: DeviceType
 ) {
+    // 设备名称，连接成功后再设置
+    var name: String = ""
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Device) return false

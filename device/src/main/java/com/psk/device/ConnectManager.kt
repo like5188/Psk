@@ -1,5 +1,6 @@
 package com.psk.device
 
+import android.annotation.SuppressLint
 import android.content.Context
 import com.like.ble.central.connect.executor.ConnectExecutorFactory
 import com.like.ble.exception.BleException
@@ -18,11 +19,12 @@ internal class ConnectManager(private val context: Context, private val device: 
         return connectExecutor.isBleDeviceConnected()
     }
 
+    @SuppressLint("MissingPermission")
     fun connect(
         autoConnectInterval: Long, onConnected: (Device) -> Unit, onDisconnected: (Device) -> Unit
     ) {
-        connectExecutor.connect(autoConnectInterval, onConnected = {
-            onConnected(device)
+        connectExecutor.connect(autoConnectInterval, onConnected = { device, gattServiceList ->
+            onConnected(this.device.apply { name = device.name })
             onTip?.invoke(Normal("连接成功：${device.address}"))
         }) {
             when (it) {

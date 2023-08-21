@@ -55,12 +55,12 @@ class SceneViewModel(
                     when (it.type) {
                         DeviceType.ShangXiaZhi -> {
                             Log.w(TAG, "上下肢连接成功")
-                            gameController.updateGameConnectionState(true)
+                            gameController.updateGameConnectionState(it.name, true)
                         }
 
                         DeviceType.HeartRate -> {
                             Log.w(TAG, "心电仪连接成功")
-                            gameController.updateEcgConnectionState(true)
+                            gameController.updateEcgConnectionState(it.name, true)
                         }
 
                         else -> {}
@@ -69,12 +69,12 @@ class SceneViewModel(
                     when (it.type) {
                         DeviceType.ShangXiaZhi -> {
                             Log.e(TAG, "上下肢连接失败")
-                            gameController.updateGameConnectionState(false)
+                            gameController.updateGameConnectionState(it.name, false)
                         }
 
                         DeviceType.HeartRate -> {
                             Log.e(TAG, "心电仪连接失败")
-                            gameController.updateEcgConnectionState(false)
+                            gameController.updateEcgConnectionState(it.name, false)
                         }
 
                         else -> {}
