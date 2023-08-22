@@ -30,6 +30,11 @@ data class Device(
     override fun hashCode(): Int {
         return address.hashCode()
     }
+
+    override fun toString(): String {
+        return "Device(address='$address', protocol=$protocol, type=$type, name='$name')"
+    }
+
 }
 
 /**
