@@ -66,15 +66,20 @@ class SceneViewModel(
         val gameCallback = object : GameCallback.Stub() {
             override fun onLoading() {
                 Log.d(TAG, "onLoading")
+                val curTime = System.currentTimeMillis() / 1000
                 deviceRepository.enableShangXiaZhi()
+                getShangXiaZhi(deviceRepository.listenLatestShangXiaZhi(curTime))
                 if (existHeart) {
                     deviceRepository.enableHeartRate()
+                    getHeartRate(deviceRepository.listenLatestHeartRate(curTime))
                 }
                 if (existBloodOxygen) {
                     deviceRepository.enableBloodOxygen()
+                    getBloodOxygen(deviceRepository.listenLatestBloodOxygen(curTime))
                 }
                 if (existBloodPressure) {
                     deviceRepository.enableBloodPressure()
+                    getBloodPressure(deviceRepository.listenLatestBloodPressure(curTime))
                 }
                 bleManager.connectAll(viewModelScope, 3000L, onConnected = {
                     when (it.type) {
@@ -130,77 +135,26 @@ class SceneViewModel(
             override fun onStart() {
                 Log.d(TAG, "onStart")
                 viewModelScope.launch(Dispatchers.IO) {
-                    while (!bleManager.isConnected(DeviceType.ShangXiaZhi)) {
-                        delay(200)
-                    }
-                    //监听上下肢数据
-                    val curTime = System.currentTimeMillis() / 1000
-                    getShangXiaZhi(deviceRepository.listenLatestShangXiaZhi(curTime))
-                    delay(100)
-                    fetchShangXiaZhiAndSave()
-                    delay(100)
+                    startFetchAndSaveJob(existHeart, existBloodOxygen, existBloodPressure)
                     //设置上下肢参数，设置好后，如果是被动模式，上下肢会自动运行
                     deviceRepository.setShangXiaZhiParams(passiveModule, timeInt, speedInt, spasmInt, resistanceInt, intelligent, turn2)
-                    delay(100)
-                    if (existHeart) {
-                        launch(Dispatchers.IO) {
-                            while (!bleManager.isConnected(DeviceType.HeartRate)) {
-                                delay(200)
-                            }
-                            getHeartRate(deviceRepository.listenLatestHeartRate(curTime))
-                            fetchHeartRateAndSave()
-                        }
-                    }
-
-                    if (existBloodOxygen) {
-                        launch(Dispatchers.IO) {
-                            while (!bleManager.isConnected(DeviceType.BloodOxygen)) {
-                                delay(200)
-                            }
-                            getBloodOxygen(deviceRepository.listenLatestBloodOxygen(curTime))
-                            fetchBloodOxygenAndSave()
-                        }
-                    }
-
-                    if (existBloodPressure) {
-                        launch(Dispatchers.IO) {
-                            while (!bleManager.isConnected(DeviceType.BloodPressure)) {
-                                delay(200)
-                            }
-                            getBloodPressure(deviceRepository.listenLatestBloodPressure(curTime))
-                            fetchBloodPressureAndSave()
-                        }
-                    }
                 }
             }
 
             override fun onResume() {
                 Log.d(TAG, "onResume")
-                if (existHeart) {
-                    fetchHeartRateAndSave()
-                }
-                if (existBloodOxygen) {
-                    fetchBloodOxygenAndSave()
-                }
-                if (existBloodPressure) {
-                    fetchBloodPressureAndSave()
-                }
                 viewModelScope.launch(Dispatchers.IO) {
+                    startFetchAndSaveJob(existHeart, existBloodOxygen, existBloodPressure)
                     deviceRepository.resumeShangXiaZhi()
                 }
             }
 
             override fun onPause() {
                 Log.d(TAG, "onPause")
-                // 注意：这里不能取消上下肢的任务。因为上下肢是靠命令来操作的，取消了就收不到命令了。
-                fetchHeartRateAndSaveJob?.cancel()
-                fetchHeartRateAndSaveJob = null
-                fetchBloodOxygenAndSaveJob?.cancel()
-                fetchBloodOxygenAndSaveJob = null
-                fetchBloodPressureAndSaveJob?.cancel()
-                fetchBloodPressureAndSaveJob = null
                 viewModelScope.launch(Dispatchers.IO) {
                     deviceRepository.pauseShangXiaZhi()
+                    delay(100)
+                    cancelFetchAndSaveJob()
                 }
             }
 
@@ -208,14 +162,8 @@ class SceneViewModel(
                 Log.d(TAG, "onOver")
                 viewModelScope.launch(Dispatchers.IO) {
                     deviceRepository.overShangXiaZhi()
-                    fetchShangXiaZhiAndSaveJob?.cancel()
-                    fetchShangXiaZhiAndSaveJob = null
-                    fetchHeartRateAndSaveJob?.cancel()
-                    fetchHeartRateAndSaveJob = null
-                    fetchBloodOxygenAndSaveJob?.cancel()
-                    fetchBloodOxygenAndSaveJob = null
-                    fetchBloodPressureAndSaveJob?.cancel()
-                    fetchBloodPressureAndSaveJob = null
+                    delay(100)
+                    cancelFetchAndSaveJob()
                     bleManager.onDestroy()
                 }
             }
@@ -231,8 +179,46 @@ class SceneViewModel(
         }
     }
 
-    override fun onCleared() {
-        super.onCleared()
+    private suspend fun startFetchAndSaveJob(
+        existHeart: Boolean,
+        existBloodOxygen: Boolean,
+        existBloodPressure: Boolean,
+    ) {
+        while (!bleManager.isConnected(DeviceType.ShangXiaZhi)) {
+            delay(100)
+        }
+        fetchShangXiaZhiAndSave()
+        delay(100)
+        if (existHeart) {
+            viewModelScope.launch(Dispatchers.IO) {
+                while (!bleManager.isConnected(DeviceType.HeartRate)) {
+                    delay(100)
+                }
+                fetchHeartRateAndSave()
+                delay(100)
+            }
+        }
+        if (existBloodOxygen) {
+            viewModelScope.launch(Dispatchers.IO) {
+                while (!bleManager.isConnected(DeviceType.BloodOxygen)) {
+                    delay(100)
+                }
+                fetchBloodOxygenAndSave()
+                delay(100)
+            }
+        }
+        if (existBloodPressure) {
+            viewModelScope.launch(Dispatchers.IO) {
+                while (!bleManager.isConnected(DeviceType.BloodPressure)) {
+                    delay(100)
+                }
+                fetchBloodPressureAndSave()
+                delay(100)
+            }
+        }
+    }
+
+    private fun cancelFetchAndSaveJob() {
         fetchShangXiaZhiAndSaveJob?.cancel()
         fetchShangXiaZhiAndSaveJob = null
         fetchHeartRateAndSaveJob?.cancel()
@@ -241,7 +227,12 @@ class SceneViewModel(
         fetchBloodOxygenAndSaveJob = null
         fetchBloodPressureAndSaveJob?.cancel()
         fetchBloodPressureAndSaveJob = null
+    }
+
+    override fun onCleared() {
+        super.onCleared()
         gameController.destroy()
+        cancelFetchAndSaveJob()
         bleManager.onDestroy()
     }
 
