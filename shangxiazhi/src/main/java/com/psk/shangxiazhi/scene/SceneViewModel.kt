@@ -147,6 +147,7 @@ class SceneViewModel(
                     while (!bleManager.isConnected(DeviceType.ShangXiaZhi)) {
                         delay(200)
                     }
+                    delay(100)
                     fetchShangXiaZhiAndSave(existHeart, existBloodOxygen, existBloodPressure)
                     delay(100)
                     startFetchAndSaveJobExceptShangXiaZhi(existHeart, existBloodOxygen, existBloodPressure)
@@ -337,8 +338,7 @@ class SceneViewModel(
                 // 这就导致远远达不到心电仪的采样率的100多，从而会导致数据堆积越来越多，导致界面看起来会延迟很严重。
                 coorYValues.toList().chunked(5).forEach {
                     // 5个一组，125多的采样率，那么1秒钟发射25组数据就好，平均每个数据需要延迟40毫秒。
-                    // 经测试，延迟10毫秒时，加上系统调度损耗，大概平均就在40毫秒左右。就能使得心电图显示平滑
-                    delay(10)
+                    delay(1)
                     gameController.updateEcgData(it.toFloatArray())
                 }
             }
