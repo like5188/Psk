@@ -195,7 +195,7 @@ class SceneViewModel(
         if (existHeart) {
             viewModelScope.launch(Dispatchers.IO) {
                 while (!bleManager.isConnected(DeviceType.HeartRate)) {
-                    delay(200)
+                    delay(1000)
                 }
                 fetchHeartRateAndSave()
                 delay(100)
@@ -204,7 +204,7 @@ class SceneViewModel(
         if (existBloodOxygen) {
             viewModelScope.launch(Dispatchers.IO) {
                 while (!bleManager.isConnected(DeviceType.BloodOxygen)) {
-                    delay(200)
+                    delay(1000)
                 }
                 fetchBloodOxygenAndSave()
                 delay(100)
@@ -213,7 +213,7 @@ class SceneViewModel(
         if (existBloodPressure) {
             viewModelScope.launch(Dispatchers.IO) {
                 while (!bleManager.isConnected(DeviceType.BloodPressure)) {
-                    delay(200)
+                    delay(1000)
                 }
                 fetchBloodPressureAndSave()
                 delay(100)
