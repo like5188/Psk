@@ -203,6 +203,11 @@ class ExecuteMedicalOrderViewModel(
         updateMedicalOrderEndTimeToDb()
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        bleManager.onDestroy()
+    }
+
     /**
      * 开始或者暂停"从蓝牙设备获取数据并保存到数据库中"
      */
