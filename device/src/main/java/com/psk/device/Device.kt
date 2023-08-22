@@ -51,6 +51,11 @@ data class Protocol(
         isBeginOfPacket: ((ByteArray) -> Boolean)? = null,
         isFullPacket: ((ByteArray) -> Boolean)? = null,
     ) : this(serviceUUIDString.toUUID(), notifyUUIDString.toUUID(), writeUUIDString.toUUID(), isBeginOfPacket, isFullPacket)
+
+    override fun toString(): String {
+        return "Protocol(serviceUUID=$serviceUUID, notifyUUID=$notifyUUID, writeUUID=$writeUUID)"
+    }
+
 }
 
 /**
