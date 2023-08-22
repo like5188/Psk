@@ -47,7 +47,12 @@ class SceneViewModel(
      * 初始化蓝牙相关的工具类
      * @param onTip     蓝牙相关的提示
      */
-    fun initBle(activity: ComponentActivity, onTip: ((Tip) -> Unit)? = null) {
+    fun initBle(
+        activity: ComponentActivity,
+        onTip: ((Tip) -> Unit)? = {
+            Log.e(TAG, "onTip ${it.msg}")
+        }
+    ) {
         bleManager.onTip = onTip
         viewModelScope.launch {
             bleManager.init(activity)
@@ -145,7 +150,7 @@ class SceneViewModel(
                     fetchShangXiaZhiAndSave(existHeart, existBloodOxygen, existBloodPressure)
                     delay(100)
                     startFetchAndSaveJobExceptShangXiaZhi(existHeart, existBloodOxygen, existBloodPressure)
-                    delay(100)
+                    delay(5000)
                     //设置上下肢参数，设置好后，如果是被动模式，上下肢会自动运行
                     deviceRepository.setShangXiaZhiParams(passiveModule, timeInt, speedInt, spasmInt, resistanceInt, intelligent, turn2)
                 }
