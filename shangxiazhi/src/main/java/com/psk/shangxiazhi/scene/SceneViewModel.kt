@@ -208,8 +208,21 @@ class SceneViewModel(
                 Log.d(TAG, "onOver")
                 viewModelScope.launch(Dispatchers.IO) {
                     deviceRepository.overShangXiaZhi()
-                    onCleared()
+                    fetchShangXiaZhiAndSaveJob?.cancel()
+                    fetchShangXiaZhiAndSaveJob = null
+                    fetchHeartRateAndSaveJob?.cancel()
+                    fetchHeartRateAndSaveJob = null
+                    fetchBloodOxygenAndSaveJob?.cancel()
+                    fetchBloodOxygenAndSaveJob = null
+                    fetchBloodPressureAndSaveJob?.cancel()
+                    fetchBloodPressureAndSaveJob = null
+                    bleManager.onDestroy()
                 }
+            }
+
+            override fun onFinish() {
+                Log.d(TAG, "onFinish")
+                onCleared()
             }
 
         }
