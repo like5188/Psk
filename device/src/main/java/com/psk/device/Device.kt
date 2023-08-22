@@ -15,8 +15,6 @@ data class Device(
     val protocol: Protocol,
     val type: DeviceType
 ) {
-    // 设备名称，连接成功后再设置
-    var name: String = ""
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -29,10 +27,6 @@ data class Device(
 
     override fun hashCode(): Int {
         return address.hashCode()
-    }
-
-    override fun toString(): String {
-        return "Device(address='$address', protocol=$protocol, type=$type, name='$name')"
     }
 
 }

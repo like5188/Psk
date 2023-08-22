@@ -43,6 +43,10 @@ class SceneViewModel(
     private val decimalFormat by inject<DecimalFormat>()
     private val bleManager by inject<BleManager>()
 
+    /**
+     * 初始化蓝牙相关的工具类
+     * @param onTip     蓝牙相关的提示
+     */
     fun initBle(activity: ComponentActivity, onTip: ((Tip) -> Unit)? = null) {
         bleManager.onTip = onTip
         viewModelScope.launch {
@@ -85,22 +89,22 @@ class SceneViewModel(
                     when (it.type) {
                         DeviceType.ShangXiaZhi -> {
                             Log.w(TAG, "上下肢连接成功 $it")
-                            gameController.updateGameConnectionState(it.name, true)
+                            gameController.updateGameConnectionState(true)
                         }
 
                         DeviceType.HeartRate -> {
                             Log.w(TAG, "心电仪连接成功 $it")
-                            gameController.updateEcgConnectionState(it.name, true)
+                            gameController.updateEcgConnectionState(true)
                         }
 
                         DeviceType.BloodOxygen -> {
                             Log.w(TAG, "血氧仪连接成功 $it")
-                            gameController.updateBloodOxygenConnectionState(it.name, true)
+                            gameController.updateBloodOxygenConnectionState(true)
                         }
 
                         DeviceType.BloodPressure -> {
                             Log.w(TAG, "血压仪连接成功 $it")
-                            gameController.updateBloodPressureConnectionState(it.name, true)
+                            gameController.updateBloodPressureConnectionState(true)
                         }
 
                         else -> {}
@@ -109,22 +113,22 @@ class SceneViewModel(
                     when (it.type) {
                         DeviceType.ShangXiaZhi -> {
                             Log.e(TAG, "上下肢连接失败 $it")
-                            gameController.updateGameConnectionState(it.name, false)
+                            gameController.updateGameConnectionState(false)
                         }
 
                         DeviceType.HeartRate -> {
                             Log.e(TAG, "心电仪连接失败 $it")
-                            gameController.updateEcgConnectionState(it.name, false)
+                            gameController.updateEcgConnectionState(false)
                         }
 
                         DeviceType.BloodOxygen -> {
                             Log.e(TAG, "血氧仪连接失败 $it")
-                            gameController.updateBloodOxygenConnectionState(it.name, false)
+                            gameController.updateBloodOxygenConnectionState(false)
                         }
 
                         DeviceType.BloodPressure -> {
                             Log.e(TAG, "血压仪连接失败 $it")
-                            gameController.updateBloodPressureConnectionState(it.name, false)
+                            gameController.updateBloodPressureConnectionState(false)
                         }
 
                         else -> {}

@@ -40,10 +40,7 @@ class SceneActivity : AppCompatActivity() {
         mBinding.iv3.setOnClickListener {
             startGame(TrainScene.sea)
         }
-        mViewModel.initBle(this) {
-            // 蓝牙相关的提示
-//            showToast(it.msg)
-        }
+        mViewModel.initBle(this)
     }
 
     private fun startGame(scene: TrainScene) {

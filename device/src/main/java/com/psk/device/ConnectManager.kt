@@ -28,7 +28,7 @@ internal class ConnectManager(private val context: Context, private val device: 
         onDisconnected: (Device) -> Unit
     ) {
         connectExecutor.connect(scope, autoConnectInterval, onConnected = { device, gattServiceList ->
-            onConnected(this.device.apply { name = device.name ?: "" })
+            onConnected(this.device)
             onTip?.invoke(Normal("连接成功：${device.name} ${device.address}"))
         }) {
             when (it) {
