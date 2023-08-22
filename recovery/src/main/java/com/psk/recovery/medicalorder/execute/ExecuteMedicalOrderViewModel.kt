@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.like.common.util.mvi.Event
 import com.psk.common.util.ToastEvent
+import com.psk.device.BleManager
 import com.psk.device.data.model.BloodOxygen
 import com.psk.device.data.model.BloodPressure
 import com.psk.device.data.model.HeartRate
@@ -16,13 +17,16 @@ import com.psk.recovery.data.model.embedded.MedicalOrderAndMonitorDevice
 import com.psk.recovery.data.source.RecoveryRepository
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
+import org.koin.core.component.KoinApiExtension
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-@OptIn(FlowPreview::class)
+@OptIn(KoinApiExtension::class)
 class ExecuteMedicalOrderViewModel(
     private val startOrPauseManager: StartOrPauseManager,
     private val deviceRepository: DeviceRepository,
     private val recoveryRepository: RecoveryRepository,
-) : ViewModel() {
+) : ViewModel(), KoinComponent {
     private val _uiState = MutableStateFlow(ExecuteMedicalOrderUiState())
     val uiState = _uiState.asStateFlow()
     private var fetchBloodOxygenAndSaveJob: Job? = null
@@ -30,6 +34,7 @@ class ExecuteMedicalOrderViewModel(
     private var fetchHeartRateAndSaveJob: Job? = null
     private lateinit var medicalOrder: MedicalOrder
     private lateinit var monitorDevices: List<MonitorDevice>
+    private val bleManager by inject<BleManager>()
 
     fun setMedicalOrderAndMonitorDevice(medicalOrderAndMonitorDevice: MedicalOrderAndMonitorDevice) {
         this.medicalOrder = medicalOrderAndMonitorDevice.medicalOrder
@@ -96,7 +101,7 @@ class ExecuteMedicalOrderViewModel(
                 }
             }
         }
-        deviceRepository.connectAll(viewModelScope, 3000L,
+        bleManager.connectAll(viewModelScope, 3000L,
             onConnected = {
                 startOrPauseManager.connectOne()
             }
