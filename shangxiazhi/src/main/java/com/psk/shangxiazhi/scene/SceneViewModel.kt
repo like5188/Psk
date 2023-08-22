@@ -1,9 +1,12 @@
 package com.psk.shangxiazhi.scene
 
 import android.util.Log
+import androidx.activity.ComponentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.psk.device.BleManager
 import com.psk.device.DeviceType
+import com.psk.device.Tip
 import com.psk.device.data.model.BloodOxygen
 import com.psk.device.data.model.BloodPressure
 import com.psk.device.data.model.HeartRate
@@ -38,6 +41,14 @@ class SceneViewModel(
     private var fetchBloodOxygenAndSaveJob: Job? = null
     private var fetchBloodPressureAndSaveJob: Job? = null
     private val decimalFormat by inject<DecimalFormat>()
+    private val bleManager by inject<BleManager>()
+
+    fun initBle(activity: ComponentActivity, onTip: ((Tip) -> Unit)? = null) {
+        bleManager.onTip = onTip
+        viewModelScope.launch {
+            bleManager.init(activity)
+        }
+    }
 
     fun start(
         existHeart: Boolean,
@@ -65,7 +76,7 @@ class SceneViewModel(
                 if (existBloodPressure) {
                     deviceRepository.enableBloodPressure()
                 }
-                deviceRepository.connectAll(viewModelScope, 3000L, onConnected = {
+                bleManager.connectAll(viewModelScope, 3000L, onConnected = {
                     when (it.type) {
                         DeviceType.ShangXiaZhi -> {
                             Log.w(TAG, "上下肢连接成功")
@@ -119,7 +130,7 @@ class SceneViewModel(
             override fun onStart() {
                 Log.d(TAG, "onStart")
                 viewModelScope.launch(Dispatchers.IO) {
-                    while (!deviceRepository.isShangXiaZhiConnected()) {
+                    while (!bleManager.isConnected(DeviceType.ShangXiaZhi)) {
                         delay(200)
                     }
                     //监听上下肢数据
@@ -133,7 +144,7 @@ class SceneViewModel(
                     delay(100)
                     if (existHeart) {
                         launch(Dispatchers.IO) {
-                            while (!deviceRepository.isHeartRateConnected()) {
+                            while (!bleManager.isConnected(DeviceType.HeartRate)) {
                                 delay(200)
                             }
                             getHeartRate(deviceRepository.listenLatestHeartRate(curTime))
@@ -143,7 +154,7 @@ class SceneViewModel(
 
                     if (existBloodOxygen) {
                         launch(Dispatchers.IO) {
-                            while (!deviceRepository.isBloodOxygenConnected()) {
+                            while (!bleManager.isConnected(DeviceType.BloodOxygen)) {
                                 delay(200)
                             }
                             getBloodOxygen(deviceRepository.listenLatestBloodOxygen(curTime))
@@ -153,7 +164,7 @@ class SceneViewModel(
 
                     if (existBloodPressure) {
                         launch(Dispatchers.IO) {
-                            while (!deviceRepository.isBloodPressureConnected()) {
+                            while (!bleManager.isConnected(DeviceType.BloodPressure)) {
                                 delay(200)
                             }
                             getBloodPressure(deviceRepository.listenLatestBloodPressure(curTime))
@@ -182,7 +193,12 @@ class SceneViewModel(
             override fun onPause() {
                 Log.d(TAG, "onPause")
                 // 注意：这里不能取消上下肢的任务。因为上下肢是靠命令来操作的，取消了就收不到命令了。
-                cancelFetchAndSaveJobExceptShangXiaZhi()
+                fetchHeartRateAndSaveJob?.cancel()
+                fetchHeartRateAndSaveJob = null
+                fetchBloodOxygenAndSaveJob?.cancel()
+                fetchBloodOxygenAndSaveJob = null
+                fetchBloodPressureAndSaveJob?.cancel()
+                fetchBloodPressureAndSaveJob = null
                 viewModelScope.launch(Dispatchers.IO) {
                     deviceRepository.pauseShangXiaZhi()
                 }
@@ -190,9 +206,9 @@ class SceneViewModel(
 
             override fun onOver() {
                 Log.d(TAG, "onOver")
-                cancelFetchAndSaveJobExceptShangXiaZhi()
                 viewModelScope.launch(Dispatchers.IO) {
                     deviceRepository.overShangXiaZhi()
+                    onCleared()
                 }
             }
 
@@ -202,20 +218,18 @@ class SceneViewModel(
         }
     }
 
-    fun destroy() {
+    override fun onCleared() {
+        super.onCleared()
         fetchShangXiaZhiAndSaveJob?.cancel()
         fetchShangXiaZhiAndSaveJob = null
-        cancelFetchAndSaveJobExceptShangXiaZhi()
-        gameController.destroy()
-    }
-
-    private fun cancelFetchAndSaveJobExceptShangXiaZhi() {
         fetchHeartRateAndSaveJob?.cancel()
         fetchHeartRateAndSaveJob = null
         fetchBloodOxygenAndSaveJob?.cancel()
         fetchBloodOxygenAndSaveJob = null
         fetchBloodPressureAndSaveJob?.cancel()
         fetchBloodPressureAndSaveJob = null
+        gameController.destroy()
+        bleManager.onDestroy()
     }
 
     private fun getShangXiaZhi(flow: Flow<ShangXiaZhi?>) {

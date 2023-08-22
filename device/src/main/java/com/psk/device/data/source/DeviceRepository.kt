@@ -1,8 +1,5 @@
 package com.psk.device.data.source
 
-import com.psk.device.BleManager
-import com.psk.device.Device
-import com.psk.device.DeviceType
 import com.psk.device.data.model.BloodOxygen
 import com.psk.device.data.model.BloodPressure
 import com.psk.device.data.model.HeartRate
@@ -16,7 +13,6 @@ import com.psk.device.data.source.remote.IBloodPressureDataSource
 import com.psk.device.data.source.remote.IHeartRateDataSource
 import com.psk.device.data.source.remote.IShangXiaZhiDataSource
 import com.psk.device.data.source.remote.ble.XZX_ShangXiaZhiDataSource
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 
 class DeviceRepository(
@@ -28,30 +24,7 @@ class DeviceRepository(
     private val bloodPressureDataSource: IBloodPressureDataSource,
     private val heartRateDataSource: IHeartRateDataSource,
     private val shangXiaZhiDataSource: IShangXiaZhiDataSource,
-    private val bleManager: BleManager
 ) {
-
-    fun connectAll(
-        scope: CoroutineScope, autoConnectInterval: Long, onConnected: (Device) -> Unit, onDisconnected: (Device) -> Unit
-    ) {
-        bleManager.connectAll(scope, autoConnectInterval, onConnected, onDisconnected)
-    }
-
-    fun isBloodOxygenConnected(): Boolean {
-        return bleManager.isConnected(DeviceType.BloodOxygen)
-    }
-
-    fun isBloodPressureConnected(): Boolean {
-        return bleManager.isConnected(DeviceType.BloodPressure)
-    }
-
-    fun isHeartRateConnected(): Boolean {
-        return bleManager.isConnected(DeviceType.HeartRate)
-    }
-
-    fun isShangXiaZhiConnected(): Boolean {
-        return bleManager.isConnected(DeviceType.ShangXiaZhi)
-    }
 
     fun enableBloodOxygen() {
         bloodOxygenDataSource.enable()

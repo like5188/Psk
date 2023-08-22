@@ -72,7 +72,6 @@ val deviceModule = module {
             get(named("BP")),
             get(named("SCI311W")),
             get(named("XZX")),
-            get()
         )
     }
 
