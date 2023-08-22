@@ -29,7 +29,7 @@ internal class ConnectManager(private val context: Context, private val device: 
     ) {
         connectExecutor.connect(scope, autoConnectInterval, onConnected = { device, gattServiceList ->
             onConnected(this.device.apply { name = device.name ?: "" })
-            onTip?.invoke(Normal("连接成功：${device.address}"))
+            onTip?.invoke(Normal("连接成功：${device.name} ${device.address}"))
         }) {
             when (it) {
                 is BleExceptionCancelTimeout -> {
