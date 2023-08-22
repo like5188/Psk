@@ -73,6 +73,8 @@ class SceneViewModel(
         turn2: Boolean = true
     ) {
         val gameCallback = object : GameCallback.Stub() {
+            var isStart = false
+
             override fun onLoading() {
                 Log.d(TAG, "game onLoading")
                 val curTime = System.currentTimeMillis() / 1000
@@ -95,21 +97,56 @@ class SceneViewModel(
                         DeviceType.ShangXiaZhi -> {
                             Log.w(TAG, "上下肢连接成功 $it")
                             gameController.updateGameConnectionState(true)
+                            viewModelScope.launch(Dispatchers.IO) {
+                                while (!isStart) {
+                                    delay(10)
+                                }
+                                fetchShangXiaZhiAndSave(existHeart, existBloodOxygen, existBloodPressure)
+                                delay(100)
+                                //设置上下肢参数，设置好后，如果是被动模式，上下肢会自动运行
+                                deviceRepository.setShangXiaZhiParams(
+                                    passiveModule,
+                                    timeInt,
+                                    speedInt,
+                                    spasmInt,
+                                    resistanceInt,
+                                    intelligent,
+                                    turn2
+                                )
+                            }
                         }
 
                         DeviceType.HeartRate -> {
                             Log.w(TAG, "心电仪连接成功 $it")
                             gameController.updateEcgConnectionState(true)
+                            viewModelScope.launch(Dispatchers.IO) {
+                                while (!isStart) {
+                                    delay(10)
+                                }
+                                fetchHeartRateAndSave()
+                            }
                         }
 
                         DeviceType.BloodOxygen -> {
                             Log.w(TAG, "血氧仪连接成功 $it")
                             gameController.updateBloodOxygenConnectionState(true)
+                            viewModelScope.launch(Dispatchers.IO) {
+                                while (!isStart) {
+                                    delay(10)
+                                }
+                                fetchBloodOxygenAndSave()
+                            }
                         }
 
                         DeviceType.BloodPressure -> {
                             Log.w(TAG, "血压仪连接成功 $it")
                             gameController.updateBloodPressureConnectionState(true)
+                            viewModelScope.launch(Dispatchers.IO) {
+                                while (!isStart) {
+                                    delay(10)
+                                }
+                                fetchBloodPressureAndSave()
+                            }
                         }
 
                         else -> {}
@@ -142,19 +179,8 @@ class SceneViewModel(
             }
 
             override fun onStart() {
+                isStart = true
                 Log.d(TAG, "game onStart")
-                viewModelScope.launch(Dispatchers.IO) {
-                    while (!bleManager.isConnected(DeviceType.ShangXiaZhi)) {
-                        delay(200)
-                    }
-                    delay(100)
-                    fetchShangXiaZhiAndSave(existHeart, existBloodOxygen, existBloodPressure)
-                    delay(100)
-                    startFetchAndSaveJobExceptShangXiaZhi(existHeart, existBloodOxygen, existBloodPressure)
-                    delay(100)
-                    //设置上下肢参数，设置好后，如果是被动模式，上下肢会自动运行
-                    deviceRepository.setShangXiaZhiParams(passiveModule, timeInt, speedInt, spasmInt, resistanceInt, intelligent, turn2)
-                }
             }
 
             override fun onResume() {
@@ -200,32 +226,14 @@ class SceneViewModel(
         existBloodOxygen: Boolean,
         existBloodPressure: Boolean,
     ) {
-        if (existHeart && fetchHeartRateAndSaveJob == null) {
-            viewModelScope.launch(Dispatchers.IO) {
-                while (!bleManager.isConnected(DeviceType.HeartRate)) {
-                    delay(1000)
-                }
-                fetchHeartRateAndSave()
-                delay(100)
-            }
+        if (existHeart && bleManager.isConnected(DeviceType.HeartRate)) {
+            fetchHeartRateAndSave()
         }
-        if (existBloodOxygen && fetchBloodOxygenAndSaveJob == null) {
-            viewModelScope.launch(Dispatchers.IO) {
-                while (!bleManager.isConnected(DeviceType.BloodOxygen)) {
-                    delay(1000)
-                }
-                fetchBloodOxygenAndSave()
-                delay(100)
-            }
+        if (existBloodOxygen && bleManager.isConnected(DeviceType.BloodOxygen)) {
+            fetchBloodOxygenAndSave()
         }
-        if (existBloodPressure && fetchBloodPressureAndSaveJob == null) {
-            viewModelScope.launch(Dispatchers.IO) {
-                while (!bleManager.isConnected(DeviceType.BloodPressure)) {
-                    delay(1000)
-                }
-                fetchBloodPressureAndSave()
-                delay(100)
-            }
+        if (existBloodPressure && bleManager.isConnected(DeviceType.BloodPressure)) {
+            fetchBloodPressureAndSave()
         }
     }
 
