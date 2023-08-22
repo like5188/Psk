@@ -52,7 +52,7 @@ class BleManager(private val context: Context) {
         onDisconnected: (Device) -> Unit
     ) {
         if (connectManagers.isEmpty()) {
-            onTip?.invoke(Normal("请先调用 addDevices 方法添加设备。"))
+            onTip?.invoke(Normal("connectAll 请先调用 addDevices 方法添加设备。"))
             return
         }
         connectManagers.values.forEach {
@@ -93,7 +93,7 @@ class BleManager(private val context: Context) {
     fun setNotifyCallback(device: Device): Flow<ByteArray>? {
         val connectManager = connectManagers[device]
         if (connectManager == null) {
-            onTip?.invoke(Error("未找到设备：${device.address}"))
+            onTip?.invoke(Error("setNotifyCallback 未找到设备：${device.address}"))
             return null
         }
         return connectManager.setNotifyCallback()
@@ -106,7 +106,7 @@ class BleManager(private val context: Context) {
     suspend fun write(device: Device, cmd: ByteArray) {
         val connectManager = connectManagers[device]
         if (connectManager == null) {
-            onTip?.invoke(Error("未找到设备：${device.address}"))
+            onTip?.invoke(Error("write 未找到设备：${device.address}"))
             return
         }
         connectManager.write(cmd)
@@ -119,7 +119,7 @@ class BleManager(private val context: Context) {
     suspend fun writeAndWaitResult(device: Device, cmd: ByteArray): ByteArray? {
         val connectManager = connectManagers[device]
         if (connectManager == null) {
-            onTip?.invoke(Error("未找到设备：${device.address}"))
+            onTip?.invoke(Error("writeAndWaitResult 未找到设备：${device.address}"))
             return null
         }
         return connectManager.writeAndWaitResult(cmd)
@@ -128,7 +128,7 @@ class BleManager(private val context: Context) {
     suspend fun waitResult(device: Device): ByteArray? {
         val connectManager = connectManagers[device]
         if (connectManager == null) {
-            onTip?.invoke(Error("未找到设备：${device.address}"))
+            onTip?.invoke(Error("waitResult 未找到设备：${device.address}"))
             return null
         }
         return connectManager.writeAndWaitResult(null)

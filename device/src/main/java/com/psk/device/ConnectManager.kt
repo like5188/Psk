@@ -56,6 +56,7 @@ internal class ConnectManager(private val context: Context, private val device: 
                 }
 
                 is BleExceptionBusy -> {
+                    onTip?.invoke(Error("setNotifyCallback 失败：${it.message}"))
                 }
 
                 else -> {
@@ -74,6 +75,7 @@ internal class ConnectManager(private val context: Context, private val device: 
                 }
 
                 is BleExceptionBusy -> {
+                    onTip?.invoke(Error("write 失败：${e.message}"))
                 }
 
                 else -> {
@@ -107,6 +109,7 @@ internal class ConnectManager(private val context: Context, private val device: 
             }
 
             is BleExceptionBusy -> {
+                onTip?.invoke(Error("writeAndWaitResult 失败：${e.message}"))
             }
 
             else -> {
