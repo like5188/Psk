@@ -84,22 +84,22 @@ class SceneViewModel(
                 bleManager.connectAll(viewModelScope, 3000L, onConnected = {
                     when (it.type) {
                         DeviceType.ShangXiaZhi -> {
-                            Log.w(TAG, "上下肢连接成功")
+                            Log.w(TAG, "上下肢连接成功 $it")
                             gameController.updateGameConnectionState(it.name, true)
                         }
 
                         DeviceType.HeartRate -> {
-                            Log.w(TAG, "心电仪连接成功")
+                            Log.w(TAG, "心电仪连接成功 $it")
                             gameController.updateEcgConnectionState(it.name, true)
                         }
 
                         DeviceType.BloodOxygen -> {
-                            Log.w(TAG, "血氧仪连接成功")
+                            Log.w(TAG, "血氧仪连接成功 $it")
                             gameController.updateBloodOxygenConnectionState(it.name, true)
                         }
 
                         DeviceType.BloodPressure -> {
-                            Log.w(TAG, "血压仪连接成功")
+                            Log.w(TAG, "血压仪连接成功 $it")
                             gameController.updateBloodPressureConnectionState(it.name, true)
                         }
 
@@ -108,22 +108,22 @@ class SceneViewModel(
                 }) {
                     when (it.type) {
                         DeviceType.ShangXiaZhi -> {
-                            Log.e(TAG, "上下肢连接失败")
+                            Log.e(TAG, "上下肢连接失败 $it")
                             gameController.updateGameConnectionState(it.name, false)
                         }
 
                         DeviceType.HeartRate -> {
-                            Log.e(TAG, "心电仪连接失败")
+                            Log.e(TAG, "心电仪连接失败 $it")
                             gameController.updateEcgConnectionState(it.name, false)
                         }
 
                         DeviceType.BloodOxygen -> {
-                            Log.w(TAG, "血氧仪连接失败")
+                            Log.e(TAG, "血氧仪连接失败 $it")
                             gameController.updateBloodOxygenConnectionState(it.name, false)
                         }
 
                         DeviceType.BloodPressure -> {
-                            Log.w(TAG, "血压仪连接失败")
+                            Log.e(TAG, "血压仪连接失败 $it")
                             gameController.updateBloodPressureConnectionState(it.name, false)
                         }
 
