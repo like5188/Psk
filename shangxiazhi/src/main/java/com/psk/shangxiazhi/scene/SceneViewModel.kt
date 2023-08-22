@@ -154,21 +154,29 @@ class SceneViewModel(
                         DeviceType.ShangXiaZhi -> {
                             Log.e(TAG, "上下肢连接失败 $it")
                             gameController.updateGameConnectionState(false)
+                            fetchShangXiaZhiAndSaveJob?.cancel()
+                            fetchShangXiaZhiAndSaveJob = null
                         }
 
                         DeviceType.HeartRate -> {
                             Log.e(TAG, "心电仪连接失败 $it")
                             gameController.updateEcgConnectionState(false)
+                            fetchHeartRateAndSaveJob?.cancel()
+                            fetchHeartRateAndSaveJob = null
                         }
 
                         DeviceType.BloodOxygen -> {
                             Log.e(TAG, "血氧仪连接失败 $it")
                             gameController.updateBloodOxygenConnectionState(false)
+                            fetchBloodOxygenAndSaveJob?.cancel()
+                            fetchBloodOxygenAndSaveJob = null
                         }
 
                         DeviceType.BloodPressure -> {
                             Log.e(TAG, "血压仪连接失败 $it")
                             gameController.updateBloodPressureConnectionState(false)
+                            fetchBloodPressureAndSaveJob?.cancel()
+                            fetchBloodPressureAndSaveJob = null
                         }
 
                         else -> {}
