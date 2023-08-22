@@ -189,7 +189,7 @@ class SceneViewModel(
         }
     }
 
-    private suspend fun startFetchAndSaveJobExceptShangXiaZhi(
+    private fun startFetchAndSaveJobExceptShangXiaZhi(
         existHeart: Boolean,
         existBloodOxygen: Boolean,
         existBloodPressure: Boolean,
@@ -200,8 +200,8 @@ class SceneViewModel(
                     delay(1000)
                 }
                 fetchHeartRateAndSave()
+                delay(100)
             }
-            delay(100)
         }
         if (existBloodOxygen && fetchBloodOxygenAndSaveJob == null) {
             viewModelScope.launch(Dispatchers.IO) {
@@ -209,8 +209,8 @@ class SceneViewModel(
                     delay(1000)
                 }
                 fetchBloodOxygenAndSave()
+                delay(100)
             }
-            delay(100)
         }
         if (existBloodPressure && fetchBloodPressureAndSaveJob == null) {
             viewModelScope.launch(Dispatchers.IO) {
@@ -218,8 +218,8 @@ class SceneViewModel(
                     delay(1000)
                 }
                 fetchBloodPressureAndSave()
+                delay(100)
             }
-            delay(100)
         }
     }
 
