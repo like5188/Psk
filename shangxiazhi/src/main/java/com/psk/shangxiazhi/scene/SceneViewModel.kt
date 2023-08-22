@@ -75,6 +75,12 @@ class SceneViewModel(
         val gameCallback = object : GameCallback.Stub() {
             var isStart = false
 
+            private suspend fun waitStart() {
+                while (!isStart) {
+                    delay(10)
+                }
+            }
+
             override fun onLoading() {
                 Log.d(TAG, "game onLoading")
                 val curTime = System.currentTimeMillis() / 1000
@@ -98,9 +104,7 @@ class SceneViewModel(
                             Log.w(TAG, "上下肢连接成功 $it")
                             gameController.updateGameConnectionState(true)
                             viewModelScope.launch(Dispatchers.IO) {
-                                while (!isStart) {
-                                    delay(10)
-                                }
+                                waitStart()
                                 fetchShangXiaZhiAndSave(existHeart, existBloodOxygen, existBloodPressure)
                                 delay(100)
                                 //设置上下肢参数，设置好后，如果是被动模式，上下肢会自动运行
@@ -120,9 +124,7 @@ class SceneViewModel(
                             Log.w(TAG, "心电仪连接成功 $it")
                             gameController.updateEcgConnectionState(true)
                             viewModelScope.launch(Dispatchers.IO) {
-                                while (!isStart) {
-                                    delay(10)
-                                }
+                                waitStart()
                                 fetchHeartRateAndSave()
                             }
                         }
@@ -131,9 +133,7 @@ class SceneViewModel(
                             Log.w(TAG, "血氧仪连接成功 $it")
                             gameController.updateBloodOxygenConnectionState(true)
                             viewModelScope.launch(Dispatchers.IO) {
-                                while (!isStart) {
-                                    delay(10)
-                                }
+                                waitStart()
                                 fetchBloodOxygenAndSave()
                             }
                         }
@@ -142,9 +142,7 @@ class SceneViewModel(
                             Log.w(TAG, "血压仪连接成功 $it")
                             gameController.updateBloodPressureConnectionState(true)
                             viewModelScope.launch(Dispatchers.IO) {
-                                while (!isStart) {
-                                    delay(10)
-                                }
+                                waitStart()
                                 fetchBloodPressureAndSave()
                             }
                         }
