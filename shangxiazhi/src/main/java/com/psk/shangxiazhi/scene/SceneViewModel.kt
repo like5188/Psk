@@ -224,13 +224,13 @@ class SceneViewModel(
         existBloodOxygen: Boolean,
         existBloodPressure: Boolean,
     ) {
-        if (existHeart && bleManager.isConnected(DeviceType.HeartRate)) {
+        if (existHeart) {
             fetchHeartRateAndSave()
         }
-        if (existBloodOxygen && bleManager.isConnected(DeviceType.BloodOxygen)) {
+        if (existBloodOxygen) {
             fetchBloodOxygenAndSave()
         }
-        if (existBloodPressure && bleManager.isConnected(DeviceType.BloodPressure)) {
+        if (existBloodPressure) {
             fetchBloodPressureAndSave()
         }
     }
