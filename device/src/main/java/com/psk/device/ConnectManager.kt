@@ -29,7 +29,7 @@ internal class ConnectManager(private val context: Context, private val device: 
     ) {
         connectExecutor.connect(scope, autoConnectInterval, onConnected = { device, gattServiceList ->
             onConnected(this.device)
-            onTip?.invoke(Normal("连接成功：${device.name} ${device.address}"))
+            onTip?.invoke(Normal("connect 成功：${device.name} ${device.address}"))
         }) {
             when (it) {
                 is BleExceptionCancelTimeout -> {
@@ -37,11 +37,11 @@ internal class ConnectManager(private val context: Context, private val device: 
                 }
 
                 is BleExceptionBusy -> {
-                    onTip?.invoke(Error(it))
+                    onTip?.invoke(Error("connect 失败：${it.message}"))
                 }
 
                 else -> {
-                    onTip?.invoke(Error(it))
+                    onTip?.invoke(Error("connect 失败：${it.message}"))
                     onDisconnected(device)
                 }
             }
