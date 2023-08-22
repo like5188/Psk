@@ -69,7 +69,7 @@ class SceneViewModel(
     ) {
         val gameCallback = object : GameCallback.Stub() {
             override fun onLoading() {
-                Log.d(TAG, "onLoading")
+                Log.d(TAG, "game onLoading")
                 val curTime = System.currentTimeMillis() / 1000
                 deviceRepository.enableShangXiaZhi()
                 getShangXiaZhi(deviceRepository.listenLatestShangXiaZhi(curTime))
@@ -137,9 +137,14 @@ class SceneViewModel(
             }
 
             override fun onStart() {
-                Log.d(TAG, "onStart")
+                Log.d(TAG, "game onStart")
                 viewModelScope.launch(Dispatchers.IO) {
-                    startFetchAndSaveJob(existHeart, existBloodOxygen, existBloodPressure)
+                    while (!bleManager.isConnected(DeviceType.ShangXiaZhi)) {
+                        delay(200)
+                    }
+                    fetchShangXiaZhiAndSave(existHeart, existBloodOxygen, existBloodPressure)
+                    delay(100)
+                    startFetchAndSaveJobExceptShangXiaZhi(existHeart, existBloodOxygen, existBloodPressure)
                     delay(100)
                     //设置上下肢参数，设置好后，如果是被动模式，上下肢会自动运行
                     deviceRepository.setShangXiaZhiParams(passiveModule, timeInt, speedInt, spasmInt, resistanceInt, intelligent, turn2)
@@ -147,36 +152,34 @@ class SceneViewModel(
             }
 
             override fun onResume() {
-                Log.d(TAG, "onResume")
+                Log.d(TAG, "game onResume")
                 viewModelScope.launch(Dispatchers.IO) {
-                    startFetchAndSaveJob(existHeart, existBloodOxygen, existBloodPressure)
-                    delay(100)
                     deviceRepository.resumeShangXiaZhi()
+                    startFetchAndSaveJobExceptShangXiaZhi(existHeart, existBloodOxygen, existBloodPressure)
                 }
             }
 
             override fun onPause() {
-                Log.d(TAG, "onPause")
+                Log.d(TAG, "game onPause")
                 viewModelScope.launch(Dispatchers.IO) {
                     deviceRepository.pauseShangXiaZhi()
-                    delay(100)
-                    cancelFetchAndSaveJob()
+                    cancelFetchAndSaveJobExceptShangXiaZhi()
                 }
             }
 
             override fun onOver() {
-                Log.d(TAG, "onOver")
+                Log.d(TAG, "game onOver")
                 viewModelScope.launch(Dispatchers.IO) {
                     deviceRepository.overShangXiaZhi()
-                    delay(100)
-                    cancelFetchAndSaveJob()
-                    delay(100)
+                    fetchShangXiaZhiAndSaveJob?.cancel()
+                    fetchShangXiaZhiAndSaveJob = null
+                    cancelFetchAndSaveJobExceptShangXiaZhi()
                     bleManager.onDestroy()
                 }
             }
 
             override fun onFinish() {
-                Log.d(TAG, "onFinish")
+                Log.d(TAG, "game onFinish")
                 onCleared()
             }
 
@@ -186,48 +189,41 @@ class SceneViewModel(
         }
     }
 
-    private suspend fun startFetchAndSaveJob(
+    private suspend fun startFetchAndSaveJobExceptShangXiaZhi(
         existHeart: Boolean,
         existBloodOxygen: Boolean,
         existBloodPressure: Boolean,
     ) {
-        while (!bleManager.isConnected(DeviceType.ShangXiaZhi)) {
-            delay(200)
-        }
-        fetchShangXiaZhiAndSave()
-        delay(100)
-        if (existHeart) {
+        if (existHeart && fetchHeartRateAndSaveJob == null) {
             viewModelScope.launch(Dispatchers.IO) {
                 while (!bleManager.isConnected(DeviceType.HeartRate)) {
                     delay(1000)
                 }
                 fetchHeartRateAndSave()
-                delay(100)
             }
+            delay(100)
         }
-        if (existBloodOxygen) {
+        if (existBloodOxygen && fetchBloodOxygenAndSaveJob == null) {
             viewModelScope.launch(Dispatchers.IO) {
                 while (!bleManager.isConnected(DeviceType.BloodOxygen)) {
                     delay(1000)
                 }
                 fetchBloodOxygenAndSave()
-                delay(100)
             }
+            delay(100)
         }
-        if (existBloodPressure) {
+        if (existBloodPressure && fetchBloodPressureAndSaveJob == null) {
             viewModelScope.launch(Dispatchers.IO) {
                 while (!bleManager.isConnected(DeviceType.BloodPressure)) {
                     delay(1000)
                 }
                 fetchBloodPressureAndSave()
-                delay(100)
             }
+            delay(100)
         }
     }
 
-    private fun cancelFetchAndSaveJob() {
-        fetchShangXiaZhiAndSaveJob?.cancel()
-        fetchShangXiaZhiAndSaveJob = null
+    private fun cancelFetchAndSaveJobExceptShangXiaZhi() {
         fetchHeartRateAndSaveJob?.cancel()
         fetchHeartRateAndSaveJob = null
         fetchBloodOxygenAndSaveJob?.cancel()
@@ -238,8 +234,11 @@ class SceneViewModel(
 
     override fun onCleared() {
         super.onCleared()
+        Log.d(TAG, "onCleared")
         gameController.destroy()
-        cancelFetchAndSaveJob()
+        fetchShangXiaZhiAndSaveJob?.cancel()
+        fetchShangXiaZhiAndSaveJob = null
+        cancelFetchAndSaveJobExceptShangXiaZhi()
         bleManager.onDestroy()
     }
 
@@ -357,7 +356,11 @@ class SceneViewModel(
         }
     }
 
-    private fun fetchShangXiaZhiAndSave() {
+    private fun fetchShangXiaZhiAndSave(
+        existHeart: Boolean,
+        existBloodOxygen: Boolean,
+        existBloodPressure: Boolean,
+    ) {
         if (fetchShangXiaZhiAndSaveJob != null) {
             return
         }
@@ -365,16 +368,26 @@ class SceneViewModel(
             Log.d(TAG, "fetchShangXiaZhiAndSave")
             try {
                 deviceRepository.fetchShangXiaZhiAndSave(1, onStart = {
-                    fetchHeartRateAndSave()
-                    gameController.startGame()
+                    viewModelScope.launch(Dispatchers.IO) {
+                        Log.d(TAG, "game onStart by shang xia zhi")
+                        gameController.startGame()
+                        startFetchAndSaveJobExceptShangXiaZhi(existHeart, existBloodOxygen, existBloodPressure)
+                    }
                 }, onPause = {
-                    fetchHeartRateAndSaveJob?.cancel()
-                    fetchHeartRateAndSaveJob = null
-                    gameController.pauseGame()
+                    viewModelScope.launch(Dispatchers.IO) {
+                        Log.d(TAG, "game onPause by shang xia zhi")
+                        gameController.pauseGame()
+                        cancelFetchAndSaveJobExceptShangXiaZhi()
+                    }
                 }, onOver = {
-                    fetchHeartRateAndSaveJob?.cancel()
-                    fetchHeartRateAndSaveJob = null
-                    gameController.overGame()
+                    viewModelScope.launch(Dispatchers.IO) {
+                        Log.d(TAG, "game onOver by shang xia zhi")
+                        gameController.overGame()
+                        fetchShangXiaZhiAndSaveJob?.cancel()
+                        fetchShangXiaZhiAndSaveJob = null
+                        cancelFetchAndSaveJobExceptShangXiaZhi()
+                        bleManager.onDestroy()
+                    }
                 })
             } catch (e: Exception) {
             }
