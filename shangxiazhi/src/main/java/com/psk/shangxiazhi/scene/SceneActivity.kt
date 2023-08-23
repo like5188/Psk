@@ -30,31 +30,38 @@ class SceneActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mBinding.iv0.setOnClickListener {
-            // todo 选择设备
-//            startGame(TrainScene.country)
-            SelectDeviceDialogFragment.newInstance(
-                arrayOf(
-                    DeviceType.BloodOxygen,
-                    DeviceType.BloodPressure,
-                    DeviceType.HeartRate,
-                    DeviceType.ShangXiaZhi,
-                )
-            ).show(this)
+            selectDevice(true, true, true, TrainScene.country)
         }
         mBinding.iv1.setOnClickListener {
-            startGame(TrainScene.dust)
+            selectDevice(true, true, true, TrainScene.dust)
         }
         mBinding.iv2.setOnClickListener {
-            startGame(TrainScene.lasa)
+            selectDevice(true, true, true, TrainScene.lasa)
         }
         mBinding.iv3.setOnClickListener {
-            startGame(TrainScene.sea)
+            selectDevice(true, true, true, TrainScene.sea)
         }
         mViewModel.initBle(this)
     }
 
-    private fun startGame(scene: TrainScene) {
-        mViewModel.start(false, true, false, scene, resistanceInt = 1, passiveModule = true, timeInt = 2)
+    private fun selectDevice(
+        existHeart: Boolean, existBloodOxygen: Boolean, existBloodPressure: Boolean, scene: TrainScene
+    ) {
+        SelectDeviceDialogFragment.newInstance(
+            arrayOf(
+                DeviceType.ShangXiaZhi,
+                DeviceType.BloodOxygen,
+                DeviceType.BloodPressure,
+                DeviceType.HeartRate,
+            )
+        ).apply {
+            onSelected = {
+                mViewModel.start(
+                    existHeart, existBloodOxygen, existBloodPressure, scene, resistanceInt = 1, passiveModule = true, timeInt = 2
+                )
+            }
+            show(this)
+        }
     }
 
     override fun onBackPressed() {
