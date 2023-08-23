@@ -42,6 +42,9 @@ class SceneViewModel(
     private var fetchBloodPressureAndSaveJob: Job? = null
     private val decimalFormat by inject<DecimalFormat>()
     private val bleManager by inject<BleManager>()
+    private var existHeart: Boolean = false
+    private var existBloodOxygen: Boolean = false
+    private var existBloodPressure: Boolean = false
 
     /**
      * 初始化蓝牙相关的工具类
@@ -72,6 +75,10 @@ class SceneViewModel(
         intelligent: Boolean = true,
         turn2: Boolean = true
     ) {
+        this.existHeart = existHeart
+        this.existBloodOxygen = existBloodOxygen
+        this.existBloodPressure = existBloodPressure
+
         val gameCallback = object : GameCallback.Stub() {
             var isStart = false
 
@@ -105,7 +112,7 @@ class SceneViewModel(
                             gameController.updateGameConnectionState(true)
                             viewModelScope.launch(Dispatchers.IO) {
                                 waitStart()
-                                fetchShangXiaZhiAndSave(existHeart, existBloodOxygen, existBloodPressure)
+                                fetchShangXiaZhiAndSave()
                                 delay(100)
                                 //设置上下肢参数，设置好后，如果是被动模式，上下肢会自动运行
                                 deviceRepository.setShangXiaZhiParams(
@@ -193,7 +200,7 @@ class SceneViewModel(
                 Log.d(TAG, "game onResume")
                 viewModelScope.launch(Dispatchers.IO) {
                     deviceRepository.resumeShangXiaZhi()
-                    startFetchAndSaveJobExceptShangXiaZhi(existHeart, existBloodOxygen, existBloodPressure)
+                    startFetchAndSaveJobExceptShangXiaZhi()
                 }
             }
 
@@ -212,7 +219,7 @@ class SceneViewModel(
                     fetchShangXiaZhiAndSaveJob?.cancel()
                     fetchShangXiaZhiAndSaveJob = null
                     cancelFetchAndSaveJobExceptShangXiaZhi()
-                    bleManager.onDestroy()
+                    destroyBle()
                 }
             }
 
@@ -227,11 +234,23 @@ class SceneViewModel(
         }
     }
 
-    private fun startFetchAndSaveJobExceptShangXiaZhi(
-        existHeart: Boolean,
-        existBloodOxygen: Boolean,
-        existBloodPressure: Boolean,
-    ) {
+    private fun destroyBle() {
+        // 由于 bleManager.onDestroy() 方法不会触发 connect() 方法的 onDisconnected 回调，
+        // 所以只能单独调用 updateXxxConnectionState 方法更新界面状态。
+        bleManager.onDestroy()
+        gameController.updateGameConnectionState(false)
+        if (existHeart) {
+            gameController.updateEcgConnectionState(false)
+        }
+        if (existBloodOxygen) {
+            gameController.updateBloodOxygenConnectionState(false)
+        }
+        if (existBloodPressure) {
+            gameController.updateBloodPressureConnectionState(false)
+        }
+    }
+
+    private fun startFetchAndSaveJobExceptShangXiaZhi() {
         if (existHeart) {
             fetchHeartRateAndSave()
         }
@@ -258,7 +277,7 @@ class SceneViewModel(
         fetchShangXiaZhiAndSaveJob?.cancel()
         fetchShangXiaZhiAndSaveJob = null
         cancelFetchAndSaveJobExceptShangXiaZhi()
-        bleManager.onDestroy()
+        destroyBle()
         gameController.destroy()
     }
 
@@ -375,11 +394,7 @@ class SceneViewModel(
         }
     }
 
-    private fun fetchShangXiaZhiAndSave(
-        existHeart: Boolean,
-        existBloodOxygen: Boolean,
-        existBloodPressure: Boolean,
-    ) {
+    private fun fetchShangXiaZhiAndSave() {
         if (fetchShangXiaZhiAndSaveJob != null) {
             return
         }
@@ -390,7 +405,7 @@ class SceneViewModel(
                     viewModelScope.launch(Dispatchers.IO) {
                         Log.d(TAG, "game onStart by shang xia zhi")
                         gameController.startGame()
-                        startFetchAndSaveJobExceptShangXiaZhi(existHeart, existBloodOxygen, existBloodPressure)
+                        startFetchAndSaveJobExceptShangXiaZhi()
                     }
                 }, onPause = {
                     viewModelScope.launch(Dispatchers.IO) {
