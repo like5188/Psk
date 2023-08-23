@@ -82,6 +82,7 @@ class SelectDeviceDialogFragment private constructor() : BaseDialogFragment(), K
     private fun showScanDeviceDialogFragment(deviceType: DeviceType) {
         ScanDeviceDialogFragment.newInstance(deviceType).apply {
             onSelected = {
+                selectDeviceMap[deviceType] = it
                 when (deviceType) {
                     DeviceType.BloodOxygen -> {
                         mBinding.tvBloodOxygenName.text = it.name
