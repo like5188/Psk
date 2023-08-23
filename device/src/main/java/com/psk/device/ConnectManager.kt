@@ -65,24 +65,24 @@ internal class ConnectManager(private val context: Context, private val device: 
             }
         }
 
-    suspend fun write(cmd: ByteArray) {
-        try {
-            connectExecutor.writeCharacteristic(cmd, device.protocol.writeUUID, device.protocol.serviceUUID)
-        } catch (e: BleException) {
-            when (e) {
-                is BleExceptionCancelTimeout -> {
-                    // 提前取消超时(BleExceptionCancelTimeout)不做处理。因为这是调用 disconnect() 造成的，使用者可以直接在 disconnect() 方法结束后处理 UI 的显示，不需要此回调。
-                }
+    suspend fun write(cmd: ByteArray): Boolean = try {
+        connectExecutor.writeCharacteristic(cmd, device.protocol.writeUUID, device.protocol.serviceUUID)
+        true
+    } catch (e: BleException) {
+        when (e) {
+            is BleExceptionCancelTimeout -> {
+                // 提前取消超时(BleExceptionCancelTimeout)不做处理。因为这是调用 disconnect() 造成的，使用者可以直接在 disconnect() 方法结束后处理 UI 的显示，不需要此回调。
+            }
 
-                is BleExceptionBusy -> {
-                    onTip?.invoke(Error("write 失败：${e.message}"))
-                }
+            is BleExceptionBusy -> {
+                onTip?.invoke(Error("write 失败：${e.message}"))
+            }
 
-                else -> {
-                    onTip?.invoke(Error("write 失败：${e.message}"))
-                }
+            else -> {
+                onTip?.invoke(Error("write 失败：${e.message}"))
             }
         }
+        false
     }
 
     /**

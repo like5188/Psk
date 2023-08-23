@@ -99,17 +99,17 @@ class BleManager(private val context: Context) {
         return connectManager.setNotifyCallback()
     }
 
-    suspend fun write(device: Device, cmd: String) {
-        write(device, cmd.hexStringToByteArray())
+    suspend fun write(device: Device, cmd: String): Boolean {
+        return write(device, cmd.hexStringToByteArray())
     }
 
-    suspend fun write(device: Device, cmd: ByteArray) {
+    suspend fun write(device: Device, cmd: ByteArray): Boolean {
         val connectManager = connectManagers[device]
         if (connectManager == null) {
             onTip?.invoke(Error("write 未找到设备：${device.address}"))
-            return
+            return false
         }
-        connectManager.write(cmd)
+        return connectManager.write(cmd)
     }
 
     suspend fun writeAndWaitResult(device: Device, cmd: String): ByteArray? {
