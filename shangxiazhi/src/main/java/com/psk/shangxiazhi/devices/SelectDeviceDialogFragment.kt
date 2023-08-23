@@ -10,7 +10,6 @@ import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import com.like.common.base.BaseDialogFragment
 import com.like.common.util.visible
-import com.psk.common.util.showToast
 import com.psk.device.DeviceType
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.databinding.DialogFragmentSelectDeviceBinding
@@ -36,15 +35,11 @@ class SelectDeviceDialogFragment private constructor() : BaseDialogFragment(), K
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.dialog_fragment_select_device, container, true)
-        val deviceTypes = arguments?.getSerializable(KEY_DEVICE_TYPES) as? Array<DeviceType>
         mBinding.btnConfirm.setOnClickListener {
-            if (deviceTypes?.size != selectDeviceMap.size) {
-                context?.showToast("请先选择所有设备")
-                return@setOnClickListener
-            }
             onSelected?.invoke(selectDeviceMap)
             dismiss()
         }
+        val deviceTypes = arguments?.getSerializable(KEY_DEVICE_TYPES) as? Array<DeviceType>
         deviceTypes?.forEach { deviceType ->
             when (deviceType) {
                 DeviceType.BloodOxygen -> {
