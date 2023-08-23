@@ -55,7 +55,7 @@ class SceneActivity : AppCompatActivity() {
             )
         ).apply {
             onSelected = {
-                if (it.containsKey(DeviceType.ShangXiaZhi)) {
+                if (!it.containsKey(DeviceType.ShangXiaZhi)) {
                     showToast("请先选择上下肢设备")
                 } else {
                     val existHeart = it.containsKey(DeviceType.HeartRate)
