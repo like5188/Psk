@@ -16,7 +16,7 @@
 
         <LinearLayout
             android:id="@+id/llShangXiaZhi"
-            android:layout_width="420dp"
+            android:layout_width="450dp"
             android:layout_height="wrap_content"
             android:background="@drawable/setting_bg_choose"
             android:gravity="center_vertical"
@@ -49,7 +49,7 @@
 
         <LinearLayout
             android:id="@+id/llBloodOxygen"
-            android:layout_width="420dp"
+            android:layout_width="450dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:background="@drawable/setting_bg_choose"
@@ -83,7 +83,7 @@
 
         <LinearLayout
             android:id="@+id/llBloodPressure"
-            android:layout_width="420dp"
+            android:layout_width="450dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:background="@drawable/setting_bg_choose"
@@ -117,7 +117,7 @@
 
         <LinearLayout
             android:id="@+id/llHeartRate"
-            android:layout_width="420dp"
+            android:layout_width="450dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:background="@drawable/setting_bg_choose"
@@ -151,7 +151,7 @@
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnConfirm"
-            android:layout_width="420dp"
+            android:layout_width="450dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:background="@drawable/setting_bg_choose"
