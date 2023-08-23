@@ -64,14 +64,23 @@ class ScanDeviceDialogFragment private constructor() : BaseDialogFragment(), Koi
             bleManager.scan().collect {
                 val name = it.device.name
                 val address = it.device.address
+                if (address.isNullOrEmpty()) {
+                    return@collect
+                }
                 val isRightDevice = when (deviceType) {
                     DeviceType.BloodOxygen -> name?.startsWith("O2") == true
                     DeviceType.BloodPressure -> name?.startsWith("BP") == true
-                    DeviceType.HeartRate -> name?.startsWith("ER1") == true
+                    DeviceType.HeartRate -> name?.startsWith("ER1") == true ||
+                            address.replace(":", "") == name// SCI411C、SCI311W 这些心电仪的名称和地址是一样的。
                     DeviceType.ShangXiaZhi -> name?.startsWith("RKF") == true
                 }
-                if (!address.isNullOrEmpty() && isRightDevice) {
-                    mAdapter.submitList(listOf(BleScanInfo(name, address)))
+                if (isRightDevice) {
+                    val item: BleScanInfo? = mAdapter.currentList.firstOrNull { it?.address == address }
+                    if (item == null) {// 防止重复添加
+                        val newItems = mAdapter.currentList.toMutableList()
+                        newItems.add(BleScanInfo(name, address))
+                        mAdapter.submitList(newItems)
+                    }
                 }
             }
         }
