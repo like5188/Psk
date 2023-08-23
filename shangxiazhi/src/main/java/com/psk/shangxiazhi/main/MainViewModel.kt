@@ -1,5 +1,6 @@
 package com.psk.shangxiazhi.main
 
+import android.app.Activity
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -14,6 +15,7 @@ import com.psk.common.util.showToast
 import com.psk.device.DeviceType
 import com.psk.shangxiazhi.devices.SelectDeviceDialogFragment
 import com.psk.shangxiazhi.game.GameManagerService
+import com.psk.shangxiazhi.scene.SceneActivity
 import com.twsz.twsystempre.TrainScene
 
 class MainViewModel : ViewModel() {
@@ -52,36 +54,45 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    fun selectDeviceAndStartGame(activity: FragmentActivity, scene: TrainScene) {
-        SelectDeviceDialogFragment.newInstance(
-            arrayOf(
-                DeviceType.ShangXiaZhi,
-                DeviceType.BloodOxygen,
-                DeviceType.BloodPressure,
-                DeviceType.HeartRate,
-            )
-        ).apply {
-            onSelected = {
-                val shangXiaZhiDeviceAddress = it.getOrDefault(DeviceType.ShangXiaZhi, null)?.address ?: ""
-                val heartRateDeviceAddress = it.getOrDefault(DeviceType.HeartRate, null)?.address ?: ""
-                val bloodOxygenDeviceAddress = it.getOrDefault(DeviceType.BloodOxygen, null)?.address ?: ""
-                val bloodPressureDeviceAddress = it.getOrDefault(DeviceType.BloodPressure, null)?.address ?: ""
-                if (shangXiaZhiDeviceAddress.isEmpty()) {
-                    activity.showToast("请先选择上下肢设备")
-                } else {
-                    gameManagerService?.start(
-                        shangXiaZhiDeviceAddress,
-                        heartRateDeviceAddress,
-                        bloodOxygenDeviceAddress,
-                        bloodPressureDeviceAddress,
-                        scene,
-                        resistanceInt = 1,
-                        passiveModule = true,
-                        timeInt = 2
-                    )
-                }
+    /**
+     * 选择场景、设备，并启动游戏app
+     */
+    fun selectSceneAndDeviceAndStartGame(activity: FragmentActivity) {
+        SceneActivity.start(activity) {
+            if (it.resultCode != Activity.RESULT_OK) {
+                return@start
             }
-            show(activity)
+            val scene = it.data?.getSerializableExtra(SceneActivity.KEY_DATA) as? TrainScene ?: return@start
+            SelectDeviceDialogFragment.newInstance(
+                arrayOf(
+                    DeviceType.ShangXiaZhi,
+                    DeviceType.BloodOxygen,
+                    DeviceType.BloodPressure,
+                    DeviceType.HeartRate,
+                )
+            ).apply {
+                onSelected = {
+                    val shangXiaZhiDeviceAddress = it.getOrDefault(DeviceType.ShangXiaZhi, null)?.address ?: ""
+                    val heartRateDeviceAddress = it.getOrDefault(DeviceType.HeartRate, null)?.address ?: ""
+                    val bloodOxygenDeviceAddress = it.getOrDefault(DeviceType.BloodOxygen, null)?.address ?: ""
+                    val bloodPressureDeviceAddress = it.getOrDefault(DeviceType.BloodPressure, null)?.address ?: ""
+                    if (shangXiaZhiDeviceAddress.isEmpty()) {
+                        activity.showToast("请先选择上下肢设备")
+                    } else {
+                        gameManagerService?.start(
+                            shangXiaZhiDeviceAddress,
+                            heartRateDeviceAddress,
+                            bloodOxygenDeviceAddress,
+                            bloodPressureDeviceAddress,
+                            scene,
+                            resistanceInt = 1,
+                            passiveModule = true,
+                            timeInt = 2
+                        )
+                    }
+                }
+                show(activity)
+            }
         }
     }
 

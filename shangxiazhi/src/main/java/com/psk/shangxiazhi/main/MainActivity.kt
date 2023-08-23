@@ -1,6 +1,5 @@
 package com.psk.shangxiazhi.main
 
-import android.app.Activity
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -9,8 +8,6 @@ import com.psk.common.CommonApplication
 import com.psk.common.util.showToast
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.databinding.ActivityMainBinding
-import com.psk.shangxiazhi.scene.SceneActivity
-import com.twsz.twsystempre.TrainScene
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
@@ -30,14 +27,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        mViewModel.bindGameManagerService(this)
         mBinding.ivAutonomyTraining.setOnClickListener {
-            SceneActivity.start(this) {
-                if (it.resultCode != Activity.RESULT_OK) {
-                    return@start
-                }
-                val scene = it.data?.getSerializableExtra(SceneActivity.KEY_DATA) as? TrainScene ?: return@start
-                mViewModel.selectDeviceAndStartGame(this, scene)
-            }
+            mViewModel.selectSceneAndDeviceAndStartGame(this)
         }
         mBinding.ivMedicalOrderTraining.setOnClickListener {
             showToast("医嘱训练")
@@ -45,7 +37,6 @@ class MainActivity : AppCompatActivity() {
         mBinding.ivTrainingRecords.setOnClickListener {
             showToast("训练记录")
         }
-        mViewModel.bindGameManagerService(this)
     }
 
     override fun onDestroy() {

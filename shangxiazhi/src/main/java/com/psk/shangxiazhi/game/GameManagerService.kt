@@ -37,7 +37,7 @@ import org.koin.core.component.inject
 import java.text.DecimalFormat
 
 /**
- * 游戏管理服务
+ * 游戏管理服务，如果需要和游戏app进行交互，就使用此服务。
  */
 @OptIn(KoinApiExtension::class)
 class GameManagerService : Service(), KoinComponent {
