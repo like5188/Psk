@@ -1,85 +1,59 @@
 package com.psk.shangxiazhi.scene
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import com.like.common.util.startActivity
-import com.psk.common.CommonApplication
-import com.psk.common.util.showToast
-import com.psk.device.DeviceType
+import com.like.common.util.activityresultlauncher.startActivityForResult
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.databinding.ActivitySceneBinding
-import com.psk.shangxiazhi.devices.SelectDeviceDialogFragment
 import com.twsz.twsystempre.TrainScene
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
  * 选择场景界面
  */
 class SceneActivity : AppCompatActivity() {
     companion object {
-        fun start() {
-            CommonApplication.sInstance.startActivity<SceneActivity>()
+        const val KEY_DATA = "key_data"
+        fun start(
+            activity: ComponentActivity,
+            callback: ActivityResultCallback<ActivityResult>
+        ) {
+            activity.startActivityForResult<SceneActivity>(
+                callback = callback
+            )
         }
     }
 
     private val mBinding: ActivitySceneBinding by lazy {
         DataBindingUtil.setContentView(this, R.layout.activity_scene)
     }
-    private val mViewModel: SceneViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mBinding.iv0.setOnClickListener {
-            selectDeviceAndStartGame(TrainScene.country)
+            setResultAndFinish(TrainScene.country)
         }
         mBinding.iv1.setOnClickListener {
-            selectDeviceAndStartGame(TrainScene.dust)
+            setResultAndFinish(TrainScene.dust)
         }
         mBinding.iv2.setOnClickListener {
-            selectDeviceAndStartGame(TrainScene.lasa)
+            setResultAndFinish(TrainScene.lasa)
         }
         mBinding.iv3.setOnClickListener {
-            selectDeviceAndStartGame(TrainScene.sea)
-        }
-        mViewModel.initBle(this)
-    }
-
-    private fun selectDeviceAndStartGame(scene: TrainScene) {
-        SelectDeviceDialogFragment.newInstance(
-            arrayOf(
-                DeviceType.ShangXiaZhi,
-                DeviceType.BloodOxygen,
-                DeviceType.BloodPressure,
-                DeviceType.HeartRate,
-            )
-        ).apply {
-            onSelected = {
-                val shangXiaZhiDeviceAddress = it.getOrDefault(DeviceType.ShangXiaZhi, null)?.address ?: ""
-                val heartRateDeviceAddress = it.getOrDefault(DeviceType.HeartRate, null)?.address ?: ""
-                val bloodOxygenDeviceAddress = it.getOrDefault(DeviceType.BloodOxygen, null)?.address ?: ""
-                val bloodPressureDeviceAddress = it.getOrDefault(DeviceType.BloodPressure, null)?.address ?: ""
-                if (shangXiaZhiDeviceAddress.isEmpty()) {
-                    showToast("请先选择上下肢设备")
-                } else {
-                    mViewModel.start(
-                        shangXiaZhiDeviceAddress,
-                        heartRateDeviceAddress,
-                        bloodOxygenDeviceAddress,
-                        bloodPressureDeviceAddress,
-                        scene,
-                        resistanceInt = 1,
-                        passiveModule = true,
-                        timeInt = 2
-                    )
-                }
-            }
-            show(this@SceneActivity)
+            setResultAndFinish(TrainScene.sea)
         }
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
+    private fun setResultAndFinish(scene: TrainScene) {
+        val intent = Intent()
+        intent.putExtra(KEY_DATA, scene)
+        setResult(Activity.RESULT_OK, intent)
         finish()
     }
+
 }

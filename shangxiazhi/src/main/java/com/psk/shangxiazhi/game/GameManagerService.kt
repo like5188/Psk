@@ -1,9 +1,12 @@
-package com.psk.shangxiazhi.scene
+package com.psk.shangxiazhi.game
 
+import android.app.Service
+import android.content.Intent
+import android.os.Binder
+import android.os.IBinder
 import android.util.Log
 import androidx.activity.ComponentActivity
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.lifecycleScope
 import com.psk.device.BleManager
 import com.psk.device.DeviceType
 import com.psk.device.Tip
@@ -16,6 +19,7 @@ import com.twsz.twsystempre.GameCallback
 import com.twsz.twsystempre.GameController
 import com.twsz.twsystempre.GameData
 import com.twsz.twsystempre.TrainScene
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -32,19 +36,27 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.text.DecimalFormat
 
+/**
+ * 游戏管理服务
+ */
 @OptIn(KoinApiExtension::class)
-class SceneViewModel(
-    private val deviceRepository: DeviceRepository, private val gameController: GameController
-) : ViewModel(), KoinComponent {
+class GameManagerService : Service(), KoinComponent {
+    companion object {
+        private val TAG = GameManagerService::class.java.simpleName
+    }
+
+    private val deviceRepository by inject<DeviceRepository>()
+    private val gameController by inject<GameController>()
+    private val decimalFormat by inject<DecimalFormat>()
+    private val bleManager by inject<BleManager>()
     private var fetchShangXiaZhiAndSaveJob: Job? = null
     private var fetchHeartRateAndSaveJob: Job? = null
     private var fetchBloodOxygenAndSaveJob: Job? = null
     private var fetchBloodPressureAndSaveJob: Job? = null
-    private val decimalFormat by inject<DecimalFormat>()
-    private val bleManager by inject<BleManager>()
     private var existHeartRate: Boolean = false
     private var existBloodOxygen: Boolean = false
     private var existBloodPressure: Boolean = false
+    private lateinit var lifecycleScope: CoroutineScope
 
     /**
      * 初始化蓝牙相关的工具类
@@ -56,8 +68,9 @@ class SceneViewModel(
             Log.e(TAG, "onTip ${it.msg}")
         }
     ) {
+        lifecycleScope = activity.lifecycleScope
         bleManager.onTip = onTip
-        viewModelScope.launch {
+        lifecycleScope.launch {
             bleManager.init(activity)
         }
     }
@@ -109,12 +122,12 @@ class SceneViewModel(
                     deviceRepository.enableBloodPressure(bloodPressureDeviceAddress)
                     getBloodPressure(deviceRepository.listenLatestBloodPressure(curTime))
                 }
-                bleManager.connectAll(viewModelScope, 3000L, onConnected = {
+                bleManager.connectAll(lifecycleScope, 3000L, onConnected = {
                     when (it.type) {
                         DeviceType.ShangXiaZhi -> {
                             Log.w(TAG, "上下肢连接成功 $it")
                             gameController.updateGameConnectionState(true)
-                            viewModelScope.launch(Dispatchers.IO) {
+                            lifecycleScope.launch(Dispatchers.IO) {
                                 waitStart()
                                 fetchShangXiaZhiAndSave()
                                 delay(100)
@@ -134,7 +147,7 @@ class SceneViewModel(
                         DeviceType.HeartRate -> {
                             Log.w(TAG, "心电仪连接成功 $it")
                             gameController.updateEcgConnectionState(true)
-                            viewModelScope.launch(Dispatchers.IO) {
+                            lifecycleScope.launch(Dispatchers.IO) {
                                 waitStart()
                                 fetchHeartRateAndSave()
                             }
@@ -143,7 +156,7 @@ class SceneViewModel(
                         DeviceType.BloodOxygen -> {
                             Log.w(TAG, "血氧仪连接成功 $it")
                             gameController.updateBloodOxygenConnectionState(true)
-                            viewModelScope.launch(Dispatchers.IO) {
+                            lifecycleScope.launch(Dispatchers.IO) {
                                 waitStart()
                                 fetchBloodOxygenAndSave()
                             }
@@ -152,7 +165,7 @@ class SceneViewModel(
                         DeviceType.BloodPressure -> {
                             Log.w(TAG, "血压仪连接成功 $it")
                             gameController.updateBloodPressureConnectionState(true)
-                            viewModelScope.launch(Dispatchers.IO) {
+                            lifecycleScope.launch(Dispatchers.IO) {
                                 waitStart()
                                 fetchBloodPressureAndSave()
                             }
@@ -202,7 +215,7 @@ class SceneViewModel(
 
             override fun onResume() {
                 Log.d(TAG, "game onResume")
-                viewModelScope.launch(Dispatchers.IO) {
+                lifecycleScope.launch(Dispatchers.IO) {
                     deviceRepository.resumeShangXiaZhi()
                     startFetchAndSaveJobExceptShangXiaZhi()
                 }
@@ -210,7 +223,7 @@ class SceneViewModel(
 
             override fun onPause() {
                 Log.d(TAG, "game onPause")
-                viewModelScope.launch(Dispatchers.IO) {
+                lifecycleScope.launch(Dispatchers.IO) {
                     deviceRepository.pauseShangXiaZhi()
                     cancelFetchAndSaveJobExceptShangXiaZhi()
                 }
@@ -218,7 +231,7 @@ class SceneViewModel(
 
             override fun onOver() {
                 Log.d(TAG, "game onOver")
-                viewModelScope.launch(Dispatchers.IO) {
+                lifecycleScope.launch(Dispatchers.IO) {
                     deviceRepository.overShangXiaZhi()
                     fetchShangXiaZhiAndSaveJob?.cancel()
                     fetchShangXiaZhiAndSaveJob = null
@@ -229,11 +242,11 @@ class SceneViewModel(
 
             override fun onFinish() {
                 Log.d(TAG, "game onFinish")
-                onCleared()
+                onDestroy()
             }
 
         }
-        viewModelScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch(Dispatchers.IO) {
             gameController.initGame(existHeartRate, existBloodOxygen, existBloodPressure, scene, gameCallback)
         }
     }
@@ -275,9 +288,9 @@ class SceneViewModel(
         fetchBloodPressureAndSaveJob = null
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        Log.d(TAG, "onCleared")
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d(TAG, "onDestroy")
         fetchShangXiaZhiAndSaveJob?.cancel()
         fetchShangXiaZhiAndSaveJob = null
         cancelFetchAndSaveJobExceptShangXiaZhi()
@@ -286,7 +299,7 @@ class SceneViewModel(
     }
 
     private fun getShangXiaZhi(flow: Flow<ShangXiaZhi?>) {
-        viewModelScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch(Dispatchers.IO) {
             var mActiveMil = 0f// 主动里程数
             var mPassiveMil = 0f// 被动里程数
             var totalCal = 0f// 总卡路里
@@ -359,14 +372,14 @@ class SceneViewModel(
     }
 
     private fun getHeartRate(flow: Flow<HeartRate?>) {
-        viewModelScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch(Dispatchers.IO) {
             flow.filterNotNull().map {
                 it.value
             }.distinctUntilChanged().collect { value ->
                 gameController.updateHeartRateData(value)
             }
         }
-        viewModelScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch(Dispatchers.IO) {
             flow.filterNotNull().map {
                 it.coorYValues
             }.buffer(Int.MAX_VALUE).collect { coorYValues ->
@@ -383,7 +396,7 @@ class SceneViewModel(
     }
 
     private fun getBloodOxygen(flow: Flow<BloodOxygen?>) {
-        viewModelScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch(Dispatchers.IO) {
             flow.distinctUntilChanged().conflate().collect { value ->
                 gameController.updateBloodOxygenData(value?.value ?: 0)
             }
@@ -391,7 +404,7 @@ class SceneViewModel(
     }
 
     private fun getBloodPressure(flow: Flow<BloodPressure?>) {
-        viewModelScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch(Dispatchers.IO) {
             flow.distinctUntilChanged().conflate().collect { value ->
                 gameController.updateBloodPressureData(value?.sbp ?: 0, value?.dbp ?: 0)
             }
@@ -402,23 +415,23 @@ class SceneViewModel(
         if (fetchShangXiaZhiAndSaveJob != null) {
             return
         }
-        fetchShangXiaZhiAndSaveJob = viewModelScope.launch(Dispatchers.IO) {
+        fetchShangXiaZhiAndSaveJob = lifecycleScope.launch(Dispatchers.IO) {
             Log.d(TAG, "fetchShangXiaZhiAndSave")
             try {
                 deviceRepository.fetchShangXiaZhiAndSave(1, onStart = {
-                    viewModelScope.launch(Dispatchers.IO) {
+                    lifecycleScope.launch(Dispatchers.IO) {
                         Log.d(TAG, "game onStart by shang xia zhi")
                         gameController.startGame()
                         startFetchAndSaveJobExceptShangXiaZhi()
                     }
                 }, onPause = {
-                    viewModelScope.launch(Dispatchers.IO) {
+                    lifecycleScope.launch(Dispatchers.IO) {
                         Log.d(TAG, "game onPause by shang xia zhi")
                         gameController.pauseGame()
                         cancelFetchAndSaveJobExceptShangXiaZhi()
                     }
                 }, onOver = {
-                    viewModelScope.launch(Dispatchers.IO) {
+                    lifecycleScope.launch(Dispatchers.IO) {
                         Log.d(TAG, "game onOver by shang xia zhi")
                         gameController.overGame()
                         fetchShangXiaZhiAndSaveJob?.cancel()
@@ -436,7 +449,7 @@ class SceneViewModel(
         if (fetchHeartRateAndSaveJob != null) {
             return
         }
-        fetchHeartRateAndSaveJob = viewModelScope.launch(Dispatchers.IO) {
+        fetchHeartRateAndSaveJob = lifecycleScope.launch(Dispatchers.IO) {
             Log.d(TAG, "fetchHeartRateAndSave")
             try {
                 deviceRepository.fetchHeartRateAndSave(1)
@@ -449,7 +462,7 @@ class SceneViewModel(
         if (fetchBloodOxygenAndSaveJob != null) {
             return
         }
-        fetchBloodOxygenAndSaveJob = viewModelScope.launch(Dispatchers.IO) {
+        fetchBloodOxygenAndSaveJob = lifecycleScope.launch(Dispatchers.IO) {
             while (isActive) {
                 Log.d(TAG, "fetchBloodOxygenAndSave")
                 deviceRepository.fetchBloodOxygenAndSave(1)
@@ -462,7 +475,7 @@ class SceneViewModel(
         if (fetchBloodPressureAndSaveJob != null) {
             return
         }
-        fetchBloodPressureAndSaveJob = viewModelScope.launch(Dispatchers.IO) {
+        fetchBloodPressureAndSaveJob = lifecycleScope.launch(Dispatchers.IO) {
             while (isActive) {
                 Log.d(TAG, "fetchBloodPressureAndSave")
                 deviceRepository.fetchBloodPressureAndSave(1)
@@ -472,8 +485,17 @@ class SceneViewModel(
         }
     }
 
-    companion object {
-        private val TAG = SceneViewModel::class.java.simpleName
+    override fun onBind(intent: Intent?): IBinder {
+        return LocalBinder()
+    }
+
+    /**
+     * 用于本地同进程调用
+     */
+    inner class LocalBinder : Binder() {
+        fun getService(): GameManagerService {
+            return this@GameManagerService
+        }
     }
 
 }

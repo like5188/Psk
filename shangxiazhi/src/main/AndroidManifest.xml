@@ -39,7 +39,7 @@
             android:screenOrientation="landscape" />
 
         <service
-            android:name=".game.GameService"
+            android:name=".game.GameManagerService"
             android:exported="false" />
     </application>
 
