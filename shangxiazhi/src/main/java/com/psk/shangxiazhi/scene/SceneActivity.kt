@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.like.common.util.startActivity
 import com.psk.common.CommonApplication
+import com.psk.common.util.showToast
 import com.psk.device.DeviceType
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.databinding.ActivitySceneBinding
@@ -30,23 +31,21 @@ class SceneActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mBinding.iv0.setOnClickListener {
-            selectDevice(true, true, true, TrainScene.country)
+            selectDeviceAndStartGame(TrainScene.country)
         }
         mBinding.iv1.setOnClickListener {
-            selectDevice(true, true, true, TrainScene.dust)
+            selectDeviceAndStartGame(TrainScene.dust)
         }
         mBinding.iv2.setOnClickListener {
-            selectDevice(true, true, true, TrainScene.lasa)
+            selectDeviceAndStartGame(TrainScene.lasa)
         }
         mBinding.iv3.setOnClickListener {
-            selectDevice(true, true, true, TrainScene.sea)
+            selectDeviceAndStartGame(TrainScene.sea)
         }
         mViewModel.initBle(this)
     }
 
-    private fun selectDevice(
-        existHeart: Boolean, existBloodOxygen: Boolean, existBloodPressure: Boolean, scene: TrainScene
-    ) {
+    private fun selectDeviceAndStartGame(scene: TrainScene) {
         SelectDeviceDialogFragment.newInstance(
             arrayOf(
                 DeviceType.ShangXiaZhi,
@@ -56,11 +55,18 @@ class SceneActivity : AppCompatActivity() {
             )
         ).apply {
             onSelected = {
-                mViewModel.start(
-                    existHeart, existBloodOxygen, existBloodPressure, scene, resistanceInt = 1, passiveModule = true, timeInt = 2
-                )
+                if (it.isEmpty()) {
+                    showToast("请先选择设备")
+                } else {
+                    val existHeart = it.containsKey(DeviceType.HeartRate)
+                    val existBloodOxygen = it.containsKey(DeviceType.BloodOxygen)
+                    val existBloodPressure = it.containsKey(DeviceType.BloodPressure)
+                    mViewModel.start(
+                        existHeart, existBloodOxygen, existBloodPressure, scene, resistanceInt = 1, passiveModule = true, timeInt = 2
+                    )
+                }
             }
-            show(this)
+            show(this@SceneActivity)
         }
     }
 
