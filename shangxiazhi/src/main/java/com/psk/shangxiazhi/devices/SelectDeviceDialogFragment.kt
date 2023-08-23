@@ -1,6 +1,5 @@
 package com.psk.shangxiazhi.devices
 
-import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -39,7 +38,6 @@ class SelectDeviceDialogFragment private constructor() : BaseDialogFragment(), K
             onSelected?.invoke()
             dismiss()
         }
-        mBinding.root.setBackgroundColor(Color.WHITE)
         (arguments?.getSerializable(KEY_DEVICE_TYPES) as? Array<DeviceType>)?.forEach { deviceType ->
             when (deviceType) {
                 DeviceType.BloodOxygen -> {

@@ -1,7 +1,6 @@
 package com.psk.shangxiazhi.devices
 
 import android.annotation.SuppressLint
-import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -13,10 +12,10 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.like.common.base.BaseDialogFragment
 import com.like.recyclerview.layoutmanager.WrapLinearLayoutManager
-import com.psk.common.databinding.CommonFragmentRecyclerviewBinding
 import com.psk.device.BleManager
 import com.psk.device.DeviceType
 import com.psk.shangxiazhi.R
+import com.psk.shangxiazhi.databinding.DialogFragmentScanDeviceBinding
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
@@ -35,13 +34,13 @@ class ScanDeviceDialogFragment private constructor() : BaseDialogFragment(), Koi
         }
     }
 
-    private lateinit var mBinding: CommonFragmentRecyclerviewBinding
+    private lateinit var mBinding: DialogFragmentScanDeviceBinding
     private val mAdapter: ScanDeviceAdapter by lazy { ScanDeviceAdapter() }
     private val bleManager by inject<BleManager>()
     var onSelected: ((BleScanInfo) -> Unit)? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        mBinding = DataBindingUtil.inflate(inflater, R.layout.common_fragment_recyclerview, container, true)
+        mBinding = DataBindingUtil.inflate(inflater, R.layout.dialog_fragment_scan_device, container, true)
         mBinding.rv.layoutManager = WrapLinearLayoutManager(requireContext())
         mBinding.rv.adapter = mAdapter
         mAdapter.addOnItemClickListener {
@@ -49,7 +48,6 @@ class ScanDeviceDialogFragment private constructor() : BaseDialogFragment(), Koi
             onSelected?.invoke(it.binding.bleScanInfo!!)
             dismiss()
         }
-        mBinding.root.setBackgroundColor(Color.WHITE)
         return mBinding.root
     }
 
