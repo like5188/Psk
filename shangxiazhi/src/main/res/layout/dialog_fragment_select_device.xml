@@ -5,7 +5,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/black"
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
@@ -16,9 +15,10 @@
 
         <LinearLayout
             android:id="@+id/llShangXiaZhi"
-            android:layout_width="wrap_content"
+            android:layout_width="420dp"
             android:layout_height="wrap_content"
             android:background="@drawable/setting_bg_choose"
+            android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingStart="15dp"
             android:paddingTop="10dp"
@@ -36,7 +36,7 @@
 
             <TextView
                 android:id="@+id/tvShangXiaZhiName"
-                android:layout_width="300dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
                 android:hint="去选择 >"
@@ -48,10 +48,11 @@
 
         <LinearLayout
             android:id="@+id/llBloodOxygen"
-            android:layout_width="wrap_content"
+            android:layout_width="420dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:background="@drawable/setting_bg_choose"
+            android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingStart="15dp"
             android:paddingTop="10dp"
@@ -69,7 +70,7 @@
 
             <TextView
                 android:id="@+id/tvBloodOxygenName"
-                android:layout_width="300dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
                 android:hint="去选择 >"
@@ -81,10 +82,11 @@
 
         <LinearLayout
             android:id="@+id/llBloodPressure"
-            android:layout_width="wrap_content"
+            android:layout_width="420dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:background="@drawable/setting_bg_choose"
+            android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingStart="15dp"
             android:paddingTop="10dp"
@@ -102,7 +104,7 @@
 
             <TextView
                 android:id="@+id/tvBloodPressureName"
-                android:layout_width="300dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
                 android:hint="去选择 >"
@@ -114,10 +116,11 @@
 
         <LinearLayout
             android:id="@+id/llHeartRate"
-            android:layout_width="wrap_content"
+            android:layout_width="420dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:background="@drawable/setting_bg_choose"
+            android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingStart="15dp"
             android:paddingTop="10dp"
@@ -135,7 +138,7 @@
 
             <TextView
                 android:id="@+id/tvHeartRateName"
-                android:layout_width="300dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
                 android:hint="去选择 >"
@@ -144,6 +147,21 @@
                 android:textSize="28sp" />
 
         </LinearLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnConfirm"
+            android:layout_width="420dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/setting_bg_choose"
+            android:gravity="center"
+            android:paddingStart="15dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="15dp"
+            android:paddingBottom="10dp"
+            android:text="确定"
+            android:textColor="@drawable/setting_text_color_choose"
+            android:textSize="28sp" />
 
         <Space
             android:layout_width="wrap_content"

@@ -89,13 +89,11 @@ class ScanDeviceDialogFragment private constructor() : BaseDialogFragment(), Koi
         resources.displayMetrics?.widthPixels?.let {
             layoutParams.width = (it * 0.5).toInt()
         }
-        resources.displayMetrics?.heightPixels?.let {
-            layoutParams.height = (it * 0.5).toInt()
-        }
+        layoutParams.height = WindowManager.LayoutParams.MATCH_PARENT
         // 位置
-        layoutParams.gravity = Gravity.CENTER
+        layoutParams.gravity = Gravity.END
         // 透明度
-        layoutParams.dimAmount = 1f
+        layoutParams.dimAmount = 0.6f
     }
 
 }

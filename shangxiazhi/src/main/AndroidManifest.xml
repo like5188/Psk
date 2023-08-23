@@ -37,10 +37,6 @@
             android:name=".scene.SceneActivity"
             android:exported="false"
             android:screenOrientation="landscape" />
-        <activity
-            android:name=".devices.SelectDeviceActivity"
-            android:exported="false"
-            android:screenOrientation="landscape" />
     </application>
 
 </manifest>

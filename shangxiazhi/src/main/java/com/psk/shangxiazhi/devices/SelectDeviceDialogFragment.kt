@@ -1,49 +1,46 @@
 package com.psk.shangxiazhi.devices
 
+import android.graphics.Color
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.ActivityResultCallback
-import androidx.appcompat.app.AppCompatActivity
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
-import com.like.common.util.AutoWired
-import com.like.common.util.activityresultlauncher.startActivityForResult
-import com.like.common.util.injectForIntentExtras
+import com.like.common.base.BaseDialogFragment
 import com.like.common.util.visible
 import com.psk.device.DeviceType
 import com.psk.shangxiazhi.R
-import com.psk.shangxiazhi.databinding.ActivitySelectDeviceBinding
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import com.psk.shangxiazhi.databinding.DialogFragmentSelectDeviceBinding
+import org.koin.core.component.KoinApiExtension
+import org.koin.core.component.KoinComponent
 
-/**
- * 选择设备界面
- */
-class SelectDeviceActivity : AppCompatActivity() {
+@OptIn(KoinApiExtension::class)
+class SelectDeviceDialogFragment private constructor() : BaseDialogFragment(), KoinComponent {
     companion object {
-        fun start(
-            activity: ComponentActivity,
-            deviceTypes: Array<DeviceType>,
-            callback: ActivityResultCallback<ActivityResult>
-        ) {
-            activity.startActivityForResult<SelectDeviceActivity>(
-                "deviceTypes" to deviceTypes,
-                callback = callback
-            )
+        private const val KEY_DEVICE_TYPES = "key_device_types"
+        fun newInstance(deviceTypes: Array<DeviceType>): SelectDeviceDialogFragment {
+            return SelectDeviceDialogFragment().apply {
+                arguments = bundleOf(
+                    KEY_DEVICE_TYPES to deviceTypes
+                )
+            }
         }
     }
 
-    @AutoWired
-    val deviceTypes: Array<DeviceType>? = null
+    private lateinit var mBinding: DialogFragmentSelectDeviceBinding
+    var onSelected: (() -> Unit)? = null
 
-    private val mBinding: ActivitySelectDeviceBinding by lazy {
-        DataBindingUtil.setContentView(this, R.layout.activity_select_device)
-    }
-    private val mViewModel: SelectDeviceViewModel by viewModel()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        injectForIntentExtras()
-        deviceTypes?.forEach { deviceType ->
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        mBinding = DataBindingUtil.inflate(inflater, R.layout.dialog_fragment_select_device, container, true)
+        mBinding.btnConfirm.setOnClickListener {
+            onSelected?.invoke()
+            dismiss()
+        }
+        mBinding.root.setBackgroundColor(Color.WHITE)
+        (arguments?.getSerializable(KEY_DEVICE_TYPES) as? Array<DeviceType>)?.forEach { deviceType ->
             when (deviceType) {
                 DeviceType.BloodOxygen -> {
                     mBinding.llBloodOxygen.visible()
@@ -74,6 +71,7 @@ class SelectDeviceActivity : AppCompatActivity() {
                 }
             }
         }
+        return mBinding.root
     }
 
     private fun showScanDeviceDialogFragment(deviceType: DeviceType) {
@@ -97,12 +95,20 @@ class SelectDeviceActivity : AppCompatActivity() {
                     }
                 }
             }
-            show(this@SelectDeviceActivity)
+            show(this@SelectDeviceDialogFragment)
         }
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
-        finish()
+    override fun initLayoutParams(layoutParams: WindowManager.LayoutParams) {
+        // 宽高
+        resources.displayMetrics?.widthPixels?.let {
+            layoutParams.width = (it * 0.5).toInt()
+        }
+        layoutParams.height = WindowManager.LayoutParams.MATCH_PARENT
+        // 位置
+        layoutParams.gravity = Gravity.START
+        // 透明度
+        layoutParams.dimAmount = 0.6f
     }
+
 }

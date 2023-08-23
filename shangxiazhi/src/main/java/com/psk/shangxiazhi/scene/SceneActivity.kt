@@ -8,7 +8,7 @@ import com.psk.common.CommonApplication
 import com.psk.device.DeviceType
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.databinding.ActivitySceneBinding
-import com.psk.shangxiazhi.devices.SelectDeviceActivity
+import com.psk.shangxiazhi.devices.SelectDeviceDialogFragment
 import com.twsz.twsystempre.TrainScene
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -32,16 +32,14 @@ class SceneActivity : AppCompatActivity() {
         mBinding.iv0.setOnClickListener {
             // todo 选择设备
 //            startGame(TrainScene.country)
-            SelectDeviceActivity.start(
-                this, arrayOf(
+            SelectDeviceDialogFragment.newInstance(
+                arrayOf(
                     DeviceType.BloodOxygen,
                     DeviceType.BloodPressure,
                     DeviceType.HeartRate,
                     DeviceType.ShangXiaZhi,
                 )
-            ) {
-
-            }
+            ).show(this)
         }
         mBinding.iv1.setOnClickListener {
             startGame(TrainScene.dust)
