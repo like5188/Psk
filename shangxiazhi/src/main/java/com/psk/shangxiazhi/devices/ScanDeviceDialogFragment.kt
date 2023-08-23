@@ -53,19 +53,29 @@ class ScanDeviceDialogFragment private constructor() : BaseDialogFragment(), Koi
 
     override fun onResume() {
         super.onResume()
-        startScan()
+        (arguments?.getSerializable(KEY_DEVICE_TYPE) as? DeviceType)?.apply {
+            startScan(this)
+        }
     }
 
     @SuppressLint("MissingPermission")
-    private fun startScan() {
+    private fun startScan(deviceType: DeviceType) {
         lifecycleScope.launch {
             bleManager.scan()
                 .collect {
-                    val name = it.device.name ?: "N/A"
-                    val address = it.device.address ?: ""
-                    val newItems = mAdapter.currentList.toMutableList()
-                    newItems.add(BleScanInfo(name, address))
-                    mAdapter.submitList(newItems)
+                    val name = it.device.name
+                    val isRightDevice = when (deviceType) {
+                        DeviceType.BloodOxygen -> name?.startsWith("O2") == true
+                        DeviceType.BloodPressure -> name?.startsWith("BP") == true
+                        DeviceType.HeartRate -> name?.startsWith("ER1") == true
+                        DeviceType.ShangXiaZhi -> name?.startsWith("RKF") == true
+                    }
+                    if (isRightDevice) {
+                        val address = it.device.address ?: ""
+                        val newItems = mAdapter.currentList.toMutableList()
+                        newItems.add(BleScanInfo(name, address))
+                        mAdapter.submitList(newItems)
+                    }
                 }
         }
     }
