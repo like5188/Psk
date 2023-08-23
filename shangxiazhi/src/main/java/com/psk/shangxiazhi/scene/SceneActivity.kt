@@ -44,7 +44,7 @@ class SceneActivity : AppCompatActivity() {
     }
 
     private fun startGame(scene: TrainScene) {
-        mViewModel.start(false, false, false, scene, resistanceInt = 1, passiveModule = true, timeInt = 2)
+        mViewModel.start(false, true, false, scene, resistanceInt = 1, passiveModule = true, timeInt = 2)
     }
 
     override fun onBackPressed() {

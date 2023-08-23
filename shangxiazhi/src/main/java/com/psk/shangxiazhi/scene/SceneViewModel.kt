@@ -255,11 +255,11 @@ class SceneViewModel(
     override fun onCleared() {
         super.onCleared()
         Log.d(TAG, "onCleared")
-        gameController.destroy()
         fetchShangXiaZhiAndSaveJob?.cancel()
         fetchShangXiaZhiAndSaveJob = null
         cancelFetchAndSaveJobExceptShangXiaZhi()
         bleManager.onDestroy()
+        gameController.destroy()
     }
 
     private fun getShangXiaZhi(flow: Flow<ShangXiaZhi?>) {
