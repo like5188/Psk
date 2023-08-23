@@ -19,9 +19,10 @@ class O2_BloodOxygenDataSource(
             it[0] == 0x55.toByte()
         }
     ) { it.last() == BleCRC.calCRC8(it) }
-    private val device = Device("D5:92:D0:78:48:4E", protocol, DeviceType.BloodOxygen)
+    private lateinit var device: Device
 
-    override fun enable() {
+    override fun enable(address: String) {
+        device = Device(address, protocol, DeviceType.ShangXiaZhi)
         bleManager.addDevices(device)
     }
 

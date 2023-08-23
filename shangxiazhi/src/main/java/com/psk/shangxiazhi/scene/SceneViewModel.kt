@@ -42,7 +42,7 @@ class SceneViewModel(
     private var fetchBloodPressureAndSaveJob: Job? = null
     private val decimalFormat by inject<DecimalFormat>()
     private val bleManager by inject<BleManager>()
-    private var existHeart: Boolean = false
+    private var existHeartRate: Boolean = false
     private var existBloodOxygen: Boolean = false
     private var existBloodPressure: Boolean = false
 
@@ -63,9 +63,10 @@ class SceneViewModel(
     }
 
     fun start(
-        existHeart: Boolean,
-        existBloodOxygen: Boolean,
-        existBloodPressure: Boolean,
+        shangXiaZhiDeviceAddress: String,
+        heartRateDeviceAddress: String,
+        bloodOxygenDeviceAddress: String,
+        bloodPressureDeviceAddress: String,
         scene: TrainScene,
         passiveModule: Boolean = true,
         timeInt: Int = 5,
@@ -75,9 +76,12 @@ class SceneViewModel(
         intelligent: Boolean = true,
         turn2: Boolean = true
     ) {
-        this.existHeart = existHeart
-        this.existBloodOxygen = existBloodOxygen
-        this.existBloodPressure = existBloodPressure
+        if (shangXiaZhiDeviceAddress.isEmpty()) {
+            return
+        }
+        existHeartRate = heartRateDeviceAddress.isNotEmpty()
+        existBloodOxygen = bloodOxygenDeviceAddress.isNotEmpty()
+        existBloodPressure = bloodPressureDeviceAddress.isNotEmpty()
 
         val gameCallback = object : GameCallback.Stub() {
             var isStart = false
@@ -91,18 +95,18 @@ class SceneViewModel(
             override fun onLoading() {
                 Log.d(TAG, "game onLoading")
                 val curTime = System.currentTimeMillis() / 1000
-                deviceRepository.enableShangXiaZhi()
+                deviceRepository.enableShangXiaZhi(shangXiaZhiDeviceAddress)
                 getShangXiaZhi(deviceRepository.listenLatestShangXiaZhi(curTime))
-                if (existHeart) {
-                    deviceRepository.enableHeartRate()
+                if (existHeartRate) {
+                    deviceRepository.enableHeartRate(heartRateDeviceAddress)
                     getHeartRate(deviceRepository.listenLatestHeartRate(curTime))
                 }
                 if (existBloodOxygen) {
-                    deviceRepository.enableBloodOxygen()
+                    deviceRepository.enableBloodOxygen(bloodOxygenDeviceAddress)
                     getBloodOxygen(deviceRepository.listenLatestBloodOxygen(curTime))
                 }
                 if (existBloodPressure) {
-                    deviceRepository.enableBloodPressure()
+                    deviceRepository.enableBloodPressure(bloodPressureDeviceAddress)
                     getBloodPressure(deviceRepository.listenLatestBloodPressure(curTime))
                 }
                 bleManager.connectAll(viewModelScope, 3000L, onConnected = {
@@ -230,7 +234,7 @@ class SceneViewModel(
 
         }
         viewModelScope.launch(Dispatchers.IO) {
-            gameController.initGame(existHeart, existBloodOxygen, existBloodPressure, scene, gameCallback)
+            gameController.initGame(existHeartRate, existBloodOxygen, existBloodPressure, scene, gameCallback)
         }
     }
 
@@ -239,7 +243,7 @@ class SceneViewModel(
         // 所以只能单独调用 updateXxxConnectionState 方法更新界面状态。
         bleManager.onDestroy()
         gameController.updateGameConnectionState(false)
-        if (existHeart) {
+        if (existHeartRate) {
             gameController.updateEcgConnectionState(false)
         }
         if (existBloodOxygen) {
@@ -251,7 +255,7 @@ class SceneViewModel(
     }
 
     private fun startFetchAndSaveJobExceptShangXiaZhi() {
-        if (existHeart) {
+        if (existHeartRate) {
             fetchHeartRateAndSave()
         }
         if (existBloodOxygen) {

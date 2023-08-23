@@ -4,5 +4,5 @@ interface IRemoteDeviceDataSource {
     /**
      * 启用该设备
      */
-    fun enable()
+    fun enable(address: String)
 }

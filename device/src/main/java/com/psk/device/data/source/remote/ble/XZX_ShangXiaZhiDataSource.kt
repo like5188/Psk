@@ -21,7 +21,7 @@ class XZX_ShangXiaZhiDataSource(
         "0000ffe2-0000-1000-8000-00805f9b34fb",
         "0000ffe3-0000-1000-8000-00805f9b34fb",
     )
-    private val device = Device("00:1B:10:3A:01:2C", protocol, DeviceType.ShangXiaZhi)
+    private lateinit var device: Device
     private val shangXiaZhiDataParser by lazy {
         ShangXiaZhiDataParser()
     }
@@ -35,7 +35,8 @@ class XZX_ShangXiaZhiDataSource(
     // 上下肢结束时回调
     var onOver: (() -> Unit)? = null
 
-    override fun enable() {
+    override fun enable(address: String) {
+        device = Device(address, protocol, DeviceType.ShangXiaZhi)
         bleManager.addDevices(device)
     }
 

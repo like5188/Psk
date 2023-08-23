@@ -18,9 +18,10 @@ class BP_BloodPressureDataSource(
             it[0] == 0xAA.toByte()
         }
     ) { it.size == 20 }
-    private val device = Device("A4:C1:38:51:12:F2", protocol, DeviceType.BloodPressure)
+    private lateinit var device: Device
 
-    override fun enable() {
+    override fun enable(address: String) {
+        device = Device(address, protocol, DeviceType.ShangXiaZhi)
         bleManager.addDevices(device)
     }
 

@@ -55,14 +55,22 @@ class SceneActivity : AppCompatActivity() {
             )
         ).apply {
             onSelected = {
-                if (!it.containsKey(DeviceType.ShangXiaZhi)) {
+                val shangXiaZhiDeviceAddress = it.getOrDefault(DeviceType.ShangXiaZhi, null)?.address ?: ""
+                val heartRateDeviceAddress = it.getOrDefault(DeviceType.HeartRate, null)?.address ?: ""
+                val bloodOxygenDeviceAddress = it.getOrDefault(DeviceType.BloodOxygen, null)?.address ?: ""
+                val bloodPressureDeviceAddress = it.getOrDefault(DeviceType.BloodPressure, null)?.address ?: ""
+                if (shangXiaZhiDeviceAddress.isEmpty()) {
                     showToast("请先选择上下肢设备")
                 } else {
-                    val existHeart = it.containsKey(DeviceType.HeartRate)
-                    val existBloodOxygen = it.containsKey(DeviceType.BloodOxygen)
-                    val existBloodPressure = it.containsKey(DeviceType.BloodPressure)
                     mViewModel.start(
-                        existHeart, existBloodOxygen, existBloodPressure, scene, resistanceInt = 1, passiveModule = true, timeInt = 2
+                        shangXiaZhiDeviceAddress,
+                        heartRateDeviceAddress,
+                        bloodOxygenDeviceAddress,
+                        bloodPressureDeviceAddress,
+                        scene,
+                        resistanceInt = 1,
+                        passiveModule = true,
+                        timeInt = 2
                     )
                 }
             }

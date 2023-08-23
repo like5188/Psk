@@ -26,20 +26,20 @@ class DeviceRepository(
     private val shangXiaZhiDataSource: IShangXiaZhiDataSource,
 ) {
 
-    fun enableBloodOxygen() {
-        bloodOxygenDataSource.enable()
+    fun enableBloodOxygen(address: String) {
+        bloodOxygenDataSource.enable(address)
     }
 
-    fun enableBloodPressure() {
-        bloodPressureDataSource.enable()
+    fun enableBloodPressure(address: String) {
+        bloodPressureDataSource.enable(address)
     }
 
-    fun enableHeartRate() {
-        heartRateDataSource.enable()
+    fun enableHeartRate(address: String) {
+        heartRateDataSource.enable(address)
     }
 
-    fun enableShangXiaZhi() {
-        shangXiaZhiDataSource.enable()
+    fun enableShangXiaZhi(address: String) {
+        shangXiaZhiDataSource.enable(address)
     }
 
     fun listenLatestBloodOxygen(startTime: Long): Flow<BloodOxygen> {

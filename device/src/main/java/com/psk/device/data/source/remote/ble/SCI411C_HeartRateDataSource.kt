@@ -47,9 +47,10 @@ class SCI411C_HeartRateDataSource(
         "00000003-0000-1000-8000-00805f9b34fb",
         "00000002-0000-1000-8000-00805f9b34fb",
     )
-    private val device = Device("C0:02:28:00:06:95", protocol, DeviceType.HeartRate)
+    private lateinit var device: Device
 
-    override fun enable() {
+    override fun enable(address: String) {
+        device = Device(address, protocol, DeviceType.ShangXiaZhi)
         bleManager.addDevices(device)
     }
 
