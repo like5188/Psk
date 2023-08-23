@@ -1,6 +1,7 @@
 package com.psk.device
 
 import com.like.ble.util.toUUID
+import java.io.Serializable
 import java.util.UUID
 
 /**
@@ -61,6 +62,6 @@ data class Protocol(
 /**
  * 设备类型
  */
-enum class DeviceType {
+enum class DeviceType : Serializable {
     BloodOxygen, BloodPressure, HeartRate, ShangXiaZhi
 }

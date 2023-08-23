@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <LinearLayout
+            android:id="@+id/llShangXiaZhi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/setting_bg_choose"
+            android:orientation="horizontal"
+            android:paddingStart="15dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="15dp"
+            android:paddingBottom="10dp"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="上下肢:"
+                android:textColor="@drawable/setting_text_color_choose"
+                android:textSize="28sp" />
+
+            <TextView
+                android:id="@+id/tvShangXiaZhiName"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:hint="去选择 >"
+                android:textColor="@drawable/setting_text_color_choose"
+                android:textColorHint="@drawable/setting_text_color_choose"
+                android:textSize="28sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llBloodOxygen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/setting_bg_choose"
+            android:orientation="horizontal"
+            android:paddingStart="15dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="15dp"
+            android:paddingBottom="10dp"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="血氧仪:"
+                android:textColor="@drawable/setting_text_color_choose"
+                android:textSize="28sp" />
+
+            <TextView
+                android:id="@+id/tvBloodOxygenName"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:hint="去选择 >"
+                android:textColor="@drawable/setting_text_color_choose"
+                android:textColorHint="@drawable/setting_text_color_choose"
+                android:textSize="28sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llBloodPressure"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/setting_bg_choose"
+            android:orientation="horizontal"
+            android:paddingStart="15dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="15dp"
+            android:paddingBottom="10dp"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="血压仪:"
+                android:textColor="@drawable/setting_text_color_choose"
+                android:textSize="28sp" />
+
+            <TextView
+                android:id="@+id/tvBloodPressureName"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:hint="去选择 >"
+                android:textColor="@drawable/setting_text_color_choose"
+                android:textColorHint="@drawable/setting_text_color_choose"
+                android:textSize="28sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llHeartRate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/setting_bg_choose"
+            android:orientation="horizontal"
+            android:paddingStart="15dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="15dp"
+            android:paddingBottom="10dp"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="心电仪:"
+                android:textColor="@drawable/setting_text_color_choose"
+                android:textSize="28sp" />
+
+            <TextView
+                android:id="@+id/tvHeartRateName"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:hint="去选择 >"
+                android:textColor="@drawable/setting_text_color_choose"
+                android:textColorHint="@drawable/setting_text_color_choose"
+                android:textSize="28sp" />
+
+        </LinearLayout>
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+    </LinearLayout>
+</layout>
