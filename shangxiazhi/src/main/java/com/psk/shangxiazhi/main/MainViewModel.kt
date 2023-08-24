@@ -11,13 +11,18 @@ import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.like.common.util.SPUtils
 import com.psk.common.util.SecondCountDownTimer
 import com.psk.common.util.showToast
 import com.psk.device.DeviceType
+import com.psk.shangxiazhi.data.model.Login
 import com.psk.shangxiazhi.data.source.ShangXiaZhiRepository
 import com.psk.shangxiazhi.devices.SelectDeviceDialogFragment
 import com.psk.shangxiazhi.game.GameManagerService
 import com.psk.shangxiazhi.scene.SceneActivity
+import com.psk.shangxiazhi.util.SP_LOGIN
 import com.twsz.twsystempre.TrainScene
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -38,6 +43,7 @@ class MainViewModel(
     private lateinit var activity: ComponentActivity
     private var gameManagerService: GameManagerService? = null
     private val sdf: SimpleDateFormat by inject(named("yyyy-MM-dd HH:mm:ss"))
+    private val gson: Gson by inject()
     private val countDownTimer by lazy {
         object : SecondCountDownTimer(Int.MAX_VALUE.toLong(), 1) {
             override fun onSecondsTick(secondsUntilFinished: Long) {
@@ -57,8 +63,17 @@ class MainViewModel(
         countDownTimer.start()
     }
 
-    suspend fun getUser(patientToken: String?): String? {
-        return shangXiaZhiRepository.getUser(patientToken)
+    suspend fun getUser(): String? {
+        val loginJsonString = SPUtils.getInstance().get<String?>(SP_LOGIN, null)
+        if (loginJsonString.isNullOrEmpty()) {
+            return null
+        }
+        val login = try {
+            gson.fromJson<Login?>(loginJsonString, object : TypeToken<Login>() {}.type)
+        } catch (e: Exception) {
+            null
+        } ?: return null
+        return shangXiaZhiRepository.getUser(login.patient_token)
     }
 
     override fun onCleared() {
