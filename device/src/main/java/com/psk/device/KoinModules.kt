@@ -57,7 +57,7 @@ val deviceModule = module {
     factory<IHeartRateDataSource>(named("SCI411C")) {
         SCI411C_HeartRateDataSource(get())
     }
-    factory<IShangXiaZhiDataSource>(named("XZX")) {
+    factory<IShangXiaZhiDataSource>(named("RKF")) {
         RKF_ShangXiaZhiDataSource(get())
     }
 
@@ -71,7 +71,7 @@ val deviceModule = module {
             get(named("O2")),
             get(named("BP")),
             get(named("SCI311W")),
-            get(named("XZX")),
+            get(named("RKF")),
         )
     }
 
