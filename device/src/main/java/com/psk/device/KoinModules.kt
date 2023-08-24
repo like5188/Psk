@@ -14,9 +14,9 @@ import com.psk.device.data.source.remote.IShangXiaZhiDataSource
 import com.psk.device.data.source.remote.ble.BP_BloodPressureDataSource
 import com.psk.device.data.source.remote.ble.ER1_HeartRateDataSource
 import com.psk.device.data.source.remote.ble.O2_BloodOxygenDataSource
+import com.psk.device.data.source.remote.ble.RKF_ShangXiaZhiDataSource
 import com.psk.device.data.source.remote.ble.SCI311W_HeartRateDataSource
 import com.psk.device.data.source.remote.ble.SCI411C_HeartRateDataSource
-import com.psk.device.data.source.remote.ble.RKF_ShangXiaZhiDataSource
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
@@ -68,10 +68,6 @@ val deviceModule = module {
             get(),
             get(),
             get(),
-            get(named("O2")),
-            get(named("BP")),
-            get(named("SCI311W")),
-            get(named("RKF")),
         )
     }
 

@@ -14,32 +14,69 @@ import com.psk.device.data.source.remote.IHeartRateDataSource
 import com.psk.device.data.source.remote.IShangXiaZhiDataSource
 import com.psk.device.data.source.remote.ble.RKF_ShangXiaZhiDataSource
 import kotlinx.coroutines.flow.Flow
+import org.koin.core.component.KoinApiExtension
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
+import org.koin.core.qualifier.named
 
+@OptIn(KoinApiExtension::class)
 class DeviceRepository(
     private val bloodOxygenDbDataSource: BloodOxygenDbDataSource,
     private val bloodPressureDbDataSource: BloodPressureDbDataSource,
     private val heartRateDbDataSource: HeartRateDbDataSource,
     private val shangXiaZhiDbDataSource: ShangXiaZhiDbDataSource,
-    private val bloodOxygenDataSource: IBloodOxygenDataSource,
-    private val bloodPressureDataSource: IBloodPressureDataSource,
-    private val heartRateDataSource: IHeartRateDataSource,
-    private val shangXiaZhiDataSource: IShangXiaZhiDataSource,
-) {
+) : KoinComponent {
+    private var bloodOxygenDataSource: IBloodOxygenDataSource? = null
+    private var bloodPressureDataSource: IBloodPressureDataSource? = null
+    private var heartRateDataSource: IHeartRateDataSource? = null
+    private var shangXiaZhiDataSource: IShangXiaZhiDataSource? = null
 
-    fun enableBloodOxygen(address: String) {
-        bloodOxygenDataSource.enable(address)
+    fun enableBloodOxygen(name: String, address: String) {
+        bloodOxygenDataSource = when {
+            name.startsWith("O2") -> {
+                this.get(named("O2"))
+            }
+
+            else -> null
+        }
+        bloodOxygenDataSource?.enable(address)
     }
 
-    fun enableBloodPressure(address: String) {
-        bloodPressureDataSource.enable(address)
+    fun enableBloodPressure(name: String, address: String) {
+        bloodPressureDataSource = when {
+            name.startsWith("BP") -> {
+                this.get(named("BP"))
+            }
+
+            else -> null
+        }
+        bloodPressureDataSource?.enable(address)
     }
 
-    fun enableHeartRate(address: String) {
-        heartRateDataSource.enable(address)
+    fun enableHeartRate(name: String, address: String) {
+        heartRateDataSource = when {
+            name.startsWith("ER1") -> {
+                this.get(named("ER1"))
+            }
+
+            name.startsWith("A00219") -> {
+                this.get(named("SCI311W"))
+            }
+
+            else -> null
+        }
+        heartRateDataSource?.enable(address)
     }
 
-    fun enableShangXiaZhi(address: String) {
-        shangXiaZhiDataSource.enable(address)
+    fun enableShangXiaZhi(name: String, address: String) {
+        shangXiaZhiDataSource = when {
+            name.startsWith("RKF") -> {
+                this.get(named("RKF"))
+            }
+
+            else -> null
+        }
+        shangXiaZhiDataSource?.enable(address)
     }
 
     fun listenLatestBloodOxygen(startTime: Long): Flow<BloodOxygen> {
@@ -75,19 +112,19 @@ class DeviceRepository(
     }
 
     suspend fun fetchBloodOxygenAndSave(medicalOrderId: Long) {
-        bloodOxygenDataSource.fetch(medicalOrderId)?.apply {
+        bloodOxygenDataSource?.fetch(medicalOrderId)?.apply {
             bloodOxygenDbDataSource.save(this)
         }
     }
 
     suspend fun fetchBloodPressureAndSave(medicalOrderId: Long) {
-        bloodPressureDataSource.fetch(medicalOrderId)?.apply {
+        bloodPressureDataSource?.fetch(medicalOrderId)?.apply {
             bloodPressureDbDataSource.save(this)
         }
     }
 
     suspend fun fetchHeartRateAndSave(medicalOrderId: Long) {
-        heartRateDataSource.fetch(medicalOrderId).collect {
+        heartRateDataSource?.fetch(medicalOrderId)?.collect {
             heartRateDbDataSource.save(it)
         }
     }
@@ -95,26 +132,26 @@ class DeviceRepository(
     suspend fun fetchShangXiaZhiAndSave(
         medicalOrderId: Long, onStart: (() -> Unit)? = null, onPause: (() -> Unit)? = null, onOver: (() -> Unit)? = null
     ) {
-        if (shangXiaZhiDataSource is RKF_ShangXiaZhiDataSource) {
-            shangXiaZhiDataSource.onStart = onStart
-            shangXiaZhiDataSource.onPause = onPause
-            shangXiaZhiDataSource.onOver = onOver
+        (shangXiaZhiDataSource as? RKF_ShangXiaZhiDataSource)?.apply {
+            this.onStart = onStart
+            this.onPause = onPause
+            this.onOver = onOver
         }
-        shangXiaZhiDataSource.fetch(medicalOrderId).collect {
+        shangXiaZhiDataSource?.fetch(medicalOrderId)?.collect {
             shangXiaZhiDbDataSource.save(it)
         }
     }
 
     suspend fun resumeShangXiaZhi() {
-        shangXiaZhiDataSource.resume()
+        shangXiaZhiDataSource?.resume()
     }
 
     suspend fun pauseShangXiaZhi() {
-        shangXiaZhiDataSource.pause()
+        shangXiaZhiDataSource?.pause()
     }
 
     suspend fun overShangXiaZhi() {
-        shangXiaZhiDataSource.over()
+        shangXiaZhiDataSource?.over()
     }
 
     /**
@@ -129,7 +166,7 @@ class DeviceRepository(
     suspend fun setShangXiaZhiParams(
         passiveModule: Boolean, timeInt: Int, speedInt: Int, spasmInt: Int, resistanceInt: Int, intelligent: Boolean, turn2: Boolean
     ) {
-        shangXiaZhiDataSource.setParams(passiveModule, timeInt, speedInt, spasmInt, resistanceInt, intelligent, turn2)
+        shangXiaZhiDataSource?.setParams(passiveModule, timeInt, speedInt, spasmInt, resistanceInt, intelligent, turn2)
     }
 
 }

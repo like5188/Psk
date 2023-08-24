@@ -15,6 +15,7 @@ import com.psk.device.data.model.BloodPressure
 import com.psk.device.data.model.HeartRate
 import com.psk.device.data.model.ShangXiaZhi
 import com.psk.device.data.source.DeviceRepository
+import com.psk.shangxiazhi.devices.BleScanInfo
 import com.twsz.twsystempre.GameCallback
 import com.twsz.twsystempre.GameController
 import com.twsz.twsystempre.GameData
@@ -76,10 +77,7 @@ class GameManagerService : Service(), KoinComponent {
     }
 
     fun start(
-        shangXiaZhiDeviceAddress: String,
-        heartRateDeviceAddress: String,
-        bloodOxygenDeviceAddress: String,
-        bloodPressureDeviceAddress: String,
+        devices: Map<DeviceType, BleScanInfo>,
         scene: TrainScene,
         passiveModule: Boolean = true,
         timeInt: Int = 5,
@@ -89,12 +87,9 @@ class GameManagerService : Service(), KoinComponent {
         intelligent: Boolean = true,
         turn2: Boolean = true
     ) {
-        if (shangXiaZhiDeviceAddress.isEmpty()) {
-            return
-        }
-        existHeartRate = heartRateDeviceAddress.isNotEmpty()
-        existBloodOxygen = bloodOxygenDeviceAddress.isNotEmpty()
-        existBloodPressure = bloodPressureDeviceAddress.isNotEmpty()
+        existHeartRate = devices.containsKey(DeviceType.HeartRate)
+        existBloodOxygen = devices.containsKey(DeviceType.BloodOxygen)
+        existBloodPressure = devices.containsKey(DeviceType.BloodPressure)
 
         val gameCallback = object : GameCallback.Stub() {
             var isStart = false
@@ -108,18 +103,20 @@ class GameManagerService : Service(), KoinComponent {
             override fun onLoading() {
                 Log.d(TAG, "game onLoading")
                 val curTime = System.currentTimeMillis() / 1000
-                deviceRepository.enableShangXiaZhi(shangXiaZhiDeviceAddress)
-                getShangXiaZhi(deviceRepository.listenLatestShangXiaZhi(curTime))
-                if (existHeartRate) {
-                    deviceRepository.enableHeartRate(heartRateDeviceAddress)
+                devices.getOrDefault(DeviceType.ShangXiaZhi, null)?.apply {
+                    deviceRepository.enableShangXiaZhi(this.name, this.address)
+                    getShangXiaZhi(deviceRepository.listenLatestShangXiaZhi(curTime))
+                }
+                devices.getOrDefault(DeviceType.HeartRate, null)?.apply {
+                    deviceRepository.enableHeartRate(this.name, this.address)
                     getHeartRate(deviceRepository.listenLatestHeartRate(curTime))
                 }
-                if (existBloodOxygen) {
-                    deviceRepository.enableBloodOxygen(bloodOxygenDeviceAddress)
+                devices.getOrDefault(DeviceType.BloodOxygen, null)?.apply {
+                    deviceRepository.enableBloodOxygen(this.name, this.address)
                     getBloodOxygen(deviceRepository.listenLatestBloodOxygen(curTime))
                 }
-                if (existBloodPressure) {
-                    deviceRepository.enableBloodPressure(bloodPressureDeviceAddress)
+                devices.getOrDefault(DeviceType.BloodPressure, null)?.apply {
+                    deviceRepository.enableBloodPressure(this.name, this.address)
                     getBloodPressure(deviceRepository.listenLatestBloodPressure(curTime))
                 }
                 bleManager.connectAll(lifecycleScope, 3000L, onConnected = {

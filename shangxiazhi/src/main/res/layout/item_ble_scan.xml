@@ -17,32 +17,29 @@
         android:background="@drawable/setting_bg_choose"
         android:clickable="true"
         android:focusable="true"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingLeft="15dp"
+        android:paddingTop="10dp"
+        android:paddingRight="15dp"
+        android:paddingBottom="10dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingLeft="15dp"
-            android:paddingTop="10dp"
-            android:paddingRight="15dp"
-            android:paddingBottom="10dp"
             android:text="@{bleScanInfo.name}"
             android:textColor="@drawable/setting_text_color_choose"
-            android:textSize="24sp"
+            android:textSize="20sp"
             android:textStyle="bold"
             tools:text="SJZG-TEST" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
             android:gravity="end"
-            android:paddingLeft="15dp"
-            android:paddingTop="10dp"
-            android:paddingRight="15dp"
-            android:paddingBottom="10dp"
             android:text="@{bleScanInfo.address}"
             android:textColor="@drawable/setting_text_color_choose"
-            android:textSize="24sp"
+            android:textSize="20sp"
             android:textStyle="bold"
             tools:text="SJZG-TEST" />
     </LinearLayout>

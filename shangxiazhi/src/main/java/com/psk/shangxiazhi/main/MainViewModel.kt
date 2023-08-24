@@ -72,23 +72,10 @@ class MainViewModel : ViewModel() {
                 )
             ).apply {
                 onSelected = {
-                    val shangXiaZhiDeviceAddress = it.getOrDefault(DeviceType.ShangXiaZhi, null)?.address ?: ""
-                    val heartRateDeviceAddress = it.getOrDefault(DeviceType.HeartRate, null)?.address ?: ""
-                    val bloodOxygenDeviceAddress = it.getOrDefault(DeviceType.BloodOxygen, null)?.address ?: ""
-                    val bloodPressureDeviceAddress = it.getOrDefault(DeviceType.BloodPressure, null)?.address ?: ""
-                    if (shangXiaZhiDeviceAddress.isEmpty()) {
+                    if (!it.containsKey(DeviceType.ShangXiaZhi)) {
                         activity.showToast("请先选择上下肢设备")
                     } else {
-                        gameManagerService?.start(
-                            shangXiaZhiDeviceAddress,
-                            heartRateDeviceAddress,
-                            bloodOxygenDeviceAddress,
-                            bloodPressureDeviceAddress,
-                            scene,
-                            resistanceInt = 1,
-                            passiveModule = true,
-                            timeInt = 2
-                        )
+                        gameManagerService?.start(it, scene, resistanceInt = 1, passiveModule = true, timeInt = 2)
                     }
                 }
                 show(activity)
