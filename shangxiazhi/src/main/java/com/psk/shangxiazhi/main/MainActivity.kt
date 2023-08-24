@@ -1,5 +1,6 @@
 package com.psk.shangxiazhi.main
 
+import android.app.Activity
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -7,11 +8,14 @@ import androidx.lifecycle.lifecycleScope
 import com.like.common.util.mvi.propertyCollector
 import com.like.common.util.startActivity
 import com.psk.common.CommonApplication
-import com.psk.common.customview.ProgressDialog
 import com.psk.common.util.showToast
+import com.psk.device.DeviceType
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.databinding.ActivityMainBinding
+import com.psk.shangxiazhi.devices.SelectDeviceDialogFragment
+import com.psk.shangxiazhi.scene.SceneActivity
 import com.psk.shangxiazhi.setting.SettingActivity
+import com.twsz.twsystempre.TrainScene
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -29,15 +33,12 @@ class MainActivity : AppCompatActivity() {
         DataBindingUtil.setContentView(this, R.layout.activity_main)
     }
     private val mViewModel: MainViewModel by viewModel()
-    private val mProgressDialog by lazy {
-        ProgressDialog(this)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mViewModel.bindGameManagerService(this)
         mBinding.ivAutonomyTraining.setOnClickListener {
-            mViewModel.selectSceneAndDeviceAndStartGame(this)
+            selectSceneAndDeviceAndStartGame()
         }
         mBinding.ivMedicalOrderTraining.setOnClickListener {
 
@@ -60,6 +61,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun collectUiState() {
         mViewModel.uiState.propertyCollector(this) {
+            collectDistinctProperty(MainUiState::gameManagerService) {
+                it ?: return@collectDistinctProperty
+                it.initBle(this@MainActivity)
+            }
             collectDistinctProperty(MainUiState::time) {
                 mBinding.tvTime.text = it
             }
@@ -68,6 +73,35 @@ class MainActivity : AppCompatActivity() {
             }
             collectEventProperty(MainUiState::toastEvent) {
                 showToast(it)
+            }
+        }
+    }
+
+    /**
+     * 选择场景、设备，并启动游戏app
+     */
+    private fun selectSceneAndDeviceAndStartGame() {
+        SceneActivity.start(this) {
+            if (it.resultCode != Activity.RESULT_OK) {
+                return@start
+            }
+            val scene = it.data?.getSerializableExtra(SceneActivity.KEY_DATA) as? TrainScene ?: return@start
+            SelectDeviceDialogFragment.newInstance(
+                arrayOf(
+                    DeviceType.ShangXiaZhi,
+                    DeviceType.BloodOxygen,
+                    DeviceType.BloodPressure,
+                    DeviceType.HeartRate,
+                )
+            ).apply {
+                onSelected = {
+                    if (!it.containsKey(DeviceType.ShangXiaZhi)) {
+                        showToast("请先选择上下肢设备")
+                    } else {
+                        mViewModel.uiState.value.gameManagerService?.start(it, scene, resistanceInt = 1, passiveModule = true, timeInt = 2)
+                    }
+                }
+                show(this@MainActivity)
             }
         }
     }
