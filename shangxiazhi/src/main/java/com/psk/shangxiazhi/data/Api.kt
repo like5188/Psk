@@ -1,6 +1,7 @@
 package com.psk.shangxiazhi.data
 
 import com.google.gson.JsonObject
+import com.psk.shangxiazhi.data.model.GetUserResult
 import com.psk.shangxiazhi.data.model.LoginResult
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -16,6 +17,6 @@ interface Api {
     suspend fun login(@Body params: JsonObject?): LoginResult?
 
     @GET("pad/patient/user/getUser")
-    suspend fun getUser(@Header("patient_token") patientToken: String): String?
+    suspend fun getUser(@Header("patient_token") patientToken: String): GetUserResult?
 
 }

@@ -8,7 +8,6 @@ import com.like.common.util.mvi.propertyCollector
 import com.like.common.util.startActivity
 import com.psk.common.CommonApplication
 import com.psk.common.customview.ProgressDialog
-import com.psk.common.util.DataHandler
 import com.psk.common.util.showToast
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.databinding.ActivityMainBinding
@@ -41,15 +40,7 @@ class MainActivity : AppCompatActivity() {
             mViewModel.selectSceneAndDeviceAndStartGame(this)
         }
         mBinding.ivMedicalOrderTraining.setOnClickListener {
-            lifecycleScope.launch {
-                DataHandler.collectWithProgress(mProgressDialog, block = {
-                    mViewModel.getUser()
-                }, onError = {
-                    showToast("获取用户信息失败")
-                }) {
-                    println(it)
-                }
-            }
+
         }
         mBinding.ivTrainingRecords.setOnClickListener {
             showToast("训练记录")
@@ -58,12 +49,25 @@ class MainActivity : AppCompatActivity() {
             SettingActivity.start()
         }
         collectUiState()
+        getUser()
+    }
+
+    private fun getUser() {
+        lifecycleScope.launch {
+            mViewModel.getUser(this@MainActivity)
+        }
     }
 
     private fun collectUiState() {
         mViewModel.uiState.propertyCollector(this) {
             collectDistinctProperty(MainUiState::time) {
                 mBinding.tvTime.text = it
+            }
+            collectDistinctProperty(MainUiState::userName) {
+                mBinding.tvUser.text = "欢迎：$it"
+            }
+            collectEventProperty(MainUiState::toastEvent) {
+                showToast(it)
             }
         }
     }

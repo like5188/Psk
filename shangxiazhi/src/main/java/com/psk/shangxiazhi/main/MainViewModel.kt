@@ -14,7 +14,10 @@ import androidx.lifecycle.ViewModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.like.common.util.SPUtils
+import com.like.common.util.mvi.Event
+import com.psk.common.util.DataHandler
 import com.psk.common.util.SecondCountDownTimer
+import com.psk.common.util.ToastEvent
 import com.psk.common.util.showToast
 import com.psk.device.DeviceType
 import com.psk.shangxiazhi.data.model.Login
@@ -63,17 +66,45 @@ class MainViewModel(
         countDownTimer.start()
     }
 
-    suspend fun getUser(): String? {
+    suspend fun getUser(context: Context) {
         val loginJsonString = SPUtils.getInstance().get<String?>(SP_LOGIN, null)
         if (loginJsonString.isNullOrEmpty()) {
-            return null
+            _uiState.update {
+                it.copy(toastEvent = Event(ToastEvent(text = "获取token失败")))
+            }
+            return
         }
         val login = try {
             gson.fromJson<Login?>(loginJsonString, object : TypeToken<Login>() {}.type)
         } catch (e: Exception) {
             null
-        } ?: return null
-        return shangXiaZhiRepository.getUser(login.patient_token)
+        }
+        if (login == null) {
+            _uiState.update {
+                it.copy(toastEvent = Event(ToastEvent(text = "获取token失败")))
+            }
+            return
+        }
+
+        DataHandler.collect(context, block = {
+            shangXiaZhiRepository.getUser(login.patient_token)
+        }, onError = {
+            _uiState.update {
+                it.copy(toastEvent = Event(ToastEvent(text = "获取用户信息失败")))
+            }
+        }) { getUserResult ->
+            if (getUserResult?.code == 0) {
+                _uiState.update {
+                    it.copy(
+                        userName = getUserResult.user.name
+                    )
+                }
+            } else {
+                _uiState.update {
+                    it.copy(toastEvent = Event(ToastEvent(text = "获取用户信息失败")))
+                }
+            }
+        }
     }
 
     override fun onCleared() {

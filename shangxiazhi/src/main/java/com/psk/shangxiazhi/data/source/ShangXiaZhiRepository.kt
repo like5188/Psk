@@ -1,5 +1,6 @@
 package com.psk.shangxiazhi.data.source
 
+import com.psk.shangxiazhi.data.model.GetUserResult
 import com.psk.shangxiazhi.data.model.LoginResult
 
 class ShangXiaZhiRepository(
@@ -11,7 +12,7 @@ class ShangXiaZhiRepository(
         return loginDataSource.load(phone, password, type)
     }
 
-    suspend fun getUser(patientToken: String?): String? {
+    suspend fun getUser(patientToken: String?): GetUserResult? {
         return getUserDataSource.load(patientToken)
     }
 
