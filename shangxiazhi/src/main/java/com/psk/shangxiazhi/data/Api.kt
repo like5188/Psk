@@ -16,6 +16,9 @@ interface Api {
     @POST("pad/login")
     suspend fun login(@Body params: JsonObject?): LoginResult?
 
+    @POST("pad/patient/loginOut")
+    suspend fun logout(@Header("patient_token") patientToken: String): LoginResult?
+
     @GET("pad/patient/user/getUser")
     suspend fun getUser(@Header("patient_token") patientToken: String): GetUserResult?
 
