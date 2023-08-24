@@ -3,13 +3,16 @@ package com.psk.shangxiazhi.setting
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import com.like.common.util.ApplicationHolder
 import com.like.common.util.mvi.propertyCollector
 import com.like.common.util.startActivity
 import com.psk.common.CommonApplication
 import com.psk.common.customview.ProgressDialog
 import com.psk.common.util.showToast
 import com.psk.shangxiazhi.R
+import com.psk.shangxiazhi.data.model.Login
 import com.psk.shangxiazhi.databinding.ActivitySettingBinding
+import com.psk.shangxiazhi.login.LoginActivity
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
@@ -44,6 +47,13 @@ class SettingActivity : AppCompatActivity() {
 
     private fun collectUiState() {
         mViewModel.uiState.propertyCollector(this) {
+            collectDistinctProperty(SettingUiState::logout) {
+                if (it) {
+                    Login.setCache(null)
+                    LoginActivity.start()
+                    ApplicationHolder.finishAllActivitiesExclude(LoginActivity::class.java)
+                }
+            }
             collectEventProperty(SettingUiState::toastEvent) {
                 showToast(it)
             }
