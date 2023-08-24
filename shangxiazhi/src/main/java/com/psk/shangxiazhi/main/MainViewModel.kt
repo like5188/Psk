@@ -11,7 +11,6 @@ import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
-import com.google.gson.Gson
 import com.like.common.util.mvi.Event
 import com.psk.common.util.DataHandler
 import com.psk.common.util.SecondCountDownTimer
@@ -43,7 +42,6 @@ class MainViewModel(
     private lateinit var activity: ComponentActivity
     private var gameManagerService: GameManagerService? = null
     private val sdf: SimpleDateFormat by inject(named("yyyy-MM-dd HH:mm:ss"))
-    private val gson: Gson by inject()
     private val countDownTimer by lazy {
         object : SecondCountDownTimer(Int.MAX_VALUE.toLong(), 1) {
             override fun onSecondsTick(secondsUntilFinished: Long) {
