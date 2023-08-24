@@ -28,7 +28,7 @@ data class Login(
     val type: Int
 ) {
     companion object {
-        const val SP_LOGIN = "sp_login"
+        private const val SP_LOGIN = "sp_login"
 
         fun setCache(login: Login?) {
             val jsonString = if (login == null) {
