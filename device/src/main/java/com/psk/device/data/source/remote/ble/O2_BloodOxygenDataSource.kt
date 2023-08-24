@@ -40,4 +40,7 @@ class O2_BloodOxygenDataSource(
         }
     }
 
+    companion object {
+        const val NAME_PREFIX: String = "O2"
+    }
 }

@@ -86,4 +86,8 @@ class SCI411C_HeartRateDataSource(
 
     }
 
+    companion object {
+        const val NAME_PREFIX: String = "C00228"
+    }
+
 }

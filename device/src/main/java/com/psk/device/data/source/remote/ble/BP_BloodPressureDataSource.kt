@@ -40,4 +40,7 @@ class BP_BloodPressureDataSource(
         }
     }
 
+    companion object {
+        const val NAME_PREFIX: String = "BP"
+    }
 }

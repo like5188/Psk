@@ -88,4 +88,7 @@ class ER1_HeartRateDataSource(
         return cmd
     }
 
+    companion object {
+        const val NAME_PREFIX: String = "ER1"
+    }
 }

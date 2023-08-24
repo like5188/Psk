@@ -134,4 +134,8 @@ class RKF_ShangXiaZhiDataSource(
         )
     }
 
+    companion object {
+        const val NAME_PREFIX: String = "RKF"
+    }
+
 }

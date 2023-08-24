@@ -42,22 +42,22 @@ val deviceModule = module {
     factory {
         ShangXiaZhiDbDataSource(get())
     }
-    factory<IBloodOxygenDataSource>(named("O2")) {
+    factory<IBloodOxygenDataSource>(named(O2_BloodOxygenDataSource.NAME_PREFIX)) {
         O2_BloodOxygenDataSource(get())
     }
-    factory<IBloodPressureDataSource>(named("BP")) {
+    factory<IBloodPressureDataSource>(named(BP_BloodPressureDataSource.NAME_PREFIX)) {
         BP_BloodPressureDataSource(get())
     }
-    factory<IHeartRateDataSource>(named("SCI311W")) {
+    factory<IHeartRateDataSource>(named(SCI311W_HeartRateDataSource.NAME_PREFIX)) {
         SCI311W_HeartRateDataSource(get())
     }
-    factory<IHeartRateDataSource>(named("ER1")) {
+    factory<IHeartRateDataSource>(named(ER1_HeartRateDataSource.NAME_PREFIX)) {
         ER1_HeartRateDataSource(get())
     }
-    factory<IHeartRateDataSource>(named("SCI411C")) {
+    factory<IHeartRateDataSource>(named(SCI411C_HeartRateDataSource.NAME_PREFIX)) {
         SCI411C_HeartRateDataSource(get())
     }
-    factory<IShangXiaZhiDataSource>(named("RKF")) {
+    factory<IShangXiaZhiDataSource>(named(RKF_ShangXiaZhiDataSource.NAME_PREFIX)) {
         RKF_ShangXiaZhiDataSource(get())
     }
 

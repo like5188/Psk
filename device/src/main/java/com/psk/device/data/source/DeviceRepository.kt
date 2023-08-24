@@ -12,7 +12,11 @@ import com.psk.device.data.source.remote.IBloodOxygenDataSource
 import com.psk.device.data.source.remote.IBloodPressureDataSource
 import com.psk.device.data.source.remote.IHeartRateDataSource
 import com.psk.device.data.source.remote.IShangXiaZhiDataSource
+import com.psk.device.data.source.remote.ble.BP_BloodPressureDataSource
+import com.psk.device.data.source.remote.ble.ER1_HeartRateDataSource
+import com.psk.device.data.source.remote.ble.O2_BloodOxygenDataSource
 import com.psk.device.data.source.remote.ble.RKF_ShangXiaZhiDataSource
+import com.psk.device.data.source.remote.ble.SCI311W_HeartRateDataSource
 import kotlinx.coroutines.flow.Flow
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
@@ -33,8 +37,8 @@ class DeviceRepository(
 
     fun enableBloodOxygen(name: String, address: String) {
         bloodOxygenDataSource = when {
-            name.startsWith("O2") -> {
-                this.get(named("O2"))
+            name.startsWith(O2_BloodOxygenDataSource.NAME_PREFIX) -> {
+                this.get(named(O2_BloodOxygenDataSource.NAME_PREFIX))
             }
 
             else -> null
@@ -44,8 +48,8 @@ class DeviceRepository(
 
     fun enableBloodPressure(name: String, address: String) {
         bloodPressureDataSource = when {
-            name.startsWith("BP") -> {
-                this.get(named("BP"))
+            name.startsWith(BP_BloodPressureDataSource.NAME_PREFIX) -> {
+                this.get(named(BP_BloodPressureDataSource.NAME_PREFIX))
             }
 
             else -> null
@@ -55,12 +59,12 @@ class DeviceRepository(
 
     fun enableHeartRate(name: String, address: String) {
         heartRateDataSource = when {
-            name.startsWith("ER1") -> {
-                this.get(named("ER1"))
+            name.startsWith(ER1_HeartRateDataSource.NAME_PREFIX) -> {
+                this.get(named(ER1_HeartRateDataSource.NAME_PREFIX))
             }
 
-            name.startsWith("A00219") -> {
-                this.get(named("SCI311W"))
+            name.startsWith(SCI311W_HeartRateDataSource.NAME_PREFIX) -> {
+                this.get(named(SCI311W_HeartRateDataSource.NAME_PREFIX))
             }
 
             else -> null
@@ -70,8 +74,8 @@ class DeviceRepository(
 
     fun enableShangXiaZhi(name: String, address: String) {
         shangXiaZhiDataSource = when {
-            name.startsWith("RKF") -> {
-                this.get(named("RKF"))
+            name.startsWith(RKF_ShangXiaZhiDataSource.NAME_PREFIX) -> {
+                this.get(named(RKF_ShangXiaZhiDataSource.NAME_PREFIX))
             }
 
             else -> null

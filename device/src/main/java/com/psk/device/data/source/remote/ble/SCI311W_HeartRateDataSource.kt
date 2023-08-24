@@ -733,4 +733,7 @@ class SCI311W_HeartRateDataSource(
         }
     }
 
+    companion object {
+        const val NAME_PREFIX: String = "A00219"
+    }
 }

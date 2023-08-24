@@ -64,16 +64,11 @@ class ScanDeviceDialogFragment private constructor() : BaseDialogFragment(), Koi
             bleManager.scan().collect {
                 val name = it.device.name
                 val address = it.device.address
-                if (address.isNullOrEmpty()) {
+                if (name.isNullOrEmpty() || address.isNullOrEmpty()) {
                     return@collect
                 }
-                val isRightDevice = when (deviceType) {
-                    DeviceType.BloodOxygen -> name?.startsWith("O2") == true
-                    DeviceType.BloodPressure -> name?.startsWith("BP") == true
-                    DeviceType.HeartRate -> name?.startsWith("ER1") == true || name?.startsWith("A00219") == true// SCI311W
-                    DeviceType.ShangXiaZhi -> name?.startsWith("RKF") == true
-                }
-                if (isRightDevice) {
+
+                if (deviceType.contains(name)) {
                     val item: BleScanInfo? = mAdapter.currentList.firstOrNull { it?.address == address }
                     if (item == null) {// 防止重复添加
                         val newItems = mAdapter.currentList.toMutableList()
