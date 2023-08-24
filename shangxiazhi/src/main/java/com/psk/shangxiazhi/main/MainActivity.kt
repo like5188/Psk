@@ -8,6 +8,7 @@ import com.psk.common.CommonApplication
 import com.psk.common.util.showToast
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.databinding.ActivityMainBinding
+import com.psk.shangxiazhi.setting.SettingActivity
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
@@ -36,6 +37,9 @@ class MainActivity : AppCompatActivity() {
         }
         mBinding.ivTrainingRecords.setOnClickListener {
             showToast("训练记录")
+        }
+        mBinding.ivSetting.setOnClickListener {
+            SettingActivity.start()
         }
     }
 
