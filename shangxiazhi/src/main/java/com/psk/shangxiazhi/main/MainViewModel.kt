@@ -12,8 +12,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import com.like.common.util.SPUtils
 import com.like.common.util.mvi.Event
 import com.psk.common.util.DataHandler
 import com.psk.common.util.SecondCountDownTimer
@@ -25,7 +23,6 @@ import com.psk.shangxiazhi.data.source.ShangXiaZhiRepository
 import com.psk.shangxiazhi.devices.SelectDeviceDialogFragment
 import com.psk.shangxiazhi.game.GameManagerService
 import com.psk.shangxiazhi.scene.SceneActivity
-import com.psk.shangxiazhi.util.SP_LOGIN
 import com.twsz.twsystempre.TrainScene
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -67,18 +64,7 @@ class MainViewModel(
     }
 
     suspend fun getUser(context: Context) {
-        val loginJsonString = SPUtils.getInstance().get<String?>(SP_LOGIN, null)
-        if (loginJsonString.isNullOrEmpty()) {
-            _uiState.update {
-                it.copy(toastEvent = Event(ToastEvent(text = "获取token失败")))
-            }
-            return
-        }
-        val login = try {
-            gson.fromJson<Login?>(loginJsonString, object : TypeToken<Login>() {}.type)
-        } catch (e: Exception) {
-            null
-        }
+        val login = Login.getCache()
         if (login == null) {
             _uiState.update {
                 it.copy(toastEvent = Event(ToastEvent(text = "获取token失败")))
