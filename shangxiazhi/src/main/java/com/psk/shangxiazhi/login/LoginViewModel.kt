@@ -28,19 +28,11 @@ class LoginViewModel(
                         login = null, toastEvent = Event(ToastEvent(throwable = throwable))
                     )
                 }
-            }) { loginResult ->
-                if (loginResult?.code == 0) {
-                    _uiState.update {
-                        it.copy(
-                            login = loginResult.login, toastEvent = Event(ToastEvent(text = "登录成功"))
-                        )
-                    }
-                } else {
-                    _uiState.update {
-                        it.copy(
-                            login = null, toastEvent = Event(ToastEvent(text = loginResult?.msg ?: "登录失败"))
-                        )
-                    }
+            }) { login ->
+                _uiState.update {
+                    it.copy(
+                        login = login, toastEvent = Event(ToastEvent(text = "登录成功"))
+                    )
                 }
             }
         }

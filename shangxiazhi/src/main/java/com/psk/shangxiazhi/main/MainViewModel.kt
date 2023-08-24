@@ -82,17 +82,11 @@ class MainViewModel(
             _uiState.update {
                 it.copy(toastEvent = Event(ToastEvent(throwable = throwable)))
             }
-        }) { getUserResult ->
-            if (getUserResult?.code == 0) {
-                _uiState.update {
-                    it.copy(
-                        userName = getUserResult.user.name
-                    )
-                }
-            } else {
-                _uiState.update {
-                    it.copy(toastEvent = Event(ToastEvent(text = getUserResult?.msg ?: "获取用户信息失败")))
-                }
+        }) { user ->
+            _uiState.update {
+                it.copy(
+                    userName = user?.name ?: ""
+                )
             }
         }
     }

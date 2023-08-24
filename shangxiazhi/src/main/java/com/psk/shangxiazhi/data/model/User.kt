@@ -43,12 +43,6 @@ package com.psk.shangxiazhi.data.model
     }
 }
  */
-data class GetUserResult(
-    val code: Int,
-    val msg: String,
-    val user: User
-)
-
 data class User(
     val name: String,
 )

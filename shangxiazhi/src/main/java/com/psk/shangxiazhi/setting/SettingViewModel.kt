@@ -40,21 +40,12 @@ class SettingViewModel(
                         toastEvent = Event(ToastEvent(throwable = throwable))
                     )
                 }
-            }) { loginResult ->
-                if (loginResult?.code == 0) {
-                    _uiState.update {
-                        it.copy(
-                            logout = true,
-                            toastEvent = Event(ToastEvent(text = "退出登录成功"))
-                        )
-                    }
-                } else {
-                    _uiState.update {
-                        it.copy(
-                            logout = false,
-                            toastEvent = Event(ToastEvent(text = loginResult?.msg ?: "退出登录失败"))
-                        )
-                    }
+            }) {
+                _uiState.update {
+                    it.copy(
+                        logout = true,
+                        toastEvent = Event(ToastEvent(text = "退出登录成功"))
+                    )
                 }
             }
         }
