@@ -1,11 +1,9 @@
 package com.psk.device.data.source.remote.ble
 
-import com.psk.device.BleManager
-import com.psk.device.Device
 import com.psk.device.DeviceType
 import com.psk.device.Protocol
 import com.psk.device.data.model.ShangXiaZhi
-import com.psk.device.data.source.remote.IShangXiaZhiDataSource
+import com.psk.device.data.source.remote.BaseShangXiaZhiDataSource
 import com.psk.device.util.ShangXiaZhiDataParser
 import com.psk.device.util.ShangXiaZhiReceiver
 import com.twsz.remotecommands.RemoteCommand
@@ -13,15 +11,12 @@ import com.twsz.remotecommands.TrunkCommandData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 
-class RKF_ShangXiaZhiDataSource(
-    private val bleManager: BleManager
-) : IShangXiaZhiDataSource {
-    private val protocol = Protocol(
+class RKF_ShangXiaZhiDataSource : BaseShangXiaZhiDataSource(DeviceType.ShangXiaZhi) {
+    override val protocol = Protocol(
         "0000ffe1-0000-1000-8000-00805f9b34fb",
         "0000ffe2-0000-1000-8000-00805f9b34fb",
         "0000ffe3-0000-1000-8000-00805f9b34fb",
     )
-    private lateinit var device: Device
     private val shangXiaZhiDataParser by lazy {
         ShangXiaZhiDataParser()
     }
@@ -34,11 +29,6 @@ class RKF_ShangXiaZhiDataSource(
 
     // 上下肢结束时回调
     var onOver: (() -> Unit)? = null
-
-    override fun enable(address: String) {
-        device = Device(address, protocol, DeviceType.ShangXiaZhi)
-        bleManager.addDevices(device)
-    }
 
     override suspend fun fetch(medicalOrderId: Long): Flow<ShangXiaZhi> = channelFlow {
         shangXiaZhiDataParser.receiver = object : ShangXiaZhiReceiver {

@@ -1,11 +1,9 @@
 package com.psk.device.data.source.remote.ble
 
-import com.psk.device.BleManager
-import com.psk.device.Device
 import com.psk.device.DeviceType
 import com.psk.device.Protocol
 import com.psk.device.data.model.HeartRate
-import com.psk.device.data.source.remote.IHeartRateDataSource
+import com.psk.device.data.source.remote.BaseHeartRateDataSource
 import com.psk.device.util.BleCRC
 import com.psk.device.util.BtResponse
 import kotlinx.coroutines.delay
@@ -15,20 +13,12 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.experimental.inv
 
-class ER1_HeartRateDataSource(
-    private val bleManager: BleManager
-) : IHeartRateDataSource {
-    private val protocol = Protocol(
+class ER1_HeartRateDataSource : BaseHeartRateDataSource(DeviceType.HeartRate) {
+    override val protocol = Protocol(
         "14839ac4-7d7e-415c-9a42-167340cf2339",
         "0734594A-A8E7-4B1A-A6B1-CD5243059A57",
         "8B00ACE7-EB0B-49B0-BBE9-9AEE0A26E1A3",
     )
-    private lateinit var device: Device
-
-    override fun enable(address: String) {
-        device = Device(address, protocol, DeviceType.HeartRate)
-        bleManager.addDevices(device)
-    }
 
     override suspend fun fetch(medicalOrderId: Long): Flow<HeartRate> = channelFlow {
         BtResponse.setReceiveListener(object : BtResponse.ReceiveListener {

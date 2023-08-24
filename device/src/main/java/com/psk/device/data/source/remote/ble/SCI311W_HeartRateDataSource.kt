@@ -1,11 +1,9 @@
 package com.psk.device.data.source.remote.ble
 
-import com.psk.device.BleManager
-import com.psk.device.Device
 import com.psk.device.DeviceType
 import com.psk.device.Protocol
 import com.psk.device.data.model.HeartRate
-import com.psk.device.data.source.remote.IHeartRateDataSource
+import com.psk.device.data.source.remote.BaseHeartRateDataSource
 import com.starcaretech.stardata.StarData
 import com.starcaretech.stardata.common.DataReceiverSample
 import com.starcaretech.stardata.data.AlertSwitch
@@ -683,19 +681,14 @@ private DataReceiver dataReceiver = new DataReceiverSample(){
 send(CommandUtil.getDeviceStatus()); // 向设备发送获取系统状态命令
 说明：send()是一个蓝牙通信方法，向设备发送数据；CommandUtil.getDeviceStatus()就是获取命令内容，发送完此命令后会触发DataReceiver.onDeviceStatus(DeviceStatus status)
  */
-class SCI311W_HeartRateDataSource(
-    private val bleManager: BleManager
-) : IHeartRateDataSource {
-    private val protocol = Protocol(
+class SCI311W_HeartRateDataSource : BaseHeartRateDataSource(DeviceType.HeartRate) {
+    override val protocol = Protocol(
         "00000001-0000-1000-8000-00805f9b34fb",
         "00000003-0000-1000-8000-00805f9b34fb",
         "00000002-0000-1000-8000-00805f9b34fb",
     )
-    private lateinit var device: Device
 
-    override fun enable(address: String) {
-        device = Device(address, protocol, DeviceType.HeartRate)
-        bleManager.addDevices(device)
+    init {
         StarData.init()
     }
 

@@ -7,10 +7,10 @@ import com.psk.device.data.source.db.BloodOxygenDbDataSource
 import com.psk.device.data.source.db.BloodPressureDbDataSource
 import com.psk.device.data.source.db.HeartRateDbDataSource
 import com.psk.device.data.source.db.ShangXiaZhiDbDataSource
-import com.psk.device.data.source.remote.IBloodOxygenDataSource
-import com.psk.device.data.source.remote.IBloodPressureDataSource
-import com.psk.device.data.source.remote.IHeartRateDataSource
-import com.psk.device.data.source.remote.IShangXiaZhiDataSource
+import com.psk.device.data.source.remote.BaseBloodOxygenDataSource
+import com.psk.device.data.source.remote.BaseBloodPressureDataSource
+import com.psk.device.data.source.remote.BaseHeartRateDataSource
+import com.psk.device.data.source.remote.BaseShangXiaZhiDataSource
 import com.psk.device.data.source.remote.ble.BP_BloodPressureDataSource
 import com.psk.device.data.source.remote.ble.ER1_HeartRateDataSource
 import com.psk.device.data.source.remote.ble.O2_BloodOxygenDataSource
@@ -42,23 +42,23 @@ val deviceModule = module {
     factory {
         ShangXiaZhiDbDataSource(get())
     }
-    factory<IBloodOxygenDataSource>(named(O2_BloodOxygenDataSource.NAME_PREFIX)) {
-        O2_BloodOxygenDataSource(get())
+    factory<BaseBloodOxygenDataSource>(named(O2_BloodOxygenDataSource.NAME_PREFIX)) {
+        O2_BloodOxygenDataSource()
     }
-    factory<IBloodPressureDataSource>(named(BP_BloodPressureDataSource.NAME_PREFIX)) {
-        BP_BloodPressureDataSource(get())
+    factory<BaseBloodPressureDataSource>(named(BP_BloodPressureDataSource.NAME_PREFIX)) {
+        BP_BloodPressureDataSource()
     }
-    factory<IHeartRateDataSource>(named(SCI311W_HeartRateDataSource.NAME_PREFIX)) {
-        SCI311W_HeartRateDataSource(get())
+    factory<BaseHeartRateDataSource>(named(SCI311W_HeartRateDataSource.NAME_PREFIX)) {
+        SCI311W_HeartRateDataSource()
     }
-    factory<IHeartRateDataSource>(named(ER1_HeartRateDataSource.NAME_PREFIX)) {
-        ER1_HeartRateDataSource(get())
+    factory<BaseHeartRateDataSource>(named(ER1_HeartRateDataSource.NAME_PREFIX)) {
+        ER1_HeartRateDataSource()
     }
-    factory<IHeartRateDataSource>(named(SCI411C_HeartRateDataSource.NAME_PREFIX)) {
-        SCI411C_HeartRateDataSource(get())
+    factory<BaseHeartRateDataSource>(named(SCI411C_HeartRateDataSource.NAME_PREFIX)) {
+        SCI411C_HeartRateDataSource()
     }
-    factory<IShangXiaZhiDataSource>(named(RKF_ShangXiaZhiDataSource.NAME_PREFIX)) {
-        RKF_ShangXiaZhiDataSource(get())
+    factory<BaseShangXiaZhiDataSource>(named(RKF_ShangXiaZhiDataSource.NAME_PREFIX)) {
+        RKF_ShangXiaZhiDataSource()
     }
 
     //repository

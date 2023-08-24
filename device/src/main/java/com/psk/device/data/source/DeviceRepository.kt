@@ -8,10 +8,10 @@ import com.psk.device.data.source.db.BloodOxygenDbDataSource
 import com.psk.device.data.source.db.BloodPressureDbDataSource
 import com.psk.device.data.source.db.HeartRateDbDataSource
 import com.psk.device.data.source.db.ShangXiaZhiDbDataSource
-import com.psk.device.data.source.remote.IBloodOxygenDataSource
-import com.psk.device.data.source.remote.IBloodPressureDataSource
-import com.psk.device.data.source.remote.IHeartRateDataSource
-import com.psk.device.data.source.remote.IShangXiaZhiDataSource
+import com.psk.device.data.source.remote.BaseBloodOxygenDataSource
+import com.psk.device.data.source.remote.BaseBloodPressureDataSource
+import com.psk.device.data.source.remote.BaseHeartRateDataSource
+import com.psk.device.data.source.remote.BaseShangXiaZhiDataSource
 import com.psk.device.data.source.remote.ble.BP_BloodPressureDataSource
 import com.psk.device.data.source.remote.ble.ER1_HeartRateDataSource
 import com.psk.device.data.source.remote.ble.O2_BloodOxygenDataSource
@@ -30,10 +30,10 @@ class DeviceRepository(
     private val heartRateDbDataSource: HeartRateDbDataSource,
     private val shangXiaZhiDbDataSource: ShangXiaZhiDbDataSource,
 ) : KoinComponent {
-    private var bloodOxygenDataSource: IBloodOxygenDataSource? = null
-    private var bloodPressureDataSource: IBloodPressureDataSource? = null
-    private var heartRateDataSource: IHeartRateDataSource? = null
-    private var shangXiaZhiDataSource: IShangXiaZhiDataSource? = null
+    private var bloodOxygenDataSource: BaseBloodOxygenDataSource? = null
+    private var bloodPressureDataSource: BaseBloodPressureDataSource? = null
+    private var heartRateDataSource: BaseHeartRateDataSource? = null
+    private var shangXiaZhiDataSource: BaseShangXiaZhiDataSource? = null
 
     fun enableBloodOxygen(name: String, address: String) {
         bloodOxygenDataSource = when {

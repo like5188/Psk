@@ -1,16 +1,12 @@
 package com.psk.device.data.source.remote.ble
 
-import com.psk.device.BleManager
-import com.psk.device.Device
 import com.psk.device.DeviceType
 import com.psk.device.Protocol
 import com.psk.device.data.model.BloodPressure
-import com.psk.device.data.source.remote.IBloodPressureDataSource
+import com.psk.device.data.source.remote.BaseBloodPressureDataSource
 
-class BP_BloodPressureDataSource(
-    private val bleManager: BleManager
-) : IBloodPressureDataSource {
-    private val protocol = Protocol(
+class BP_BloodPressureDataSource : BaseBloodPressureDataSource(DeviceType.BloodPressure) {
+    override val protocol: Protocol = Protocol(
         "0000fff0-0000-1000-8000-00805f9b34fb",
         "0000fff1-0000-1000-8000-00805f9b34fb",
         "0000fff2-0000-1000-8000-00805f9b34fb",
@@ -18,12 +14,6 @@ class BP_BloodPressureDataSource(
             it[0] == 0xAA.toByte()
         }
     ) { it.size == 20 }
-    private lateinit var device: Device
-
-    override fun enable(address: String) {
-        device = Device(address, protocol, DeviceType.BloodPressure)
-        bleManager.addDevices(device)
-    }
 
     override suspend fun fetch(medicalOrderId: Long): BloodPressure? {
         val data = bleManager.waitResult(device)
