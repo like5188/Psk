@@ -13,7 +13,7 @@
                     android:endColor="#00a7ff"
                     android:startColor="#00a7ff" />
 
-                <corners android:radius="10.0dip" />
+                <corners android:radius="4.0dip" />
             </shape>
         </item>
         <item>
@@ -23,7 +23,7 @@
                     android:endColor="#00a7ff"
                     android:startColor="#00a7ff" />
 
-                <corners android:radius="10.0dip" />
+                <corners android:radius="4.0dip" />
             </shape>
         </item>
     </selector>

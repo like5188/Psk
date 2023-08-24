@@ -16,6 +16,8 @@ import com.psk.device.BleManager
 import com.psk.device.DeviceType
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.databinding.DialogFragmentScanDeviceBinding
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
@@ -61,7 +63,11 @@ class ScanDeviceDialogFragment private constructor() : BaseDialogFragment(), Koi
     @SuppressLint("MissingPermission")
     private fun startScan(deviceType: DeviceType) {
         lifecycleScope.launch {
-            bleManager.scan().collect {
+            bleManager.scan().onStart {
+                mBinding.tvState.text = "扫描中，请稍后……"
+            }.onCompletion {
+                mBinding.tvState.text = "扫描完成"
+            }.collect {
                 val name = it.device.name
                 val address = it.device.address
                 if (name.isNullOrEmpty() || address.isNullOrEmpty()) {
