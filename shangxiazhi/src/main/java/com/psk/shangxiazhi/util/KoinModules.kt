@@ -1,7 +1,8 @@
 package com.psk.shangxiazhi.util
 
-import com.psk.shangxiazhi.data.source.LoginRepository
-import com.psk.shangxiazhi.data.source.remote.LoginRemoteDataSource
+import com.psk.shangxiazhi.data.source.GetUserDataSource
+import com.psk.shangxiazhi.data.source.LoginDataSource
+import com.psk.shangxiazhi.data.source.ShangXiaZhiRepository
 import com.psk.shangxiazhi.login.LoginViewModel
 import com.psk.shangxiazhi.main.MainViewModel
 import com.twsz.twsystempre.GameController
@@ -16,12 +17,15 @@ import java.text.DecimalFormat
 val shangXiaZhiModule = module {
     //DataSource
     factory {
-        LoginRemoteDataSource()
+        LoginDataSource()
+    }
+    factory {
+        GetUserDataSource()
     }
 
     //Repository
     factory {
-        LoginRepository(get())
+        ShangXiaZhiRepository(get(), get())
     }
 
     //viewModel
@@ -29,7 +33,7 @@ val shangXiaZhiModule = module {
         LoginViewModel(get())
     }
     viewModel {
-        MainViewModel()
+        MainViewModel(get())
     }
 
     //GameController

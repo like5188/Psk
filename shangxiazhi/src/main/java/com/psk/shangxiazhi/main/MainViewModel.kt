@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModel
 import com.psk.common.util.SecondCountDownTimer
 import com.psk.common.util.showToast
 import com.psk.device.DeviceType
+import com.psk.shangxiazhi.data.source.ShangXiaZhiRepository
 import com.psk.shangxiazhi.devices.SelectDeviceDialogFragment
 import com.psk.shangxiazhi.game.GameManagerService
 import com.psk.shangxiazhi.scene.SceneActivity
@@ -29,7 +30,9 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 @OptIn(KoinApiExtension::class)
-class MainViewModel : ViewModel(), KoinComponent {
+class MainViewModel(
+    private val shangXiaZhiRepository: ShangXiaZhiRepository,
+) : ViewModel(), KoinComponent {
     private val _uiState = MutableStateFlow(MainUiState())
     val uiState = _uiState.asStateFlow()
     private lateinit var activity: ComponentActivity
@@ -52,6 +55,10 @@ class MainViewModel : ViewModel(), KoinComponent {
 
     init {
         countDownTimer.start()
+    }
+
+    suspend fun getUser(patientToken: String?): String? {
+        return shangXiaZhiRepository.getUser(patientToken)
     }
 
     override fun onCleared() {

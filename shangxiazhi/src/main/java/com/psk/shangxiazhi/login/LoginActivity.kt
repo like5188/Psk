@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
+import com.google.gson.Gson
 import com.like.common.util.SPUtils
 import com.like.common.util.startActivity
 import com.psk.common.CommonApplication
@@ -15,6 +16,7 @@ import com.psk.shangxiazhi.databinding.ActivityLoginBinding
 import com.psk.shangxiazhi.main.MainActivity
 import com.psk.shangxiazhi.util.SP_LOGIN
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
@@ -34,6 +36,7 @@ class LoginActivity : AppCompatActivity() {
     private val mProgressDialog by lazy {
         ProgressDialog(this)
     }
+    private val gson by inject<Gson>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,15 +54,20 @@ class LoginActivity : AppCompatActivity() {
                 }
                 DataHandler.collectWithProgress(mProgressDialog, block = {
                     mViewModel.login(
-                        phone = phone, password = password, type = 2// 1：病人；2：医生
+                        phone = phone, password = password, type = 1// 1：病人；2：医生
                     )
                 }, onError = {
-                    SPUtils.getInstance().put(SP_LOGIN, false)
+                    SPUtils.getInstance().put(SP_LOGIN, null)
                 }) {
-                    showToast("登录成功")
-                    SPUtils.getInstance().put(SP_LOGIN, true)
-                    MainActivity.start()
-                    finish()
+                    if (it?.code == 0) {
+                        showToast("登录成功")
+                        SPUtils.getInstance().put(SP_LOGIN, gson.toJson(it.login))
+                        MainActivity.start()
+                        finish()
+                    } else {
+                        SPUtils.getInstance().put(SP_LOGIN, null)
+                        showToast(it?.msg ?: "登录失败")
+                    }
                 }
             }
         }

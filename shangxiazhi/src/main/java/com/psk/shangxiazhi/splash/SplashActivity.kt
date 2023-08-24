@@ -6,11 +6,11 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.like.common.util.SPUtils
 import com.psk.shangxiazhi.R
+import com.psk.shangxiazhi.data.model.Login
 import com.psk.shangxiazhi.databinding.ActivitySplashBinding
 import com.psk.shangxiazhi.login.LoginActivity
 import com.psk.shangxiazhi.main.MainActivity
 import com.psk.shangxiazhi.util.SP_LOGIN
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 /**
@@ -25,7 +25,7 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         mBinding
         lifecycleScope.launch {
-            if (SPUtils.getInstance().get(SP_LOGIN, false)) {
+            if (!SPUtils.getInstance().get<String?>(SP_LOGIN, null).isNullOrEmpty()) {
                 MainActivity.start()
             } else {
                 LoginActivity.start()
