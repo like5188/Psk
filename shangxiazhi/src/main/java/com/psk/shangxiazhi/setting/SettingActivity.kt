@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
+import com.like.common.util.ApplicationHolder
 import com.like.common.util.startActivity
 import com.psk.common.CommonApplication
 import com.psk.common.customview.ProgressDialog
@@ -52,7 +53,7 @@ class SettingActivity : AppCompatActivity() {
                         showToast("退出登录成功")
                         Login.setCache(null)
                         LoginActivity.start()
-                        finish()
+                        ApplicationHolder.finishAllActivitiesExclude(LoginActivity::class.java)
                     } else {
                         showToast(it?.msg ?: "退出登录失败")
                     }
