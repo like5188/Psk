@@ -33,15 +33,15 @@ class SettingViewModel(
         viewModelScope.launch {
             DataHandler.collectWithProgress(progressDialog, block = {
                 shangXiaZhiRepository.logout(login.patient_token)
-            }, onError = {
+            }, onError = { throwable ->
                 _uiState.update {
                     it.copy(
                         logout = false,
-                        toastEvent = Event(ToastEvent(text = "退出登录失败"))
+                        toastEvent = Event(ToastEvent(throwable = throwable))
                     )
                 }
-            }) {
-                if (it?.code == 0) {
+            }) { loginResult ->
+                if (loginResult?.code == 0) {
                     _uiState.update {
                         it.copy(
                             logout = true,
@@ -52,7 +52,7 @@ class SettingViewModel(
                     _uiState.update {
                         it.copy(
                             logout = false,
-                            toastEvent = Event(ToastEvent(text = "退出登录失败"))
+                            toastEvent = Event(ToastEvent(text = loginResult?.msg ?: "退出登录失败"))
                         )
                     }
                 }

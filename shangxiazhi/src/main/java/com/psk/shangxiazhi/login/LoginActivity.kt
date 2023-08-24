@@ -3,17 +3,15 @@ package com.psk.shangxiazhi.login
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.lifecycleScope
+import com.like.common.util.mvi.propertyCollector
 import com.like.common.util.startActivity
 import com.psk.common.CommonApplication
 import com.psk.common.customview.ProgressDialog
-import com.psk.common.util.DataHandler
 import com.psk.common.util.showToast
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.data.model.Login
 import com.psk.shangxiazhi.databinding.ActivityLoginBinding
 import com.psk.shangxiazhi.main.MainActivity
-import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
@@ -37,34 +35,32 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mBinding.btnLogin.setOnClickListener {
-            lifecycleScope.launch {
-                val phone = mBinding.etPhone.text.toString().trim()
-                if (phone.isEmpty()) {
-                    showToast("手机号码不能为空")
-                    return@launch
+            val phone = mBinding.etPhone.text.toString().trim()
+            if (phone.isEmpty()) {
+                showToast("手机号码不能为空")
+                return@setOnClickListener
+            }
+            val password = mBinding.etPassword.text.toString().trim()
+            if (password.isEmpty()) {
+                showToast("密码不能为空")
+                return@setOnClickListener
+            }
+            mViewModel.login(phone = phone, password = password, type = 1, progressDialog = mProgressDialog)
+        }
+        collectUiState()
+    }
+
+    private fun collectUiState() {
+        mViewModel.uiState.propertyCollector(this) {
+            collectDistinctProperty(LoginUiState::login) {
+                Login.setCache(it)
+                if (it != null) {
+                    MainActivity.start()
+                    finish()
                 }
-                val password = mBinding.etPassword.text.toString().trim()
-                if (password.isEmpty()) {
-                    showToast("密码不能为空")
-                    return@launch
-                }
-                DataHandler.collectWithProgress(mProgressDialog, block = {
-                    mViewModel.login(
-                        phone = phone, password = password, type = 1// 1：病人；2：医生
-                    )
-                }, onError = {
-                    Login.setCache(null)
-                }) {
-                    if (it?.code == 0) {
-                        showToast("登录成功")
-                        Login.setCache(it.login)
-                        MainActivity.start()
-                        finish()
-                    } else {
-                        Login.setCache(null)
-                        showToast(it?.msg ?: "登录失败")
-                    }
-                }
+            }
+            collectEventProperty(LoginUiState::toastEvent) {
+                showToast(it)
             }
         }
     }

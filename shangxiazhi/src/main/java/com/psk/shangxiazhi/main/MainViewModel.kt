@@ -74,9 +74,9 @@ class MainViewModel(
 
         DataHandler.collect(context, block = {
             shangXiaZhiRepository.getUser(login.patient_token)
-        }, onError = {
+        }, onError = { throwable ->
             _uiState.update {
-                it.copy(toastEvent = Event(ToastEvent(text = "获取用户信息失败")))
+                it.copy(toastEvent = Event(ToastEvent(throwable = throwable)))
             }
         }) { getUserResult ->
             if (getUserResult?.code == 0) {
@@ -87,7 +87,7 @@ class MainViewModel(
                 }
             } else {
                 _uiState.update {
-                    it.copy(toastEvent = Event(ToastEvent(text = "获取用户信息失败")))
+                    it.copy(toastEvent = Event(ToastEvent(text = getUserResult?.msg ?: "获取用户信息失败")))
                 }
             }
         }
