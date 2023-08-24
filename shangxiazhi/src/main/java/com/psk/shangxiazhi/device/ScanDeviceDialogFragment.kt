@@ -15,6 +15,7 @@ import com.like.recyclerview.layoutmanager.WrapLinearLayoutManager
 import com.psk.device.BleManager
 import com.psk.device.DeviceType
 import com.psk.shangxiazhi.R
+import com.psk.shangxiazhi.data.model.BleScanInfo
 import com.psk.shangxiazhi.databinding.DialogFragmentScanDeviceBinding
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart

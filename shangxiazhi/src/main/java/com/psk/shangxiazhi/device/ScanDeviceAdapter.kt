@@ -3,6 +3,7 @@ package com.psk.shangxiazhi.device
 import androidx.recyclerview.widget.DiffUtil
 import com.like.recyclerview.adapter.BaseListAdapter
 import com.like.recyclerview.viewholder.BindingViewHolder
+import com.psk.shangxiazhi.data.model.BleScanInfo
 import com.psk.shangxiazhi.databinding.ItemBleScanBinding
 
 class ScanDeviceAdapter : BaseListAdapter<ItemBleScanBinding, BleScanInfo>(DIFF) {

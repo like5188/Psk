@@ -15,7 +15,7 @@ import com.psk.device.data.model.BloodPressure
 import com.psk.device.data.model.HeartRate
 import com.psk.device.data.model.ShangXiaZhi
 import com.psk.device.data.source.DeviceRepository
-import com.psk.shangxiazhi.device.BleScanInfo
+import com.psk.shangxiazhi.data.model.BleScanInfo
 import com.twsz.twsystempre.GameCallback
 import com.twsz.twsystempre.GameController
 import com.twsz.twsystempre.GameData

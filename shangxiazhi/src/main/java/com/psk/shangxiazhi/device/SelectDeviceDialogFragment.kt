@@ -12,6 +12,7 @@ import com.like.common.base.BaseDialogFragment
 import com.like.common.util.visible
 import com.psk.device.DeviceType
 import com.psk.shangxiazhi.R
+import com.psk.shangxiazhi.data.model.BleScanInfo
 import com.psk.shangxiazhi.databinding.DialogFragmentSelectDeviceBinding
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent

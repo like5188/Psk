@@ -1,4 +1,4 @@
-package com.psk.shangxiazhi.device
+package com.psk.shangxiazhi.data.model
 
 import com.like.recyclerview.model.IRecyclerViewItem
 import com.psk.shangxiazhi.BR
