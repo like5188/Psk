@@ -13,7 +13,7 @@ import com.twsz.remotecommands.TrunkCommandData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 
-class XZX_ShangXiaZhiDataSource(
+class RKF_ShangXiaZhiDataSource(
     private val bleManager: BleManager
 ) : IShangXiaZhiDataSource {
     private val protocol = Protocol(

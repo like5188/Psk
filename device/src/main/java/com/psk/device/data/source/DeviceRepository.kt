@@ -12,7 +12,7 @@ import com.psk.device.data.source.remote.IBloodOxygenDataSource
 import com.psk.device.data.source.remote.IBloodPressureDataSource
 import com.psk.device.data.source.remote.IHeartRateDataSource
 import com.psk.device.data.source.remote.IShangXiaZhiDataSource
-import com.psk.device.data.source.remote.ble.XZX_ShangXiaZhiDataSource
+import com.psk.device.data.source.remote.ble.RKF_ShangXiaZhiDataSource
 import kotlinx.coroutines.flow.Flow
 
 class DeviceRepository(
@@ -95,7 +95,7 @@ class DeviceRepository(
     suspend fun fetchShangXiaZhiAndSave(
         medicalOrderId: Long, onStart: (() -> Unit)? = null, onPause: (() -> Unit)? = null, onOver: (() -> Unit)? = null
     ) {
-        if (shangXiaZhiDataSource is XZX_ShangXiaZhiDataSource) {
+        if (shangXiaZhiDataSource is RKF_ShangXiaZhiDataSource) {
             shangXiaZhiDataSource.onStart = onStart
             shangXiaZhiDataSource.onPause = onPause
             shangXiaZhiDataSource.onOver = onOver
