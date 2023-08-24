@@ -24,7 +24,7 @@ class LoginRemoteDataSource {
                     "account" to phone,
                     "password" to password,
                     "type" to type,
-                    "loginType" to 1,
+                    "loginType" to 1,// 患者：1；医生：2；
                     "device" to "TV",
                     "appName" to Build.DEVICE
                 ).toJsonObjectForApi()
