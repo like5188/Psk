@@ -70,8 +70,7 @@ class ScanDeviceDialogFragment private constructor() : BaseDialogFragment(), Koi
                 val isRightDevice = when (deviceType) {
                     DeviceType.BloodOxygen -> name?.startsWith("O2") == true
                     DeviceType.BloodPressure -> name?.startsWith("BP") == true
-                    DeviceType.HeartRate -> name?.startsWith("ER1") == true ||
-                            address.replace(":", "") == name// SCI411C、SCI311W 这些心电仪的名称和地址是一样的。
+                    DeviceType.HeartRate -> name?.startsWith("ER1") == true || name?.startsWith("A00219") == true// SCI311W
                     DeviceType.ShangXiaZhi -> name?.startsWith("RKF") == true
                 }
                 if (isRightDevice) {
