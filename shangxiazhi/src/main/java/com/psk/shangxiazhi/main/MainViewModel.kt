@@ -68,16 +68,8 @@ class MainViewModel(
     }
 
     suspend fun getUser(context: Context) {
-        val login = Login.getCache()
-        if (login == null) {
-            _uiState.update {
-                it.copy(toastEvent = Event(ToastEvent(text = "获取token失败")))
-            }
-            return
-        }
-
         DataHandler.collect(context, block = {
-            shangXiaZhiRepository.getUser(login.patient_token)
+            shangXiaZhiRepository.getUser(Login.getCache()?.patient_token)
         }, onError = { throwable ->
             _uiState.update {
                 it.copy(toastEvent = Event(ToastEvent(throwable = throwable)))

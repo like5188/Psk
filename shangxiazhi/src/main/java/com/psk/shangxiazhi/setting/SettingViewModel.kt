@@ -20,19 +20,9 @@ class SettingViewModel(
     val uiState = _uiState.asStateFlow()
 
     fun logout(progressDialog: ProgressDialog) {
-        val login = Login.getCache()
-        if (login == null) {
-            _uiState.update {
-                it.copy(
-                    logout = false,
-                    toastEvent = Event(ToastEvent(text = "获取token失败"))
-                )
-            }
-            return
-        }
         viewModelScope.launch {
             DataHandler.collectWithProgress(progressDialog, block = {
-                shangXiaZhiRepository.logout(login.patient_token)
+                shangXiaZhiRepository.logout(Login.getCache()?.patient_token)
             }, onError = { throwable ->
                 _uiState.update {
                     it.copy(

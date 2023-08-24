@@ -36,15 +36,7 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         mBinding.btnLogin.setOnClickListener {
             val phone = mBinding.etPhone.text.toString().trim()
-            if (phone.isEmpty()) {
-                showToast("手机号码不能为空")
-                return@setOnClickListener
-            }
             val password = mBinding.etPassword.text.toString().trim()
-            if (password.isEmpty()) {
-                showToast("密码不能为空")
-                return@setOnClickListener
-            }
             mViewModel.login(phone = phone, password = password, type = 1, progressDialog = mProgressDialog)
         }
         collectUiState()
