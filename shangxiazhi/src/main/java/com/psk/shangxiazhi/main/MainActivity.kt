@@ -12,7 +12,7 @@ import com.psk.common.util.showToast
 import com.psk.device.DeviceType
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.databinding.ActivityMainBinding
-import com.psk.shangxiazhi.devices.SelectDeviceDialogFragment
+import com.psk.shangxiazhi.device.SelectDeviceDialogFragment
 import com.psk.shangxiazhi.scene.SceneActivity
 import com.psk.shangxiazhi.setting.SettingActivity
 import com.twsz.twsystempre.TrainScene

@@ -6,7 +6,7 @@
 
         <variable
             name="bleScanInfo"
-            type="com.psk.shangxiazhi.devices.BleScanInfo" />
+            type="com.psk.shangxiazhi.device.BleScanInfo" />
     </data>
 
     <LinearLayout

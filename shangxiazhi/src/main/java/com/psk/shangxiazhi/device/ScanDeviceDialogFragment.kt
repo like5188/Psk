@@ -1,4 +1,4 @@
-package com.psk.shangxiazhi.devices
+package com.psk.shangxiazhi.device
 
 import android.annotation.SuppressLint
 import android.os.Bundle

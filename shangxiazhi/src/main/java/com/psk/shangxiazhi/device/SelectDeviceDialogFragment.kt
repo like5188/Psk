@@ -1,4 +1,4 @@
-package com.psk.shangxiazhi.devices
+package com.psk.shangxiazhi.device
 
 import android.os.Bundle
 import android.view.Gravity
