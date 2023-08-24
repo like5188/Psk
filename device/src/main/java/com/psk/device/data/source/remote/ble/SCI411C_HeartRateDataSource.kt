@@ -50,7 +50,7 @@ class SCI411C_HeartRateDataSource(
     private lateinit var device: Device
 
     override fun enable(address: String) {
-        device = Device(address, protocol, DeviceType.ShangXiaZhi)
+        device = Device(address, protocol, DeviceType.HeartRate)
         bleManager.addDevices(device)
     }
 

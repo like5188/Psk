@@ -21,7 +21,7 @@ class BP_BloodPressureDataSource(
     private lateinit var device: Device
 
     override fun enable(address: String) {
-        device = Device(address, protocol, DeviceType.ShangXiaZhi)
+        device = Device(address, protocol, DeviceType.BloodPressure)
         bleManager.addDevices(device)
     }
 

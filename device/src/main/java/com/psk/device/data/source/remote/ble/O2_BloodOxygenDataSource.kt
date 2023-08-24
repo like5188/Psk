@@ -22,7 +22,7 @@ class O2_BloodOxygenDataSource(
     private lateinit var device: Device
 
     override fun enable(address: String) {
-        device = Device(address, protocol, DeviceType.ShangXiaZhi)
+        device = Device(address, protocol, DeviceType.BloodOxygen)
         bleManager.addDevices(device)
     }
 
