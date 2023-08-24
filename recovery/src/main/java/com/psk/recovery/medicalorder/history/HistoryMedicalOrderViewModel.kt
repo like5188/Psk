@@ -55,7 +55,7 @@ class HistoryMedicalOrderViewModel(
      * 更新uiState的时间间隙，用于控制快进
      */
     var updateUiStateInterval = 1000L
-    private val sdf: SimpleDateFormat by inject(named("yyyy-MM-dd hh:mm:ss"))
+    private val sdf: SimpleDateFormat by inject(named("yyyy-MM-dd HH:mm:ss"))
     private var bloodOxygenList: List<BloodOxygen>? = null
     private var bloodPressureList: List<BloodPressure>? = null
     private var heartRateList: List<HeartRate>? = null

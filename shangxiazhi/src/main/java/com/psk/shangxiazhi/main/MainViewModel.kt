@@ -11,16 +11,53 @@ import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
+import com.psk.common.util.SecondCountDownTimer
 import com.psk.common.util.showToast
 import com.psk.device.DeviceType
 import com.psk.shangxiazhi.devices.SelectDeviceDialogFragment
 import com.psk.shangxiazhi.game.GameManagerService
 import com.psk.shangxiazhi.scene.SceneActivity
 import com.twsz.twsystempre.TrainScene
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import org.koin.core.component.KoinApiExtension
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import org.koin.core.qualifier.named
+import java.text.SimpleDateFormat
+import java.util.Date
 
-class MainViewModel : ViewModel() {
+@OptIn(KoinApiExtension::class)
+class MainViewModel : ViewModel(), KoinComponent {
+    private val _uiState = MutableStateFlow(MainUiState())
+    val uiState = _uiState.asStateFlow()
     private lateinit var activity: ComponentActivity
     private var gameManagerService: GameManagerService? = null
+    private val sdf: SimpleDateFormat by inject(named("yyyy-MM-dd HH:mm:ss"))
+    private val countDownTimer by lazy {
+        object : SecondCountDownTimer(Int.MAX_VALUE.toLong(), 1) {
+            override fun onSecondsTick(secondsUntilFinished: Long) {
+                _uiState.update {
+                    it.copy(
+                        time = sdf.format(Date())
+                    )
+                }
+            }
+
+            override fun onFinish() {
+            }
+        }
+    }
+
+    init {
+        countDownTimer.start()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        countDownTimer.cancel()
+    }
 
     //创建一个ServiceConnection回调，通过IBinder进行交互
     private val localConnection = object : ServiceConnection {

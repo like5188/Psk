@@ -3,6 +3,7 @@ package com.psk.shangxiazhi.main
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import com.like.common.util.mvi.propertyCollector
 import com.like.common.util.startActivity
 import com.psk.common.CommonApplication
 import com.psk.common.util.showToast
@@ -40,6 +41,15 @@ class MainActivity : AppCompatActivity() {
         }
         mBinding.ivSetting.setOnClickListener {
             SettingActivity.start()
+        }
+        collectUiState()
+    }
+
+    private fun collectUiState() {
+        mViewModel.uiState.propertyCollector(this) {
+            collectDistinctProperty(MainUiState::time) {
+                mBinding.tvTime.text = it
+            }
         }
     }
 

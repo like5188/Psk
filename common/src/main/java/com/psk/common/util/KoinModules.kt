@@ -25,7 +25,7 @@ val commonModule = module {
     single(named("yyyy-MM-dd")) {
         SimpleDateFormat("yyyy-MM-dd")
     }
-    single(named("yyyy-MM-dd hh:mm:ss")) {
-        SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
+    single(named("yyyy-MM-dd HH:mm:ss")) {
+        SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
     }
 }
