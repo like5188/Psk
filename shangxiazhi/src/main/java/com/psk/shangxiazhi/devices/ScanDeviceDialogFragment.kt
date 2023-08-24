@@ -101,7 +101,7 @@ class ScanDeviceDialogFragment private constructor() : BaseDialogFragment(), Koi
     override fun initLayoutParams(layoutParams: WindowManager.LayoutParams) {
         // 宽高
         resources.displayMetrics?.widthPixels?.let {
-            layoutParams.width = (it * 0.5).toInt()
+            layoutParams.width = (it * 0.5).toInt() - 1
         }
         layoutParams.height = WindowManager.LayoutParams.MATCH_PARENT
         // 位置
