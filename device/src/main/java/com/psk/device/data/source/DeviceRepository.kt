@@ -61,22 +61,6 @@ class DeviceRepository : KoinComponent {
         shangXiaZhiDataSource.enable(address)
     }
 
-    fun listenLatestBloodOxygen(startTime: Long): Flow<BloodOxygen> {
-        return bloodOxygenDbDataSource.listenLatest(startTime)
-    }
-
-    fun listenLatestBloodPressure(startTime: Long): Flow<BloodPressure> {
-        return bloodPressureDbDataSource.listenLatest(startTime)
-    }
-
-    fun listenLatestHeartRate(startTime: Long): Flow<HeartRate> {
-        return heartRateDbDataSource.listenLatest(startTime)
-    }
-
-    fun listenLatestShangXiaZhi(startTime: Long): Flow<ShangXiaZhi> {
-        return shangXiaZhiDbDataSource.listenLatest(startTime)
-    }
-
     suspend fun getBloodOxygenByMedicalOrderId(medicalOrderId: Long): List<BloodOxygen>? {
         return bloodOxygenDbDataSource.getByMedicalOrderId(medicalOrderId)
     }
@@ -91,6 +75,22 @@ class DeviceRepository : KoinComponent {
 
     suspend fun getShangXiaZhiByMedicalOrderId(medicalOrderId: Long): List<ShangXiaZhi>? {
         return shangXiaZhiDbDataSource.getByMedicalOrderId(medicalOrderId)
+    }
+
+    fun listenLatestBloodOxygen(startTime: Long): Flow<BloodOxygen> {
+        return bloodOxygenDbDataSource.listenLatest(startTime)
+    }
+
+    fun listenLatestBloodPressure(startTime: Long): Flow<BloodPressure> {
+        return bloodPressureDbDataSource.listenLatest(startTime)
+    }
+
+    fun listenLatestHeartRate(startTime: Long): Flow<HeartRate> {
+        return heartRateDbDataSource.listenLatest(startTime)
+    }
+
+    fun listenLatestShangXiaZhi(startTime: Long): Flow<ShangXiaZhi> {
+        return shangXiaZhiDbDataSource.listenLatest(startTime)
     }
 
     suspend fun fetchBloodOxygenAndSave(medicalOrderId: Long) {
