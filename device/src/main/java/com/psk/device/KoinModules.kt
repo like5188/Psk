@@ -64,6 +64,6 @@ val deviceModule = module {
 
     // BleManager
     single {
-        BleManager(get())
+        BleManager(get(), get())
     }
 }

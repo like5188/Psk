@@ -1,5 +1,6 @@
 package com.psk.device.data.source
 
+import android.content.Context
 import com.psk.device.DeviceType
 import com.psk.device.data.model.BloodOxygen
 import com.psk.device.data.model.BloodPressure
@@ -30,6 +31,17 @@ class DeviceRepository(
     private var bloodPressureDataSource: BaseBloodPressureDataSource? = null
     private var heartRateDataSource: BaseHeartRateDataSource? = null
     private var shangXiaZhiDataSource: BaseShangXiaZhiDataSource? = null
+
+    internal suspend fun init(context: Context) {
+        BleDeviceDataSourceFactory.init(context)
+    }
+
+    /**
+     * 判断指定设备名称[name]是否属于指定设备类型[deviceType]
+     */
+    fun match(name: String, deviceType: DeviceType): Boolean {
+        return BleDeviceDataSourceFactory.match(name, deviceType)
+    }
 
     fun enableBloodOxygen(name: String, address: String) {
         bloodOxygenDataSource = BleDeviceDataSourceFactory.create(name, DeviceType.BloodOxygen) as BaseBloodOxygenDataSource?

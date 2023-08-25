@@ -6,11 +6,11 @@ import com.like.ble.central.scan.result.ScanResult
 import com.like.ble.util.BleBroadcastReceiverManager
 import com.like.ble.util.PermissionUtils
 import com.like.ble.util.hexStringToByteArray
-import com.psk.device.data.source.remote.BleDeviceDataSourceFactory
+import com.psk.device.data.source.DeviceRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 
-class BleManager(private val context: Context) {
+class BleManager(private val context: Context, val deviceRepository: DeviceRepository) {
     private val bleBroadcastReceiverManager by lazy {
         BleBroadcastReceiverManager(context, onBleOn = {}, onBleOff = {
             onTip?.invoke(Error("蓝牙已关闭"))
@@ -29,7 +29,7 @@ class BleManager(private val context: Context) {
     }
 
     suspend fun init(activity: ComponentActivity) {
-        BleDeviceDataSourceFactory.init(context)
+        deviceRepository.init(activity)
         PermissionUtils.requestScanEnvironment(activity)
         PermissionUtils.requestConnectEnvironment(activity)
     }

@@ -46,10 +46,12 @@ class GameManagerService : Service(), KoinComponent {
         private val TAG = GameManagerService::class.java.simpleName
     }
 
-    private val deviceRepository by inject<DeviceRepository>()
     private val gameController by inject<GameController>()
     private val decimalFormat by inject<DecimalFormat>()
     private val bleManager by inject<BleManager>()
+    private val deviceRepository: DeviceRepository by lazy {
+        bleManager.deviceRepository
+    }
     private var fetchShangXiaZhiAndSaveJob: Job? = null
     private var fetchHeartRateAndSaveJob: Job? = null
     private var fetchBloodOxygenAndSaveJob: Job? = null
