@@ -1,8 +1,7 @@
 package com.psk.device.data.source.remote
 
 import com.psk.device.DeviceType
-import com.psk.device.data.source.remote.BleDeviceDataSourceFactory.create
-import com.psk.device.data.source.remote.BleDeviceDataSourceFactory.match
+import com.psk.device.data.source.remote.BleDeviceDataSourceFactory.dataSources
 import com.psk.device.data.source.remote.ble.BP_BloodPressureDataSource
 import com.psk.device.data.source.remote.ble.ER1_HeartRateDataSource
 import com.psk.device.data.source.remote.ble.O2_BloodOxygenDataSource
@@ -14,87 +13,52 @@ import com.psk.device.data.source.remote.ble.SCI411C_HeartRateDataSource
  * 蓝牙设备数据源工厂
  * 注意：如果要添加新的蓝牙设备，那么需要一下步骤：
  * 1、新增一个 datasource 到 [com.psk.device.data.source.remote.ble] 中。
- * 2、处理本类，包括：添加名称前缀、以及修改[create]、[match]方法。
- * 3、在[com.psk.device.data.source.DeviceRepository]中添加自己想要的方法。
+ * 2、在[com.psk.device.data.source.DeviceRepository]中添加自己想要的方法。
+ * 3、在本类的[dataSources]中增加数据源及它的名称前缀。
  */
 object BleDeviceDataSourceFactory {
-    private const val BP_NamePrefix = "BP"
-    private const val ER1_NamePrefix = "ER1"
-    private const val O2_NamePrefix = "O2"
-    private const val RKF_NamePrefix = "RKF"
-    private const val SCI311W_NamePrefix = "A00219"
-    private const val SCI411C_NamePrefix = "C00228"
+    private val dataSources = mapOf(
+        DeviceType.BloodOxygen to mapOf(
+            "O2" to O2_BloodOxygenDataSource::class.java
+        ),
+        DeviceType.BloodPressure to mapOf(
+            "BP" to BP_BloodPressureDataSource::class.java
+        ),
+        DeviceType.HeartRate to mapOf(
+            "ER1" to ER1_HeartRateDataSource::class.java,
+            "A00219" to SCI311W_HeartRateDataSource::class.java,
+            "C00228" to SCI411C_HeartRateDataSource::class.java,
+        ),
+        DeviceType.ShangXiaZhi to mapOf(
+            "RKF" to RKF_ShangXiaZhiDataSource::class.java
+        ),
+    )
 
     /**
-     * 根据设备名称和设备类型创建数据源
+     * 根据设备名称和设备类型反射创建数据源
      */
     fun create(name: String, deviceType: DeviceType): BaseRemoteDeviceDataSource? {
-        return when (deviceType) {
-            DeviceType.BloodOxygen -> {
-                when {
-                    name.startsWith(O2_NamePrefix) -> {
-                        O2_BloodOxygenDataSource()
-                    }
-
-                    else -> null
-                }
-            }
-
-            DeviceType.BloodPressure -> {
-                when {
-                    name.startsWith(BP_NamePrefix) -> {
-                        BP_BloodPressureDataSource()
-                    }
-
-                    else -> null
-                }
-            }
-
-            DeviceType.HeartRate -> {
-                when {
-                    name.startsWith(ER1_NamePrefix) -> {
-                        ER1_HeartRateDataSource()
-                    }
-
-                    name.startsWith(SCI311W_NamePrefix) -> {
-                        SCI311W_HeartRateDataSource()
-                    }
-
-                    name.startsWith(SCI411C_NamePrefix) -> {
-                        SCI411C_HeartRateDataSource()
-                    }
-
-                    else -> null
-                }
-            }
-
-            DeviceType.ShangXiaZhi -> {
-                when {
-                    name.startsWith(RKF_NamePrefix) -> {
-                        RKF_ShangXiaZhiDataSource()
-                    }
-
-                    else -> null
-                }
-            }
+        val map = dataSources.getOrDefault(deviceType, null) ?: return null
+        val key = map.keys.find { name.startsWith(it) }
+        if (key.isNullOrEmpty()) {
+            return null
+        }
+        return try {
+            map[key]?.newInstance()
+        } catch (e: Exception) {
+            null
         }
     }
 
     /**
-     * 当前设备名称和设备类型是否匹配
+     * 判断指定设备名称[name]是否属于指定设备类型[deviceType]
      */
     fun match(name: String, deviceType: DeviceType): Boolean {
         if (name.isEmpty()) {
             return false
         }
-        return when (deviceType) {
-            DeviceType.BloodOxygen -> name.startsWith(O2_NamePrefix)
-            DeviceType.BloodPressure -> name.startsWith(BP_NamePrefix)
-            DeviceType.HeartRate -> name.startsWith(ER1_NamePrefix) ||
-                    name.startsWith(SCI311W_NamePrefix) ||
-                    name.startsWith(SCI411C_NamePrefix)
-
-            DeviceType.ShangXiaZhi -> name.startsWith(RKF_NamePrefix)
-        }
+        val map = dataSources.getOrDefault(deviceType, null) ?: return false
+        return map.keys.any { name.startsWith(it) }
     }
+
 }
