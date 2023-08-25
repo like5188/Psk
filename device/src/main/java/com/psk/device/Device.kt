@@ -1,11 +1,6 @@
 package com.psk.device
 
 import com.like.ble.util.toUUID
-import com.psk.device.data.source.remote.ble.BP_BloodPressureDataSource
-import com.psk.device.data.source.remote.ble.ER1_HeartRateDataSource
-import com.psk.device.data.source.remote.ble.O2_BloodOxygenDataSource
-import com.psk.device.data.source.remote.ble.RKF_ShangXiaZhiDataSource
-import com.psk.device.data.source.remote.ble.SCI311W_HeartRateDataSource
 import java.io.Serializable
 import java.util.UUID
 
@@ -67,21 +62,4 @@ data class Protocol(
  */
 enum class DeviceType : Serializable {
     BloodOxygen, BloodPressure, HeartRate, ShangXiaZhi;
-
-    /**
-     * 当前设备类型是否包含指定设备
-     *
-     * @param deviceName    设备名称
-     */
-    fun contains(deviceName: String?): Boolean {
-        if (deviceName.isNullOrEmpty()) {
-            return false
-        }
-        return when (this) {
-            BloodOxygen -> deviceName.startsWith(O2_BloodOxygenDataSource.NAME_PREFIX)
-            BloodPressure -> deviceName.startsWith(BP_BloodPressureDataSource.NAME_PREFIX)
-            HeartRate -> deviceName.startsWith(ER1_HeartRateDataSource.NAME_PREFIX) || deviceName.startsWith(SCI311W_HeartRateDataSource.NAME_PREFIX)
-            ShangXiaZhi -> deviceName.startsWith(RKF_ShangXiaZhiDataSource.NAME_PREFIX)
-        }
-    }
 }

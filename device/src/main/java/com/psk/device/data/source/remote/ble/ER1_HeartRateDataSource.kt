@@ -78,7 +78,4 @@ class ER1_HeartRateDataSource : BaseHeartRateDataSource(DeviceType.HeartRate) {
         return cmd
     }
 
-    companion object {
-        const val NAME_PREFIX: String = "ER1"
-    }
 }

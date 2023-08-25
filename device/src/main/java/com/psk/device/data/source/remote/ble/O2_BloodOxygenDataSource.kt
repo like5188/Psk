@@ -30,7 +30,4 @@ class O2_BloodOxygenDataSource : BaseBloodOxygenDataSource(DeviceType.BloodOxyge
         }
     }
 
-    companion object {
-        const val NAME_PREFIX: String = "O2"
-    }
 }

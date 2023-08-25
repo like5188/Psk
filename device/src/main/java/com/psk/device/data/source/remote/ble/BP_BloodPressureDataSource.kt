@@ -30,7 +30,4 @@ class BP_BloodPressureDataSource : BaseBloodPressureDataSource(DeviceType.BloodP
         }
     }
 
-    companion object {
-        const val NAME_PREFIX: String = "BP"
-    }
 }

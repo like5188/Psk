@@ -14,6 +14,7 @@ import com.like.common.base.BaseDialogFragment
 import com.like.recyclerview.layoutmanager.WrapLinearLayoutManager
 import com.psk.device.BleManager
 import com.psk.device.DeviceType
+import com.psk.device.data.source.remote.BleDeviceDataSourceFactory
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.data.model.BleScanInfo
 import com.psk.shangxiazhi.databinding.DialogFragmentScanDeviceBinding
@@ -75,7 +76,7 @@ class ScanDeviceDialogFragment private constructor() : BaseDialogFragment(), Koi
                     return@collect
                 }
 
-                if (deviceType.contains(name)) {
+                if (BleDeviceDataSourceFactory.match(name, deviceType)) {
                     val item: BleScanInfo? = mAdapter.currentList.firstOrNull { it?.address == address }
                     if (item == null) {// 防止重复添加
                         val newItems = mAdapter.currentList.toMutableList()

@@ -726,7 +726,4 @@ class SCI311W_HeartRateDataSource : BaseHeartRateDataSource(DeviceType.HeartRate
         }
     }
 
-    companion object {
-        const val NAME_PREFIX: String = "A00219"
-    }
 }

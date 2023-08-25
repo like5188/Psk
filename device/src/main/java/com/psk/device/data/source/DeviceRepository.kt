@@ -1,5 +1,6 @@
 package com.psk.device.data.source
 
+import com.psk.device.DeviceType
 import com.psk.device.data.model.BloodOxygen
 import com.psk.device.data.model.BloodPressure
 import com.psk.device.data.model.HeartRate
@@ -12,16 +13,11 @@ import com.psk.device.data.source.remote.BaseBloodOxygenDataSource
 import com.psk.device.data.source.remote.BaseBloodPressureDataSource
 import com.psk.device.data.source.remote.BaseHeartRateDataSource
 import com.psk.device.data.source.remote.BaseShangXiaZhiDataSource
-import com.psk.device.data.source.remote.ble.BP_BloodPressureDataSource
-import com.psk.device.data.source.remote.ble.ER1_HeartRateDataSource
-import com.psk.device.data.source.remote.ble.O2_BloodOxygenDataSource
+import com.psk.device.data.source.remote.BleDeviceDataSourceFactory
 import com.psk.device.data.source.remote.ble.RKF_ShangXiaZhiDataSource
-import com.psk.device.data.source.remote.ble.SCI311W_HeartRateDataSource
 import kotlinx.coroutines.flow.Flow
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
-import org.koin.core.qualifier.named
 
 @OptIn(KoinApiExtension::class)
 class DeviceRepository(
@@ -36,50 +32,22 @@ class DeviceRepository(
     private var shangXiaZhiDataSource: BaseShangXiaZhiDataSource? = null
 
     fun enableBloodOxygen(name: String, address: String) {
-        bloodOxygenDataSource = when {
-            name.startsWith(O2_BloodOxygenDataSource.NAME_PREFIX) -> {
-                this.get(named(O2_BloodOxygenDataSource.NAME_PREFIX))
-            }
-
-            else -> null
-        }
+        bloodOxygenDataSource = BleDeviceDataSourceFactory.create(name, DeviceType.BloodOxygen) as BaseBloodOxygenDataSource?
         bloodOxygenDataSource?.enable(address)
     }
 
     fun enableBloodPressure(name: String, address: String) {
-        bloodPressureDataSource = when {
-            name.startsWith(BP_BloodPressureDataSource.NAME_PREFIX) -> {
-                this.get(named(BP_BloodPressureDataSource.NAME_PREFIX))
-            }
-
-            else -> null
-        }
+        bloodPressureDataSource = BleDeviceDataSourceFactory.create(name, DeviceType.BloodPressure) as BaseBloodPressureDataSource?
         bloodPressureDataSource?.enable(address)
     }
 
     fun enableHeartRate(name: String, address: String) {
-        heartRateDataSource = when {
-            name.startsWith(ER1_HeartRateDataSource.NAME_PREFIX) -> {
-                this.get(named(ER1_HeartRateDataSource.NAME_PREFIX))
-            }
-
-            name.startsWith(SCI311W_HeartRateDataSource.NAME_PREFIX) -> {
-                this.get(named(SCI311W_HeartRateDataSource.NAME_PREFIX))
-            }
-
-            else -> null
-        }
+        heartRateDataSource = BleDeviceDataSourceFactory.create(name, DeviceType.HeartRate) as BaseHeartRateDataSource?
         heartRateDataSource?.enable(address)
     }
 
     fun enableShangXiaZhi(name: String, address: String) {
-        shangXiaZhiDataSource = when {
-            name.startsWith(RKF_ShangXiaZhiDataSource.NAME_PREFIX) -> {
-                this.get(named(RKF_ShangXiaZhiDataSource.NAME_PREFIX))
-            }
-
-            else -> null
-        }
+        shangXiaZhiDataSource = BleDeviceDataSourceFactory.create(name, DeviceType.ShangXiaZhi) as BaseShangXiaZhiDataSource?
         shangXiaZhiDataSource?.enable(address)
     }
 

@@ -124,8 +124,4 @@ class RKF_ShangXiaZhiDataSource : BaseShangXiaZhiDataSource(DeviceType.ShangXiaZ
         )
     }
 
-    companion object {
-        const val NAME_PREFIX: String = "RKF"
-    }
-
 }
