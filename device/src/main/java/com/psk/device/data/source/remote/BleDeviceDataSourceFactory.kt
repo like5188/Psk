@@ -14,7 +14,7 @@ import com.psk.device.data.source.remote.ble.SCI411C_HeartRateDataSource
  * 注意：如果要添加新的蓝牙设备，那么需要一下步骤：
  * 1、新增一个 datasource 到 [com.psk.device.data.source.remote.ble] 中。
  * 2、在[com.psk.device.data.source.DeviceRepository]中添加自己想要的方法。
- * 3、在本类的[dataSources]中增加数据源及它的名称前缀。
+ * 3、在本类的[dataSources]中增加蓝牙设备的数据源及它名称的前缀。
  */
 object BleDeviceDataSourceFactory {
     private val dataSources = mapOf(
