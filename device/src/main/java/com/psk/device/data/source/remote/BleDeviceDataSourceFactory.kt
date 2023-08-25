@@ -6,9 +6,6 @@ import com.psk.device.util.getSubclasses
 
 /**
  * 蓝牙设备数据源工厂
- * 注意：如果要添加新的蓝牙设备，那么需要一下步骤：
- * 1、新增一个 [deviceNamePrefix]_[DeviceType]Datasource 到 [com.psk.device.data.source.remote.ble] 中，注意命名格式和位置。
- * 2、在[com.psk.device.data.source.DeviceRepository]中添加自己想要的方法。
  */
 internal object BleDeviceDataSourceFactory {
     private lateinit var dataSourceClasses: List<Class<out BaseRemoteDeviceDataSource>>

@@ -20,6 +20,12 @@ import kotlinx.coroutines.flow.Flow
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 
+/**
+ * 蓝牙设备数据仓库
+ * 注意：如果要添加新的蓝牙设备，那么需要一下步骤：
+ * 1、新增一个 [扫描出来的蓝牙设备的名称前缀]_[DeviceType]Datasource 到 [com.psk.device.data.source.remote.ble] 中，注意命名格式和位置。
+ * 2、在本仓库中添加自己想要的方法。
+ */
 @OptIn(KoinApiExtension::class)
 class DeviceRepository(
     private val bloodOxygenDbDataSource: BloodOxygenDbDataSource,
