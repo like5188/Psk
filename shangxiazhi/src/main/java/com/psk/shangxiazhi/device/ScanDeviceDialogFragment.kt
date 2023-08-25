@@ -75,7 +75,7 @@ class ScanDeviceDialogFragment private constructor() : BaseDialogFragment(), Koi
                     return@collect
                 }
 
-                if (bleManager.deviceRepository.match(name, deviceType)) {
+                if (deviceType.containsDevice(name)) {
                     val item: BleScanInfo? = mAdapter.currentList.firstOrNull { it?.address == address }
                     if (item == null) {// 防止重复添加
                         val newItems = mAdapter.currentList.toMutableList()

@@ -17,7 +17,7 @@ internal object BleDeviceDataSourceFactory {
         dataSourceClasses = BaseRemoteDeviceDataSource::class.java.getSubclasses(context, "com.psk.device.data.source.remote.ble")
     }
 
-    private inline fun foreach(block: (prefix: String, deviceTypeName: String, Class<out BaseRemoteDeviceDataSource>) -> Unit) {
+    inline fun foreach(block: (prefix: String, deviceTypeName: String, Class<out BaseRemoteDeviceDataSource>) -> Unit) {
         for (clazz in dataSourceClasses) {
             val split = clazz.simpleName.split("_")
             if (split.size != 2) {
@@ -43,21 +43,6 @@ internal object BleDeviceDataSourceFactory {
             }
         }
         return null
-    }
-
-    /**
-     * 判断指定设备名称[name]是否属于指定设备类型[deviceType]
-     */
-    fun match(name: String, deviceType: DeviceType): Boolean {
-        if (name.isEmpty()) {
-            return false
-        }
-        foreach { prefix, deviceTypeName, clazz ->
-            if (deviceTypeName == deviceType.name && name.startsWith(prefix)) {
-                return true
-            }
-        }
-        return false
     }
 
 }

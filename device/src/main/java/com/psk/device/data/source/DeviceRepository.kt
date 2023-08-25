@@ -42,13 +42,6 @@ class DeviceRepository(
         BleDeviceDataSourceFactory.init(context)
     }
 
-    /**
-     * 判断指定设备名称[name]是否属于指定设备类型[deviceType]
-     */
-    fun match(name: String, deviceType: DeviceType): Boolean {
-        return BleDeviceDataSourceFactory.match(name, deviceType)
-    }
-
     fun enableBloodOxygen(name: String, address: String) {
         bloodOxygenDataSource = BleDeviceDataSourceFactory.create(name, DeviceType.BloodOxygen) as BaseBloodOxygenDataSource?
         bloodOxygenDataSource?.enable(address)
