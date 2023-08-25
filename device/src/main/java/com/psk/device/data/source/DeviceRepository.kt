@@ -32,29 +32,29 @@ class DeviceRepository(
     private val heartRateDbDataSource: HeartRateDbDataSource,
     private val shangXiaZhiDbDataSource: ShangXiaZhiDbDataSource,
 ) : KoinComponent {
-    private var bloodOxygenDataSource: BaseBloodOxygenDataSource? = null
-    private var bloodPressureDataSource: BaseBloodPressureDataSource? = null
-    private var heartRateDataSource: BaseHeartRateDataSource? = null
-    private var shangXiaZhiDataSource: BaseShangXiaZhiDataSource? = null
+    private lateinit var bloodOxygenDataSource: BaseBloodOxygenDataSource
+    private lateinit var bloodPressureDataSource: BaseBloodPressureDataSource
+    private lateinit var heartRateDataSource: BaseHeartRateDataSource
+    private lateinit var shangXiaZhiDataSource: BaseShangXiaZhiDataSource
 
     fun enableBloodOxygen(name: String, address: String) {
-        bloodOxygenDataSource = BleDeviceDataSourceFactory.create(name, DeviceType.BloodOxygen) as BaseBloodOxygenDataSource?
-        bloodOxygenDataSource?.enable(address)
+        bloodOxygenDataSource = BleDeviceDataSourceFactory.create(name, DeviceType.BloodOxygen) as BaseBloodOxygenDataSource
+        bloodOxygenDataSource.enable(address)
     }
 
     fun enableBloodPressure(name: String, address: String) {
-        bloodPressureDataSource = BleDeviceDataSourceFactory.create(name, DeviceType.BloodPressure) as BaseBloodPressureDataSource?
-        bloodPressureDataSource?.enable(address)
+        bloodPressureDataSource = BleDeviceDataSourceFactory.create(name, DeviceType.BloodPressure) as BaseBloodPressureDataSource
+        bloodPressureDataSource.enable(address)
     }
 
     fun enableHeartRate(name: String, address: String) {
-        heartRateDataSource = BleDeviceDataSourceFactory.create(name, DeviceType.HeartRate) as BaseHeartRateDataSource?
-        heartRateDataSource?.enable(address)
+        heartRateDataSource = BleDeviceDataSourceFactory.create(name, DeviceType.HeartRate) as BaseHeartRateDataSource
+        heartRateDataSource.enable(address)
     }
 
     fun enableShangXiaZhi(name: String, address: String) {
-        shangXiaZhiDataSource = BleDeviceDataSourceFactory.create(name, DeviceType.ShangXiaZhi) as BaseShangXiaZhiDataSource?
-        shangXiaZhiDataSource?.enable(address)
+        shangXiaZhiDataSource = BleDeviceDataSourceFactory.create(name, DeviceType.ShangXiaZhi) as BaseShangXiaZhiDataSource
+        shangXiaZhiDataSource.enable(address)
     }
 
     fun listenLatestBloodOxygen(startTime: Long): Flow<BloodOxygen> {
@@ -90,19 +90,19 @@ class DeviceRepository(
     }
 
     suspend fun fetchBloodOxygenAndSave(medicalOrderId: Long) {
-        bloodOxygenDataSource?.fetch(medicalOrderId)?.apply {
+        bloodOxygenDataSource.fetch(medicalOrderId)?.apply {
             bloodOxygenDbDataSource.save(this)
         }
     }
 
     suspend fun fetchBloodPressureAndSave(medicalOrderId: Long) {
-        bloodPressureDataSource?.fetch(medicalOrderId)?.apply {
+        bloodPressureDataSource.fetch(medicalOrderId)?.apply {
             bloodPressureDbDataSource.save(this)
         }
     }
 
     suspend fun fetchHeartRateAndSave(medicalOrderId: Long) {
-        heartRateDataSource?.fetch(medicalOrderId)?.collect {
+        heartRateDataSource.fetch(medicalOrderId).collect {
             heartRateDbDataSource.save(it)
         }
     }
@@ -115,21 +115,21 @@ class DeviceRepository(
             this.onPause = onPause
             this.onOver = onOver
         }
-        shangXiaZhiDataSource?.fetch(medicalOrderId)?.collect {
+        shangXiaZhiDataSource.fetch(medicalOrderId).collect {
             shangXiaZhiDbDataSource.save(it)
         }
     }
 
     suspend fun resumeShangXiaZhi() {
-        shangXiaZhiDataSource?.resume()
+        shangXiaZhiDataSource.resume()
     }
 
     suspend fun pauseShangXiaZhi() {
-        shangXiaZhiDataSource?.pause()
+        shangXiaZhiDataSource.pause()
     }
 
     suspend fun overShangXiaZhi() {
-        shangXiaZhiDataSource?.over()
+        shangXiaZhiDataSource.over()
     }
 
     /**
@@ -144,7 +144,7 @@ class DeviceRepository(
     suspend fun setShangXiaZhiParams(
         passiveModule: Boolean, timeInt: Int, speedInt: Int, spasmInt: Int, resistanceInt: Int, intelligent: Boolean, turn2: Boolean
     ) {
-        shangXiaZhiDataSource?.setParams(passiveModule, timeInt, speedInt, spasmInt, resistanceInt, intelligent, turn2)
+        shangXiaZhiDataSource.setParams(passiveModule, timeInt, speedInt, spasmInt, resistanceInt, intelligent, turn2)
     }
 
 }
