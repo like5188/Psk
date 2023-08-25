@@ -6,12 +6,14 @@ import com.like.ble.central.scan.result.ScanResult
 import com.like.ble.util.BleBroadcastReceiverManager
 import com.like.ble.util.PermissionUtils
 import com.like.ble.util.hexStringToByteArray
-import com.psk.device.data.source.DeviceRepository
 import com.psk.device.data.source.remote.BleDeviceDataSourceFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 
-class BleManager(private val context: Context, val deviceRepository: DeviceRepository) {
+/**
+ * 蓝牙设备相关的操作管理
+ */
+class BleManager(private val context: Context) {
     private val bleBroadcastReceiverManager by lazy {
         BleBroadcastReceiverManager(context, onBleOn = {}, onBleOff = {
             onTip?.invoke(Error("蓝牙已关闭"))
@@ -32,7 +34,7 @@ class BleManager(private val context: Context, val deviceRepository: DeviceRepos
     suspend fun init(activity: ComponentActivity) {
         // 必须放在这里初始化，否则扫描时，如果要用到[DeviceType.containsDevice]方法就没效果。
         // 也就是说[BleDeviceDataSourceFactory]工具类在使用[DeviceRepository]和[BleManager]时都需要用到。
-        BleDeviceDataSourceFactory.init(activity)
+        BleDeviceDataSourceFactory.init(context)
         PermissionUtils.requestScanEnvironment(activity)
         PermissionUtils.requestConnectEnvironment(activity)
     }
@@ -51,10 +53,7 @@ class BleManager(private val context: Context, val deviceRepository: DeviceRepos
      * 连接添加的所有蓝牙设备。
      */
     fun connectAll(
-        scope: CoroutineScope,
-        autoConnectInterval: Long,
-        onConnected: (Device) -> Unit,
-        onDisconnected: (Device) -> Unit
+        scope: CoroutineScope, autoConnectInterval: Long, onConnected: (Device) -> Unit, onDisconnected: (Device) -> Unit
     ) {
         if (connectManagers.isEmpty()) {
             onTip?.invoke(Normal("connectAll 请先调用 addDevices 方法添加设备。"))
