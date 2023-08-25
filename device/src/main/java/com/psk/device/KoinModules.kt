@@ -7,6 +7,7 @@ import com.psk.device.data.source.db.BloodOxygenDbDataSource
 import com.psk.device.data.source.db.BloodPressureDbDataSource
 import com.psk.device.data.source.db.HeartRateDbDataSource
 import com.psk.device.data.source.db.ShangXiaZhiDbDataSource
+import com.psk.device.data.source.remote.BleDeviceDataSourceFactory
 import org.koin.dsl.module
 
 /**
@@ -31,10 +32,18 @@ val deviceModule = module {
     factory {
         ShangXiaZhiDbDataSource(get())
     }
+    factory { (name: String, deviceType: DeviceType) ->
+        BleDeviceDataSourceFactory.create(name, deviceType)
+    }
 
     //repository
     factory {
         DeviceRepository()
+    }
+
+    // BleManager
+    single {
+        BleManager(get())
     }
 
     //ServerDatabase
@@ -55,10 +64,5 @@ val deviceModule = module {
     }
     single {
         get<DeviceDatabase>().shangXiaZhiDao()
-    }
-
-    // BleManager
-    single {
-        BleManager(get())
     }
 }

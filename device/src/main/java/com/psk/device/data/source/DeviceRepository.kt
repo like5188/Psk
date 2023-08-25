@@ -13,12 +13,12 @@ import com.psk.device.data.source.remote.BaseBloodOxygenDataSource
 import com.psk.device.data.source.remote.BaseBloodPressureDataSource
 import com.psk.device.data.source.remote.BaseHeartRateDataSource
 import com.psk.device.data.source.remote.BaseShangXiaZhiDataSource
-import com.psk.device.data.source.remote.BleDeviceDataSourceFactory
 import com.psk.device.data.source.remote.ble.RKF_ShangXiaZhiDataSource
 import kotlinx.coroutines.flow.Flow
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
+import org.koin.core.parameter.parametersOf
 
 /**
  * 蓝牙设备数据仓库
@@ -39,25 +39,25 @@ class DeviceRepository : KoinComponent {
 
     fun enableBloodOxygen(name: String, address: String) {
         bloodOxygenDbDataSource = get()
-        bloodOxygenDataSource = BleDeviceDataSourceFactory.create(name, DeviceType.BloodOxygen) as BaseBloodOxygenDataSource
+        bloodOxygenDataSource = get { parametersOf(name, DeviceType.BloodOxygen) }
         bloodOxygenDataSource.enable(address)
     }
 
     fun enableBloodPressure(name: String, address: String) {
         bloodPressureDbDataSource = get()
-        bloodPressureDataSource = BleDeviceDataSourceFactory.create(name, DeviceType.BloodPressure) as BaseBloodPressureDataSource
+        bloodPressureDataSource = get { parametersOf(name, DeviceType.BloodPressure) }
         bloodPressureDataSource.enable(address)
     }
 
     fun enableHeartRate(name: String, address: String) {
         heartRateDbDataSource = get()
-        heartRateDataSource = BleDeviceDataSourceFactory.create(name, DeviceType.HeartRate) as BaseHeartRateDataSource
+        heartRateDataSource = get { parametersOf(name, DeviceType.HeartRate) }
         heartRateDataSource.enable(address)
     }
 
     fun enableShangXiaZhi(name: String, address: String) {
         shangXiaZhiDbDataSource = get()
-        shangXiaZhiDataSource = BleDeviceDataSourceFactory.create(name, DeviceType.ShangXiaZhi) as BaseShangXiaZhiDataSource
+        shangXiaZhiDataSource = get { parametersOf(name, DeviceType.ShangXiaZhi) }
         shangXiaZhiDataSource.enable(address)
     }
 
