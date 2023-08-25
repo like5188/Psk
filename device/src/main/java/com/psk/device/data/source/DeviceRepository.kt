@@ -14,7 +14,12 @@ import com.psk.device.data.source.remote.BaseBloodPressureDataSource
 import com.psk.device.data.source.remote.BaseHeartRateDataSource
 import com.psk.device.data.source.remote.BaseShangXiaZhiDataSource
 import com.psk.device.data.source.remote.ble.RKF_ShangXiaZhiDataSource
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
@@ -61,67 +66,74 @@ class DeviceRepository : KoinComponent {
         shangXiaZhiDataSource.enable(address)
     }
 
-    suspend fun getBloodOxygenByMedicalOrderId(medicalOrderId: Long): List<BloodOxygen>? {
+    suspend fun getBloodOxygenListByMedicalOrderId(medicalOrderId: Long): List<BloodOxygen>? {
         return bloodOxygenDbDataSource.getByMedicalOrderId(medicalOrderId)
     }
 
-    suspend fun getBloodPressureByMedicalOrderId(medicalOrderId: Long): List<BloodPressure>? {
+    suspend fun getBloodPressureListByMedicalOrderId(medicalOrderId: Long): List<BloodPressure>? {
         return bloodPressureDbDataSource.getByMedicalOrderId(medicalOrderId)
     }
 
-    suspend fun getHeartRateByMedicalOrderId(medicalOrderId: Long): List<HeartRate>? {
+    suspend fun getHeartRateListByMedicalOrderId(medicalOrderId: Long): List<HeartRate>? {
         return heartRateDbDataSource.getByMedicalOrderId(medicalOrderId)
     }
 
-    suspend fun getShangXiaZhiByMedicalOrderId(medicalOrderId: Long): List<ShangXiaZhi>? {
+    suspend fun getShangXiaZhiListByMedicalOrderId(medicalOrderId: Long): List<ShangXiaZhi>? {
         return shangXiaZhiDbDataSource.getByMedicalOrderId(medicalOrderId)
     }
 
-    fun listenLatestBloodOxygen(startTime: Long): Flow<BloodOxygen> {
-        return bloodOxygenDbDataSource.listenLatest(startTime)
-    }
-
-    fun listenLatestBloodPressure(startTime: Long): Flow<BloodPressure> {
-        return bloodPressureDbDataSource.listenLatest(startTime)
-    }
-
-    fun listenLatestHeartRate(startTime: Long): Flow<HeartRate> {
-        return heartRateDbDataSource.listenLatest(startTime)
-    }
-
-    fun listenLatestShangXiaZhi(startTime: Long): Flow<ShangXiaZhi> {
-        return shangXiaZhiDbDataSource.listenLatest(startTime)
-    }
-
-    suspend fun fetchBloodOxygenAndSave(medicalOrderId: Long) {
-        bloodOxygenDataSource.fetch(medicalOrderId)?.apply {
-            bloodOxygenDbDataSource.save(this)
+    fun getBloodOxygenFlow(scope: CoroutineScope, medicalOrderId: Long, interval: Long = 1000): Flow<BloodOxygen> {
+        scope.launch(Dispatchers.IO) {
+            while (isActive) {
+                bloodOxygenDataSource.fetch(medicalOrderId)?.apply {
+                    bloodOxygenDbDataSource.save(this)
+                }
+                delay(interval)
+            }
         }
+        return bloodOxygenDbDataSource.listenLatest(System.currentTimeMillis() / 1000)
     }
 
-    suspend fun fetchBloodPressureAndSave(medicalOrderId: Long) {
-        bloodPressureDataSource.fetch(medicalOrderId)?.apply {
-            bloodPressureDbDataSource.save(this)
+    fun getBloodPressureFlow(scope: CoroutineScope, medicalOrderId: Long, interval: Long = 1000): Flow<BloodPressure> {
+        scope.launch(Dispatchers.IO) {
+            while (isActive) {
+                bloodPressureDataSource.fetch(medicalOrderId)?.apply {
+                    bloodPressureDbDataSource.save(this)
+                }
+                // 设备大概在3秒内可以多次获取同一次测量结果。
+                delay(interval)
+            }
         }
+        return bloodPressureDbDataSource.listenLatest(System.currentTimeMillis() / 1000)
     }
 
-    suspend fun fetchHeartRateAndSave(medicalOrderId: Long) {
-        heartRateDataSource.fetch(medicalOrderId).collect {
-            heartRateDbDataSource.save(it)
+    fun getHeartRateFlow(scope: CoroutineScope, medicalOrderId: Long): Flow<HeartRate> {
+        scope.launch(Dispatchers.IO) {
+            heartRateDataSource.fetch(medicalOrderId).collect {
+                heartRateDbDataSource.save(it)
+            }
         }
+        return heartRateDbDataSource.listenLatest(System.currentTimeMillis() / 1000)
     }
 
-    suspend fun fetchShangXiaZhiAndSave(
-        medicalOrderId: Long, onStart: (() -> Unit)? = null, onPause: (() -> Unit)? = null, onOver: (() -> Unit)? = null
-    ) {
-        (shangXiaZhiDataSource as? RKF_ShangXiaZhiDataSource)?.apply {
-            this.onStart = onStart
-            this.onPause = onPause
-            this.onOver = onOver
+    fun getShangXiaZhiFlow(
+        scope: CoroutineScope,
+        medicalOrderId: Long,
+        onStart: (() -> Unit)? = null,
+        onPause: (() -> Unit)? = null,
+        onOver: (() -> Unit)? = null,
+    ): Flow<ShangXiaZhi> {
+        scope.launch(Dispatchers.IO) {
+            (shangXiaZhiDataSource as? RKF_ShangXiaZhiDataSource)?.apply {
+                this.onStart = onStart
+                this.onPause = onPause
+                this.onOver = onOver
+            }
+            shangXiaZhiDataSource.fetch(medicalOrderId).collect {
+                shangXiaZhiDbDataSource.save(it)
+            }
         }
-        shangXiaZhiDataSource.fetch(medicalOrderId).collect {
-            shangXiaZhiDbDataSource.save(it)
-        }
+        return shangXiaZhiDbDataSource.listenLatest(System.currentTimeMillis() / 1000)
     }
 
     suspend fun resumeShangXiaZhi() {

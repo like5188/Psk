@@ -10,10 +10,6 @@ import androidx.lifecycle.lifecycleScope
 import com.psk.device.BleManager
 import com.psk.device.DeviceType
 import com.psk.device.Tip
-import com.psk.device.data.model.BloodOxygen
-import com.psk.device.data.model.BloodPressure
-import com.psk.device.data.model.HeartRate
-import com.psk.device.data.model.ShangXiaZhi
 import com.psk.device.data.source.DeviceRepository
 import com.psk.shangxiazhi.data.model.BleScanInfo
 import com.twsz.twsystempre.GameCallback
@@ -24,13 +20,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
@@ -50,10 +44,10 @@ class GameManagerService : Service(), KoinComponent {
     private val deviceRepository by inject<DeviceRepository>()
     private val gameController by inject<GameController>()
     private val decimalFormat by inject<DecimalFormat>()
-    private var fetchShangXiaZhiAndSaveJob: Job? = null
-    private var fetchHeartRateAndSaveJob: Job? = null
-    private var fetchBloodOxygenAndSaveJob: Job? = null
-    private var fetchBloodPressureAndSaveJob: Job? = null
+    private var shangXiaZhiJob: Job? = null
+    private var heartRateJob: Job? = null
+    private var bloodOxygenJob: Job? = null
+    private var bloodPressureJob: Job? = null
     private var existHeartRate: Boolean = false
     private var existBloodOxygen: Boolean = false
     private var existBloodPressure: Boolean = false
@@ -63,12 +57,7 @@ class GameManagerService : Service(), KoinComponent {
      * 初始化蓝牙相关的工具类
      * @param onTip     蓝牙相关的提示
      */
-    fun initBle(
-        activity: ComponentActivity,
-        onTip: ((Tip) -> Unit)? = {
-            Log.e(TAG, "onTip ${it.msg}")
-        }
-    ) {
+    fun initBle(activity: ComponentActivity, onTip: ((Tip) -> Unit)? = { Log.e(TAG, "onTip ${it.msg}") }) {
         lifecycleScope = activity.lifecycleScope
         bleManager.onTip = onTip
         lifecycleScope.launch {
@@ -102,22 +91,17 @@ class GameManagerService : Service(), KoinComponent {
 
             override fun onLoading() {
                 Log.d(TAG, "game onLoading")
-                val curTime = System.currentTimeMillis() / 1000
                 devices.getOrDefault(DeviceType.ShangXiaZhi, null)?.apply {
                     deviceRepository.enableShangXiaZhi(this.name, this.address)
-                    getShangXiaZhi(deviceRepository.listenLatestShangXiaZhi(curTime))
                 }
                 devices.getOrDefault(DeviceType.HeartRate, null)?.apply {
                     deviceRepository.enableHeartRate(this.name, this.address)
-                    getHeartRate(deviceRepository.listenLatestHeartRate(curTime))
                 }
                 devices.getOrDefault(DeviceType.BloodOxygen, null)?.apply {
                     deviceRepository.enableBloodOxygen(this.name, this.address)
-                    getBloodOxygen(deviceRepository.listenLatestBloodOxygen(curTime))
                 }
                 devices.getOrDefault(DeviceType.BloodPressure, null)?.apply {
                     deviceRepository.enableBloodPressure(this.name, this.address)
-                    getBloodPressure(deviceRepository.listenLatestBloodPressure(curTime))
                 }
                 bleManager.connectAll(lifecycleScope, 3000L, onConnected = {
                     when (it.type) {
@@ -126,7 +110,7 @@ class GameManagerService : Service(), KoinComponent {
                             gameController.updateGameConnectionState(true)
                             lifecycleScope.launch(Dispatchers.IO) {
                                 waitStart()
-                                fetchShangXiaZhiAndSave()
+                                startShangXiaZhiJob()
                                 delay(100)
                                 //设置上下肢参数，设置好后，如果是被动模式，上下肢会自动运行
                                 deviceRepository.setShangXiaZhiParams(
@@ -146,7 +130,7 @@ class GameManagerService : Service(), KoinComponent {
                             gameController.updateEcgConnectionState(true)
                             lifecycleScope.launch(Dispatchers.IO) {
                                 waitStart()
-                                fetchHeartRateAndSave()
+                                startHeartRateJob()
                             }
                         }
 
@@ -155,7 +139,7 @@ class GameManagerService : Service(), KoinComponent {
                             gameController.updateBloodOxygenConnectionState(true)
                             lifecycleScope.launch(Dispatchers.IO) {
                                 waitStart()
-                                fetchBloodOxygenAndSave()
+                                startBloodOxygenJob()
                             }
                         }
 
@@ -164,7 +148,7 @@ class GameManagerService : Service(), KoinComponent {
                             gameController.updateBloodPressureConnectionState(true)
                             lifecycleScope.launch(Dispatchers.IO) {
                                 waitStart()
-                                fetchBloodPressureAndSave()
+                                startBloodPressureJob()
                             }
                         }
 
@@ -175,29 +159,29 @@ class GameManagerService : Service(), KoinComponent {
                         DeviceType.ShangXiaZhi -> {
                             Log.e(TAG, "上下肢连接失败 $it")
                             gameController.updateGameConnectionState(false)
-                            fetchShangXiaZhiAndSaveJob?.cancel()
-                            fetchShangXiaZhiAndSaveJob = null
+                            shangXiaZhiJob?.cancel()
+                            shangXiaZhiJob = null
                         }
 
                         DeviceType.HeartRate -> {
                             Log.e(TAG, "心电仪连接失败 $it")
                             gameController.updateEcgConnectionState(false)
-                            fetchHeartRateAndSaveJob?.cancel()
-                            fetchHeartRateAndSaveJob = null
+                            heartRateJob?.cancel()
+                            heartRateJob = null
                         }
 
                         DeviceType.BloodOxygen -> {
                             Log.e(TAG, "血氧仪连接失败 $it")
                             gameController.updateBloodOxygenConnectionState(false)
-                            fetchBloodOxygenAndSaveJob?.cancel()
-                            fetchBloodOxygenAndSaveJob = null
+                            bloodOxygenJob?.cancel()
+                            bloodOxygenJob = null
                         }
 
                         DeviceType.BloodPressure -> {
                             Log.e(TAG, "血压仪连接失败 $it")
                             gameController.updateBloodPressureConnectionState(false)
-                            fetchBloodPressureAndSaveJob?.cancel()
-                            fetchBloodPressureAndSaveJob = null
+                            bloodPressureJob?.cancel()
+                            bloodPressureJob = null
                         }
 
                         else -> {}
@@ -214,7 +198,7 @@ class GameManagerService : Service(), KoinComponent {
                 Log.d(TAG, "game onResume")
                 lifecycleScope.launch(Dispatchers.IO) {
                     deviceRepository.resumeShangXiaZhi()
-                    startFetchAndSaveJobExceptShangXiaZhi()
+                    startJobsExceptShangXiaZhi()
                 }
             }
 
@@ -222,7 +206,7 @@ class GameManagerService : Service(), KoinComponent {
                 Log.d(TAG, "game onPause")
                 lifecycleScope.launch(Dispatchers.IO) {
                     deviceRepository.pauseShangXiaZhi()
-                    cancelFetchAndSaveJobExceptShangXiaZhi()
+                    cancelJobsExceptShangXiaZhi()
                 }
             }
 
@@ -230,9 +214,9 @@ class GameManagerService : Service(), KoinComponent {
                 Log.d(TAG, "game onOver")
                 lifecycleScope.launch(Dispatchers.IO) {
                     deviceRepository.overShangXiaZhi()
-                    fetchShangXiaZhiAndSaveJob?.cancel()
-                    fetchShangXiaZhiAndSaveJob = null
-                    cancelFetchAndSaveJobExceptShangXiaZhi()
+                    shangXiaZhiJob?.cancel()
+                    shangXiaZhiJob = null
+                    cancelJobsExceptShangXiaZhi()
                     destroyBle()
                 }
             }
@@ -248,55 +232,33 @@ class GameManagerService : Service(), KoinComponent {
         }
     }
 
-    private fun destroyBle() {
-        // 由于 bleManager.onDestroy() 方法不会触发 connect() 方法的 onDisconnected 回调，
-        // 所以只能单独调用 updateXxxConnectionState 方法更新界面状态。
-        bleManager.onDestroy()
-        gameController.updateGameConnectionState(false)
+    private fun startJobsExceptShangXiaZhi() {
         if (existHeartRate) {
-            gameController.updateEcgConnectionState(false)
+            startHeartRateJob()
         }
         if (existBloodOxygen) {
-            gameController.updateBloodOxygenConnectionState(false)
+            startBloodOxygenJob()
         }
         if (existBloodPressure) {
-            gameController.updateBloodPressureConnectionState(false)
+            startBloodPressureJob()
         }
     }
 
-    private fun startFetchAndSaveJobExceptShangXiaZhi() {
-        if (existHeartRate) {
-            fetchHeartRateAndSave()
-        }
-        if (existBloodOxygen) {
-            fetchBloodOxygenAndSave()
-        }
-        if (existBloodPressure) {
-            fetchBloodPressureAndSave()
-        }
+    private fun cancelJobsExceptShangXiaZhi() {
+        heartRateJob?.cancel()
+        heartRateJob = null
+        bloodOxygenJob?.cancel()
+        bloodOxygenJob = null
+        bloodPressureJob?.cancel()
+        bloodPressureJob = null
     }
 
-    private fun cancelFetchAndSaveJobExceptShangXiaZhi() {
-        fetchHeartRateAndSaveJob?.cancel()
-        fetchHeartRateAndSaveJob = null
-        fetchBloodOxygenAndSaveJob?.cancel()
-        fetchBloodOxygenAndSaveJob = null
-        fetchBloodPressureAndSaveJob?.cancel()
-        fetchBloodPressureAndSaveJob = null
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d(TAG, "onDestroy")
-        fetchShangXiaZhiAndSaveJob?.cancel()
-        fetchShangXiaZhiAndSaveJob = null
-        cancelFetchAndSaveJobExceptShangXiaZhi()
-        destroyBle()
-        gameController.destroy()
-    }
-
-    private fun getShangXiaZhi(flow: Flow<ShangXiaZhi?>) {
-        lifecycleScope.launch(Dispatchers.IO) {
+    private fun startShangXiaZhiJob() {
+        if (shangXiaZhiJob != null) {
+            return
+        }
+        shangXiaZhiJob = lifecycleScope.launch(Dispatchers.IO) {
+            Log.d(TAG, "startShangXiaZhiJob")
             var mActiveMil = 0f// 主动里程数
             var mPassiveMil = 0f// 被动里程数
             var totalCal = 0f// 总卡路里
@@ -304,8 +266,27 @@ class GameManagerService : Service(), KoinComponent {
             var mFirstSpasmValue = 0// 第一次痉挛值
             var spasm = 0// 痉挛值
             // 这里不能用 distinctUntilChanged、conflate 等操作符，因为需要根据所有数据来计算里程等。必须得到每次数据。
-            flow.buffer(Int.MAX_VALUE).collect { shangXiaZhi ->
-                shangXiaZhi ?: return@collect
+            deviceRepository.getShangXiaZhiFlow(
+                lifecycleScope, 1,
+                onStart = {
+                    Log.d(TAG, "game onStart by shang xia zhi")
+                    gameController.startGame()
+                    startJobsExceptShangXiaZhi()
+                },
+                onPause = {
+                    Log.d(TAG, "game onPause by shang xia zhi")
+                    gameController.pauseGame()
+                    cancelJobsExceptShangXiaZhi()
+                },
+                onOver = {
+                    Log.d(TAG, "game onOver by shang xia zhi")
+                    gameController.overGame()
+                    shangXiaZhiJob?.cancel()
+                    shangXiaZhiJob = null
+                    cancelJobsExceptShangXiaZhi()
+                    bleManager.onDestroy()
+                }
+            ).buffer(Int.MAX_VALUE).collect { shangXiaZhi ->
                 //转速
                 val speed = shangXiaZhi.speedValue
                 //阻力
@@ -368,118 +349,85 @@ class GameManagerService : Service(), KoinComponent {
         }
     }
 
-    private fun getHeartRate(flow: Flow<HeartRate?>) {
-        lifecycleScope.launch(Dispatchers.IO) {
-            flow.filterNotNull().map {
-                it.value
-            }.distinctUntilChanged().collect { value ->
-                gameController.updateHeartRateData(value)
-            }
+    private fun startHeartRateJob() {
+        if (heartRateJob != null) {
+            return
         }
-        lifecycleScope.launch(Dispatchers.IO) {
-            flow.filterNotNull().map {
-                it.coorYValues
-            }.buffer(Int.MAX_VALUE).collect { coorYValues ->
-                // 注意：此处不能使用 onEach 进行每个数据的延迟，因为只要延迟，由于系统资源的调度损耗，延迟会比设置的值增加10多毫秒，所以延迟10多毫秒以下毫无意义，因为根本不可能达到。
-                // 这也导致1秒钟时间段内，就算延迟1毫秒，实际上延迟却会达到10多毫秒，导致最多只能发射60多个数据（实际测试）。
-                // 这就导致远远达不到心电仪的采样率的100多，从而会导致数据堆积越来越多，导致界面看起来会延迟很严重。
-                coorYValues.toList().chunked(5).forEach {
-                    // 5个一组，125多的采样率，那么1秒钟发射25组数据就好，平均每个数据需要延迟40毫秒。
-                    delay(1)
-                    gameController.updateEcgData(it.toFloatArray())
+        heartRateJob = lifecycleScope.launch(Dispatchers.IO) {
+            Log.d(TAG, "startHeartRateJob")
+            val flow = deviceRepository.getHeartRateFlow(lifecycleScope, 1).filterNotNull()
+            launch(Dispatchers.IO) {
+                flow.map {
+                    it.value
+                }.distinctUntilChanged().collect { value ->
+                    gameController.updateHeartRateData(value)
+                }
+            }
+            launch(Dispatchers.IO) {
+                flow.map {
+                    it.coorYValues
+                }.buffer(Int.MAX_VALUE).collect { coorYValues ->
+                    // 注意：此处不能使用 onEach 进行每个数据的延迟，因为只要延迟，由于系统资源的调度损耗，延迟会比设置的值增加10多毫秒，所以延迟10多毫秒以下毫无意义，因为根本不可能达到。
+                    // 这也导致1秒钟时间段内，就算延迟1毫秒，实际上延迟却会达到10多毫秒，导致最多只能发射60多个数据（实际测试）。
+                    // 这就导致远远达不到心电仪的采样率的100多，从而会导致数据堆积越来越多，导致界面看起来会延迟很严重。
+                    coorYValues.toList().chunked(5).forEach {
+                        // 5个一组，125多的采样率，那么1秒钟发射25组数据就好，平均每个数据需要延迟40毫秒。
+                        delay(1)
+                        gameController.updateEcgData(it.toFloatArray())
+                    }
                 }
             }
         }
     }
 
-    private fun getBloodOxygen(flow: Flow<BloodOxygen?>) {
-        lifecycleScope.launch(Dispatchers.IO) {
-            flow.distinctUntilChanged().conflate().collect { value ->
-                gameController.updateBloodOxygenData(value?.value ?: 0)
-            }
-        }
-    }
-
-    private fun getBloodPressure(flow: Flow<BloodPressure?>) {
-        lifecycleScope.launch(Dispatchers.IO) {
-            flow.distinctUntilChanged().conflate().collect { value ->
-                gameController.updateBloodPressureData(value?.sbp ?: 0, value?.dbp ?: 0)
-            }
-        }
-    }
-
-    private fun fetchShangXiaZhiAndSave() {
-        if (fetchShangXiaZhiAndSaveJob != null) {
+    private fun startBloodOxygenJob() {
+        if (bloodOxygenJob != null) {
             return
         }
-        fetchShangXiaZhiAndSaveJob = lifecycleScope.launch(Dispatchers.IO) {
-            Log.d(TAG, "fetchShangXiaZhiAndSave")
-            try {
-                deviceRepository.fetchShangXiaZhiAndSave(1, onStart = {
-                    lifecycleScope.launch(Dispatchers.IO) {
-                        Log.d(TAG, "game onStart by shang xia zhi")
-                        gameController.startGame()
-                        startFetchAndSaveJobExceptShangXiaZhi()
-                    }
-                }, onPause = {
-                    lifecycleScope.launch(Dispatchers.IO) {
-                        Log.d(TAG, "game onPause by shang xia zhi")
-                        gameController.pauseGame()
-                        cancelFetchAndSaveJobExceptShangXiaZhi()
-                    }
-                }, onOver = {
-                    lifecycleScope.launch(Dispatchers.IO) {
-                        Log.d(TAG, "game onOver by shang xia zhi")
-                        gameController.overGame()
-                        fetchShangXiaZhiAndSaveJob?.cancel()
-                        fetchShangXiaZhiAndSaveJob = null
-                        cancelFetchAndSaveJobExceptShangXiaZhi()
-                        bleManager.onDestroy()
-                    }
-                })
-            } catch (e: Exception) {
+        bloodOxygenJob = lifecycleScope.launch(Dispatchers.IO) {
+            Log.d(TAG, "startBloodOxygenJob")
+            deviceRepository.getBloodOxygenFlow(lifecycleScope, 1).distinctUntilChanged().conflate().collect { value ->
+                gameController.updateBloodOxygenData(value.value)
             }
         }
     }
 
-    private fun fetchHeartRateAndSave() {
-        if (fetchHeartRateAndSaveJob != null) {
+    private fun startBloodPressureJob() {
+        if (bloodPressureJob != null) {
             return
         }
-        fetchHeartRateAndSaveJob = lifecycleScope.launch(Dispatchers.IO) {
-            Log.d(TAG, "fetchHeartRateAndSave")
-            try {
-                deviceRepository.fetchHeartRateAndSave(1)
-            } catch (e: Exception) {
+        bloodPressureJob = lifecycleScope.launch(Dispatchers.IO) {
+            Log.d(TAG, "startBloodPressureJob")
+            deviceRepository.getBloodPressureFlow(lifecycleScope, 1).distinctUntilChanged().conflate().collect { value ->
+                gameController.updateBloodPressureData(value.sbp, value.dbp)
             }
         }
     }
 
-    private fun fetchBloodOxygenAndSave() {
-        if (fetchBloodOxygenAndSaveJob != null) {
-            return
+    private fun destroyBle() {
+        // 由于 bleManager.onDestroy() 方法不会触发 connect() 方法的 onDisconnected 回调，原因见 Ble 框架的 close 方法
+        // 所以只能单独调用 updateXxxConnectionState 方法更新界面状态。
+        bleManager.onDestroy()
+        gameController.updateGameConnectionState(false)
+        if (existHeartRate) {
+            gameController.updateEcgConnectionState(false)
         }
-        fetchBloodOxygenAndSaveJob = lifecycleScope.launch(Dispatchers.IO) {
-            while (isActive) {
-                Log.d(TAG, "fetchBloodOxygenAndSave")
-                deviceRepository.fetchBloodOxygenAndSave(1)
-                delay(1000)
-            }
+        if (existBloodOxygen) {
+            gameController.updateBloodOxygenConnectionState(false)
+        }
+        if (existBloodPressure) {
+            gameController.updateBloodPressureConnectionState(false)
         }
     }
 
-    private fun fetchBloodPressureAndSave() {
-        if (fetchBloodPressureAndSaveJob != null) {
-            return
-        }
-        fetchBloodPressureAndSaveJob = lifecycleScope.launch(Dispatchers.IO) {
-            while (isActive) {
-                Log.d(TAG, "fetchBloodPressureAndSave")
-                deviceRepository.fetchBloodPressureAndSave(1)
-                // 设备大概在3秒内可以多次获取同一次测量结果。
-                delay(1000)
-            }
-        }
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d(TAG, "onDestroy")
+        shangXiaZhiJob?.cancel()
+        shangXiaZhiJob = null
+        cancelJobsExceptShangXiaZhi()
+        destroyBle()
+        gameController.destroy()
     }
 
     override fun onBind(intent: Intent?): IBinder {

@@ -73,9 +73,9 @@ class HistoryMedicalOrderViewModel(
             monitorDevices.forEach {
                 // 0：血氧仪；1：血压仪；2：心电；
                 when (it.type) {
-                    0 -> bloodOxygenList = deviceRepository.getBloodOxygenByMedicalOrderId(medicalOrder.id)
-                    1 -> bloodPressureList = deviceRepository.getBloodPressureByMedicalOrderId(medicalOrder.id)
-                    2 -> heartRateList = deviceRepository.getHeartRateByMedicalOrderId(medicalOrder.id)
+                    0 -> bloodOxygenList = deviceRepository.getBloodOxygenListByMedicalOrderId(medicalOrder.id)
+                    1 -> bloodPressureList = deviceRepository.getBloodPressureListByMedicalOrderId(medicalOrder.id)
+                    2 -> heartRateList = deviceRepository.getHeartRateListByMedicalOrderId(medicalOrder.id)
                 }
             }
             Log.i(TAG, "bloodOxygenList=$bloodOxygenList")
