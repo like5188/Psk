@@ -18,6 +18,7 @@ import com.psk.device.data.source.remote.ble.RKF_ShangXiaZhiDataSource
 import kotlinx.coroutines.flow.Flow
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 
 /**
  * 蓝牙设备数据仓库
@@ -26,33 +27,36 @@ import org.koin.core.component.KoinComponent
  * 2、在本仓库中添加自己想要的方法。
  */
 @OptIn(KoinApiExtension::class)
-class DeviceRepository(
-    private val bloodOxygenDbDataSource: BloodOxygenDbDataSource,
-    private val bloodPressureDbDataSource: BloodPressureDbDataSource,
-    private val heartRateDbDataSource: HeartRateDbDataSource,
-    private val shangXiaZhiDbDataSource: ShangXiaZhiDbDataSource,
-) : KoinComponent {
+class DeviceRepository : KoinComponent {
+    private lateinit var bloodOxygenDbDataSource: BloodOxygenDbDataSource
+    private lateinit var bloodPressureDbDataSource: BloodPressureDbDataSource
+    private lateinit var heartRateDbDataSource: HeartRateDbDataSource
+    private lateinit var shangXiaZhiDbDataSource: ShangXiaZhiDbDataSource
     private lateinit var bloodOxygenDataSource: BaseBloodOxygenDataSource
     private lateinit var bloodPressureDataSource: BaseBloodPressureDataSource
     private lateinit var heartRateDataSource: BaseHeartRateDataSource
     private lateinit var shangXiaZhiDataSource: BaseShangXiaZhiDataSource
 
     fun enableBloodOxygen(name: String, address: String) {
+        bloodOxygenDbDataSource = get()
         bloodOxygenDataSource = BleDeviceDataSourceFactory.create(name, DeviceType.BloodOxygen) as BaseBloodOxygenDataSource
         bloodOxygenDataSource.enable(address)
     }
 
     fun enableBloodPressure(name: String, address: String) {
+        bloodPressureDbDataSource = get()
         bloodPressureDataSource = BleDeviceDataSourceFactory.create(name, DeviceType.BloodPressure) as BaseBloodPressureDataSource
         bloodPressureDataSource.enable(address)
     }
 
     fun enableHeartRate(name: String, address: String) {
+        heartRateDbDataSource = get()
         heartRateDataSource = BleDeviceDataSourceFactory.create(name, DeviceType.HeartRate) as BaseHeartRateDataSource
         heartRateDataSource.enable(address)
     }
 
     fun enableShangXiaZhi(name: String, address: String) {
+        shangXiaZhiDbDataSource = get()
         shangXiaZhiDataSource = BleDeviceDataSourceFactory.create(name, DeviceType.ShangXiaZhi) as BaseShangXiaZhiDataSource
         shangXiaZhiDataSource.enable(address)
     }

@@ -34,12 +34,7 @@ val deviceModule = module {
 
     //repository
     factory {
-        DeviceRepository(
-            get(),
-            get(),
-            get(),
-            get(),
-        )
+        DeviceRepository()
     }
 
     //ServerDatabase
