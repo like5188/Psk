@@ -6,6 +6,9 @@ import com.psk.device.data.model.BloodOxygen
 import com.psk.device.data.source.remote.BaseBloodOxygenDataSource
 import com.psk.device.util.BleCRC
 
+/**
+ * 脉搏血氧仪数据源
+ */
 class O2_BloodOxygenDataSource : BaseBloodOxygenDataSource(DeviceType.BloodOxygen) {
     override val protocol = Protocol(
         "14839ac4-7d7e-415c-9a42-167340cf2339",

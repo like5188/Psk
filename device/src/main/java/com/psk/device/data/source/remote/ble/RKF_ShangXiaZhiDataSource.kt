@@ -11,6 +11,9 @@ import com.twsz.remotecommands.TrunkCommandData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 
+/**
+ * 瑞甲上下肢康复机数据源
+ */
 class RKF_ShangXiaZhiDataSource : BaseShangXiaZhiDataSource(DeviceType.ShangXiaZhi) {
     override val protocol = Protocol(
         "0000ffe1-0000-1000-8000-00805f9b34fb",

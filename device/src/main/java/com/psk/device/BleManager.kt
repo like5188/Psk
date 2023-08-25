@@ -6,6 +6,7 @@ import com.like.ble.central.scan.result.ScanResult
 import com.like.ble.util.BleBroadcastReceiverManager
 import com.like.ble.util.PermissionUtils
 import com.like.ble.util.hexStringToByteArray
+import com.psk.device.data.source.remote.BleDeviceDataSourceFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 
@@ -28,6 +29,7 @@ class BleManager(private val context: Context) {
     }
 
     suspend fun init(activity: ComponentActivity) {
+        BleDeviceDataSourceFactory.init(context)
         PermissionUtils.requestScanEnvironment(activity)
         PermissionUtils.requestConnectEnvironment(activity)
     }

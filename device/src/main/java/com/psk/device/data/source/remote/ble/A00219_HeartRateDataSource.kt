@@ -681,7 +681,10 @@ private DataReceiver dataReceiver = new DataReceiverSample(){
 send(CommandUtil.getDeviceStatus()); // 向设备发送获取系统状态命令
 说明：send()是一个蓝牙通信方法，向设备发送数据；CommandUtil.getDeviceStatus()就是获取命令内容，发送完此命令后会触发DataReceiver.onDeviceStatus(DeviceStatus status)
  */
-class SCI311W_HeartRateDataSource : BaseHeartRateDataSource(DeviceType.HeartRate) {
+/**
+ * SCI311W 心电仪数据源
+ */
+class A00219_HeartRateDataSource : BaseHeartRateDataSource(DeviceType.HeartRate) {
     override val protocol = Protocol(
         "00000001-0000-1000-8000-00805f9b34fb",
         "00000003-0000-1000-8000-00805f9b34fb",

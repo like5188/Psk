@@ -37,7 +37,10 @@ if (parsable instanceof EcgPack) {	// 或者 pack.cmd == CCmd.ECG
 // 其他数据解析过程均同上
 // 注意：需要配合相应的心电图显示视图，才能显示。
 */
-class SCI411C_HeartRateDataSource : BaseHeartRateDataSource(DeviceType.HeartRate) {
+/**
+ * SCI411C 心电仪数据源
+ */
+class C00228_HeartRateDataSource : BaseHeartRateDataSource(DeviceType.HeartRate) {
     override val protocol = Protocol(
         "00000001-0000-1000-8000-00805f9b34fb",
         "00000003-0000-1000-8000-00805f9b34fb",

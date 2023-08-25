@@ -13,6 +13,9 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.experimental.inv
 
+/**
+ * 乐普单导联动态心电记录仪数据源
+ */
 class ER1_HeartRateDataSource : BaseHeartRateDataSource(DeviceType.HeartRate) {
     override val protocol = Protocol(
         "14839ac4-7d7e-415c-9a42-167340cf2339",

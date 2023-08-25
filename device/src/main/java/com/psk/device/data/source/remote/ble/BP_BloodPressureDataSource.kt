@@ -5,6 +5,9 @@ import com.psk.device.Protocol
 import com.psk.device.data.model.BloodPressure
 import com.psk.device.data.source.remote.BaseBloodPressureDataSource
 
+/**
+ * maibobo 血压计数据源
+ */
 class BP_BloodPressureDataSource : BaseBloodPressureDataSource(DeviceType.BloodPressure) {
     override val protocol: Protocol = Protocol(
         "0000fff0-0000-1000-8000-00805f9b34fb",
