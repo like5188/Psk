@@ -5,8 +5,6 @@ import com.psk.ble.DeviceType
 import com.psk.device.data.source.RepositoryFactory
 import com.psk.device.data.source.local.db.DbDataSourceFactory
 import com.psk.device.data.source.remote.ble.BleDataSourceFactory
-import com.psk.device.util.deviceModule
-import org.koin.core.context.loadKoinModules
 
 /**
  * 设备管理。使用本模块时，只需使用此工具类进行初始化，然后使用koin注入仓库来使用。
@@ -25,7 +23,6 @@ import org.koin.core.context.loadKoinModules
  */
 object DeviceManager {
     suspend fun init(context: Context) {
-        loadKoinModules(deviceModule)
         // [BleDataSourceFactory]必须放在扫描之前初始化，否则扫描时，如果要用到[DeviceType.containsDevice]方法就没效果。
         BleDataSourceFactory.init(context)
         DbDataSourceFactory.init(context)

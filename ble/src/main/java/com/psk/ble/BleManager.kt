@@ -8,7 +8,6 @@ import com.like.ble.util.PermissionUtils
 import com.like.ble.util.hexStringToByteArray
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
-import org.koin.core.context.loadKoinModules
 
 /**
  * 蓝牙设备相关的操作管理
@@ -32,7 +31,6 @@ class BleManager(private val context: Context) {
     }
 
     suspend fun init(activity: ComponentActivity) {
-        loadKoinModules(bleModule)
         PermissionUtils.requestScanEnvironment(activity)
         PermissionUtils.requestConnectEnvironment(activity)
     }
