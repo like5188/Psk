@@ -18,26 +18,26 @@ import org.koin.core.parameter.parametersOf
  */
 @OptIn(KoinApiExtension::class)
 class HeartRateRepository : KoinComponent, IRepository {
-    private lateinit var heartRateDbDataSource: HeartRateDbDataSource
-    private lateinit var heartRateDataSource: BaseHeartRateDataSource
+    private lateinit var dbDataSource: HeartRateDbDataSource
+    private lateinit var dataSource: BaseHeartRateDataSource
 
     fun enable(name: String, address: String) {
-        heartRateDbDataSource = get { parametersOf(DeviceType.HeartRate) }
-        heartRateDataSource = get { parametersOf(name, DeviceType.HeartRate) }
-        heartRateDataSource.enable(address)
+        dbDataSource = get { parametersOf(DeviceType.HeartRate) }
+        dataSource = get { parametersOf(name, DeviceType.HeartRate) }
+        dataSource.enable(address)
     }
 
     suspend fun getListByMedicalOrderId(medicalOrderId: Long): List<HeartRate>? {
-        return heartRateDbDataSource.getByMedicalOrderId(medicalOrderId)
+        return dbDataSource.getByMedicalOrderId(medicalOrderId)
     }
 
     fun getFlow(scope: CoroutineScope, medicalOrderId: Long): Flow<HeartRate> {
         scope.launch(Dispatchers.IO) {
-            heartRateDataSource.fetch(medicalOrderId).collect {
-                heartRateDbDataSource.save(it)
+            dataSource.fetch(medicalOrderId).collect {
+                dbDataSource.save(it)
             }
         }
-        return heartRateDbDataSource.listenLatest(System.currentTimeMillis() / 1000)
+        return dbDataSource.listenLatest(System.currentTimeMillis() / 1000)
     }
 
 }

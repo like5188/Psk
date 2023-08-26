@@ -20,30 +20,30 @@ import org.koin.core.parameter.parametersOf
  */
 @OptIn(KoinApiExtension::class)
 class BloodPressureRepository : KoinComponent, IRepository {
-    private lateinit var bloodPressureDbDataSource: BloodPressureDbDataSource
-    private lateinit var bloodPressureDataSource: BaseBloodPressureDataSource
+    private lateinit var dbDataSource: BloodPressureDbDataSource
+    private lateinit var dataSource: BaseBloodPressureDataSource
 
     fun enable(name: String, address: String) {
-        bloodPressureDbDataSource = get { parametersOf(DeviceType.BloodPressure) }
-        bloodPressureDataSource = get { parametersOf(name, DeviceType.BloodPressure) }
-        bloodPressureDataSource.enable(address)
+        dbDataSource = get { parametersOf(DeviceType.BloodPressure) }
+        dataSource = get { parametersOf(name, DeviceType.BloodPressure) }
+        dataSource.enable(address)
     }
 
     suspend fun getListByMedicalOrderId(medicalOrderId: Long): List<BloodPressure>? {
-        return bloodPressureDbDataSource.getByMedicalOrderId(medicalOrderId)
+        return dbDataSource.getByMedicalOrderId(medicalOrderId)
     }
 
     fun getFlow(scope: CoroutineScope, medicalOrderId: Long, interval: Long = 1000): Flow<BloodPressure> {
         scope.launch(Dispatchers.IO) {
             while (isActive) {
-                bloodPressureDataSource.fetch(medicalOrderId)?.apply {
-                    bloodPressureDbDataSource.save(this)
+                dataSource.fetch(medicalOrderId)?.apply {
+                    dbDataSource.save(this)
                 }
                 // 设备大概在3秒内可以多次获取同一次测量结果。
                 delay(interval)
             }
         }
-        return bloodPressureDbDataSource.listenLatest(System.currentTimeMillis() / 1000)
+        return dbDataSource.listenLatest(System.currentTimeMillis() / 1000)
     }
 
 }

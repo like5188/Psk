@@ -20,29 +20,29 @@ import org.koin.core.parameter.parametersOf
  */
 @OptIn(KoinApiExtension::class)
 class BloodOxygenRepository : KoinComponent, IRepository {
-    private lateinit var bloodOxygenDbDataSource: BloodOxygenDbDataSource
-    private lateinit var bloodOxygenDataSource: BaseBloodOxygenDataSource
+    private lateinit var dbDataSource: BloodOxygenDbDataSource
+    private lateinit var dataSource: BaseBloodOxygenDataSource
 
     fun enable(name: String, address: String) {
-        bloodOxygenDbDataSource = get { parametersOf(DeviceType.BloodOxygen) }
-        bloodOxygenDataSource = get { parametersOf(name, DeviceType.BloodOxygen) }
-        bloodOxygenDataSource.enable(address)
+        dbDataSource = get { parametersOf(DeviceType.BloodOxygen) }
+        dataSource = get { parametersOf(name, DeviceType.BloodOxygen) }
+        dataSource.enable(address)
     }
 
     suspend fun getListByMedicalOrderId(medicalOrderId: Long): List<BloodOxygen>? {
-        return bloodOxygenDbDataSource.getByMedicalOrderId(medicalOrderId)
+        return dbDataSource.getByMedicalOrderId(medicalOrderId)
     }
 
     fun getFlow(scope: CoroutineScope, medicalOrderId: Long, interval: Long = 1000): Flow<BloodOxygen> {
         scope.launch(Dispatchers.IO) {
             while (isActive) {
-                bloodOxygenDataSource.fetch(medicalOrderId)?.apply {
-                    bloodOxygenDbDataSource.save(this)
+                dataSource.fetch(medicalOrderId)?.apply {
+                    dbDataSource.save(this)
                 }
                 delay(interval)
             }
         }
-        return bloodOxygenDbDataSource.listenLatest(System.currentTimeMillis() / 1000)
+        return dbDataSource.listenLatest(System.currentTimeMillis() / 1000)
     }
 
 }

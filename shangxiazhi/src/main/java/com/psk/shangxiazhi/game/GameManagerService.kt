@@ -122,7 +122,7 @@ class GameManagerService : Service(), KoinComponent {
                                 startShangXiaZhiJob()
                                 delay(100)
                                 //设置上下肢参数，设置好后，如果是被动模式，上下肢会自动运行
-                                shangXiaZhiRepository.setShangXiaZhiParams(
+                                shangXiaZhiRepository.setParams(
                                     passiveModule,
                                     timeInt,
                                     speedInt,
@@ -206,7 +206,7 @@ class GameManagerService : Service(), KoinComponent {
             override fun onResume() {
                 Log.d(TAG, "game onResume")
                 lifecycleScope.launch(Dispatchers.IO) {
-                    shangXiaZhiRepository.resumeShangXiaZhi()
+                    shangXiaZhiRepository.resume()
                     startJobsExceptShangXiaZhi()
                 }
             }
@@ -214,7 +214,7 @@ class GameManagerService : Service(), KoinComponent {
             override fun onPause() {
                 Log.d(TAG, "game onPause")
                 lifecycleScope.launch(Dispatchers.IO) {
-                    shangXiaZhiRepository.pauseShangXiaZhi()
+                    shangXiaZhiRepository.pause()
                     cancelJobsExceptShangXiaZhi()
                 }
             }
@@ -222,7 +222,7 @@ class GameManagerService : Service(), KoinComponent {
             override fun onOver() {
                 Log.d(TAG, "game onOver")
                 lifecycleScope.launch(Dispatchers.IO) {
-                    shangXiaZhiRepository.overShangXiaZhi()
+                    shangXiaZhiRepository.over()
                     shangXiaZhiJob?.cancel()
                     shangXiaZhiJob = null
                     cancelJobsExceptShangXiaZhi()

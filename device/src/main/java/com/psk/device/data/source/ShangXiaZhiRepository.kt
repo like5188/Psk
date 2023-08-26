@@ -19,26 +19,26 @@ import org.koin.core.parameter.parametersOf
  */
 @OptIn(KoinApiExtension::class)
 class ShangXiaZhiRepository : KoinComponent, IRepository {
-    private lateinit var shangXiaZhiDbDataSource: ShangXiaZhiDbDataSource
-    private lateinit var shangXiaZhiDataSource: BaseShangXiaZhiDataSource
+    private lateinit var dbDataSource: ShangXiaZhiDbDataSource
+    private lateinit var dataSource: BaseShangXiaZhiDataSource
 
     fun enable(name: String, address: String) {
-        shangXiaZhiDbDataSource = get { parametersOf(DeviceType.ShangXiaZhi) }
-        shangXiaZhiDataSource = get { parametersOf(name, DeviceType.ShangXiaZhi) }
-        shangXiaZhiDataSource.enable(address)
+        dbDataSource = get { parametersOf(DeviceType.ShangXiaZhi) }
+        dataSource = get { parametersOf(name, DeviceType.ShangXiaZhi) }
+        dataSource.enable(address)
     }
 
     suspend fun getListByMedicalOrderId(medicalOrderId: Long): List<ShangXiaZhi>? {
-        return shangXiaZhiDbDataSource.getByMedicalOrderId(medicalOrderId)
+        return dbDataSource.getByMedicalOrderId(medicalOrderId)
     }
 
     fun getFlow(scope: CoroutineScope, medicalOrderId: Long): Flow<ShangXiaZhi> {
         scope.launch(Dispatchers.IO) {
-            shangXiaZhiDataSource.fetch(medicalOrderId).collect {
-                shangXiaZhiDbDataSource.save(it)
+            dataSource.fetch(medicalOrderId).collect {
+                dbDataSource.save(it)
             }
         }
-        return shangXiaZhiDbDataSource.listenLatest(System.currentTimeMillis() / 1000)
+        return dbDataSource.listenLatest(System.currentTimeMillis() / 1000)
     }
 
     fun setCallback(
@@ -46,23 +46,23 @@ class ShangXiaZhiRepository : KoinComponent, IRepository {
         onPause: (() -> Unit)? = null,
         onOver: (() -> Unit)? = null,
     ) {
-        (shangXiaZhiDataSource as? RKF_ShangXiaZhiDataSource)?.apply {
+        (dataSource as? RKF_ShangXiaZhiDataSource)?.apply {
             this.onStart = onStart
             this.onPause = onPause
             this.onOver = onOver
         }
     }
 
-    suspend fun resumeShangXiaZhi() {
-        shangXiaZhiDataSource.resume()
+    suspend fun resume() {
+        dataSource.resume()
     }
 
-    suspend fun pauseShangXiaZhi() {
-        shangXiaZhiDataSource.pause()
+    suspend fun pause() {
+        dataSource.pause()
     }
 
-    suspend fun overShangXiaZhi() {
-        shangXiaZhiDataSource.over()
+    suspend fun over() {
+        dataSource.over()
     }
 
     /**
@@ -74,9 +74,9 @@ class ShangXiaZhiRepository : KoinComponent, IRepository {
      * @param intelligent       智能模式
      * @param turn2             正转
      */
-    suspend fun setShangXiaZhiParams(
+    suspend fun setParams(
         passiveModule: Boolean, timeInt: Int, speedInt: Int, spasmInt: Int, resistanceInt: Int, intelligent: Boolean, turn2: Boolean
     ) {
-        shangXiaZhiDataSource.setParams(passiveModule, timeInt, speedInt, spasmInt, resistanceInt, intelligent, turn2)
+        dataSource.setParams(passiveModule, timeInt, speedInt, spasmInt, resistanceInt, intelligent, turn2)
     }
 }
