@@ -10,7 +10,10 @@ import androidx.lifecycle.lifecycleScope
 import com.psk.device.BleManager
 import com.psk.device.DeviceType
 import com.psk.device.Tip
-import com.psk.device.data.source.DeviceRepository
+import com.psk.device.data.source.BloodOxygenRepository
+import com.psk.device.data.source.BloodPressureRepository
+import com.psk.device.data.source.HeartRateRepository
+import com.psk.device.data.source.ShangXiaZhiRepository
 import com.psk.shangxiazhi.data.model.BleScanInfo
 import com.twsz.twsystempre.GameCallback
 import com.twsz.twsystempre.GameController
@@ -41,7 +44,10 @@ class GameManagerService : Service(), KoinComponent {
     }
 
     private val bleManager by inject<BleManager>()
-    private val deviceRepository by inject<DeviceRepository>()
+    private val bloodOxygenRepository by inject<BloodOxygenRepository>()
+    private val bloodPressureRepository by inject<BloodPressureRepository>()
+    private val heartRateRepository by inject<HeartRateRepository>()
+    private val shangXiaZhiRepository by inject<ShangXiaZhiRepository>()
     private val gameController by inject<GameController>()
     private val decimalFormat by inject<DecimalFormat>()
     private var shangXiaZhiJob: Job? = null
@@ -92,16 +98,16 @@ class GameManagerService : Service(), KoinComponent {
             override fun onLoading() {
                 Log.d(TAG, "game onLoading")
                 devices.getOrDefault(DeviceType.ShangXiaZhi, null)?.apply {
-                    deviceRepository.enableShangXiaZhi(this.name, this.address)
+                    shangXiaZhiRepository.enable(this.name, this.address)
                 }
                 devices.getOrDefault(DeviceType.HeartRate, null)?.apply {
-                    deviceRepository.enableHeartRate(this.name, this.address)
+                    heartRateRepository.enable(this.name, this.address)
                 }
                 devices.getOrDefault(DeviceType.BloodOxygen, null)?.apply {
-                    deviceRepository.enableBloodOxygen(this.name, this.address)
+                    bloodOxygenRepository.enable(this.name, this.address)
                 }
                 devices.getOrDefault(DeviceType.BloodPressure, null)?.apply {
-                    deviceRepository.enableBloodPressure(this.name, this.address)
+                    bloodPressureRepository.enable(this.name, this.address)
                 }
                 bleManager.connectAll(lifecycleScope, 3000L, onConnected = {
                     when (it.type) {
@@ -113,7 +119,7 @@ class GameManagerService : Service(), KoinComponent {
                                 startShangXiaZhiJob()
                                 delay(100)
                                 //设置上下肢参数，设置好后，如果是被动模式，上下肢会自动运行
-                                deviceRepository.setShangXiaZhiParams(
+                                shangXiaZhiRepository.setShangXiaZhiParams(
                                     passiveModule,
                                     timeInt,
                                     speedInt,
@@ -197,7 +203,7 @@ class GameManagerService : Service(), KoinComponent {
             override fun onResume() {
                 Log.d(TAG, "game onResume")
                 lifecycleScope.launch(Dispatchers.IO) {
-                    deviceRepository.resumeShangXiaZhi()
+                    shangXiaZhiRepository.resumeShangXiaZhi()
                     startJobsExceptShangXiaZhi()
                 }
             }
@@ -205,7 +211,7 @@ class GameManagerService : Service(), KoinComponent {
             override fun onPause() {
                 Log.d(TAG, "game onPause")
                 lifecycleScope.launch(Dispatchers.IO) {
-                    deviceRepository.pauseShangXiaZhi()
+                    shangXiaZhiRepository.pauseShangXiaZhi()
                     cancelJobsExceptShangXiaZhi()
                 }
             }
@@ -213,7 +219,7 @@ class GameManagerService : Service(), KoinComponent {
             override fun onOver() {
                 Log.d(TAG, "game onOver")
                 lifecycleScope.launch(Dispatchers.IO) {
-                    deviceRepository.overShangXiaZhi()
+                    shangXiaZhiRepository.overShangXiaZhi()
                     shangXiaZhiJob?.cancel()
                     shangXiaZhiJob = null
                     cancelJobsExceptShangXiaZhi()
@@ -265,9 +271,7 @@ class GameManagerService : Service(), KoinComponent {
             var isFirstSpasm = false// 是否第一次痉挛
             var mFirstSpasmValue = 0// 第一次痉挛值
             var spasm = 0// 痉挛值
-            // 这里不能用 distinctUntilChanged、conflate 等操作符，因为需要根据所有数据来计算里程等。必须得到每次数据。
-            deviceRepository.getShangXiaZhiFlow(
-                lifecycleScope, 1,
+            shangXiaZhiRepository.setCallback(
                 onStart = {
                     Log.d(TAG, "game onStart by shang xia zhi")
                     gameController.startGame()
@@ -286,7 +290,9 @@ class GameManagerService : Service(), KoinComponent {
                     cancelJobsExceptShangXiaZhi()
                     bleManager.onDestroy()
                 }
-            ).buffer(Int.MAX_VALUE).collect { shangXiaZhi ->
+            )
+            // 这里不能用 distinctUntilChanged、conflate 等操作符，因为需要根据所有数据来计算里程等。必须得到每次数据。
+            shangXiaZhiRepository.getFlow(lifecycleScope, 1).buffer(Int.MAX_VALUE).collect { shangXiaZhi ->
                 //转速
                 val speed = shangXiaZhi.speedValue
                 //阻力
@@ -355,7 +361,7 @@ class GameManagerService : Service(), KoinComponent {
         }
         heartRateJob = lifecycleScope.launch(Dispatchers.IO) {
             Log.d(TAG, "startHeartRateJob")
-            val flow = deviceRepository.getHeartRateFlow(lifecycleScope, 1).filterNotNull()
+            val flow = heartRateRepository.getFlow(lifecycleScope, 1).filterNotNull()
             launch(Dispatchers.IO) {
                 flow.map {
                     it.value
@@ -386,7 +392,7 @@ class GameManagerService : Service(), KoinComponent {
         }
         bloodOxygenJob = lifecycleScope.launch(Dispatchers.IO) {
             Log.d(TAG, "startBloodOxygenJob")
-            deviceRepository.getBloodOxygenFlow(lifecycleScope, 1).distinctUntilChanged().conflate().collect { value ->
+            bloodOxygenRepository.getFlow(lifecycleScope, 1).distinctUntilChanged().conflate().collect { value ->
                 gameController.updateBloodOxygenData(value.value)
             }
         }
@@ -398,7 +404,7 @@ class GameManagerService : Service(), KoinComponent {
         }
         bloodPressureJob = lifecycleScope.launch(Dispatchers.IO) {
             Log.d(TAG, "startBloodPressureJob")
-            deviceRepository.getBloodPressureFlow(lifecycleScope, 1).distinctUntilChanged().conflate().collect { value ->
+            bloodPressureRepository.getFlow(lifecycleScope, 1).distinctUntilChanged().conflate().collect { value ->
                 gameController.updateBloodPressureData(value.sbp, value.dbp)
             }
         }

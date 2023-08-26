@@ -13,7 +13,7 @@ import com.psk.common.util.DataHandler
 import com.psk.common.util.SecondCountDownTimer
 import com.psk.common.util.ToastEvent
 import com.psk.shangxiazhi.data.model.Login
-import com.psk.shangxiazhi.data.source.ShangXiaZhiRepository
+import com.psk.shangxiazhi.data.source.ShangXiaZhiBusinessRepository
 import com.psk.shangxiazhi.game.GameManagerService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,7 +27,7 @@ import java.util.Date
 
 @OptIn(KoinApiExtension::class)
 class MainViewModel(
-    private val shangXiaZhiRepository: ShangXiaZhiRepository,
+    private val shangXiaZhiRepository: ShangXiaZhiBusinessRepository,
 ) : ViewModel(), KoinComponent {
     private val _uiState = MutableStateFlow(MainUiState())
     val uiState = _uiState.asStateFlow()

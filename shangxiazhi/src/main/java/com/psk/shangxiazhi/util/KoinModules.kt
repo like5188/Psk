@@ -3,7 +3,7 @@ package com.psk.shangxiazhi.util
 import com.psk.shangxiazhi.data.source.GetUserDataSource
 import com.psk.shangxiazhi.data.source.LoginDataSource
 import com.psk.shangxiazhi.data.source.LogoutDataSource
-import com.psk.shangxiazhi.data.source.ShangXiaZhiRepository
+import com.psk.shangxiazhi.data.source.ShangXiaZhiBusinessRepository
 import com.psk.shangxiazhi.login.LoginViewModel
 import com.psk.shangxiazhi.main.MainViewModel
 import com.psk.shangxiazhi.setting.SettingViewModel
@@ -30,7 +30,7 @@ val shangXiaZhiModule = module {
 
     //Repository
     factory {
-        ShangXiaZhiRepository(get(), get(), get())
+        ShangXiaZhiBusinessRepository(get(), get(), get())
     }
 
     //viewModel

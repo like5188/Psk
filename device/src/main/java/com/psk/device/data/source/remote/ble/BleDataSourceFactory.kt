@@ -24,7 +24,7 @@ internal object BleDataSourceFactory {
         )
     }
 
-    inline fun foreach(block: (prefix: String, deviceTypeName: String, Class<out BaseRemoteDeviceDataSource>) -> Unit) {
+    inline fun foreach(block: (prefix: String, deviceTypeName: String, Class<BaseRemoteDeviceDataSource>) -> Unit) {
         for (clazz in dataSourceClasses) {
             val split = clazz.simpleName.split("_")
             if (split.size != 2) {

@@ -7,14 +7,14 @@ import com.psk.common.customview.ProgressDialog
 import com.psk.common.util.DataHandler
 import com.psk.common.util.ToastEvent
 import com.psk.shangxiazhi.data.model.Login
-import com.psk.shangxiazhi.data.source.ShangXiaZhiRepository
+import com.psk.shangxiazhi.data.source.ShangXiaZhiBusinessRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SettingViewModel(
-    private val shangXiaZhiRepository: ShangXiaZhiRepository,
+    private val shangXiaZhiRepository: ShangXiaZhiBusinessRepository,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(SettingUiState())
     val uiState = _uiState.asStateFlow()

@@ -3,7 +3,7 @@ package com.psk.device
 import com.psk.device.data.db.DeviceDatabaseManager
 import com.psk.device.data.db.dao.BaseDao
 import com.psk.device.data.db.database.DeviceDatabase
-import com.psk.device.data.source.DeviceRepository
+import com.psk.device.data.source.RepositoryFactory
 import com.psk.device.data.source.local.db.DbDataSourceFactory
 import com.psk.device.data.source.remote.ble.BleDataSourceFactory
 import org.koin.dsl.module
@@ -17,7 +17,7 @@ import org.koin.dsl.module
  * Date:
  */
 val deviceModule = module {
-    //DataSource
+    //IDbDataSource
     factory { (deviceType: DeviceType) ->
         // 从DeviceDatabase中获取deviceType对应的方法
         val method = DeviceDatabase::class.java.declaredMethods.firstOrNull {
@@ -26,13 +26,14 @@ val deviceModule = module {
         method.isAccessible = true
         DbDataSourceFactory.create(deviceType, method.invoke(get<DeviceDatabase>()) as BaseDao<*>)
     }
+    //BaseRemoteDeviceDataSource
     factory { (name: String, deviceType: DeviceType) ->
         BleDataSourceFactory.create(name, deviceType)
     }
 
-    //repository
-    factory {
-        DeviceRepository()
+    //IRepository
+    factory { (deviceType: DeviceType) ->
+        RepositoryFactory.create(deviceType)
     }
 
     // BleManager

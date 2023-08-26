@@ -3,7 +3,7 @@ package com.psk.shangxiazhi.data.source
 import com.psk.shangxiazhi.data.model.Login
 import com.psk.shangxiazhi.data.model.User
 
-class ShangXiaZhiRepository(
+class ShangXiaZhiBusinessRepository(
     private val loginDataSource: LoginDataSource,
     private val logoutDataSource: LogoutDataSource,
     private val getUserDataSource: GetUserDataSource,
