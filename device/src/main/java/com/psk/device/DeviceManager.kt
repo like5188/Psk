@@ -2,6 +2,7 @@ package com.psk.device
 
 import android.content.Context
 import com.psk.ble.DeviceType
+import com.psk.device.data.source.RepositoryFactory
 import com.psk.device.data.source.local.db.DbDataSourceFactory
 import com.psk.device.data.source.remote.ble.BleDataSourceFactory
 import com.psk.device.util.deviceModule
@@ -28,5 +29,6 @@ object DeviceManager {
         // [BleDataSourceFactory]必须放在扫描之前初始化，否则扫描时，如果要用到[DeviceType.containsDevice]方法就没效果。
         BleDataSourceFactory.init(context)
         DbDataSourceFactory.init(context)
+        RepositoryFactory.init(context)
     }
 }
