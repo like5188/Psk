@@ -8,20 +8,20 @@ import com.psk.device.util.getSubclasses
  * 仓库工厂
  */
 internal object RepositoryFactory {
-    private lateinit var repositoryClasses: List<Class<IRepository>>
+    private lateinit var classes: List<Class<IRepository>>
 
     suspend fun init(context: Context) {
-        if (::repositoryClasses.isInitialized) {
+        if (::classes.isInitialized) {
             return
         }
-        repositoryClasses = IRepository::class.java.getSubclasses(
+        classes = IRepository::class.java.getSubclasses(
             context,
             RepositoryFactory::class.java.`package`?.name
         )
     }
 
     inline fun foreach(block: (deviceTypeName: String, Class<IRepository>) -> Unit) {
-        for (clazz in repositoryClasses) {
+        for (clazz in classes) {
             val deviceTypeName = clazz.simpleName.replace("Repository", "")
             block(deviceTypeName, clazz)
         }

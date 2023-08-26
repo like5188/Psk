@@ -9,20 +9,20 @@ import com.psk.device.util.getSubclasses
  * 蓝牙设备数据源工厂
  */
 internal object BleDataSourceFactory {
-    private lateinit var dataSourceClasses: List<Class<BaseRemoteDeviceDataSource>>
+    private lateinit var classes: List<Class<BaseRemoteDeviceDataSource>>
 
     suspend fun init(context: Context) {
-        if (BleDataSourceFactory::dataSourceClasses.isInitialized) {
+        if (BleDataSourceFactory::classes.isInitialized) {
             return
         }
-        dataSourceClasses = BaseRemoteDeviceDataSource::class.java.getSubclasses(
+        classes = BaseRemoteDeviceDataSource::class.java.getSubclasses(
             context,
             BleDataSourceFactory::class.java.`package`?.name
         )
     }
 
     inline fun foreach(block: (prefix: String, deviceTypeName: String, Class<BaseRemoteDeviceDataSource>) -> Unit) {
-        for (clazz in dataSourceClasses) {
+        for (clazz in classes) {
             val split = clazz.simpleName.split("_")
             if (split.size != 2) {
                 continue

@@ -10,20 +10,20 @@ import com.psk.device.util.getSubclasses
  * 数据库数据源工厂
  */
 internal object DbDataSourceFactory {
-    private lateinit var dataSourceClasses: List<Class<IDbDataSource<*>>>
+    private lateinit var classes: List<Class<IDbDataSource<*>>>
 
     suspend fun init(context: Context) {
-        if (DbDataSourceFactory::dataSourceClasses.isInitialized) {
+        if (DbDataSourceFactory::classes.isInitialized) {
             return
         }
-        dataSourceClasses = IDbDataSource::class.java.getSubclasses(
+        classes = IDbDataSource::class.java.getSubclasses(
             context,
             DbDataSourceFactory::class.java.`package`?.name
         )
     }
 
     inline fun foreach(block: (deviceTypeName: String, Class<IDbDataSource<*>>) -> Unit) {
-        for (clazz in dataSourceClasses) {
+        for (clazz in classes) {
             val deviceTypeName = clazz.simpleName.replace("DbDataSource", "")
             block(deviceTypeName, clazz)
         }
