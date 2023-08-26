@@ -18,21 +18,21 @@ import org.koin.core.parameter.parametersOf
  * 上下肢数据仓库
  */
 @OptIn(KoinApiExtension::class)
-class ShangXiaZhiRepository : KoinComponent, IRepository {
+class ShangXiaZhiRepository : KoinComponent, IRepository<ShangXiaZhi> {
     private lateinit var dbDataSource: ShangXiaZhiDbDataSource
     private lateinit var dataSource: BaseShangXiaZhiDataSource
 
-    fun enable(name: String, address: String) {
+    override fun enable(name: String, address: String) {
         dbDataSource = get { parametersOf(DeviceType.ShangXiaZhi) }
         dataSource = get { parametersOf(name, DeviceType.ShangXiaZhi) }
         dataSource.enable(address)
     }
 
-    suspend fun getListByMedicalOrderId(medicalOrderId: Long): List<ShangXiaZhi>? {
+    override suspend fun getListByMedicalOrderId(medicalOrderId: Long): List<ShangXiaZhi>? {
         return dbDataSource.getByMedicalOrderId(medicalOrderId)
     }
 
-    fun getFlow(scope: CoroutineScope, medicalOrderId: Long): Flow<ShangXiaZhi> {
+    override fun getFlow(scope: CoroutineScope, medicalOrderId: Long, interval: Long): Flow<ShangXiaZhi> {
         scope.launch(Dispatchers.IO) {
             dataSource.fetch(medicalOrderId).collect {
                 dbDataSource.save(it)

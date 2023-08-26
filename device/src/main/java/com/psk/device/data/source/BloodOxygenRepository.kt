@@ -19,21 +19,21 @@ import org.koin.core.parameter.parametersOf
  * 血氧数据仓库
  */
 @OptIn(KoinApiExtension::class)
-class BloodOxygenRepository : KoinComponent, IRepository {
+class BloodOxygenRepository : KoinComponent, IRepository<BloodOxygen> {
     private lateinit var dbDataSource: BloodOxygenDbDataSource
     private lateinit var dataSource: BaseBloodOxygenDataSource
 
-    fun enable(name: String, address: String) {
+    override fun enable(name: String, address: String) {
         dbDataSource = get { parametersOf(DeviceType.BloodOxygen) }
         dataSource = get { parametersOf(name, DeviceType.BloodOxygen) }
         dataSource.enable(address)
     }
 
-    suspend fun getListByMedicalOrderId(medicalOrderId: Long): List<BloodOxygen>? {
+    override suspend fun getListByMedicalOrderId(medicalOrderId: Long): List<BloodOxygen>? {
         return dbDataSource.getByMedicalOrderId(medicalOrderId)
     }
 
-    fun getFlow(scope: CoroutineScope, medicalOrderId: Long, interval: Long = 1000): Flow<BloodOxygen> {
+    override fun getFlow(scope: CoroutineScope, medicalOrderId: Long, interval: Long): Flow<BloodOxygen> {
         scope.launch(Dispatchers.IO) {
             while (isActive) {
                 dataSource.fetch(medicalOrderId)?.apply {

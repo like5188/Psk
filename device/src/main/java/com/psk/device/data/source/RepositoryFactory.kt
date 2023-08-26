@@ -8,7 +8,7 @@ import com.psk.device.util.getSubclasses
  * 仓库工厂
  */
 internal object RepositoryFactory {
-    private lateinit var classes: List<Class<IRepository>>
+    private lateinit var classes: List<Class<IRepository<*>>>
 
     suspend fun init(context: Context) {
         if (::classes.isInitialized) {
@@ -20,7 +20,7 @@ internal object RepositoryFactory {
         )
     }
 
-    inline fun foreach(block: (deviceTypeName: String, Class<IRepository>) -> Unit) {
+    inline fun foreach(block: (deviceTypeName: String, Class<IRepository<*>>) -> Unit) {
         for (clazz in classes) {
             val deviceTypeName = clazz.simpleName.replace("Repository", "")
             block(deviceTypeName, clazz)
@@ -30,7 +30,7 @@ internal object RepositoryFactory {
     /**
      * 根据设备类型反射创建仓库
      */
-    fun create(deviceType: DeviceType): IRepository? {
+    fun create(deviceType: DeviceType): IRepository<*>? {
         foreach { deviceTypeName, clazz ->
             if (deviceTypeName == deviceType.name) {
                 return try {

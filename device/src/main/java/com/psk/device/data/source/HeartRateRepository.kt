@@ -17,21 +17,21 @@ import org.koin.core.parameter.parametersOf
  * 心率数据仓库
  */
 @OptIn(KoinApiExtension::class)
-class HeartRateRepository : KoinComponent, IRepository {
+class HeartRateRepository : KoinComponent, IRepository<HeartRate> {
     private lateinit var dbDataSource: HeartRateDbDataSource
     private lateinit var dataSource: BaseHeartRateDataSource
 
-    fun enable(name: String, address: String) {
+    override fun enable(name: String, address: String) {
         dbDataSource = get { parametersOf(DeviceType.HeartRate) }
         dataSource = get { parametersOf(name, DeviceType.HeartRate) }
         dataSource.enable(address)
     }
 
-    suspend fun getListByMedicalOrderId(medicalOrderId: Long): List<HeartRate>? {
+    override suspend fun getListByMedicalOrderId(medicalOrderId: Long): List<HeartRate>? {
         return dbDataSource.getByMedicalOrderId(medicalOrderId)
     }
 
-    fun getFlow(scope: CoroutineScope, medicalOrderId: Long): Flow<HeartRate> {
+    override fun getFlow(scope: CoroutineScope, medicalOrderId: Long, interval: Long): Flow<HeartRate> {
         scope.launch(Dispatchers.IO) {
             dataSource.fetch(medicalOrderId).collect {
                 dbDataSource.save(it)
