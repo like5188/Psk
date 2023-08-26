@@ -8,11 +8,6 @@ import com.psk.device.util.getSubclasses
 
 /**
  * 数据库数据源工厂
- * 注意：如果要添加新的蓝牙设备系列（非血压、血氧、心电、上下肢），那么需要以下步骤：
- * 1、新增对应实体类放到[com.psk.device.data.model]中。
- * 2、新增一个对应的Dao。
- * 3、在[com.psk.device.data.db.database.DeviceDatabase]类中新增相关方法和entities。
- * 4、新增一个DbDataSource。名称格式为：[DeviceType]DbDataSource；包名为：[com.psk.device.data.source.local.db]。
  */
 internal object DbDataSourceFactory {
     private lateinit var dataSourceClasses: List<Class<IDbDataSource<*>>>
