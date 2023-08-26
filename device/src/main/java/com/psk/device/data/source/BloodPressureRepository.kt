@@ -1,6 +1,6 @@
 package com.psk.device.data.source
 
-import com.psk.device.DeviceType
+import com.psk.ble.DeviceType
 import com.psk.device.data.model.BloodPressure
 import com.psk.device.data.source.local.db.BloodPressureDbDataSource
 import com.psk.device.data.source.remote.BaseBloodPressureDataSource
@@ -19,21 +19,21 @@ import org.koin.core.parameter.parametersOf
  * 血压数据仓库
  */
 @OptIn(KoinApiExtension::class)
-class BloodPressureRepository : IRepository<BloodPressure>, KoinComponent {
+class BloodPressureRepository : KoinComponent {
     private lateinit var bloodPressureDbDataSource: BloodPressureDbDataSource
     private lateinit var bloodPressureDataSource: BaseBloodPressureDataSource
 
-    override fun enable(name: String, address: String) {
+    fun enable(name: String, address: String) {
         bloodPressureDbDataSource = get { parametersOf(DeviceType.BloodPressure) }
         bloodPressureDataSource = get { parametersOf(name, DeviceType.BloodPressure) }
         bloodPressureDataSource.enable(address)
     }
 
-    override suspend fun getListByMedicalOrderId(medicalOrderId: Long): List<BloodPressure>? {
+    suspend fun getListByMedicalOrderId(medicalOrderId: Long): List<BloodPressure>? {
         return bloodPressureDbDataSource.getByMedicalOrderId(medicalOrderId)
     }
 
-    override fun getFlow(scope: CoroutineScope, medicalOrderId: Long, interval: Long): Flow<BloodPressure> {
+    fun getFlow(scope: CoroutineScope, medicalOrderId: Long, interval: Long = 1000): Flow<BloodPressure> {
         scope.launch(Dispatchers.IO) {
             while (isActive) {
                 bloodPressureDataSource.fetch(medicalOrderId)?.apply {

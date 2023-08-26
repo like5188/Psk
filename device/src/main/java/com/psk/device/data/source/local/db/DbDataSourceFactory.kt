@@ -1,7 +1,7 @@
 package com.psk.device.data.source.local.db
 
 import android.content.Context
-import com.psk.device.DeviceType
+import com.psk.ble.DeviceType
 import com.psk.device.data.db.dao.BaseDao
 import com.psk.device.data.source.local.IDbDataSource
 import com.psk.device.util.getSubclasses

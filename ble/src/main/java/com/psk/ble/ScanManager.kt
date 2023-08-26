@@ -1,4 +1,4 @@
-package com.psk.device
+package com.psk.ble
 
 import android.content.Context
 import com.like.ble.central.scan.executor.AbstractScanExecutor

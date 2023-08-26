@@ -1,9 +1,9 @@
 package com.psk.device.data.source.remote
 
-import com.psk.device.BleManager
-import com.psk.device.Device
-import com.psk.device.DeviceType
-import com.psk.device.Protocol
+import com.psk.ble.BleManager
+import com.psk.ble.Device
+import com.psk.ble.DeviceType
+import com.psk.ble.Protocol
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject

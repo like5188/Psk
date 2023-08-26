@@ -69,4 +69,5 @@ dependencies {
     implementation(name: 'aidl-debug', ext: 'aar')
     implementation project(':common')
     implementation project(':device')
+    implementation project(':ble')
 }

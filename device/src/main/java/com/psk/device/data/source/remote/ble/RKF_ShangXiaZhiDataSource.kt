@@ -1,7 +1,7 @@
 package com.psk.device.data.source.remote.ble
 
-import com.psk.device.DeviceType
-import com.psk.device.Protocol
+import com.psk.ble.DeviceType
+import com.psk.ble.Protocol
 import com.psk.device.data.model.ShangXiaZhi
 import com.psk.device.data.source.remote.BaseShangXiaZhiDataSource
 import com.psk.device.util.ShangXiaZhiDataParser

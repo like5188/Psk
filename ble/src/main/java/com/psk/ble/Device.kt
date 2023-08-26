@@ -1,7 +1,6 @@
-package com.psk.device
+package com.psk.ble
 
 import com.like.ble.util.toUUID
-import com.psk.device.data.source.remote.ble.BleDataSourceFactory
 import java.io.Serializable
 import java.util.UUID
 
@@ -63,19 +62,4 @@ data class Protocol(
  */
 enum class DeviceType : Serializable {
     BloodOxygen, BloodPressure, HeartRate, ShangXiaZhi;
-
-    /**
-     * 判断当前设备类型是否包含指定设备名称[name]的设备
-     */
-    fun containsDevice(name: String): Boolean {
-        if (name.isEmpty()) {
-            return false
-        }
-        BleDataSourceFactory.foreach { prefix, deviceTypeName, clazz ->
-            if (deviceTypeName == this.name && name.startsWith(prefix)) {
-                return true
-            }
-        }
-        return false
-    }
 }

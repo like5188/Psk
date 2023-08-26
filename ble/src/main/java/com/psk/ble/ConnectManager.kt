@@ -1,4 +1,4 @@
-package com.psk.device
+package com.psk.ble
 
 import android.annotation.SuppressLint
 import android.content.Context

@@ -1,6 +1,6 @@
 package com.psk.device.data.source
 
-import com.psk.device.DeviceType
+import com.psk.ble.DeviceType
 import com.psk.device.data.model.ShangXiaZhi
 import com.psk.device.data.source.local.db.ShangXiaZhiDbDataSource
 import com.psk.device.data.source.remote.BaseShangXiaZhiDataSource
@@ -18,21 +18,21 @@ import org.koin.core.parameter.parametersOf
  * 上下肢数据仓库
  */
 @OptIn(KoinApiExtension::class)
-class ShangXiaZhiRepository : IRepository<ShangXiaZhi>, KoinComponent {
+class ShangXiaZhiRepository : KoinComponent {
     private lateinit var shangXiaZhiDbDataSource: ShangXiaZhiDbDataSource
     private lateinit var shangXiaZhiDataSource: BaseShangXiaZhiDataSource
 
-    override fun enable(name: String, address: String) {
+    fun enable(name: String, address: String) {
         shangXiaZhiDbDataSource = get { parametersOf(DeviceType.ShangXiaZhi) }
         shangXiaZhiDataSource = get { parametersOf(name, DeviceType.ShangXiaZhi) }
         shangXiaZhiDataSource.enable(address)
     }
 
-    override suspend fun getListByMedicalOrderId(medicalOrderId: Long): List<ShangXiaZhi>? {
+    suspend fun getListByMedicalOrderId(medicalOrderId: Long): List<ShangXiaZhi>? {
         return shangXiaZhiDbDataSource.getByMedicalOrderId(medicalOrderId)
     }
 
-    override fun getFlow(scope: CoroutineScope, medicalOrderId: Long, interval: Long): Flow<ShangXiaZhi> {
+    fun getFlow(scope: CoroutineScope, medicalOrderId: Long): Flow<ShangXiaZhi> {
         scope.launch(Dispatchers.IO) {
             shangXiaZhiDataSource.fetch(medicalOrderId).collect {
                 shangXiaZhiDbDataSource.save(it)

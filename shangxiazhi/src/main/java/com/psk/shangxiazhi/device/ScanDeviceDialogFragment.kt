@@ -12,8 +12,9 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.like.common.base.BaseDialogFragment
 import com.like.recyclerview.layoutmanager.WrapLinearLayoutManager
-import com.psk.device.BleManager
-import com.psk.device.DeviceType
+import com.psk.ble.BleManager
+import com.psk.ble.DeviceType
+import com.psk.device.util.containsDevice
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.data.model.BleScanInfo
 import com.psk.shangxiazhi.databinding.DialogFragmentScanDeviceBinding

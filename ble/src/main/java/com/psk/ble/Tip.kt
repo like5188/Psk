@@ -1,4 +1,4 @@
-package com.psk.device
+package com.psk.ble
 
 sealed class Tip(val msg: String)
 class Normal(msg: String) : Tip(msg)

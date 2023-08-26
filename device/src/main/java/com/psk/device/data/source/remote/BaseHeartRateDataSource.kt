@@ -1,6 +1,6 @@
 package com.psk.device.data.source.remote
 
-import com.psk.device.DeviceType
+import com.psk.ble.DeviceType
 import com.psk.device.data.model.HeartRate
 import kotlinx.coroutines.flow.Flow
 

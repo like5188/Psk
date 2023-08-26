@@ -7,9 +7,10 @@ import android.os.IBinder
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.lifecycleScope
-import com.psk.device.BleManager
-import com.psk.device.DeviceType
-import com.psk.device.Tip
+import com.psk.ble.BleManager
+import com.psk.ble.DeviceType
+import com.psk.ble.Tip
+import com.psk.device.DeviceManager
 import com.psk.device.data.source.BloodOxygenRepository
 import com.psk.device.data.source.BloodPressureRepository
 import com.psk.device.data.source.HeartRateRepository
@@ -44,12 +45,12 @@ class GameManagerService : Service(), KoinComponent {
     }
 
     private val bleManager by inject<BleManager>()
+    private val gameController by inject<GameController>()
+    private val decimalFormat by inject<DecimalFormat>()
     private val bloodOxygenRepository by inject<BloodOxygenRepository>()
     private val bloodPressureRepository by inject<BloodPressureRepository>()
     private val heartRateRepository by inject<HeartRateRepository>()
     private val shangXiaZhiRepository by inject<ShangXiaZhiRepository>()
-    private val gameController by inject<GameController>()
-    private val decimalFormat by inject<DecimalFormat>()
     private var shangXiaZhiJob: Job? = null
     private var heartRateJob: Job? = null
     private var bloodOxygenJob: Job? = null
@@ -67,6 +68,7 @@ class GameManagerService : Service(), KoinComponent {
         lifecycleScope = activity.lifecycleScope
         bleManager.onTip = onTip
         lifecycleScope.launch {
+            DeviceManager.init(activity)
             bleManager.init(activity)
         }
     }

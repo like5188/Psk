@@ -1,7 +1,7 @@
 package com.psk.device.data.source.remote.ble
 
 import android.content.Context
-import com.psk.device.DeviceType
+import com.psk.ble.DeviceType
 import com.psk.device.data.source.remote.BaseRemoteDeviceDataSource
 import com.psk.device.util.getSubclasses
 

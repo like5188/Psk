@@ -1,4 +1,4 @@
-package com.psk.device
+package com.psk.ble
 
 import android.content.Context
 import androidx.activity.ComponentActivity
@@ -6,11 +6,9 @@ import com.like.ble.central.scan.result.ScanResult
 import com.like.ble.util.BleBroadcastReceiverManager
 import com.like.ble.util.PermissionUtils
 import com.like.ble.util.hexStringToByteArray
-import com.psk.device.data.source.RepositoryFactory
-import com.psk.device.data.source.local.db.DbDataSourceFactory
-import com.psk.device.data.source.remote.ble.BleDataSourceFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import org.koin.core.context.loadKoinModules
 
 /**
  * 蓝牙设备相关的操作管理
@@ -34,11 +32,7 @@ class BleManager(private val context: Context) {
     }
 
     suspend fun init(activity: ComponentActivity) {
-        // 必须放在这里初始化，否则扫描时，如果要用到[DeviceType.containsDevice]方法就没效果。
-        // 也就是说[BleDataSourceFactory]工具类在使用[DeviceRepository]和[BleManager]时都需要用到。
-        BleDataSourceFactory.init(context)
-        DbDataSourceFactory.init(context)
-        RepositoryFactory.init(context)
+        loadKoinModules(bleModule)
         PermissionUtils.requestScanEnvironment(activity)
         PermissionUtils.requestConnectEnvironment(activity)
     }
