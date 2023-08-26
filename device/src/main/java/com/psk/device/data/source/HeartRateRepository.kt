@@ -17,7 +17,7 @@ import org.koin.core.parameter.parametersOf
  * 心率数据仓库
  */
 @OptIn(KoinApiExtension::class)
-class HeartRateRepository : KoinComponent {
+class HeartRateRepository : KoinComponent, IRepository {
     private lateinit var heartRateDbDataSource: HeartRateDbDataSource
     private lateinit var heartRateDataSource: BaseHeartRateDataSource
 

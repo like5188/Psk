@@ -19,7 +19,7 @@ import org.koin.core.parameter.parametersOf
  * 血压数据仓库
  */
 @OptIn(KoinApiExtension::class)
-class BloodPressureRepository : KoinComponent {
+class BloodPressureRepository : KoinComponent, IRepository {
     private lateinit var bloodPressureDbDataSource: BloodPressureDbDataSource
     private lateinit var bloodPressureDataSource: BaseBloodPressureDataSource
 

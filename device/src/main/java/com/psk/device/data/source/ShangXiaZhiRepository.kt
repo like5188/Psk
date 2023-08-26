@@ -18,7 +18,7 @@ import org.koin.core.parameter.parametersOf
  * 上下肢数据仓库
  */
 @OptIn(KoinApiExtension::class)
-class ShangXiaZhiRepository : KoinComponent {
+class ShangXiaZhiRepository : KoinComponent, IRepository {
     private lateinit var shangXiaZhiDbDataSource: ShangXiaZhiDbDataSource
     private lateinit var shangXiaZhiDataSource: BaseShangXiaZhiDataSource
 
