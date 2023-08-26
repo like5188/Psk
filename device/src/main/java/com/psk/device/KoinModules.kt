@@ -1,13 +1,11 @@
 package com.psk.device
 
 import com.psk.device.data.db.DeviceDatabaseManager
+import com.psk.device.data.db.dao.BaseDao
 import com.psk.device.data.db.database.DeviceDatabase
 import com.psk.device.data.source.DeviceRepository
-import com.psk.device.data.source.db.BloodOxygenDbDataSource
-import com.psk.device.data.source.db.BloodPressureDbDataSource
-import com.psk.device.data.source.db.HeartRateDbDataSource
-import com.psk.device.data.source.db.ShangXiaZhiDbDataSource
-import com.psk.device.data.source.remote.BleDeviceDataSourceFactory
+import com.psk.device.data.source.local.db.DbDataSourceFactory
+import com.psk.device.data.source.remote.ble.BleDataSourceFactory
 import org.koin.dsl.module
 
 /**
@@ -20,20 +18,16 @@ import org.koin.dsl.module
  */
 val deviceModule = module {
     //DataSource
-    factory {
-        BloodOxygenDbDataSource(get())
-    }
-    factory {
-        BloodPressureDbDataSource(get())
-    }
-    factory {
-        HeartRateDbDataSource(get())
-    }
-    factory {
-        ShangXiaZhiDbDataSource(get())
+    factory { (deviceType: DeviceType) ->
+        // 从DeviceDatabase中获取deviceType对应的方法
+        val method = DeviceDatabase::class.java.declaredMethods.firstOrNull {
+            it.name.lowercase().startsWith(deviceType.name.lowercase())
+        } ?: return@factory null
+        method.isAccessible = true
+        DbDataSourceFactory.create(deviceType, method.invoke(get<DeviceDatabase>()) as BaseDao<*>)
     }
     factory { (name: String, deviceType: DeviceType) ->
-        BleDeviceDataSourceFactory.create(name, deviceType)
+        BleDataSourceFactory.create(name, deviceType)
     }
 
     //repository
@@ -52,17 +46,4 @@ val deviceModule = module {
         DeviceDatabaseManager.db
     }
 
-    // Dao
-    single {
-        get<DeviceDatabase>().bloodOxygenDao()
-    }
-    single {
-        get<DeviceDatabase>().bloodPressureDao()
-    }
-    single {
-        get<DeviceDatabase>().heartRateDao()
-    }
-    single {
-        get<DeviceDatabase>().shangXiaZhiDao()
-    }
 }

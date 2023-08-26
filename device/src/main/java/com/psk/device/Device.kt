@@ -1,7 +1,7 @@
 package com.psk.device
 
 import com.like.ble.util.toUUID
-import com.psk.device.data.source.remote.BleDeviceDataSourceFactory
+import com.psk.device.data.source.remote.ble.BleDataSourceFactory
 import java.io.Serializable
 import java.util.UUID
 
@@ -71,7 +71,7 @@ enum class DeviceType : Serializable {
         if (name.isEmpty()) {
             return false
         }
-        BleDeviceDataSourceFactory.foreach { prefix, deviceTypeName, clazz ->
+        BleDataSourceFactory.foreach { prefix, deviceTypeName, clazz ->
             if (deviceTypeName == this.name && name.startsWith(prefix)) {
                 return true
             }

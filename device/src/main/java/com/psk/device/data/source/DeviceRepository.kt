@@ -5,10 +5,10 @@ import com.psk.device.data.model.BloodOxygen
 import com.psk.device.data.model.BloodPressure
 import com.psk.device.data.model.HeartRate
 import com.psk.device.data.model.ShangXiaZhi
-import com.psk.device.data.source.db.BloodOxygenDbDataSource
-import com.psk.device.data.source.db.BloodPressureDbDataSource
-import com.psk.device.data.source.db.HeartRateDbDataSource
-import com.psk.device.data.source.db.ShangXiaZhiDbDataSource
+import com.psk.device.data.source.local.db.BloodOxygenDbDataSource
+import com.psk.device.data.source.local.db.BloodPressureDbDataSource
+import com.psk.device.data.source.local.db.HeartRateDbDataSource
+import com.psk.device.data.source.local.db.ShangXiaZhiDbDataSource
 import com.psk.device.data.source.remote.BaseBloodOxygenDataSource
 import com.psk.device.data.source.remote.BaseBloodPressureDataSource
 import com.psk.device.data.source.remote.BaseHeartRateDataSource
@@ -27,9 +27,6 @@ import org.koin.core.parameter.parametersOf
 
 /**
  * 蓝牙设备数据仓库
- * 注意：如果要添加新的蓝牙设备，那么需要一下步骤：
- * 1、如果是当前已经存在的血压、血氧、心电、上下肢等系列：那么只需要新增一个DataSource。名称格式为：[扫描出来的蓝牙设备的名称前缀]_[DeviceType]Datasource；包名为：[com.psk.device.data.source.remote.ble]。
- * 2、如果是新的蓝牙设备系列，那么除了第1步外，还需要在本仓库中添加自己想要的方法。
  */
 @OptIn(KoinApiExtension::class)
 class DeviceRepository : KoinComponent {
@@ -43,25 +40,25 @@ class DeviceRepository : KoinComponent {
     private lateinit var shangXiaZhiDataSource: BaseShangXiaZhiDataSource
 
     fun enableBloodOxygen(name: String, address: String) {
-        bloodOxygenDbDataSource = get()
+        bloodOxygenDbDataSource = get { parametersOf(DeviceType.BloodOxygen) }
         bloodOxygenDataSource = get { parametersOf(name, DeviceType.BloodOxygen) }
         bloodOxygenDataSource.enable(address)
     }
 
     fun enableBloodPressure(name: String, address: String) {
-        bloodPressureDbDataSource = get()
+        bloodPressureDbDataSource = get { parametersOf(DeviceType.BloodPressure) }
         bloodPressureDataSource = get { parametersOf(name, DeviceType.BloodPressure) }
         bloodPressureDataSource.enable(address)
     }
 
     fun enableHeartRate(name: String, address: String) {
-        heartRateDbDataSource = get()
+        heartRateDbDataSource = get { parametersOf(DeviceType.HeartRate) }
         heartRateDataSource = get { parametersOf(name, DeviceType.HeartRate) }
         heartRateDataSource.enable(address)
     }
 
     fun enableShangXiaZhi(name: String, address: String) {
-        shangXiaZhiDbDataSource = get()
+        shangXiaZhiDbDataSource = get { parametersOf(DeviceType.ShangXiaZhi) }
         shangXiaZhiDataSource = get { parametersOf(name, DeviceType.ShangXiaZhi) }
         shangXiaZhiDataSource.enable(address)
     }

@@ -8,8 +8,8 @@ import kotlinx.coroutines.withContext
 /**
  * 在指定的包名[packageName]下查找指定类的所有子类（不包括自己）
  */
-suspend fun <T> Class<T>.getSubclasses(context: Context, packageName: String): List<Class<T>> = withContext(Dispatchers.IO) {
-    if (packageName.isEmpty()) {
+suspend fun <T> Class<T>.getSubclasses(context: Context, packageName: String?): List<Class<T>> = withContext(Dispatchers.IO) {
+    if (packageName.isNullOrEmpty()) {
         return@withContext emptyList()
     }
     val df = DexFile(context.packageCodePath) // 通过DexFile查找当前的APK中可执行文件
