@@ -12,7 +12,7 @@ internal object BleDataSourceFactory {
     private lateinit var classes: List<Class<BaseRemoteDeviceDataSource>>
 
     suspend fun init(context: Context) {
-        if (BleDataSourceFactory::classes.isInitialized) {
+        if (::classes.isInitialized) {
             return
         }
         classes = BaseRemoteDeviceDataSource::class.java.getSubclasses(

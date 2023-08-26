@@ -13,7 +13,7 @@ internal object DbDataSourceFactory {
     private lateinit var classes: List<Class<IDbDataSource<*>>>
 
     suspend fun init(context: Context) {
-        if (DbDataSourceFactory::classes.isInitialized) {
+        if (::classes.isInitialized) {
             return
         }
         classes = IDbDataSource::class.java.getSubclasses(
