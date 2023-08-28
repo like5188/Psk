@@ -22,6 +22,9 @@ object DeviceDatabaseManager {
     }
 
     fun init(application: Application) {
+        if (DeviceDatabaseManager::application.isInitialized) {
+            return
+        }
         DeviceDatabaseManager.application = application
     }
 
