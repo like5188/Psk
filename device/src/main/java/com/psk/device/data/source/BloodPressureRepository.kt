@@ -10,6 +10,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinApiExtension
@@ -45,7 +46,7 @@ class BloodPressureRepository : KoinComponent, IRepository<BloodPressure> {
                 delay(interval)
             }
         }
-        return dbDataSource.listenLatest(System.currentTimeMillis() / 1000)
+        return dbDataSource.listenLatest(System.currentTimeMillis() / 1000).filterNotNull()
     }
 
 }

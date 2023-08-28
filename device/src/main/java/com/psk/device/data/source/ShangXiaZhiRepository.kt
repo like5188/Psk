@@ -10,6 +10,7 @@ import com.psk.device.data.source.remote.ble.RKF_ShangXiaZhiDataSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
@@ -40,7 +41,7 @@ class ShangXiaZhiRepository : KoinComponent, IRepository<ShangXiaZhi> {
                 dbDataSource.save(it)
             }
         }
-        return dbDataSource.listenLatest(System.currentTimeMillis() / 1000)
+        return dbDataSource.listenLatest(System.currentTimeMillis() / 1000).filterNotNull()
     }
 
     fun setCallback(
