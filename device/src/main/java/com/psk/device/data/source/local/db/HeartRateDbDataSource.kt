@@ -4,12 +4,13 @@ import com.psk.device.data.db.dao.HeartRateDao
 import com.psk.device.data.model.HeartRate
 import com.psk.device.data.source.local.IDbDataSource
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filterNotNull
 
 class HeartRateDbDataSource(
     private val heartRateDao: HeartRateDao
 ) : IDbDataSource<HeartRate> {
     override fun listenLatest(startTime: Long): Flow<HeartRate> {
-        return heartRateDao.listenLatest(startTime)
+        return heartRateDao.listenLatest(startTime).filterNotNull()
     }
 
     override suspend fun getByMedicalOrderId(medicalOrderId: Long): List<HeartRate>? {

@@ -11,5 +11,5 @@ abstract class BloodOxygenDao : BaseDao<BloodOxygen>() {
      * 监听[startTime]开始的最近的 1 条数据，如果表中的任何行有更新，则重新查询并发射最新数据
      */
     @Query("SELECT * FROM BloodOxygen WHERE time >= :startTime ORDER BY id DESC LIMIT 1")
-    abstract fun listenLatest(startTime: Long): Flow<BloodOxygen>
+    abstract fun listenLatest(startTime: Long): Flow<BloodOxygen?>
 }
