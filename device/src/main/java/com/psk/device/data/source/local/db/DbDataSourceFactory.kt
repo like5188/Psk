@@ -2,7 +2,6 @@ package com.psk.device.data.source.local.db
 
 import android.content.Context
 import com.psk.ble.DeviceType
-import com.psk.device.data.db.dao.BaseDao
 import com.psk.device.data.source.local.IDbDataSource
 import com.psk.device.util.getSubclasses
 
@@ -32,11 +31,11 @@ internal object DbDataSourceFactory {
     /**
      * 根据设备类型反射创建数据源
      */
-    fun create(deviceType: DeviceType, dao: BaseDao<*>): IDbDataSource<*>? {
+    fun create(deviceType: DeviceType, dao: Any?, paramsClass: Class<*>): IDbDataSource<*>? {
         foreach { deviceTypeName, clazz ->
             if (deviceTypeName == deviceType.name) {
                 return try {
-                    val constructor = clazz.getConstructor(BaseDao::class.java)
+                    val constructor = clazz.getConstructor(paramsClass)
                     constructor.isAccessible = true
                     constructor.newInstance(dao)
                 } catch (e: Exception) {

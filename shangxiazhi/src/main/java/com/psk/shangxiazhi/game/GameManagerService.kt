@@ -14,6 +14,7 @@ import com.psk.device.DeviceManager
 import com.psk.device.data.source.BloodOxygenRepository
 import com.psk.device.data.source.BloodPressureRepository
 import com.psk.device.data.source.HeartRateRepository
+import com.psk.device.data.source.IRepository
 import com.psk.device.data.source.ShangXiaZhiRepository
 import com.psk.shangxiazhi.data.model.BleScanInfo
 import com.twsz.twsystempre.GameCallback
@@ -32,6 +33,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 import org.koin.core.component.inject
 import org.koin.core.parameter.parametersOf
 import java.text.DecimalFormat
@@ -48,10 +50,18 @@ class GameManagerService : Service(), KoinComponent {
     private val bleManager by inject<BleManager>()
     private val gameController by inject<GameController>()
     private val decimalFormat by inject<DecimalFormat>()
-    private val bloodOxygenRepository by inject<BloodOxygenRepository> { parametersOf(DeviceType.BloodOxygen) }
-    private val bloodPressureRepository by inject<BloodPressureRepository> { parametersOf(DeviceType.BloodPressure) }
-    private val heartRateRepository by inject<HeartRateRepository> { parametersOf(DeviceType.HeartRate) }
-    private val shangXiaZhiRepository by inject<ShangXiaZhiRepository> { parametersOf(DeviceType.ShangXiaZhi) }
+    private val bloodOxygenRepository by lazy {
+        get<IRepository<*>> { parametersOf(DeviceType.BloodOxygen) } as BloodOxygenRepository
+    }
+    private val bloodPressureRepository by lazy {
+        get<IRepository<*>> { parametersOf(DeviceType.BloodPressure) } as BloodPressureRepository
+    }
+    private val heartRateRepository by lazy {
+        get<IRepository<*>> { parametersOf(DeviceType.HeartRate) } as HeartRateRepository
+    }
+    private val shangXiaZhiRepository by lazy {
+        get<IRepository<*>> { parametersOf(DeviceType.ShangXiaZhi) } as ShangXiaZhiRepository
+    }
     private var shangXiaZhiJob: Job? = null
     private var heartRateJob: Job? = null
     private var bloodOxygenJob: Job? = null

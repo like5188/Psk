@@ -2,7 +2,9 @@ package com.psk.device.data.source
 
 import com.psk.ble.DeviceType
 import com.psk.device.data.model.ShangXiaZhi
+import com.psk.device.data.source.local.IDbDataSource
 import com.psk.device.data.source.local.db.ShangXiaZhiDbDataSource
+import com.psk.device.data.source.remote.BaseRemoteDeviceDataSource
 import com.psk.device.data.source.remote.BaseShangXiaZhiDataSource
 import com.psk.device.data.source.remote.ble.RKF_ShangXiaZhiDataSource
 import kotlinx.coroutines.CoroutineScope
@@ -23,8 +25,8 @@ class ShangXiaZhiRepository : KoinComponent, IRepository<ShangXiaZhi> {
     private lateinit var dataSource: BaseShangXiaZhiDataSource
 
     override fun enable(name: String, address: String) {
-        dbDataSource = get { parametersOf(DeviceType.ShangXiaZhi) }
-        dataSource = get { parametersOf(name, DeviceType.ShangXiaZhi) }
+        dbDataSource = get<IDbDataSource<*>> { parametersOf(DeviceType.ShangXiaZhi) } as ShangXiaZhiDbDataSource
+        dataSource = get<BaseRemoteDeviceDataSource> { parametersOf(name, DeviceType.ShangXiaZhi) } as BaseShangXiaZhiDataSource
         dataSource.enable(address)
     }
 

@@ -2,8 +2,10 @@ package com.psk.device.data.source
 
 import com.psk.ble.DeviceType
 import com.psk.device.data.model.BloodPressure
+import com.psk.device.data.source.local.IDbDataSource
 import com.psk.device.data.source.local.db.BloodPressureDbDataSource
 import com.psk.device.data.source.remote.BaseBloodPressureDataSource
+import com.psk.device.data.source.remote.BaseRemoteDeviceDataSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -24,8 +26,8 @@ class BloodPressureRepository : KoinComponent, IRepository<BloodPressure> {
     private lateinit var dataSource: BaseBloodPressureDataSource
 
     override fun enable(name: String, address: String) {
-        dbDataSource = get { parametersOf(DeviceType.BloodPressure) }
-        dataSource = get { parametersOf(name, DeviceType.BloodPressure) }
+        dbDataSource = get<IDbDataSource<*>> { parametersOf(DeviceType.BloodPressure) } as BloodPressureDbDataSource
+        dataSource = get<BaseRemoteDeviceDataSource> { parametersOf(name, DeviceType.BloodPressure) } as BaseBloodPressureDataSource
         dataSource.enable(address)
     }
 

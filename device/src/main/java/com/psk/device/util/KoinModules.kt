@@ -25,14 +25,16 @@ val deviceModule = module {
             it.name.lowercase().startsWith(deviceType.name.lowercase())
         } ?: return@factory null
         method.isAccessible = true
-        DbDataSourceFactory.create(deviceType, method.invoke(get<DeviceDatabase>()) as BaseDao<*>)
+        val packageName = BaseDao::class.java.`package`?.name
+        val paramsClass = Class.forName("$packageName.${deviceType.name}Dao")
+        DbDataSourceFactory.create(deviceType, method.invoke(get<DeviceDatabase>()), paramsClass)
     }
     //BaseRemoteDeviceDataSource
     factory { (name: String, deviceType: DeviceType) ->
         BleDataSourceFactory.create(name, deviceType)
     }
     //IRepository
-    single { (deviceType: DeviceType) ->
+    factory { (deviceType: DeviceType) ->
         RepositoryFactory.create(deviceType)
     }
 

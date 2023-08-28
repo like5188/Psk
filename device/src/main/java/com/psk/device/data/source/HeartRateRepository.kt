@@ -2,8 +2,10 @@ package com.psk.device.data.source
 
 import com.psk.ble.DeviceType
 import com.psk.device.data.model.HeartRate
+import com.psk.device.data.source.local.IDbDataSource
 import com.psk.device.data.source.local.db.HeartRateDbDataSource
 import com.psk.device.data.source.remote.BaseHeartRateDataSource
+import com.psk.device.data.source.remote.BaseRemoteDeviceDataSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -22,8 +24,8 @@ class HeartRateRepository : KoinComponent, IRepository<HeartRate> {
     private lateinit var dataSource: BaseHeartRateDataSource
 
     override fun enable(name: String, address: String) {
-        dbDataSource = get { parametersOf(DeviceType.HeartRate) }
-        dataSource = get { parametersOf(name, DeviceType.HeartRate) }
+        dbDataSource = get<IDbDataSource<*>> { parametersOf(DeviceType.HeartRate) } as HeartRateDbDataSource
+        dataSource = get<BaseRemoteDeviceDataSource> { parametersOf(name, DeviceType.HeartRate) } as BaseHeartRateDataSource
         dataSource.enable(address)
     }
 

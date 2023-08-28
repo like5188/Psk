@@ -2,8 +2,10 @@ package com.psk.device.data.source
 
 import com.psk.ble.DeviceType
 import com.psk.device.data.model.BloodOxygen
+import com.psk.device.data.source.local.IDbDataSource
 import com.psk.device.data.source.local.db.BloodOxygenDbDataSource
 import com.psk.device.data.source.remote.BaseBloodOxygenDataSource
+import com.psk.device.data.source.remote.BaseRemoteDeviceDataSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -24,8 +26,8 @@ class BloodOxygenRepository : KoinComponent, IRepository<BloodOxygen> {
     private lateinit var dataSource: BaseBloodOxygenDataSource
 
     override fun enable(name: String, address: String) {
-        dbDataSource = get { parametersOf(DeviceType.BloodOxygen) }
-        dataSource = get { parametersOf(name, DeviceType.BloodOxygen) }
+        dbDataSource = get<IDbDataSource<*>> { parametersOf(DeviceType.BloodOxygen) } as BloodOxygenDbDataSource
+        dataSource = get<BaseRemoteDeviceDataSource> { parametersOf(name, DeviceType.BloodOxygen) } as BaseBloodOxygenDataSource
         dataSource.enable(address)
     }
 
