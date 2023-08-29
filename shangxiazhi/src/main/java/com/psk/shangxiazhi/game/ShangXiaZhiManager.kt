@@ -30,7 +30,7 @@ class ShangXiaZhiManager(
     deviceManager: DeviceManager,
     deviceName: String,
     deviceAddress: String,
-) : BaseDeviceManager<ShangXiaZhi>(lifecycleScope, deviceManager, deviceName, deviceAddress), KoinComponent {
+) : BaseDeviceManager<ShangXiaZhi>(lifecycleScope), KoinComponent {
     override val repository = deviceManager.createRepository<ShangXiaZhiRepository>(DeviceType.ShangXiaZhi).apply {
         enable(deviceName, deviceAddress)
         setCallback(

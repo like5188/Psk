@@ -17,7 +17,7 @@ class BloodPressureManager(
     deviceManager: DeviceManager,
     deviceName: String,
     deviceAddress: String,
-) : BaseDeviceManager<BloodPressure>(lifecycleScope, deviceManager, deviceName, deviceAddress) {
+) : BaseDeviceManager<BloodPressure>(lifecycleScope) {
     override val repository by lazy {
         deviceManager.createRepository<BloodPressureRepository>(DeviceType.BloodPressure).apply {
             enable(deviceName, deviceAddress)

@@ -2,7 +2,6 @@ package com.psk.shangxiazhi.game
 
 import android.util.Log
 import com.psk.ble.BleManager
-import com.psk.device.DeviceManager
 import com.psk.device.data.source.IRepository
 import com.twsz.twsystempre.GameController
 import kotlinx.coroutines.CoroutineScope
@@ -17,12 +16,7 @@ import org.koin.core.component.inject
 import java.util.concurrent.atomic.AtomicBoolean
 
 @OptIn(KoinApiExtension::class)
-abstract class BaseDeviceManager<T>(
-    val lifecycleScope: CoroutineScope,
-    val deviceManager: DeviceManager,
-    deviceName: String,
-    deviceAddress: String,
-) : KoinComponent {
+abstract class BaseDeviceManager<T>(val lifecycleScope: CoroutineScope) : KoinComponent {
     protected val bleManager by inject<BleManager>()
     protected val gameController by inject<GameController>()
     private var job: Job? = null

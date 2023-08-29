@@ -17,7 +17,7 @@ class BloodOxygenManager(
     deviceManager: DeviceManager,
     deviceName: String,
     deviceAddress: String,
-) : BaseDeviceManager<BloodOxygen>(lifecycleScope, deviceManager, deviceName, deviceAddress) {
+) : BaseDeviceManager<BloodOxygen>(lifecycleScope) {
     override val repository by lazy {
         deviceManager.createRepository<BloodOxygenRepository>(DeviceType.BloodOxygen).apply {
             enable(deviceName, deviceAddress)

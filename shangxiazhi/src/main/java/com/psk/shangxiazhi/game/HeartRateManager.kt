@@ -21,7 +21,7 @@ class HeartRateManager(
     deviceManager: DeviceManager,
     deviceName: String,
     deviceAddress: String,
-) : BaseDeviceManager<HeartRate>(lifecycleScope, deviceManager, deviceName, deviceAddress) {
+) : BaseDeviceManager<HeartRate>(lifecycleScope) {
     override val repository by lazy {
         deviceManager.createRepository<HeartRateRepository>(DeviceType.HeartRate).apply {
             enable(deviceName, deviceAddress)
