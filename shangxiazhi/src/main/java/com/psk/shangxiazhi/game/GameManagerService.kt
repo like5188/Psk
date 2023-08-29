@@ -17,7 +17,6 @@ import com.twsz.twsystempre.GameController
 import com.twsz.twsystempre.TrainScene
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
@@ -70,57 +69,48 @@ class GameManagerService : Service(), KoinComponent {
             val bleScanInfo = it.value
             when (deviceType) {
                 DeviceType.BloodOxygen -> {
-                    bloodOxygenManager = BloodOxygenManager(deviceManager).apply {
-                        enable(bleScanInfo.name, bleScanInfo.address)
-                        onBloodOxygenDataChanged = {
-                            gameController.updateBloodOxygenData(it)
-                        }
-                    }
+                    bloodOxygenManager = BloodOxygenManager(lifecycleScope, deviceManager, bleScanInfo.name, bleScanInfo.address)
                 }
 
                 DeviceType.BloodPressure -> {
-                    bloodPressureManager = BloodPressureManager(deviceManager).apply {
-                        enable(bleScanInfo.name, bleScanInfo.address)
-                        onBloodPressureDataChanged = { sbp, dbp ->
-                            gameController.updateBloodPressureData(sbp, dbp)
-                        }
-                    }
+                    bloodPressureManager = BloodPressureManager(lifecycleScope, deviceManager, bleScanInfo.name, bleScanInfo.address)
                 }
 
                 DeviceType.HeartRate -> {
-                    heartRateManager = HeartRateManager(deviceManager).apply {
-                        enable(bleScanInfo.name, bleScanInfo.address)
-                        onHeartRateDataChanged = {
-                            gameController.updateHeartRateData(it)
-                        }
-                        onEcgDataChanged = {
-                            gameController.updateEcgData(it)
-                        }
-                    }
+                    heartRateManager = HeartRateManager(lifecycleScope, deviceManager, bleScanInfo.name, bleScanInfo.address)
                 }
 
                 DeviceType.ShangXiaZhi -> {
-                    shangXiaZhiManager = ShangXiaZhiManager(deviceManager).apply {
-                        enable(bleScanInfo.name, bleScanInfo.address)
+                    shangXiaZhiManager = ShangXiaZhiManager(
+                        passiveModule,
+                        timeInt,
+                        speedInt,
+                        spasmInt,
+                        resistanceInt,
+                        intelligent,
+                        turn2,
+                        lifecycleScope,
+                        deviceManager,
+                        bleScanInfo.name,
+                        bleScanInfo.address
+                    ).apply {
                         onStartGame = {
-                            Log.d(TAG, "game onStart by shang xia zhi")
-                            gameController.startGame()
-                            startJobsExceptShangXiaZhi()
+                            bloodOxygenManager?.onStartGame()
+                            bloodPressureManager?.onStartGame()
+                            heartRateManager?.onStartGame()
+                            shangXiaZhiManager?.onStartGame()
                         }
                         onPauseGame = {
-                            Log.d(TAG, "game onPause by shang xia zhi")
-                            gameController.pauseGame()
-                            cancelJobsExceptShangXiaZhi()
+                            bloodOxygenManager?.onPauseGame()
+                            bloodPressureManager?.onPauseGame()
+                            heartRateManager?.onPauseGame()
+                            shangXiaZhiManager?.onPauseGame()
                         }
                         onOverGame = {
-                            Log.d(TAG, "game onOver by shang xia zhi")
-                            gameController.overGame()
-                            shangXiaZhiManager?.cancelJob()
-                            cancelJobsExceptShangXiaZhi()
-                            destroyBle()
-                        }
-                        onGameDataChanged = {
-                            gameController.updateGameData(it)
+                            bloodOxygenManager?.onOverGame()
+                            bloodPressureManager?.onOverGame()
+                            heartRateManager?.onOverGame()
+                            shangXiaZhiManager?.onOverGame()
                         }
                     }
                 }
@@ -128,126 +118,46 @@ class GameManagerService : Service(), KoinComponent {
         }
 
         val gameCallback = object : GameCallback.Stub() {
-            var isStart = false
-
-            private suspend fun waitStart() {
-                while (!isStart) {
-                    delay(10)
-                }
-            }
-
             override fun onLoading() {
-                Log.d(TAG, "game onLoading")
-                bleManager.connectAll(lifecycleScope, 3000L, onConnected = {
-                    when (it.type) {
-                        DeviceType.ShangXiaZhi -> {
-                            Log.w(TAG, "上下肢连接成功 $it")
-                            gameController.updateGameConnectionState(true)
-                            lifecycleScope.launch(Dispatchers.IO) {
-                                waitStart()
-                                shangXiaZhiManager?.startJob(lifecycleScope)
-                                delay(100)
-                                //设置上下肢参数，设置好后，如果是被动模式，上下肢会自动运行
-                                shangXiaZhiManager?.setParams(
-                                    passiveModule, timeInt, speedInt, spasmInt, resistanceInt, intelligent, turn2
-                                )
-                            }
-                        }
-
-                        DeviceType.HeartRate -> {
-                            Log.w(TAG, "心电仪连接成功 $it")
-                            gameController.updateEcgConnectionState(true)
-                            lifecycleScope.launch(Dispatchers.IO) {
-                                waitStart()
-                                heartRateManager?.startJob(lifecycleScope)
-                            }
-                        }
-
-                        DeviceType.BloodOxygen -> {
-                            Log.w(TAG, "血氧仪连接成功 $it")
-                            gameController.updateBloodOxygenConnectionState(true)
-                            lifecycleScope.launch(Dispatchers.IO) {
-                                waitStart()
-                                bloodOxygenManager?.startJob(lifecycleScope)
-                            }
-                        }
-
-                        DeviceType.BloodPressure -> {
-                            Log.w(TAG, "血压仪连接成功 $it")
-                            gameController.updateBloodPressureConnectionState(true)
-                            lifecycleScope.launch(Dispatchers.IO) {
-                                waitStart()
-                                bloodPressureManager?.startJob(lifecycleScope)
-                            }
-                        }
-
-                        else -> {}
-                    }
-                }) {
-                    when (it.type) {
-                        DeviceType.ShangXiaZhi -> {
-                            Log.e(TAG, "上下肢连接失败 $it")
-                            gameController.updateGameConnectionState(false)
-                            shangXiaZhiManager?.cancelJob()
-                        }
-
-                        DeviceType.HeartRate -> {
-                            Log.e(TAG, "心电仪连接失败 $it")
-                            gameController.updateEcgConnectionState(false)
-                            heartRateManager?.cancelJob()
-                        }
-
-                        DeviceType.BloodOxygen -> {
-                            Log.e(TAG, "血氧仪连接失败 $it")
-                            gameController.updateBloodOxygenConnectionState(false)
-                            bloodOxygenManager?.cancelJob()
-                        }
-
-                        DeviceType.BloodPressure -> {
-                            Log.e(TAG, "血压仪连接失败 $it")
-                            gameController.updateBloodPressureConnectionState(false)
-                            bloodPressureManager?.cancelJob()
-                        }
-
-                        else -> {}
-                    }
-                }
+                bloodOxygenManager?.onGameLoading()
+                bloodPressureManager?.onGameLoading()
+                heartRateManager?.onGameLoading()
+                shangXiaZhiManager?.onGameLoading()
             }
 
             override fun onStart() {
-                isStart = true
-                Log.d(TAG, "game onStart")
+                bloodOxygenManager?.onGameStart()
+                bloodPressureManager?.onGameStart()
+                heartRateManager?.onGameStart()
+                shangXiaZhiManager?.onGameStart()
             }
 
             override fun onResume() {
-                Log.d(TAG, "game onResume")
-                lifecycleScope.launch(Dispatchers.IO) {
-                    shangXiaZhiManager?.resume()
-                    startJobsExceptShangXiaZhi()
-                }
+                bloodOxygenManager?.onGameResume()
+                bloodPressureManager?.onGameResume()
+                heartRateManager?.onGameResume()
+                shangXiaZhiManager?.onGameResume()
             }
 
             override fun onPause() {
-                Log.d(TAG, "game onPause")
-                lifecycleScope.launch(Dispatchers.IO) {
-                    shangXiaZhiManager?.pause()
-                    cancelJobsExceptShangXiaZhi()
-                }
+                bloodOxygenManager?.onGamePause()
+                bloodPressureManager?.onGamePause()
+                heartRateManager?.onGamePause()
+                shangXiaZhiManager?.onGamePause()
             }
 
             override fun onOver() {
-                Log.d(TAG, "game onOver")
-                lifecycleScope.launch(Dispatchers.IO) {
-                    shangXiaZhiManager?.over()
-                    shangXiaZhiManager?.cancelJob()
-                    cancelJobsExceptShangXiaZhi()
-                    destroyBle()
-                }
+                bloodOxygenManager?.onGameOver()
+                bloodPressureManager?.onGameOver()
+                heartRateManager?.onGameOver()
+                shangXiaZhiManager?.onGameOver()
             }
 
             override fun onFinish() {
-                Log.d(TAG, "game onFinish")
-                onDestroy()
+                bloodOxygenManager?.onGameFinish()
+                bloodPressureManager?.onGameFinish()
+                heartRateManager?.onGameFinish()
+                shangXiaZhiManager?.onGameFinish()
             }
 
         }
@@ -261,43 +171,13 @@ class GameManagerService : Service(), KoinComponent {
         }
     }
 
-    private fun startJobsExceptShangXiaZhi() {
-        heartRateManager?.startJob(lifecycleScope)
-        bloodOxygenManager?.startJob(lifecycleScope)
-        bloodPressureManager?.startJob(lifecycleScope)
-    }
-
-    private fun cancelJobsExceptShangXiaZhi() {
-        heartRateManager?.cancelJob()
-        bloodOxygenManager?.cancelJob()
-        bloodPressureManager?.cancelJob()
-    }
-
-    private fun destroyBle() {
-        // 由于 bleManager.onDestroy() 方法不会触发 connect() 方法的 onDisconnected 回调，原因见 Ble 框架的 close 方法
-        // 所以只能单独调用 updateXxxConnectionState 方法更新界面状态。
-        bleManager.onDestroy()
-        if (shangXiaZhiManager != null) {
-            gameController.updateGameConnectionState(false)
-        }
-        if (heartRateManager != null) {
-            gameController.updateEcgConnectionState(false)
-        }
-        if (bloodOxygenManager != null) {
-            gameController.updateBloodOxygenConnectionState(false)
-        }
-        if (bloodPressureManager != null) {
-            gameController.updateBloodPressureConnectionState(false)
-        }
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         Log.d(TAG, "onDestroy")
-        shangXiaZhiManager?.cancelJob()
-        cancelJobsExceptShangXiaZhi()
-        destroyBle()
-        gameController.destroy()
+        bloodOxygenManager?.onGameFinish()
+        bloodPressureManager?.onGameFinish()
+        heartRateManager?.onGameFinish()
+        shangXiaZhiManager?.onGameFinish()
     }
 
     override fun onBind(intent: Intent?): IBinder {

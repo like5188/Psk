@@ -5,6 +5,7 @@ import com.psk.ble.DeviceType
 import com.psk.device.DeviceManager
 import com.psk.device.data.model.HeartRate
 import com.psk.device.data.source.HeartRateRepository
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -15,13 +16,17 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class HeartRateManager(private val deviceManager: DeviceManager) : BaseDeviceManager<HeartRate>() {
+class HeartRateManager(
+    lifecycleScope: CoroutineScope,
+    deviceManager: DeviceManager,
+    deviceName: String,
+    deviceAddress: String,
+) : BaseDeviceManager<HeartRate>(lifecycleScope, deviceManager, deviceName, deviceAddress) {
     override val repository by lazy {
-        deviceManager.createRepository<HeartRateRepository>(DeviceType.HeartRate)
+        deviceManager.createRepository<HeartRateRepository>(DeviceType.HeartRate).apply {
+            enable(deviceName, deviceAddress)
+        }
     }
-
-    var onHeartRateDataChanged: ((heartRate: Int) -> Unit)? = null
-    var onEcgDataChanged: ((coorYArray: FloatArray) -> Unit)? = null
 
     override suspend fun handleFlow(flow: Flow<HeartRate>) = withContext<Unit>(Dispatchers.IO) {
         Log.d(TAG, "startHeartRateJob")
@@ -29,7 +34,7 @@ class HeartRateManager(private val deviceManager: DeviceManager) : BaseDeviceMan
             flow.filterNotNull().map {
                 it.value
             }.distinctUntilChanged().collect { value ->
-                onHeartRateDataChanged?.invoke(value)
+                gameController.updateHeartRateData(value)
             }
         }
         launch(Dispatchers.IO) {
@@ -42,10 +47,64 @@ class HeartRateManager(private val deviceManager: DeviceManager) : BaseDeviceMan
                 coorYValues.toList().chunked(5).forEach {
                     // 5个一组，125多的采样率，那么1秒钟发射25组数据就好，平均每个数据需要延迟40毫秒。
                     delay(1)
-                    onEcgDataChanged?.invoke(it.toFloatArray())
+                    gameController.updateEcgData(it.toFloatArray())
                 }
             }
         }
+    }
+
+    override fun onStartGame() {
+        super.onStartGame()
+        startJob()
+    }
+
+    override fun onPauseGame() {
+        super.onPauseGame()
+        cancelJob()
+    }
+
+    override fun onOverGame() {
+        super.onOverGame()
+        cancelJob()
+        gameController.updateEcgConnectionState(false)
+    }
+
+    override fun onGameLoading() {
+        super.onGameLoading()
+        bleManager.connect(DeviceType.HeartRate, lifecycleScope, 3000L, {
+            Log.w(TAG, "心电仪连接成功 $it")
+            gameController.updateEcgConnectionState(true)
+            lifecycleScope.launch(Dispatchers.IO) {
+                waitStart()
+                startJob()
+            }
+        }) {
+            Log.e(TAG, "心电仪连接失败 $it")
+            gameController.updateEcgConnectionState(false)
+            cancelJob()
+        }
+    }
+
+    override fun onGameResume() {
+        super.onGameResume()
+        startJob()
+    }
+
+    override fun onGamePause() {
+        super.onGamePause()
+        cancelJob()
+    }
+
+    override fun onGameOver() {
+        super.onGameOver()
+        cancelJob()
+        gameController.updateEcgConnectionState(false)
+    }
+
+    override fun onGameFinish() {
+        super.onGameFinish()
+        cancelJob()
+        gameController.updateEcgConnectionState(false)
     }
 
     companion object {

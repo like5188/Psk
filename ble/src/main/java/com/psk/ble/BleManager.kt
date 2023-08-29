@@ -46,6 +46,26 @@ class BleManager(private val context: Context) {
     }
 
     /**
+     * 连接指定类型的蓝牙设备。
+     */
+    fun connect(
+        deviceType: DeviceType,
+        scope: CoroutineScope,
+        autoConnectInterval: Long,
+        onConnected: (Device) -> Unit,
+        onDisconnected: (Device) -> Unit
+    ) {
+        val connectManager = connectManagers.filter {
+            it.key.type == deviceType
+        }.values.firstOrNull()
+        if (connectManager == null) {
+            onTip?.invoke(Normal("connect 没有找到 $deviceType 类型的设备。"))
+            return
+        }
+        connectManager.connect(scope, autoConnectInterval, onConnected, onDisconnected)
+    }
+
+    /**
      * 连接添加的所有蓝牙设备。
      */
     fun connectAll(
@@ -135,12 +155,15 @@ class BleManager(private val context: Context) {
     }
 
     fun onDestroy() {
-        bleBroadcastReceiverManager.unregister()
-        connectManagers.values.forEach {
-            it.close()
+        try {
+            bleBroadcastReceiverManager.unregister()
+            connectManagers.values.forEach {
+                it.close()
+            }
+            connectManagers.clear()
+            scanManager.close()
+        } catch (e: Exception) {
         }
-        connectManagers.clear()
-        scanManager.close()
     }
 
 }

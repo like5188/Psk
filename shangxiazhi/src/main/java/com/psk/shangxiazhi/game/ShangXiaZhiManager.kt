@@ -6,34 +6,34 @@ import com.psk.device.DeviceManager
 import com.psk.device.data.model.ShangXiaZhi
 import com.psk.device.data.source.ShangXiaZhiRepository
 import com.twsz.twsystempre.GameData
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.buffer
+import kotlinx.coroutines.launch
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.text.DecimalFormat
 
 @OptIn(KoinApiExtension::class)
-class ShangXiaZhiManager(private val deviceManager: DeviceManager) : BaseDeviceManager<ShangXiaZhi>(), KoinComponent {
-    override val repository by lazy {
-        deviceManager.createRepository<ShangXiaZhiRepository>(DeviceType.ShangXiaZhi)
-    }
-
-    private val decimalFormat by inject<DecimalFormat>()
-    var onStartGame: (() -> Unit)? = null
-    var onPauseGame: (() -> Unit)? = null
-    var onOverGame: (() -> Unit)? = null
-    var onGameDataChanged: ((data: GameData) -> Unit)? = null
-
-    override suspend fun handleFlow(flow: Flow<ShangXiaZhi>) {
-        Log.d(TAG, "startShangXiaZhiJob")
-        var mActiveMil = 0f// 主动里程数
-        var mPassiveMil = 0f// 被动里程数
-        var totalCal = 0f// 总卡路里
-        var isFirstSpasm = false// 是否第一次痉挛
-        var mFirstSpasmValue = 0// 第一次痉挛值
-        var spasm = 0// 痉挛值
-        repository.setCallback(
+class ShangXiaZhiManager(
+    private val passiveModule: Boolean,
+    private val timeInt: Int,
+    private val speedInt: Int,
+    private val spasmInt: Int,
+    private val resistanceInt: Int,
+    private val intelligent: Boolean,
+    private val turn2: Boolean,
+    lifecycleScope: CoroutineScope,
+    deviceManager: DeviceManager,
+    deviceName: String,
+    deviceAddress: String,
+) : BaseDeviceManager<ShangXiaZhi>(lifecycleScope, deviceManager, deviceName, deviceAddress), KoinComponent {
+    override val repository = deviceManager.createRepository<ShangXiaZhiRepository>(DeviceType.ShangXiaZhi).apply {
+        enable(deviceName, deviceAddress)
+        setCallback(
             onStart = {
                 Log.d(TAG, "game onStart by shang xia zhi")
                 onStartGame?.invoke()
@@ -46,8 +46,24 @@ class ShangXiaZhiManager(private val deviceManager: DeviceManager) : BaseDeviceM
                 Log.d(TAG, "game onOver by shang xia zhi")
                 onOverGame?.invoke()
                 cancelJob()
+                gameController.updateGameConnectionState(false)
             }
         )
+    }
+
+    private val decimalFormat by inject<DecimalFormat>()
+    var onStartGame: (() -> Unit)? = null
+    var onPauseGame: (() -> Unit)? = null
+    var onOverGame: (() -> Unit)? = null
+
+    override suspend fun handleFlow(flow: Flow<ShangXiaZhi>) {
+        Log.d(TAG, "startShangXiaZhiJob")
+        var mActiveMil = 0f// 主动里程数
+        var mPassiveMil = 0f// 被动里程数
+        var totalCal = 0f// 总卡路里
+        var isFirstSpasm = false// 是否第一次痉挛
+        var mFirstSpasmValue = 0// 第一次痉挛值
+        var spasm = 0// 痉挛值
         // 这里不能用 distinctUntilChanged、conflate 等操作符，因为需要根据所有数据来计算里程等。必须得到每次数据。
         flow.buffer(Int.MAX_VALUE).collect { shangXiaZhi ->
             //转速
@@ -92,7 +108,7 @@ class ShangXiaZhiManager(private val deviceManager: DeviceManager) : BaseDeviceM
                     spasmFlag = 0
                 }
             }
-            onGameDataChanged?.invoke(
+            gameController.updateGameData(
                 GameData(
                     model = model,
                     speed = speed,
@@ -111,30 +127,52 @@ class ShangXiaZhiManager(private val deviceManager: DeviceManager) : BaseDeviceM
         }
     }
 
-    fun setCallback(
-        onStart: (() -> Unit)? = null,
-        onPause: (() -> Unit)? = null,
-        onOver: (() -> Unit)? = null,
-    ) {
-        repository.setCallback(onStart, onPause, onOver)
+    override fun onGameLoading() {
+        super.onGameLoading()
+        bleManager.connect(DeviceType.ShangXiaZhi, lifecycleScope, 3000L, {
+            Log.w(TAG, "上下肢连接成功 $it")
+            gameController.updateGameConnectionState(true)
+            lifecycleScope.launch(Dispatchers.IO) {
+                waitStart()
+                startJob()
+                delay(100)
+                //设置上下肢参数，设置好后，如果是被动模式，上下肢会自动运行
+                repository.setParams(passiveModule, timeInt, speedInt, spasmInt, resistanceInt, intelligent, turn2)
+            }
+        }) {
+            Log.e(TAG, "上下肢连接失败 $it")
+            gameController.updateGameConnectionState(false)
+            cancelJob()
+        }
     }
 
-    suspend fun resume() {
-        repository.resume()
+    override fun onGameResume() {
+        super.onGameResume()
+        lifecycleScope.launch(Dispatchers.IO) {
+            repository.resume()
+        }
     }
 
-    suspend fun pause() {
-        repository.pause()
+    override fun onGamePause() {
+        super.onGamePause()
+        lifecycleScope.launch(Dispatchers.IO) {
+            repository.pause()
+        }
     }
 
-    suspend fun over() {
-        repository.over()
+    override fun onGameOver() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            repository.over()
+            super.onGameOver()// 这个必须放到 repository.over() 后面，否则会由于蓝牙的关闭而无法执行 repository.over()
+            cancelJob()
+            gameController.updateGameConnectionState(false)
+        }
     }
 
-    suspend fun setParams(
-        passiveModule: Boolean, timeInt: Int, speedInt: Int, spasmInt: Int, resistanceInt: Int, intelligent: Boolean, turn2: Boolean
-    ) {
-        repository.setParams(passiveModule, timeInt, speedInt, spasmInt, resistanceInt, intelligent, turn2)
+    override fun onGameFinish() {
+        super.onGameFinish()
+        cancelJob()
+        gameController.updateGameConnectionState(false)
     }
 
     companion object {
