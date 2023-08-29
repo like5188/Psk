@@ -301,7 +301,7 @@ class GameManagerService : Service(), KoinComponent {
                     shangXiaZhiJob?.cancel()
                     shangXiaZhiJob = null
                     cancelJobsExceptShangXiaZhi()
-                    bleManager.onDestroy()
+                    destroyBle()
                 }
             )
             // 这里不能用 distinctUntilChanged、conflate 等操作符，因为需要根据所有数据来计算里程等。必须得到每次数据。

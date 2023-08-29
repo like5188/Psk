@@ -98,7 +98,7 @@ class MainActivity : AppCompatActivity() {
                     if (!it.containsKey(DeviceType.ShangXiaZhi)) {
                         showToast("请先选择上下肢设备")
                     } else {
-                        mViewModel.uiState.value.gameManagerService?.start(it, scene, resistanceInt = 1, passiveModule = true, timeInt = 2)
+                        mViewModel.uiState.value.gameManagerService?.start(it, scene, resistanceInt = 1, passiveModule = true, timeInt = 1)
                     }
                 }
                 show(this@MainActivity)
