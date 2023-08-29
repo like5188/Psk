@@ -49,39 +49,49 @@ abstract class BaseBusinessManager<T>(val lifecycleScope: CoroutineScope) : Koin
     }
 
     protected abstract suspend fun handleFlow(flow: Flow<T>)
+
+    // 上下肢控制游戏
     open fun onStartGame() {
         Log.d(TAG, "onStartGame")
     }
 
+    // 上下肢控制游戏
     open fun onPauseGame() {
         Log.d(TAG, "onPauseGame")
     }
 
+    // 上下肢控制游戏
     open fun onOverGame() {
         Log.d(TAG, "onOverGame")
     }
 
+    // 游戏控制上下肢
     open fun onGameLoading() {
         Log.i(TAG, "onGameLoading")
     }
 
+    // 游戏控制上下肢
     open fun onGameStart() {
         Log.i(TAG, "onGameStart")
         isStart.compareAndSet(false, true)
     }
 
+    // 游戏控制上下肢
     open fun onGameResume() {
         Log.i(TAG, "onGameResume")
     }
 
+    // 游戏控制上下肢
     open fun onGamePause() {
         Log.i(TAG, "onGamePause")
     }
 
+    // 游戏控制上下肢
     open fun onGameOver() {
         Log.i(TAG, "onGameOver")
     }
 
+    // 游戏控制上下肢
     open fun onGameFinish() {
         Log.i(TAG, "onGameFinish")
     }
