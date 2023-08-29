@@ -36,17 +36,13 @@ internal object BleDataSourceFactory {
     /**
      * 根据设备名称和设备类型反射创建数据源
      */
-    fun create(name: String, deviceType: DeviceType): BaseRemoteDeviceDataSource? {
+    fun create(name: String, deviceType: DeviceType): BaseRemoteDeviceDataSource {
         foreach { prefix, deviceTypeName, clazz ->
             if (deviceTypeName == deviceType.name && name.startsWith(prefix)) {
-                return try {
-                    clazz.newInstance()
-                } catch (e: Exception) {
-                    null
-                }
+                return clazz.newInstance()
             }
         }
-        return null
+        throw IllegalArgumentException("未找到 $deviceType $name 对应的数据源")
     }
 
 }
