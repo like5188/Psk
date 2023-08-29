@@ -2,6 +2,7 @@ package com.psk.shangxiazhi.game
 
 import android.util.Log
 import com.psk.ble.DeviceType
+import com.psk.device.DeviceManager
 import com.psk.device.data.model.ShangXiaZhi
 import com.psk.device.data.source.ShangXiaZhiRepository
 import com.twsz.twsystempre.GameData
@@ -10,12 +11,13 @@ import kotlinx.coroutines.flow.buffer
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import org.koin.core.parameter.parametersOf
 import java.text.DecimalFormat
 
 @OptIn(KoinApiExtension::class)
-class ShangXiaZhiManager : BaseDeviceManager<ShangXiaZhi>(), KoinComponent {
-    override val repository by inject<ShangXiaZhiRepository> { parametersOf(DeviceType.ShangXiaZhi) }
+class ShangXiaZhiManager(private val deviceManager: DeviceManager) : BaseDeviceManager<ShangXiaZhi>(), KoinComponent {
+    override val repository by lazy {
+        deviceManager.createRepository<ShangXiaZhiRepository>(DeviceType.ShangXiaZhi)
+    }
 
     private val decimalFormat by inject<DecimalFormat>()
     var onStartGame: (() -> Unit)? = null

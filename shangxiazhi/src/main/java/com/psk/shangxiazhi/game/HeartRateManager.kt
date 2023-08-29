@@ -2,6 +2,7 @@ package com.psk.shangxiazhi.game
 
 import android.util.Log
 import com.psk.ble.DeviceType
+import com.psk.device.DeviceManager
 import com.psk.device.data.model.HeartRate
 import com.psk.device.data.source.HeartRateRepository
 import kotlinx.coroutines.Dispatchers
@@ -13,14 +14,11 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.koin.core.component.KoinApiExtension
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
-import org.koin.core.parameter.parametersOf
 
-@OptIn(KoinApiExtension::class)
-class HeartRateManager : BaseDeviceManager<HeartRate>(), KoinComponent {
-    override val repository by inject<HeartRateRepository> { parametersOf(DeviceType.HeartRate) }
+class HeartRateManager(private val deviceManager: DeviceManager) : BaseDeviceManager<HeartRate>() {
+    override val repository by lazy {
+        deviceManager.createRepository<HeartRateRepository>(DeviceType.HeartRate)
+    }
 
     var onHeartRateDataChanged: ((heartRate: Int) -> Unit)? = null
     var onEcgDataChanged: ((coorYArray: FloatArray) -> Unit)? = null
