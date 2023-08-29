@@ -22,10 +22,8 @@ class HeartRateManager(
     deviceName: String,
     deviceAddress: String,
 ) : BaseDeviceManager<HeartRate>(lifecycleScope) {
-    override val repository by lazy {
-        deviceManager.createRepository<HeartRateRepository>(DeviceType.HeartRate).apply {
-            enable(deviceName, deviceAddress)
-        }
+    override val repository = deviceManager.createRepository<HeartRateRepository>(DeviceType.HeartRate).apply {
+        enable(deviceName, deviceAddress)
     }
 
     override suspend fun handleFlow(flow: Flow<HeartRate>) = withContext<Unit>(Dispatchers.IO) {

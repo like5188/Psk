@@ -18,10 +18,8 @@ class BloodOxygenManager(
     deviceName: String,
     deviceAddress: String,
 ) : BaseDeviceManager<BloodOxygen>(lifecycleScope) {
-    override val repository by lazy {
-        deviceManager.createRepository<BloodOxygenRepository>(DeviceType.BloodOxygen).apply {
-            enable(deviceName, deviceAddress)
-        }
+    override val repository = deviceManager.createRepository<BloodOxygenRepository>(DeviceType.BloodOxygen).apply {
+        enable(deviceName, deviceAddress)
     }
 
     override suspend fun handleFlow(flow: Flow<BloodOxygen>) {
