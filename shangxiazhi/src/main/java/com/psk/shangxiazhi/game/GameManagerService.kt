@@ -64,49 +64,37 @@ class GameManagerService : Service(), KoinComponent {
         devices.forEach {
             val deviceType = it.key
             val bleScanInfo = it.value
-            baseDeviceManagers[deviceType] = when (deviceType) {
-                DeviceType.ShangXiaZhi -> {
-                    ShangXiaZhiManager(
-                        passiveModule,
-                        timeInt,
-                        speedInt,
-                        spasmInt,
-                        resistanceInt,
-                        intelligent,
-                        turn2,
-                        lifecycleScope,
-                        deviceManager,
-                        bleScanInfo.name,
-                        bleScanInfo.address
-                    ).apply {
-                        onStartGame = {
-                            baseDeviceManagers.values.forEach {
-                                it.onStartGame()
-                            }
-                        }
-                        onPauseGame = {
-                            baseDeviceManagers.values.forEach {
-                                it.onPauseGame()
-                            }
-                        }
-                        onOverGame = {
-                            baseDeviceManagers.values.forEach {
-                                it.onOverGame()
-                            }
+            val className = "${GameManagerService::class.java.`package`?.name}.${deviceType.name}Manager"
+            val clazz = Class.forName(className)
+            val constructor = clazz.getConstructor(
+                CoroutineScope::class.java, DeviceManager::class.java, String::class.java, String::class.java
+            )
+            constructor.isAccessible = true
+            (constructor.newInstance(lifecycleScope, deviceManager, bleScanInfo.name, bleScanInfo.address) as BaseDeviceManager<*>).apply {
+                baseDeviceManagers[deviceType] = this
+                if (this is ShangXiaZhiManager) {
+                    this.passiveModule = passiveModule
+                    this.timeInt = timeInt
+                    this.speedInt = speedInt
+                    this.spasmInt = spasmInt
+                    this.resistanceInt = resistanceInt
+                    this.intelligent = intelligent
+                    this.turn2 = turn2
+                    this.onStartGame = {
+                        baseDeviceManagers.values.forEach {
+                            it.onStartGame()
                         }
                     }
-                }
-
-                DeviceType.BloodOxygen -> {
-                    BloodOxygenManager(lifecycleScope, deviceManager, bleScanInfo.name, bleScanInfo.address)
-                }
-
-                DeviceType.BloodPressure -> {
-                    BloodPressureManager(lifecycleScope, deviceManager, bleScanInfo.name, bleScanInfo.address)
-                }
-
-                DeviceType.HeartRate -> {
-                    HeartRateManager(lifecycleScope, deviceManager, bleScanInfo.name, bleScanInfo.address)
+                    this.onPauseGame = {
+                        baseDeviceManagers.values.forEach {
+                            it.onPauseGame()
+                        }
+                    }
+                    this.onOverGame = {
+                        baseDeviceManagers.values.forEach {
+                            it.onOverGame()
+                        }
+                    }
                 }
             }
         }

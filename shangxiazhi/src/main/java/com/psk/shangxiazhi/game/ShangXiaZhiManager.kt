@@ -19,13 +19,6 @@ import java.text.DecimalFormat
 
 @OptIn(KoinApiExtension::class)
 class ShangXiaZhiManager(
-    private val passiveModule: Boolean,
-    private val timeInt: Int,
-    private val speedInt: Int,
-    private val spasmInt: Int,
-    private val resistanceInt: Int,
-    private val intelligent: Boolean,
-    private val turn2: Boolean,
     lifecycleScope: CoroutineScope,
     deviceManager: DeviceManager,
     deviceName: String,
@@ -52,6 +45,13 @@ class ShangXiaZhiManager(
     }
 
     private val decimalFormat by inject<DecimalFormat>()
+    var passiveModule: Boolean = true
+    var timeInt: Int = 5
+    var speedInt: Int = 20
+    var spasmInt: Int = 3
+    var resistanceInt: Int = 1
+    var intelligent: Boolean = true
+    var turn2: Boolean = true
     var onStartGame: (() -> Unit)? = null
     var onPauseGame: (() -> Unit)? = null
     var onOverGame: (() -> Unit)? = null
