@@ -25,7 +25,7 @@ class ShangXiaZhiApplication : CommonApplication() {
         /**
          *  生产环境
          */
-        private const val BASE_URL_PRODUCTION = "http://prod.foohoomed.com:8080/"
+        private const val BASE_URL_PRODUCTION = "http://47.92.169.14:8080/"
 
         fun getBaseUrl(): String {
             return if (BuildConfig.DEBUG) BASE_URL_TEST else BASE_URL_PRODUCTION
