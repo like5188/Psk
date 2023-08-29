@@ -11,7 +11,7 @@ internal object DbDataSourceFactory {
      * 根据设备类型反射创建数据源
      */
     fun create(deviceType: DeviceType, dao: Any?, paramsClass: Class<*>): IDbDataSource<*> {
-        val className = "${DbDataSourceFactory::class.java.`package`?.name}${deviceType.name}DbDataSource"
+        val className = "${DbDataSourceFactory::class.java.`package`?.name}.${deviceType.name}DbDataSource"
         val clazz = Class.forName(className)
         val constructor = clazz.getConstructor(paramsClass)
         constructor.isAccessible = true
