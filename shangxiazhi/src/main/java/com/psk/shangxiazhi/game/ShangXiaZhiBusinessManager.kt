@@ -18,12 +18,12 @@ import org.koin.core.component.inject
 import java.text.DecimalFormat
 
 @OptIn(KoinApiExtension::class)
-class ShangXiaZhiManager(
+class ShangXiaZhiBusinessManager(
     lifecycleScope: CoroutineScope,
     deviceManager: DeviceManager,
     deviceName: String,
     deviceAddress: String,
-) : BaseDeviceManager<ShangXiaZhi>(lifecycleScope), KoinComponent {
+) : BaseBusinessManager<ShangXiaZhi>(lifecycleScope), KoinComponent {
     override val repository = deviceManager.createRepository<ShangXiaZhiRepository>(DeviceType.ShangXiaZhi).apply {
         enable(deviceName, deviceAddress)
         setCallback(
@@ -177,6 +177,6 @@ class ShangXiaZhiManager(
     }
 
     companion object {
-        private val TAG = ShangXiaZhiManager::class.java.simpleName
+        private val TAG = ShangXiaZhiBusinessManager::class.java.simpleName
     }
 }

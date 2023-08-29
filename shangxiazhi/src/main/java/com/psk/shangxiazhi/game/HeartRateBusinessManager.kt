@@ -16,12 +16,12 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class HeartRateManager(
+class HeartRateBusinessManager(
     lifecycleScope: CoroutineScope,
     deviceManager: DeviceManager,
     deviceName: String,
     deviceAddress: String,
-) : BaseDeviceManager<HeartRate>(lifecycleScope) {
+) : BaseBusinessManager<HeartRate>(lifecycleScope) {
     override val repository = deviceManager.createRepository<HeartRateRepository>(DeviceType.HeartRate).apply {
         enable(deviceName, deviceAddress)
     }
@@ -106,6 +106,6 @@ class HeartRateManager(
     }
 
     companion object {
-        private val TAG = HeartRateManager::class.java.simpleName
+        private val TAG = HeartRateBusinessManager::class.java.simpleName
     }
 }

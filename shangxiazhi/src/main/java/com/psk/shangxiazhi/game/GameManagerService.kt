@@ -35,7 +35,7 @@ class GameManagerService : Service(), KoinComponent {
     private val deviceManager by inject<DeviceManager>()
     private val gameController by inject<GameController>()
     private lateinit var lifecycleScope: CoroutineScope
-    private val baseDeviceManagers = mutableMapOf<DeviceType, BaseDeviceManager<*>>()
+    private val baseBusinessManagers = mutableMapOf<DeviceType, BaseBusinessManager<*>>()
 
     /**
      * 初始化蓝牙相关的工具类
@@ -64,11 +64,11 @@ class GameManagerService : Service(), KoinComponent {
         devices.forEach {
             val deviceType = it.key
             val bleScanInfo = it.value
-            BaseDeviceManager.create(
+            BaseBusinessManager.create(
                 lifecycleScope, deviceManager, deviceType, bleScanInfo.name, bleScanInfo.address
             ).apply {
-                baseDeviceManagers[deviceType] = this
-                if (this is ShangXiaZhiManager) {
+                baseBusinessManagers[deviceType] = this
+                if (this is ShangXiaZhiBusinessManager) {
                     this.passiveModule = passiveModule
                     this.timeInt = timeInt
                     this.speedInt = speedInt
@@ -77,17 +77,17 @@ class GameManagerService : Service(), KoinComponent {
                     this.intelligent = intelligent
                     this.turn2 = turn2
                     this.onStartGame = {
-                        baseDeviceManagers.values.forEach {
+                        baseBusinessManagers.values.forEach {
                             it.onStartGame()
                         }
                     }
                     this.onPauseGame = {
-                        baseDeviceManagers.values.forEach {
+                        baseBusinessManagers.values.forEach {
                             it.onPauseGame()
                         }
                     }
                     this.onOverGame = {
-                        baseDeviceManagers.values.forEach {
+                        baseBusinessManagers.values.forEach {
                             it.onOverGame()
                         }
                     }
@@ -97,37 +97,37 @@ class GameManagerService : Service(), KoinComponent {
 
         val gameCallback = object : GameCallback.Stub() {
             override fun onLoading() {
-                baseDeviceManagers.values.forEach {
+                baseBusinessManagers.values.forEach {
                     it.onGameLoading()
                 }
             }
 
             override fun onStart() {
-                baseDeviceManagers.values.forEach {
+                baseBusinessManagers.values.forEach {
                     it.onGameStart()
                 }
             }
 
             override fun onResume() {
-                baseDeviceManagers.values.forEach {
+                baseBusinessManagers.values.forEach {
                     it.onGameResume()
                 }
             }
 
             override fun onPause() {
-                baseDeviceManagers.values.forEach {
+                baseBusinessManagers.values.forEach {
                     it.onGamePause()
                 }
             }
 
             override fun onOver() {
-                baseDeviceManagers.values.forEach {
+                baseBusinessManagers.values.forEach {
                     it.onGameOver()
                 }
             }
 
             override fun onFinish() {
-                baseDeviceManagers.values.forEach {
+                baseBusinessManagers.values.forEach {
                     it.onGameFinish()
                 }
             }
@@ -136,9 +136,9 @@ class GameManagerService : Service(), KoinComponent {
         lifecycleScope.launch(Dispatchers.IO) {
             // todo 如果增加蓝牙设备系列，需要在这里结合游戏app做处理。
             gameController.initGame(
-                baseDeviceManagers.containsKey(DeviceType.HeartRate),
-                baseDeviceManagers.containsKey(DeviceType.BloodOxygen),
-                baseDeviceManagers.containsKey(DeviceType.BloodPressure),
+                baseBusinessManagers.containsKey(DeviceType.HeartRate),
+                baseBusinessManagers.containsKey(DeviceType.BloodOxygen),
+                baseBusinessManagers.containsKey(DeviceType.BloodPressure),
                 scene,
                 gameCallback
             )
@@ -148,7 +148,7 @@ class GameManagerService : Service(), KoinComponent {
     override fun onDestroy() {
         super.onDestroy()
         Log.d(TAG, "onDestroy")
-        baseDeviceManagers.values.forEach {
+        baseBusinessManagers.values.forEach {
             it.onGameFinish()
         }
     }

@@ -3,8 +3,8 @@ package com.psk.shangxiazhi.game
 import android.util.Log
 import com.psk.ble.DeviceType
 import com.psk.device.DeviceManager
-import com.psk.device.data.model.BloodOxygen
-import com.psk.device.data.source.BloodOxygenRepository
+import com.psk.device.data.model.BloodPressure
+import com.psk.device.data.source.BloodPressureRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -12,20 +12,20 @@ import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
-class BloodOxygenManager(
+class BloodPressureBusinessManager(
     lifecycleScope: CoroutineScope,
     deviceManager: DeviceManager,
     deviceName: String,
     deviceAddress: String,
-) : BaseDeviceManager<BloodOxygen>(lifecycleScope) {
-    override val repository = deviceManager.createRepository<BloodOxygenRepository>(DeviceType.BloodOxygen).apply {
+) : BaseBusinessManager<BloodPressure>(lifecycleScope) {
+    override val repository = deviceManager.createRepository<BloodPressureRepository>(DeviceType.BloodPressure).apply {
         enable(deviceName, deviceAddress)
     }
 
-    override suspend fun handleFlow(flow: Flow<BloodOxygen>) {
-        Log.d(TAG, "startBloodOxygenJob")
+    override suspend fun handleFlow(flow: Flow<BloodPressure>) {
+        Log.d(TAG, "startBloodPressureJob")
         flow.distinctUntilChanged().conflate().collect { value ->
-            gameController.updateBloodOxygenData(value.value)
+            gameController.updateBloodPressureData(value.sbp, value.dbp)
         }
     }
 
@@ -42,21 +42,21 @@ class BloodOxygenManager(
     override fun onOverGame() {
         super.onOverGame()
         cancelJob()
-        gameController.updateBloodOxygenConnectionState(false)
+        gameController.updateBloodPressureConnectionState(false)
     }
 
     override fun onGameLoading() {
         super.onGameLoading()
-        bleManager.connect(DeviceType.BloodOxygen, lifecycleScope, 3000L, {
-            Log.w(TAG, "血氧仪连接成功 $it")
-            gameController.updateBloodOxygenConnectionState(true)
+        bleManager.connect(DeviceType.BloodPressure, lifecycleScope, 3000L, {
+            Log.w(TAG, "血压仪连接成功 $it")
+            gameController.updateBloodPressureConnectionState(true)
             lifecycleScope.launch(Dispatchers.IO) {
                 waitStart()
                 startJob()
             }
         }) {
-            Log.e(TAG, "血氧仪连接失败 $it")
-            gameController.updateBloodOxygenConnectionState(false)
+            Log.e(TAG, "血压仪连接失败 $it")
+            gameController.updateBloodPressureConnectionState(false)
             cancelJob()
         }
     }
@@ -74,17 +74,16 @@ class BloodOxygenManager(
     override fun onGameOver() {
         super.onGameOver()
         cancelJob()
-        gameController.updateBloodOxygenConnectionState(false)
+        gameController.updateBloodPressureConnectionState(false)
     }
 
     override fun onGameFinish() {
         super.onGameFinish()
         cancelJob()
-        gameController.updateBloodOxygenConnectionState(false)
+        gameController.updateBloodPressureConnectionState(false)
     }
 
     companion object {
-        private val TAG = BloodOxygenManager::class.java.simpleName
+        private val TAG = BloodPressureBusinessManager::class.java.simpleName
     }
-
 }

@@ -17,8 +17,11 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.concurrent.atomic.AtomicBoolean
 
+/**
+ * 设备相关的业务管理基类
+ */
 @OptIn(KoinApiExtension::class)
-abstract class BaseDeviceManager<T>(val lifecycleScope: CoroutineScope) : KoinComponent {
+abstract class BaseBusinessManager<T>(val lifecycleScope: CoroutineScope) : KoinComponent {
     protected val bleManager by inject<BleManager>()
     protected val gameController by inject<GameController>()
     private var job: Job? = null
@@ -84,7 +87,7 @@ abstract class BaseDeviceManager<T>(val lifecycleScope: CoroutineScope) : KoinCo
     }
 
     companion object {
-        private val TAG = BaseDeviceManager::class.java.simpleName
+        private val TAG = BaseBusinessManager::class.java.simpleName
 
         fun create(
             lifecycleScope: CoroutineScope,
@@ -92,14 +95,14 @@ abstract class BaseDeviceManager<T>(val lifecycleScope: CoroutineScope) : KoinCo
             deviceType: DeviceType,
             deviceName: String,
             deviceAddress: String
-        ): BaseDeviceManager<*> {
-            val className = "${BaseDeviceManager::class.java.`package`?.name}.${deviceType.name}Manager"
+        ): BaseBusinessManager<*> {
+            val className = "${BaseBusinessManager::class.java.`package`?.name}.${deviceType.name}BusinessManager"
             val clazz = Class.forName(className)
             val constructor = clazz.getConstructor(
                 CoroutineScope::class.java, DeviceManager::class.java, String::class.java, String::class.java
             )
             constructor.isAccessible = true
-            return constructor.newInstance(lifecycleScope, deviceManager, deviceName, deviceAddress) as BaseDeviceManager<*>
+            return constructor.newInstance(lifecycleScope, deviceManager, deviceName, deviceAddress) as BaseBusinessManager<*>
         }
     }
 }
