@@ -134,6 +134,7 @@ class GameManagerService : Service(), KoinComponent {
 
         }
         lifecycleScope.launch(Dispatchers.IO) {
+            // todo 如果增加蓝牙设备系列，需要在这里结合游戏app做处理。
             gameController.initGame(
                 baseDeviceManagers.containsKey(DeviceType.HeartRate),
                 baseDeviceManagers.containsKey(DeviceType.BloodOxygen),
