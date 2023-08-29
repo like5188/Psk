@@ -64,13 +64,9 @@ class GameManagerService : Service(), KoinComponent {
         devices.forEach {
             val deviceType = it.key
             val bleScanInfo = it.value
-            val className = "${GameManagerService::class.java.`package`?.name}.${deviceType.name}Manager"
-            val clazz = Class.forName(className)
-            val constructor = clazz.getConstructor(
-                CoroutineScope::class.java, DeviceManager::class.java, String::class.java, String::class.java
-            )
-            constructor.isAccessible = true
-            (constructor.newInstance(lifecycleScope, deviceManager, bleScanInfo.name, bleScanInfo.address) as BaseDeviceManager<*>).apply {
+            BaseDeviceManager.create(
+                lifecycleScope, deviceManager, deviceType, bleScanInfo.name, bleScanInfo.address
+            ).apply {
                 baseDeviceManagers[deviceType] = this
                 if (this is ShangXiaZhiManager) {
                     this.passiveModule = passiveModule

@@ -2,6 +2,8 @@ package com.psk.shangxiazhi.game
 
 import android.util.Log
 import com.psk.ble.BleManager
+import com.psk.ble.DeviceType
+import com.psk.device.DeviceManager
 import com.psk.device.data.source.IRepository
 import com.twsz.twsystempre.GameController
 import kotlinx.coroutines.CoroutineScope
@@ -92,5 +94,21 @@ abstract class BaseDeviceManager<T>(val lifecycleScope: CoroutineScope) : KoinCo
 
     companion object {
         private val TAG = BaseDeviceManager::class.java.simpleName
+
+        fun create(
+            lifecycleScope: CoroutineScope,
+            deviceManager: DeviceManager,
+            deviceType: DeviceType,
+            deviceName: String,
+            deviceAddress: String
+        ): BaseDeviceManager<*> {
+            val className = "${BaseDeviceManager::class.java.`package`?.name}.${deviceType.name}Manager"
+            val clazz = Class.forName(className)
+            val constructor = clazz.getConstructor(
+                CoroutineScope::class.java, DeviceManager::class.java, String::class.java, String::class.java
+            )
+            constructor.isAccessible = true
+            return constructor.newInstance(lifecycleScope, deviceManager, deviceName, deviceAddress) as BaseDeviceManager<*>
+        }
     }
 }
