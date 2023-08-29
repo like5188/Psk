@@ -14,7 +14,6 @@ import com.psk.device.DeviceManager
 import com.psk.device.data.source.BloodOxygenRepository
 import com.psk.device.data.source.BloodPressureRepository
 import com.psk.device.data.source.HeartRateRepository
-import com.psk.device.data.source.IRepository
 import com.psk.device.data.source.ShangXiaZhiRepository
 import com.psk.shangxiazhi.data.model.BleScanInfo
 import com.twsz.twsystempre.GameCallback
@@ -33,9 +32,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
 import org.koin.core.component.inject
-import org.koin.core.parameter.parametersOf
 import java.text.DecimalFormat
 
 /**
@@ -48,19 +45,20 @@ class GameManagerService : Service(), KoinComponent {
     }
 
     private val bleManager by inject<BleManager>()
+    private val deviceManager by inject<DeviceManager>()
     private val gameController by inject<GameController>()
     private val decimalFormat by inject<DecimalFormat>()
     private val bloodOxygenRepository by lazy {
-        get<IRepository<*>> { parametersOf(DeviceType.BloodOxygen) } as BloodOxygenRepository
+        deviceManager.createRepository<BloodOxygenRepository>(DeviceType.BloodOxygen)
     }
     private val bloodPressureRepository by lazy {
-        get<IRepository<*>> { parametersOf(DeviceType.BloodPressure) } as BloodPressureRepository
+        deviceManager.createRepository<BloodPressureRepository>(DeviceType.BloodPressure)
     }
     private val heartRateRepository by lazy {
-        get<IRepository<*>> { parametersOf(DeviceType.HeartRate) } as HeartRateRepository
+        deviceManager.createRepository<HeartRateRepository>(DeviceType.HeartRate)
     }
     private val shangXiaZhiRepository by lazy {
-        get<IRepository<*>> { parametersOf(DeviceType.ShangXiaZhi) } as ShangXiaZhiRepository
+        deviceManager.createRepository<ShangXiaZhiRepository>(DeviceType.ShangXiaZhi)
     }
     private var shangXiaZhiJob: Job? = null
     private var heartRateJob: Job? = null
@@ -79,7 +77,7 @@ class GameManagerService : Service(), KoinComponent {
         lifecycleScope = activity.lifecycleScope
         bleManager.onTip = onTip
         lifecycleScope.launch {
-            DeviceManager.init(activity)
+            deviceManager.init()
             bleManager.init(activity)
         }
     }

@@ -2,9 +2,12 @@ package com.psk.device
 
 import android.content.Context
 import com.psk.ble.DeviceType
+import com.psk.device.data.source.IRepository
 import com.psk.device.data.source.RepositoryFactory
 import com.psk.device.data.source.local.db.DbDataSourceFactory
 import com.psk.device.data.source.remote.ble.BleDataSourceFactory
+import org.koin.core.component.KoinApiExtension
+import org.koin.core.component.KoinComponent
 
 /**
  * 设备管理。使用本模块时，只需使用此工具类进行初始化，然后使用koin注入仓库来使用。
@@ -22,11 +25,28 @@ import com.psk.device.data.source.remote.ble.BleDataSourceFactory
  * 二、如果只是要添加新的蓝牙设备，那么需要以下步骤：
  * 1、新增一个DataSource。名称格式为：[扫描出来的蓝牙设备的名称前缀]_[DeviceType]Datasource；包名为：[com.psk.device.data.source.remote.ble]。
  */
-object DeviceManager {
-    suspend fun init(context: Context) {
+@OptIn(KoinApiExtension::class)
+class DeviceManager(private val context: Context) : KoinComponent {
+    private val repositories = mutableMapOf<DeviceType, IRepository<*>>()
+
+    suspend fun init() {
         // [BleDataSourceFactory]必须放在扫描之前初始化，否则扫描时，如果要用到[DeviceType.containsDevice]方法就没效果。
         BleDataSourceFactory.init(context)
         DbDataSourceFactory.init(context)
         RepositoryFactory.init(context)
     }
+
+    /**
+     * 根据设备类型创建仓库
+     */
+    fun <T : IRepository<*>> createRepository(deviceType: DeviceType): T {
+        return if (repositories.containsKey(deviceType)) {
+            repositories[deviceType]
+        } else {
+            RepositoryFactory.create(deviceType)!!.apply {
+                repositories[deviceType] = this
+            }
+        } as T
+    }
+
 }
