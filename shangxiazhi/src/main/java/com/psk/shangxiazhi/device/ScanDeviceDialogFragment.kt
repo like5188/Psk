@@ -66,9 +66,9 @@ class ScanDeviceDialogFragment private constructor() : BaseDialogFragment(), Koi
     private fun startScan(deviceType: DeviceType) {
         lifecycleScope.launch {
             bleManager.scan().onStart {
-                mBinding.tvState.text = "扫描中，请稍后……"
+                mBinding.tvState.text = "${deviceType.des}扫描中……"
             }.onCompletion {
-                mBinding.tvState.text = "扫描完成"
+                mBinding.tvState.text = "${deviceType.des}扫描完成"
             }.collect {
                 val name = it.device.name
                 val address = it.device.address
