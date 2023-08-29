@@ -19,5 +19,6 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+-keep class com.psk.device.data.**{*;}
 -keep class com.psk.shangxiazhi.data.**{*;}
 -keep class com.psk.shangxiazhi.game.**{*;}
