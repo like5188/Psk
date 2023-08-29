@@ -28,17 +28,14 @@ class ShangXiaZhiManager(
         enable(deviceName, deviceAddress)
         setCallback(
             onStart = {
-                Log.d(TAG, "game onStart by shang xia zhi")
                 onStartGame?.invoke()
                 gameController.startGame()
             },
             onPause = {
-                Log.d(TAG, "game onPause by shang xia zhi")
                 onPauseGame?.invoke()
                 gameController.pauseGame()
             },
             onOver = {
-                Log.d(TAG, "game onOver by shang xia zhi")
                 onOverGame?.invoke()
                 gameController.overGame()
                 onGameFinish()
