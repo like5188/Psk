@@ -30,16 +30,18 @@ class ShangXiaZhiManager(
             onStart = {
                 Log.d(TAG, "game onStart by shang xia zhi")
                 onStartGame?.invoke()
+                gameController.startGame()
             },
             onPause = {
                 Log.d(TAG, "game onPause by shang xia zhi")
                 onPauseGame?.invoke()
+                gameController.pauseGame()
             },
             onOver = {
                 Log.d(TAG, "game onOver by shang xia zhi")
                 onOverGame?.invoke()
-                cancelJob()
-                gameController.updateGameConnectionState(false)
+                gameController.overGame()
+                onGameFinish()
             }
         )
     }
@@ -162,10 +164,8 @@ class ShangXiaZhiManager(
 
     override fun onGameOver() {
         lifecycleScope.launch(Dispatchers.IO) {
-            repository.over()
-            super.onGameOver()// 这个必须放到 repository.over() 后面，否则会由于蓝牙的关闭而无法执行 repository.over()
-            cancelJob()
-            gameController.updateGameConnectionState(false)
+            repository.over() // bleManager.onDestroy() 必须放到 repository.over() 后面，否则会由于蓝牙的关闭而无法执行 repository.over()
+            onGameFinish()
         }
     }
 
@@ -173,6 +173,10 @@ class ShangXiaZhiManager(
         super.onGameFinish()
         cancelJob()
         gameController.updateGameConnectionState(false)
+        // 由于 bleManager.onDestroy() 方法不会触发 connect() 方法的 onDisconnected 回调，原因见 Ble 框架的 close 方法
+        // 所以只能单独调用 updateXxxConnectionState 方法更新界面状态。
+        bleManager.onDestroy()
+        gameController.destroy()
     }
 
     companion object {

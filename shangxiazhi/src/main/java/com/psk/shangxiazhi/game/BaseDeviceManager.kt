@@ -48,29 +48,23 @@ abstract class BaseDeviceManager<T>(val lifecycleScope: CoroutineScope) : KoinCo
     protected abstract suspend fun handleFlow(flow: Flow<T>)
     open fun onStartGame() {
         Log.d(TAG, "onStartGame")
-        gameController.startGame()
     }
 
     open fun onPauseGame() {
         Log.d(TAG, "onPauseGame")
-        gameController.pauseGame()
     }
 
     open fun onOverGame() {
         Log.d(TAG, "onOverGame")
-        gameController.overGame()
-        // 由于 bleManager.onDestroy() 方法不会触发 connect() 方法的 onDisconnected 回调，原因见 Ble 框架的 close 方法
-        // 所以只能单独调用 updateXxxConnectionState 方法更新界面状态。
-        bleManager.onDestroy()
     }
 
     open fun onGameLoading() {
         Log.i(TAG, "onGameLoading")
-        isStart.compareAndSet(false, true)
     }
 
     open fun onGameStart() {
         Log.i(TAG, "onGameStart")
+        isStart.compareAndSet(false, true)
     }
 
     open fun onGameResume() {
@@ -83,13 +77,10 @@ abstract class BaseDeviceManager<T>(val lifecycleScope: CoroutineScope) : KoinCo
 
     open fun onGameOver() {
         Log.i(TAG, "onGameOver")
-        bleManager.onDestroy()
     }
 
     open fun onGameFinish() {
         Log.i(TAG, "onGameFinish")
-        gameController.destroy()
-        bleManager.onDestroy()
     }
 
     companion object {
