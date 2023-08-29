@@ -34,11 +34,8 @@ class GameManagerService : Service(), KoinComponent {
     private val bleManager by inject<BleManager>()
     private val deviceManager by inject<DeviceManager>()
     private val gameController by inject<GameController>()
-    private var bloodOxygenManager: BloodOxygenManager? = null
-    private var bloodPressureManager: BloodPressureManager? = null
-    private var heartRateManager: HeartRateManager? = null
-    private var shangXiaZhiManager: ShangXiaZhiManager? = null
     private lateinit var lifecycleScope: CoroutineScope
+    private val baseDeviceManagers = mutableMapOf<DeviceType, BaseDeviceManager<*>>()
 
     /**
      * 初始化蓝牙相关的工具类
@@ -67,21 +64,9 @@ class GameManagerService : Service(), KoinComponent {
         devices.forEach {
             val deviceType = it.key
             val bleScanInfo = it.value
-            when (deviceType) {
-                DeviceType.BloodOxygen -> {
-                    bloodOxygenManager = BloodOxygenManager(lifecycleScope, deviceManager, bleScanInfo.name, bleScanInfo.address)
-                }
-
-                DeviceType.BloodPressure -> {
-                    bloodPressureManager = BloodPressureManager(lifecycleScope, deviceManager, bleScanInfo.name, bleScanInfo.address)
-                }
-
-                DeviceType.HeartRate -> {
-                    heartRateManager = HeartRateManager(lifecycleScope, deviceManager, bleScanInfo.name, bleScanInfo.address)
-                }
-
+            baseDeviceManagers[deviceType] = when (deviceType) {
                 DeviceType.ShangXiaZhi -> {
-                    shangXiaZhiManager = ShangXiaZhiManager(
+                    ShangXiaZhiManager(
                         passiveModule,
                         timeInt,
                         speedInt,
@@ -95,78 +80,82 @@ class GameManagerService : Service(), KoinComponent {
                         bleScanInfo.address
                     ).apply {
                         onStartGame = {
-                            bloodOxygenManager?.onStartGame()
-                            bloodPressureManager?.onStartGame()
-                            heartRateManager?.onStartGame()
-                            shangXiaZhiManager?.onStartGame()
+                            baseDeviceManagers.values.forEach {
+                                it.onStartGame()
+                            }
                         }
                         onPauseGame = {
-                            bloodOxygenManager?.onPauseGame()
-                            bloodPressureManager?.onPauseGame()
-                            heartRateManager?.onPauseGame()
-                            shangXiaZhiManager?.onPauseGame()
+                            baseDeviceManagers.values.forEach {
+                                it.onPauseGame()
+                            }
                         }
                         onOverGame = {
-                            bloodOxygenManager?.onOverGame()
-                            bloodPressureManager?.onOverGame()
-                            heartRateManager?.onOverGame()
-                            shangXiaZhiManager?.onOverGame()
+                            baseDeviceManagers.values.forEach {
+                                it.onOverGame()
+                            }
                         }
                     }
+                }
+
+                DeviceType.BloodOxygen -> {
+                    BloodOxygenManager(lifecycleScope, deviceManager, bleScanInfo.name, bleScanInfo.address)
+                }
+
+                DeviceType.BloodPressure -> {
+                    BloodPressureManager(lifecycleScope, deviceManager, bleScanInfo.name, bleScanInfo.address)
+                }
+
+                DeviceType.HeartRate -> {
+                    HeartRateManager(lifecycleScope, deviceManager, bleScanInfo.name, bleScanInfo.address)
                 }
             }
         }
 
         val gameCallback = object : GameCallback.Stub() {
             override fun onLoading() {
-                bloodOxygenManager?.onGameLoading()
-                bloodPressureManager?.onGameLoading()
-                heartRateManager?.onGameLoading()
-                shangXiaZhiManager?.onGameLoading()
+                baseDeviceManagers.values.forEach {
+                    it.onGameLoading()
+                }
             }
 
             override fun onStart() {
-                bloodOxygenManager?.onGameStart()
-                bloodPressureManager?.onGameStart()
-                heartRateManager?.onGameStart()
-                shangXiaZhiManager?.onGameStart()
+                baseDeviceManagers.values.forEach {
+                    it.onGameStart()
+                }
             }
 
             override fun onResume() {
-                bloodOxygenManager?.onGameResume()
-                bloodPressureManager?.onGameResume()
-                heartRateManager?.onGameResume()
-                shangXiaZhiManager?.onGameResume()
+                baseDeviceManagers.values.forEach {
+                    it.onGameResume()
+                }
             }
 
             override fun onPause() {
-                bloodOxygenManager?.onGamePause()
-                bloodPressureManager?.onGamePause()
-                heartRateManager?.onGamePause()
-                shangXiaZhiManager?.onGamePause()
+                baseDeviceManagers.values.forEach {
+                    it.onGamePause()
+                }
             }
 
             override fun onOver() {
-                bloodOxygenManager?.onGameOver()
-                bloodPressureManager?.onGameOver()
-                heartRateManager?.onGameOver()
-                shangXiaZhiManager?.onGameOver()
+                baseDeviceManagers.values.forEach {
+                    it.onGameOver()
+                }
             }
 
             override fun onFinish() {
-                bloodOxygenManager?.onGameFinish()
-                bloodPressureManager?.onGameFinish()
-                heartRateManager?.onGameFinish()
-                shangXiaZhiManager?.onGameFinish()
+                baseDeviceManagers.values.forEach {
+                    it.onGameFinish()
+                }
             }
 
         }
         lifecycleScope.launch(Dispatchers.IO) {
             gameController.initGame(
-                heartRateManager != null,
-                bloodOxygenManager != null,
-                bloodPressureManager != null,
-                scene, gameCallback
+                baseDeviceManagers.containsKey(DeviceType.HeartRate),
+                baseDeviceManagers.containsKey(DeviceType.BloodOxygen),
+                baseDeviceManagers.containsKey(DeviceType.BloodPressure),
+                scene,
+                gameCallback
             )
         }
     }
@@ -174,10 +163,9 @@ class GameManagerService : Service(), KoinComponent {
     override fun onDestroy() {
         super.onDestroy()
         Log.d(TAG, "onDestroy")
-        bloodOxygenManager?.onGameFinish()
-        bloodPressureManager?.onGameFinish()
-        heartRateManager?.onGameFinish()
-        shangXiaZhiManager?.onGameFinish()
+        baseDeviceManagers.values.forEach {
+            it.onGameFinish()
+        }
     }
 
     override fun onBind(intent: Intent?): IBinder {
