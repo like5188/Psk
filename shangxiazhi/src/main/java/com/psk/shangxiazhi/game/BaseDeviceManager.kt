@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 
 abstract class BaseDeviceManager<T> {
     private var job: Job? = null
-    protected abstract val repository: IRepository<T>
+    abstract val repository: IRepository<T>
 
     fun startJob(lifecycleScope: CoroutineScope) {
         if (job != null) {
