@@ -4,7 +4,6 @@ import android.content.Context
 import com.psk.ble.DeviceType
 import com.psk.device.data.source.IRepository
 import com.psk.device.data.source.RepositoryFactory
-import com.psk.device.data.source.local.db.DbDataSourceFactory
 import com.psk.device.data.source.remote.ble.BleDataSourceFactory
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
@@ -32,7 +31,6 @@ class DeviceManager(private val context: Context) : KoinComponent {
     suspend fun init() {
         // [BleDataSourceFactory]必须放在扫描之前初始化，否则扫描时，如果要用到[DeviceType.containsDevice]方法就没效果。
         BleDataSourceFactory.init(context)
-        DbDataSourceFactory.init(context)
     }
 
     /**

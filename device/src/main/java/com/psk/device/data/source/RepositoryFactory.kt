@@ -11,7 +11,8 @@ internal object RepositoryFactory {
      */
     fun create(deviceType: DeviceType): IRepository<*> {
         val className = "${RepositoryFactory::class.java.`package`?.name}${deviceType.name}Repository"
-        return Class.forName(className) as IRepository<*>
+        val clazz = Class.forName(className)
+        return clazz.newInstance() as IRepository<*>
     }
 
 }
