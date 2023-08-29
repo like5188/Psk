@@ -111,6 +111,32 @@ class ShangXiaZhiManager(private val deviceManager: DeviceManager) : BaseDeviceM
         }
     }
 
+    fun setCallback(
+        onStart: (() -> Unit)? = null,
+        onPause: (() -> Unit)? = null,
+        onOver: (() -> Unit)? = null,
+    ) {
+        repository.setCallback(onStart, onPause, onOver)
+    }
+
+    suspend fun resume() {
+        repository.resume()
+    }
+
+    suspend fun pause() {
+        repository.pause()
+    }
+
+    suspend fun over() {
+        repository.over()
+    }
+
+    suspend fun setParams(
+        passiveModule: Boolean, timeInt: Int, speedInt: Int, spasmInt: Int, resistanceInt: Int, intelligent: Boolean, turn2: Boolean
+    ) {
+        repository.setParams(passiveModule, timeInt, speedInt, spasmInt, resistanceInt, intelligent, turn2)
+    }
+
     companion object {
         private val TAG = ShangXiaZhiManager::class.java.simpleName
     }
