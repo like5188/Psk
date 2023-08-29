@@ -33,7 +33,6 @@ class DeviceManager(private val context: Context) : KoinComponent {
         // [BleDataSourceFactory]必须放在扫描之前初始化，否则扫描时，如果要用到[DeviceType.containsDevice]方法就没效果。
         BleDataSourceFactory.init(context)
         DbDataSourceFactory.init(context)
-        RepositoryFactory.init(context)
     }
 
     /**
@@ -43,7 +42,7 @@ class DeviceManager(private val context: Context) : KoinComponent {
         return if (repositories.containsKey(deviceType)) {
             repositories[deviceType]
         } else {
-            RepositoryFactory.create(deviceType)!!.apply {
+            RepositoryFactory.create(deviceType).apply {
                 repositories[deviceType] = this
             }
         } as T
