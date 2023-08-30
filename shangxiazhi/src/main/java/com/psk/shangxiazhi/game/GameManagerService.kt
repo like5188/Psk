@@ -61,6 +61,7 @@ class GameManagerService : Service(), KoinComponent {
         intelligent: Boolean = true,
         turn2: Boolean = true
     ) {
+        baseBusinessManagers.clear()
         devices.forEach {
             val deviceType = it.key
             val bleScanInfo = it.value
