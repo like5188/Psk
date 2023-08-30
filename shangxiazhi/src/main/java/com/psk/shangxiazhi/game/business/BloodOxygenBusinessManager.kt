@@ -1,4 +1,4 @@
-package com.psk.shangxiazhi.game
+package com.psk.shangxiazhi.game.business
 
 import android.util.Log
 import com.psk.ble.DeviceType

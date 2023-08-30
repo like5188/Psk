@@ -12,6 +12,8 @@ import com.psk.ble.DeviceType
 import com.psk.ble.Tip
 import com.psk.device.DeviceManager
 import com.psk.shangxiazhi.data.model.BleScanInfo
+import com.psk.shangxiazhi.game.business.MultiBusinessManager
+import com.psk.shangxiazhi.game.business.ShangXiaZhiBusinessManager
 import com.twsz.twsystempre.GameController
 import com.twsz.twsystempre.RemoteCallback
 import com.twsz.twsystempre.TrainScene
@@ -35,7 +37,9 @@ class GameManagerService : Service(), KoinComponent {
     private val deviceManager by inject<DeviceManager>()
     private val gameController by inject<GameController>()
     private lateinit var lifecycleScope: CoroutineScope
-    private val baseBusinessManagers = mutableMapOf<DeviceType, BaseBusinessManager<*>>()
+    private val multiBusinessManager: MultiBusinessManager by lazy {
+        MultiBusinessManager()
+    }
 
     /**
      * 初始化蓝牙相关的工具类
@@ -61,14 +65,14 @@ class GameManagerService : Service(), KoinComponent {
         intelligent: Boolean = true,
         turn2: Boolean = true
     ) {
-        baseBusinessManagers.clear()
+        multiBusinessManager.clear()
         devices.forEach {
             val deviceType = it.key
             val bleScanInfo = it.value
-            BaseBusinessManager.create(
+            MultiBusinessManager.createBusinessManager(
                 lifecycleScope, deviceManager, deviceType, bleScanInfo.name, bleScanInfo.address
             ).apply {
-                baseBusinessManagers[deviceType] = this
+                multiBusinessManager.add(deviceType, this)
                 if (this is ShangXiaZhiBusinessManager) {
                     this.passiveModule = passiveModule
                     this.timeInt = timeInt
@@ -78,72 +82,52 @@ class GameManagerService : Service(), KoinComponent {
                     this.intelligent = intelligent
                     this.turn2 = turn2
                     this.onStartGame = {
-                        baseBusinessManagers.values.forEach {
-                            it.onStartGame()
-                        }
+                        multiBusinessManager.onStartGame()
                     }
                     this.onPauseGame = {
-                        baseBusinessManagers.values.forEach {
-                            it.onPauseGame()
-                        }
+                        multiBusinessManager.onPauseGame()
                     }
                     this.onOverGame = {
-                        baseBusinessManagers.values.forEach {
-                            it.onOverGame()
-                        }
+                        multiBusinessManager.onOverGame()
                     }
                 }
             }
         }
 
-        val existShangXiaZhi = baseBusinessManagers.containsKey(DeviceType.ShangXiaZhi)
-        val existHeart = baseBusinessManagers.containsKey(DeviceType.HeartRate)
-        val existBloodOxygen = baseBusinessManagers.containsKey(DeviceType.BloodOxygen)
-        val existBloodPressure = baseBusinessManagers.containsKey(DeviceType.BloodPressure)
+        val existShangXiaZhi = multiBusinessManager.contains(DeviceType.ShangXiaZhi)
+        val existHeart = multiBusinessManager.contains(DeviceType.HeartRate)
+        val existBloodOxygen = multiBusinessManager.contains(DeviceType.BloodOxygen)
+        val existBloodPressure = multiBusinessManager.contains(DeviceType.BloodPressure)
         if (!existShangXiaZhi && !existHeart && !existBloodOxygen && !existBloodPressure) {
             return
         }
         val remoteCallback = object : RemoteCallback.Stub() {
             override fun onGameLoading() {
-                baseBusinessManagers.values.forEach {
-                    it.onGameLoading()
-                }
+                multiBusinessManager.onGameLoading()
             }
 
             override fun onGameStart() {
-                baseBusinessManagers.values.forEach {
-                    it.onGameStart()
-                }
+                multiBusinessManager.onGameStart()
             }
 
             override fun onGameResume() {
-                baseBusinessManagers.values.forEach {
-                    it.onGameResume()
-                }
+                multiBusinessManager.onGameResume()
             }
 
             override fun onGamePause() {
-                baseBusinessManagers.values.forEach {
-                    it.onGamePause()
-                }
+                multiBusinessManager.onGamePause()
             }
 
             override fun onGameOver() {
-                baseBusinessManagers.values.forEach {
-                    it.onGameOver()
-                }
+                multiBusinessManager.onGameOver()
             }
 
             override fun onGameAppStart() {
-                baseBusinessManagers.values.forEach {
-                    it.onGameAppStart()
-                }
+                multiBusinessManager.onGameAppStart()
             }
 
             override fun onGameAppFinish() {
-                baseBusinessManagers.values.forEach {
-                    it.onGameAppFinish()
-                }
+                multiBusinessManager.onGameAppFinish()
             }
 
         }
@@ -163,9 +147,7 @@ class GameManagerService : Service(), KoinComponent {
     override fun onDestroy() {
         super.onDestroy()
         Log.d(TAG, "onDestroy")
-        baseBusinessManagers.values.forEach {
-            it.onGameAppFinish()
-        }
+        multiBusinessManager.onGameAppFinish()
     }
 
     override fun onBind(intent: Intent?): IBinder {
