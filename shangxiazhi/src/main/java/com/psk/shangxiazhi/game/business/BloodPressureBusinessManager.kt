@@ -72,6 +72,11 @@ class BloodPressureBusinessManager(
         }
     }
 
+    override fun onGameAppFinish() {
+        super.onGameAppFinish()
+        cancelJob()
+    }
+
     companion object {
         private val TAG = BloodPressureBusinessManager::class.java.simpleName
     }
