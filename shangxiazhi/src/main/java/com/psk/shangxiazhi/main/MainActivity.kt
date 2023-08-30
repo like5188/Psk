@@ -7,9 +7,9 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.like.common.util.mvi.propertyCollector
 import com.like.common.util.startActivity
+import com.psk.ble.DeviceType
 import com.psk.common.CommonApplication
 import com.psk.common.util.showToast
-import com.psk.ble.DeviceType
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.databinding.ActivityMainBinding
 import com.psk.shangxiazhi.device.SelectDeviceDialogFragment
@@ -95,11 +95,7 @@ class MainActivity : AppCompatActivity() {
                 )
             ).apply {
                 onSelected = {
-                    if (!it.containsKey(DeviceType.ShangXiaZhi)) {
-                        showToast("请先选择上下肢设备")
-                    } else {
-                        mViewModel.uiState.value.gameManagerService?.start(it, scene, resistanceInt = 1, passiveModule = true, timeInt = 1)
-                    }
+                    mViewModel.uiState.value.gameManagerService?.start(it, scene, resistanceInt = 1, passiveModule = true, timeInt = 1)
                 }
                 show(this@MainActivity)
             }

@@ -10,6 +10,7 @@ import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import com.like.common.base.BaseDialogFragment
 import com.psk.ble.DeviceType
+import com.psk.common.util.showToast
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.data.model.BleScanInfo
 import com.psk.shangxiazhi.databinding.DialogFragmentSelectDeviceBinding
@@ -56,8 +57,12 @@ class SelectDeviceDialogFragment private constructor() : BaseDialogFragment(), K
             }
         }
         mBinding.btnConfirm.setOnClickListener {
-            onSelected?.invoke(selectDeviceMap)
-            dismiss()
+            if (selectDeviceMap.isEmpty()) {
+                context?.showToast("请先选择设备")
+            } else {
+                onSelected?.invoke(selectDeviceMap)
+                dismiss()
+            }
         }
         return mBinding.root
     }

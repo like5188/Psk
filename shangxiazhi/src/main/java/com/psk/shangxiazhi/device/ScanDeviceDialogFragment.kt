@@ -1,6 +1,7 @@
 package com.psk.shangxiazhi.device
 
 import android.annotation.SuppressLint
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -48,11 +49,15 @@ class ScanDeviceDialogFragment private constructor() : BaseDialogFragment(), Koi
         mBinding.rv.layoutManager = WrapLinearLayoutManager(requireContext())
         mBinding.rv.adapter = mAdapter
         mAdapter.addOnItemClickListener {
-            stopScan()
             onSelected?.invoke(it.binding.bleScanInfo!!)
             dismiss()
         }
         return mBinding.root
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        stopScan()
     }
 
     override fun onResume() {
