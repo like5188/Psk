@@ -8,12 +8,7 @@ import android.os.IBinder
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
-import com.like.common.util.mvi.Event
-import com.psk.common.util.DataHandler
 import com.psk.common.util.SecondCountDownTimer
-import com.psk.common.util.ToastEvent
-import com.psk.shangxiazhi.data.model.Login
-import com.psk.shangxiazhi.data.source.ShangXiaZhiBusinessRepository
 import com.psk.shangxiazhi.game.GameManagerService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,9 +21,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 @OptIn(KoinApiExtension::class)
-class MainViewModel(
-    private val shangXiaZhiRepository: ShangXiaZhiBusinessRepository,
-) : ViewModel(), KoinComponent {
+class MainViewModel : ViewModel(), KoinComponent {
     private val _uiState = MutableStateFlow(MainUiState())
     val uiState = _uiState.asStateFlow()
     private val sdf: SimpleDateFormat by inject(named("yyyy-MM-dd HH:mm:ss"))
@@ -65,22 +58,6 @@ class MainViewModel(
 
     init {
         countDownTimer.start()
-    }
-
-    suspend fun getUser(context: Context) {
-        DataHandler.collect(context, block = {
-            shangXiaZhiRepository.getUser(Login.getCache()?.patient_token)
-        }, onError = { throwable ->
-            _uiState.update {
-                it.copy(toastEvent = Event(ToastEvent(throwable = throwable)))
-            }
-        }) { user ->
-            _uiState.update {
-                it.copy(
-                    userName = user?.name ?: ""
-                )
-            }
-        }
     }
 
     fun bindGameManagerService(context: Context) {

@@ -18,24 +18,27 @@ class LoginViewModel(
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState = _uiState.asStateFlow()
 
-    fun login(phone: String?, password: String?, type: Int?, progressDialog: ProgressDialog) {
+    fun login(uuid: String?, code: String?, progressDialog: ProgressDialog) {
         viewModelScope.launch {
             DataHandler.collectWithProgress(progressDialog, block = {
-                shangXiaZhiRepository.login(phone, password, type)
+                shangXiaZhiRepository.login(uuid, code)
             }, onError = { throwable ->
                 _uiState.update {
                     it.copy(
-                        login = null, toastEvent = Event(ToastEvent(throwable = throwable))
+                        isLogin = false, toastEvent = Event(ToastEvent(throwable = throwable))
                     )
                 }
-            }) { login ->
+            }) { isLogin ->
                 _uiState.update {
                     it.copy(
-                        login = login, toastEvent = Event(ToastEvent(text = "登录成功"))
+                        isLogin = isLogin, toastEvent = Event(ToastEvent(text = if (isLogin == true) "激活成功" else "激活失败"))
                     )
                 }
             }
         }
     }
 
+    fun setLogin(isLogin: Boolean) {
+        shangXiaZhiRepository.setLogin(isLogin)
+    }
 }

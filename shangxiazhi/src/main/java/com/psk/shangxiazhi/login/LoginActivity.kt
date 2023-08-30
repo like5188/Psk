@@ -9,7 +9,6 @@ import com.psk.common.CommonApplication
 import com.psk.common.customview.ProgressDialog
 import com.psk.common.util.showToast
 import com.psk.shangxiazhi.R
-import com.psk.shangxiazhi.data.model.Login
 import com.psk.shangxiazhi.databinding.ActivityLoginBinding
 import com.psk.shangxiazhi.main.MainActivity
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -34,19 +33,20 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        mBinding.tvUuid.text = "1"
         mBinding.btnLogin.setOnClickListener {
-            val phone = mBinding.etPhone.text.toString().trim()
-            val password = mBinding.etPassword.text.toString().trim()
-            mViewModel.login(phone = phone, password = password, type = 1, progressDialog = mProgressDialog)
+            val uuid = mBinding.tvUuid.text.toString().trim()
+            val code = mBinding.etCode.text.toString().trim()
+            mViewModel.login(uuid, code, progressDialog = mProgressDialog)
         }
         collectUiState()
     }
 
     private fun collectUiState() {
         mViewModel.uiState.propertyCollector(this) {
-            collectDistinctProperty(LoginUiState::login) {
-                Login.setCache(it)
-                if (it != null) {
+            collectDistinctProperty(LoginUiState::isLogin) {
+                mViewModel.setLogin(it ?: false)
+                if (it == true) {
                     MainActivity.start()
                     finish()
                 }

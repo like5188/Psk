@@ -6,7 +6,6 @@ import com.psk.shangxiazhi.game.GameManagerService
 
 data class MainUiState(
     val time: String = "",
-    val userName: String = "",
     val gameManagerService: GameManagerService? = null,
     val toastEvent: Event<ToastEvent>? = null,
 )

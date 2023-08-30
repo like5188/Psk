@@ -4,7 +4,6 @@ import android.app.Activity
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.lifecycleScope
 import com.like.common.util.mvi.propertyCollector
 import com.like.common.util.startActivity
 import com.psk.ble.DeviceType
@@ -16,7 +15,6 @@ import com.psk.shangxiazhi.device.SelectDeviceDialogFragment
 import com.psk.shangxiazhi.scene.SceneActivity
 import com.psk.shangxiazhi.setting.SettingActivity
 import com.twsz.twsystempre.TrainScene
-import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
@@ -50,13 +48,6 @@ class MainActivity : AppCompatActivity() {
             SettingActivity.start()
         }
         collectUiState()
-        getUser()
-    }
-
-    private fun getUser() {
-        lifecycleScope.launch {
-            mViewModel.getUser(this@MainActivity)
-        }
     }
 
     private fun collectUiState() {
@@ -67,9 +58,6 @@ class MainActivity : AppCompatActivity() {
             }
             collectDistinctProperty(MainUiState::time) {
                 mBinding.tvTime.text = it
-            }
-            collectDistinctProperty(MainUiState::userName) {
-                mBinding.tvUser.text = "欢迎：$it"
             }
             collectEventProperty(MainUiState::toastEvent) {
                 showToast(it)

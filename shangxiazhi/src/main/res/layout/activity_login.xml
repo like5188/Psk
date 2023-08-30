@@ -28,8 +28,8 @@
             app:layout_constraintStart_toStartOf="@id/bg"
             app:layout_constraintTop_toTopOf="@id/bg" />
 
-        <EditText
-            android:id="@+id/etPhone"
+        <TextView
+            android:id="@+id/tvUuid"
             android:layout_width="0dp"
             android:layout_height="45dp"
             android:layout_marginStart="40dp"
@@ -38,17 +38,14 @@
             android:background="@drawable/shape_rectangle_border_selector"
             android:drawableStart="@drawable/login_user_icon"
             android:drawablePadding="10dp"
-            android:hint="请输入账户"
-            android:inputType="number"
-            android:maxLength="11"
+            android:gravity="center_vertical"
             android:paddingStart="10dp"
-            android:text="18584658926"
             app:layout_constraintEnd_toEndOf="@id/bg"
             app:layout_constraintStart_toStartOf="@id/bg"
             app:layout_constraintTop_toBottomOf="@id/ivTitle" />
 
         <EditText
-            android:id="@+id/etPassword"
+            android:id="@+id/etCode"
             android:layout_width="0dp"
             android:layout_height="45dp"
             android:layout_marginStart="40dp"
@@ -57,13 +54,12 @@
             android:background="@drawable/shape_rectangle_border_selector"
             android:drawableStart="@drawable/login_user_password"
             android:drawablePadding="10dp"
-            android:hint="请输入密码"
-            android:inputType="textPassword"
+            android:hint="请输入激活码"
+            android:inputType="number"
             android:paddingStart="10dp"
-            android:text="123456"
             app:layout_constraintEnd_toEndOf="@id/bg"
             app:layout_constraintStart_toStartOf="@id/bg"
-            app:layout_constraintTop_toBottomOf="@id/etPhone" />
+            app:layout_constraintTop_toBottomOf="@id/tvUuid" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnLogin"
@@ -74,13 +70,13 @@
             android:layout_marginEnd="40dp"
             android:background="@drawable/shape_rectangle_login_selector"
             android:gravity="center"
-            android:text="登录"
+            android:text="激活"
             android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="@id/bg"
             app:layout_constraintStart_toStartOf="@id/bg"
-            app:layout_constraintTop_toBottomOf="@id/etPassword" />
+            app:layout_constraintTop_toBottomOf="@id/etCode" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

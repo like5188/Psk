@@ -1,12 +1,10 @@
 package com.psk.shangxiazhi.util
 
-import com.psk.shangxiazhi.data.source.GetUserDataSource
 import com.psk.shangxiazhi.data.source.LoginDataSource
-import com.psk.shangxiazhi.data.source.LogoutDataSource
 import com.psk.shangxiazhi.data.source.ShangXiaZhiBusinessRepository
 import com.psk.shangxiazhi.login.LoginViewModel
 import com.psk.shangxiazhi.main.MainViewModel
-import com.psk.shangxiazhi.setting.SettingViewModel
+import com.psk.shangxiazhi.splash.SplashViewModel
 import com.twsz.twsystempre.GameController
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -21,27 +19,21 @@ val shangXiaZhiModule = module {
     factory {
         LoginDataSource()
     }
-    factory {
-        LogoutDataSource()
-    }
-    factory {
-        GetUserDataSource()
-    }
 
     //Repository
     factory {
-        ShangXiaZhiBusinessRepository(get(), get(), get())
+        ShangXiaZhiBusinessRepository(get())
     }
 
     //viewModel
     viewModel {
+        SplashViewModel(get())
+    }
+    viewModel {
         LoginViewModel(get())
     }
     viewModel {
-        MainViewModel(get())
-    }
-    viewModel {
-        SettingViewModel(get())
+        MainViewModel()
     }
 
     //GameController

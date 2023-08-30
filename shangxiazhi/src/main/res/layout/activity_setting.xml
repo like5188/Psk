@@ -55,33 +55,5 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/llLogout"
-            android:layout_width="450dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:background="@drawable/setting_bg_choose"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingStart="15dp"
-            android:paddingTop="10dp"
-            android:paddingEnd="15dp"
-            android:paddingBottom="10dp">
-
-            <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginLeft="36px"
-                android:src="@drawable/setting_user_choose" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:text="退出登录"
-                android:textColor="@drawable/setting_text_color_choose"
-                android:textSize="28sp" />
-
-        </LinearLayout>
     </LinearLayout>
 </layout>

@@ -1,24 +1,24 @@
 package com.psk.shangxiazhi.data.source
 
-import com.psk.shangxiazhi.data.model.Login
-import com.psk.shangxiazhi.data.model.User
+import com.like.common.util.SPUtils
 
 class ShangXiaZhiBusinessRepository(
     private val loginDataSource: LoginDataSource,
-    private val logoutDataSource: LogoutDataSource,
-    private val getUserDataSource: GetUserDataSource,
 ) {
-
-    suspend fun login(phone: String?, password: String?, type: Int?): Login? {
-        return loginDataSource.load(phone, password, type)
+    companion object {
+        private const val SP_LOGIN = "sp_login"
     }
 
-    suspend fun logout(patientToken: String?) {
-        logoutDataSource.load(patientToken)
+    suspend fun login(uuid: String?, code: String?): Boolean {
+        return loginDataSource.load(uuid, code)
     }
 
-    suspend fun getUser(patientToken: String?): User? {
-        return getUserDataSource.load(patientToken)
+    fun isLogin(): Boolean {
+        return SPUtils.getInstance().get(SP_LOGIN, false)
+    }
+
+    fun setLogin(isLogin: Boolean) {
+        SPUtils.getInstance().put(SP_LOGIN, isLogin)
     }
 
 }
