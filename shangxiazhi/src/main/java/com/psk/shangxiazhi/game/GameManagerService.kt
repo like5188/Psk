@@ -103,12 +103,6 @@ class GameManagerService : Service(), KoinComponent {
         if (!existShangXiaZhi && !existHeart && !existBloodOxygen && !existBloodPressure) {
             return
         }
-
-        if (existShangXiaZhi) {
-
-        } else {
-
-        }
         val remoteCallback = object : RemoteCallback.Stub() {
             override fun onGameLoading() {
                 baseBusinessManagers.values.forEach {
