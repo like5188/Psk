@@ -1,11 +1,19 @@
 package com.psk.shangxiazhi.game.business
 
 import android.util.Log
+import com.psk.ble.BleManager
 import com.psk.ble.DeviceType
 import com.psk.device.DeviceManager
+import com.twsz.twsystempre.GameController
 import kotlinx.coroutines.CoroutineScope
+import org.koin.core.component.KoinApiExtension
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-class MultiBusinessManager {
+@OptIn(KoinApiExtension::class)
+class MultiBusinessManager : KoinComponent {
+    private val bleManager by inject<BleManager>()
+    private val gameController by inject<GameController>()
     private val managers = mutableMapOf<DeviceType, BaseBusinessManager<*>>()
 
     fun add(deviceType: DeviceType, manager: BaseBusinessManager<*>) {
@@ -14,10 +22,6 @@ class MultiBusinessManager {
 
     fun clear() {
         managers.clear()
-    }
-
-    fun contains(deviceType: DeviceType): Boolean {
-        return managers.containsKey(deviceType)
     }
 
     fun onStartGame() {
@@ -88,6 +92,11 @@ class MultiBusinessManager {
         managers.values.forEach {
             it.onGameAppFinish()
         }
+        gameController.destroy()
+        // 由于 bleManager.onDestroy() 方法不会触发 connect() 方法的 onDisconnected 回调，原因见 Ble 框架的 close 方法
+        // 所以 gameController 中的连接状态相关的方法需要单独调用才能更新界面状态。
+        // bleManager.onDestroy() 必须放到最后面，否则会由于蓝牙的关闭而无法执行某些需要蓝牙的方法。
+        bleManager.onDestroy()
     }
 
     companion object {

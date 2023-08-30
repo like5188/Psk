@@ -27,17 +27,7 @@ class ShangXiaZhiBusinessManager(
 ) : BaseBusinessManager<ShangXiaZhi>(lifecycleScope), KoinComponent {
     override val repository = deviceManager.createRepository<ShangXiaZhiRepository>(DeviceType.ShangXiaZhi).apply {
         enable(deviceName, deviceAddress)
-        setCallback(onStart = {
-            onStartGame?.invoke()
-            gameController.startGame()
-        }, onPause = {
-            onPauseGame?.invoke()
-            gameController.pauseGame()
-        }, onOver = {
-            onOverGame?.invoke()
-            gameController.overGame()
-            onGameAppFinish()
-        })
+        setCallback(onStart = onStartGame, onPause = onPauseGame, onOver = onOverGame)
     }
 
     private val decimalFormat by inject<DecimalFormat>()
@@ -130,6 +120,24 @@ class ShangXiaZhiBusinessManager(
         }
     }
 
+    override fun onStartGame() {
+        super.onStartGame()
+        gameController.startGame()
+    }
+
+    override fun onPauseGame() {
+        super.onPauseGame()
+        // 此处不能调用 cancelJob()，因为上下肢需要靠接收数据来判断命令。取消了就收不到数据了。
+        gameController.pauseGame()
+    }
+
+    override fun onOverGame() {
+        super.onOverGame()
+        gameController.overGame()
+        cancelJob()
+        gameController.updateGameConnectionState(false)
+    }
+
     override fun onGameStart() {
         super.onGameStart()
         isStart.compareAndSet(false, true)
@@ -151,8 +159,9 @@ class ShangXiaZhiBusinessManager(
 
     override fun onGameOver() {
         lifecycleScope.launch(Dispatchers.IO) {
-            repository.over() // bleManager.onDestroy() 必须放到 repository.over() 后面，否则会由于蓝牙的关闭而无法执行 repository.over()
-            onGameAppFinish()
+            repository.over()
+            cancelJob()
+            gameController.updateGameConnectionState(false)
         }
     }
 
@@ -178,11 +187,9 @@ class ShangXiaZhiBusinessManager(
     override fun onGameAppFinish() {
         super.onGameAppFinish()
         cancelJob()
-        gameController.updateGameConnectionState(false)
         // 由于 bleManager.onDestroy() 方法不会触发 connect() 方法的 onDisconnected 回调，原因见 Ble 框架的 close 方法
         // 所以只能单独调用 updateXxxConnectionState 方法更新界面状态。
-        bleManager.onDestroy()
-        gameController.destroy()
+        gameController.updateGameConnectionState(false)
     }
 
     companion object {

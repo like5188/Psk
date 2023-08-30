@@ -65,6 +65,13 @@ class GameManagerService : Service(), KoinComponent {
         intelligent: Boolean = true,
         turn2: Boolean = true
     ) {
+        val existShangXiaZhi = devices.containsKey(DeviceType.ShangXiaZhi)
+        val existHeart = devices.containsKey(DeviceType.HeartRate)
+        val existBloodOxygen = devices.containsKey(DeviceType.BloodOxygen)
+        val existBloodPressure = devices.containsKey(DeviceType.BloodPressure)
+        if (!existShangXiaZhi && !existHeart && !existBloodOxygen && !existBloodPressure) {
+            return
+        }
         multiBusinessManager.clear()
         devices.forEach {
             val deviceType = it.key
@@ -92,14 +99,6 @@ class GameManagerService : Service(), KoinComponent {
                     }
                 }
             }
-        }
-
-        val existShangXiaZhi = multiBusinessManager.contains(DeviceType.ShangXiaZhi)
-        val existHeart = multiBusinessManager.contains(DeviceType.HeartRate)
-        val existBloodOxygen = multiBusinessManager.contains(DeviceType.BloodOxygen)
-        val existBloodPressure = multiBusinessManager.contains(DeviceType.BloodPressure)
-        if (!existShangXiaZhi && !existHeart && !existBloodOxygen && !existBloodPressure) {
-            return
         }
         val remoteCallback = object : RemoteCallback.Stub() {
             override fun onGameLoading() {
