@@ -64,11 +64,7 @@ class GameManagerService : Service(), KoinComponent {
         intelligent: Boolean = true,
         turn2: Boolean = true
     ) {
-        val existShangXiaZhi = devices.containsKey(DeviceType.ShangXiaZhi)
-        val existHeart = devices.containsKey(DeviceType.HeartRate)
-        val existBloodOxygen = devices.containsKey(DeviceType.BloodOxygen)
-        val existBloodPressure = devices.containsKey(DeviceType.BloodPressure)
-        if (!existShangXiaZhi && !existHeart && !existBloodOxygen && !existBloodPressure) {
+        if (devices.isEmpty()) {
             return
         }
         multiBusinessManager.clear()
@@ -102,7 +98,12 @@ class GameManagerService : Service(), KoinComponent {
         lifecycleScope.launch(Dispatchers.IO) {
             // todo 如果增加蓝牙设备系列，需要在这里结合游戏app做处理。
             gameController.initGame(
-                existShangXiaZhi, existHeart, existBloodOxygen, existBloodPressure, scene, multiBusinessManager
+                devices.containsKey(DeviceType.ShangXiaZhi),
+                devices.containsKey(DeviceType.HeartRate),
+                devices.containsKey(DeviceType.BloodOxygen),
+                devices.containsKey(DeviceType.BloodPressure),
+                scene,
+                multiBusinessManager
             )
         }
     }
