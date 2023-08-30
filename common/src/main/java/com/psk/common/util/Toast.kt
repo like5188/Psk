@@ -24,13 +24,13 @@ fun Context.showToast(toastEvent: ToastEvent) {
         msg = toastEvent.text
     }
     if (msg.isNullOrEmpty()) {
-        msg = toastEvent.throwable?.message ?: ""
+        msg = toastEvent.throwable.getCustomMessage()
     }
     this.showToast(msg)
 }
 
 fun Context.showToast(throwable: Throwable?) {
-    showToast(throwable?.message ?: "unknown error")
+    showToast(throwable.getCustomMessage())
 }
 
 fun Context.showToast(msg: String?) {
@@ -39,4 +39,8 @@ fun Context.showToast(msg: String?) {
     } else {
         handler.post { Toast.makeText(this, msg ?: "", Toast.LENGTH_SHORT).show() }
     }
+}
+
+fun Throwable?.getCustomMessage(): String {
+    return (this?.message ?: this?.javaClass?.name) ?: "unknown error"
 }
