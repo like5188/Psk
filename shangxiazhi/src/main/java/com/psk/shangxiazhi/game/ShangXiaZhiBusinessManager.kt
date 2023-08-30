@@ -16,6 +16,7 @@ import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.text.DecimalFormat
+import java.util.concurrent.atomic.AtomicBoolean
 
 @OptIn(KoinApiExtension::class)
 class ShangXiaZhiBusinessManager(
@@ -26,21 +27,17 @@ class ShangXiaZhiBusinessManager(
 ) : BaseBusinessManager<ShangXiaZhi>(lifecycleScope), KoinComponent {
     override val repository = deviceManager.createRepository<ShangXiaZhiRepository>(DeviceType.ShangXiaZhi).apply {
         enable(deviceName, deviceAddress)
-        setCallback(
-            onStart = {
-                onStartGame?.invoke()
-                gameController.startGame()
-            },
-            onPause = {
-                onPauseGame?.invoke()
-                gameController.pauseGame()
-            },
-            onOver = {
-                onOverGame?.invoke()
-                gameController.overGame()
-                onGameFinish()
-            }
-        )
+        setCallback(onStart = {
+            onStartGame?.invoke()
+            gameController.startGame()
+        }, onPause = {
+            onPauseGame?.invoke()
+            gameController.pauseGame()
+        }, onOver = {
+            onOverGame?.invoke()
+            gameController.overGame()
+            onGameAppFinish()
+        })
     }
 
     private val decimalFormat by inject<DecimalFormat>()
@@ -54,6 +51,13 @@ class ShangXiaZhiBusinessManager(
     var onStartGame: (() -> Unit)? = null
     var onPauseGame: (() -> Unit)? = null
     var onOverGame: (() -> Unit)? = null
+    private var isStart = AtomicBoolean(false)
+
+    private suspend fun waitStart() {
+        while (!isStart.get()) {
+            delay(10)
+        }
+    }
 
     override suspend fun handleFlow(flow: Flow<ShangXiaZhi>) {
         Log.d(TAG, "startShangXiaZhiJob")
@@ -126,23 +130,9 @@ class ShangXiaZhiBusinessManager(
         }
     }
 
-    override fun onGameLoading() {
-        super.onGameLoading()
-        bleManager.connect(DeviceType.ShangXiaZhi, lifecycleScope, 3000L, {
-            Log.w(TAG, "上下肢连接成功 $it")
-            gameController.updateGameConnectionState(true)
-            lifecycleScope.launch(Dispatchers.IO) {
-                waitStart()
-                startJob()
-                delay(100)
-                //设置上下肢参数，设置好后，如果是被动模式，上下肢会自动运行
-                repository.setParams(passiveModule, timeInt, speedInt, spasmInt, resistanceInt, intelligent, turn2)
-            }
-        }) {
-            Log.e(TAG, "上下肢连接失败 $it")
-            gameController.updateGameConnectionState(false)
-            cancelJob()
-        }
+    override fun onGameStart() {
+        super.onGameStart()
+        isStart.compareAndSet(false, true)
     }
 
     override fun onGameResume() {
@@ -162,12 +152,31 @@ class ShangXiaZhiBusinessManager(
     override fun onGameOver() {
         lifecycleScope.launch(Dispatchers.IO) {
             repository.over() // bleManager.onDestroy() 必须放到 repository.over() 后面，否则会由于蓝牙的关闭而无法执行 repository.over()
-            onGameFinish()
+            onGameAppFinish()
         }
     }
 
-    override fun onGameFinish() {
-        super.onGameFinish()
+    override fun onGameAppStart() {
+        super.onGameAppStart()
+        bleManager.connect(DeviceType.ShangXiaZhi, lifecycleScope, 3000L, {
+            Log.w(TAG, "上下肢连接成功 $it")
+            gameController.updateGameConnectionState(true)
+            lifecycleScope.launch(Dispatchers.IO) {
+                waitStart()// 等待游戏开始运行后再开始设置数据
+                startJob()
+                delay(100)
+                //设置上下肢参数，设置好后，如果是被动模式，上下肢会自动运行
+                repository.setParams(passiveModule, timeInt, speedInt, spasmInt, resistanceInt, intelligent, turn2)
+            }
+        }) {
+            Log.e(TAG, "上下肢连接失败 $it")
+            gameController.updateGameConnectionState(false)
+            cancelJob()
+        }
+    }
+
+    override fun onGameAppFinish() {
+        super.onGameAppFinish()
         cancelJob()
         gameController.updateGameConnectionState(false)
         // 由于 bleManager.onDestroy() 方法不会触发 connect() 方法的 onDisconnected 回调，原因见 Ble 框架的 close 方法

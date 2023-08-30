@@ -12,8 +12,8 @@ import com.psk.ble.DeviceType
 import com.psk.ble.Tip
 import com.psk.device.DeviceManager
 import com.psk.shangxiazhi.data.model.BleScanInfo
-import com.twsz.twsystempre.GameCallback
 import com.twsz.twsystempre.GameController
+import com.twsz.twsystempre.RemoteCallback
 import com.twsz.twsystempre.TrainScene
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -96,40 +96,59 @@ class GameManagerService : Service(), KoinComponent {
             }
         }
 
-        val gameCallback = object : GameCallback.Stub() {
-            override fun onLoading() {
+        val existShangXiaZhi = baseBusinessManagers.containsKey(DeviceType.ShangXiaZhi)
+        val existHeart = baseBusinessManagers.containsKey(DeviceType.HeartRate)
+        val existBloodOxygen = baseBusinessManagers.containsKey(DeviceType.BloodOxygen)
+        val existBloodPressure = baseBusinessManagers.containsKey(DeviceType.BloodPressure)
+        if (!existShangXiaZhi && !existHeart && !existBloodOxygen && !existBloodPressure) {
+            return
+        }
+
+        if (existShangXiaZhi) {
+
+        } else {
+
+        }
+        val remoteCallback = object : RemoteCallback.Stub() {
+            override fun onGameLoading() {
                 baseBusinessManagers.values.forEach {
                     it.onGameLoading()
                 }
             }
 
-            override fun onStart() {
+            override fun onGameStart() {
                 baseBusinessManagers.values.forEach {
                     it.onGameStart()
                 }
             }
 
-            override fun onResume() {
+            override fun onGameResume() {
                 baseBusinessManagers.values.forEach {
                     it.onGameResume()
                 }
             }
 
-            override fun onPause() {
+            override fun onGamePause() {
                 baseBusinessManagers.values.forEach {
                     it.onGamePause()
                 }
             }
 
-            override fun onOver() {
+            override fun onGameOver() {
                 baseBusinessManagers.values.forEach {
                     it.onGameOver()
                 }
             }
 
-            override fun onFinish() {
+            override fun onGameAppStart() {
                 baseBusinessManagers.values.forEach {
-                    it.onGameFinish()
+                    it.onGameAppStart()
+                }
+            }
+
+            override fun onGameAppFinish() {
+                baseBusinessManagers.values.forEach {
+                    it.onGameAppFinish()
                 }
             }
 
@@ -137,12 +156,12 @@ class GameManagerService : Service(), KoinComponent {
         lifecycleScope.launch(Dispatchers.IO) {
             // todo 如果增加蓝牙设备系列，需要在这里结合游戏app做处理。
             gameController.initGame(
-                baseBusinessManagers.containsKey(DeviceType.ShangXiaZhi),
-                baseBusinessManagers.containsKey(DeviceType.HeartRate),
-                baseBusinessManagers.containsKey(DeviceType.BloodOxygen),
-                baseBusinessManagers.containsKey(DeviceType.BloodPressure),
+                existShangXiaZhi,
+                existHeart,
+                existBloodOxygen,
+                existBloodPressure,
                 scene,
-                gameCallback
+                remoteCallback
             )
         }
     }
@@ -151,7 +170,7 @@ class GameManagerService : Service(), KoinComponent {
         super.onDestroy()
         Log.d(TAG, "onDestroy")
         baseBusinessManagers.values.forEach {
-            it.onGameFinish()
+            it.onGameAppFinish()
         }
     }
 

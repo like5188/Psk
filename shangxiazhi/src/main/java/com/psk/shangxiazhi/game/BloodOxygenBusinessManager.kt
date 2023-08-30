@@ -6,11 +6,9 @@ import com.psk.device.DeviceManager
 import com.psk.device.data.model.BloodOxygen
 import com.psk.device.data.source.BloodOxygenRepository
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.launch
 
 class BloodOxygenBusinessManager(
     lifecycleScope: CoroutineScope,
@@ -45,22 +43,6 @@ class BloodOxygenBusinessManager(
         gameController.updateBloodOxygenConnectionState(false)
     }
 
-    override fun onGameLoading() {
-        super.onGameLoading()
-        bleManager.connect(DeviceType.BloodOxygen, lifecycleScope, 3000L, {
-            Log.w(TAG, "血氧仪连接成功 $it")
-            gameController.updateBloodOxygenConnectionState(true)
-            lifecycleScope.launch(Dispatchers.IO) {
-                waitStart()
-                startJob()
-            }
-        }) {
-            Log.e(TAG, "血氧仪连接失败 $it")
-            gameController.updateBloodOxygenConnectionState(false)
-            cancelJob()
-        }
-    }
-
     override fun onGameResume() {
         super.onGameResume()
         startJob()
@@ -77,8 +59,21 @@ class BloodOxygenBusinessManager(
         gameController.updateBloodOxygenConnectionState(false)
     }
 
-    override fun onGameFinish() {
-        super.onGameFinish()
+    override fun onGameAppStart() {
+        super.onGameAppStart()
+        bleManager.connect(DeviceType.BloodOxygen, lifecycleScope, 3000L, {
+            Log.w(TAG, "血氧仪连接成功 $it")
+            gameController.updateBloodOxygenConnectionState(true)
+            startJob()
+        }) {
+            Log.e(TAG, "血氧仪连接失败 $it")
+            gameController.updateBloodOxygenConnectionState(false)
+            cancelJob()
+        }
+    }
+
+    override fun onGameAppFinish() {
+        super.onGameAppFinish()
         cancelJob()
         gameController.updateBloodOxygenConnectionState(false)
     }

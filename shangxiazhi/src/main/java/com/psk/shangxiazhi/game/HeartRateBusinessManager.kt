@@ -67,22 +67,6 @@ class HeartRateBusinessManager(
         gameController.updateEcgConnectionState(false)
     }
 
-    override fun onGameLoading() {
-        super.onGameLoading()
-        bleManager.connect(DeviceType.HeartRate, lifecycleScope, 3000L, {
-            Log.w(TAG, "心电仪连接成功 $it")
-            gameController.updateEcgConnectionState(true)
-            lifecycleScope.launch(Dispatchers.IO) {
-                waitStart()
-                startJob()
-            }
-        }) {
-            Log.e(TAG, "心电仪连接失败 $it")
-            gameController.updateEcgConnectionState(false)
-            cancelJob()
-        }
-    }
-
     override fun onGameResume() {
         super.onGameResume()
         startJob()
@@ -99,8 +83,21 @@ class HeartRateBusinessManager(
         gameController.updateEcgConnectionState(false)
     }
 
-    override fun onGameFinish() {
-        super.onGameFinish()
+    override fun onGameAppStart() {
+        super.onGameAppStart()
+        bleManager.connect(DeviceType.HeartRate, lifecycleScope, 3000L, {
+            Log.w(TAG, "心电仪连接成功 $it")
+            gameController.updateEcgConnectionState(true)
+            startJob()
+        }) {
+            Log.e(TAG, "心电仪连接失败 $it")
+            gameController.updateEcgConnectionState(false)
+            cancelJob()
+        }
+    }
+
+    override fun onGameAppFinish() {
+        super.onGameAppFinish()
         cancelJob()
         gameController.updateEcgConnectionState(false)
     }

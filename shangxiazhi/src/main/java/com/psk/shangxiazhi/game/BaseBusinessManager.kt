@@ -9,13 +9,11 @@ import com.twsz.twsystempre.GameController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * 设备相关的业务管理基类
@@ -26,13 +24,6 @@ abstract class BaseBusinessManager<T>(val lifecycleScope: CoroutineScope) : Koin
     protected val gameController by inject<GameController>()
     private var job: Job? = null
     protected abstract val repository: IRepository<T>
-    private var isStart = AtomicBoolean(false)
-
-    protected suspend fun waitStart() {
-        while (!isStart.get()) {
-            delay(10)
-        }
-    }
 
     fun startJob() {
         if (job != null) {
@@ -73,7 +64,6 @@ abstract class BaseBusinessManager<T>(val lifecycleScope: CoroutineScope) : Koin
     // 游戏控制上下肢
     open fun onGameStart() {
         Log.i(TAG, "onGameStart")
-        isStart.compareAndSet(false, true)
     }
 
     // 游戏控制上下肢
@@ -92,8 +82,13 @@ abstract class BaseBusinessManager<T>(val lifecycleScope: CoroutineScope) : Koin
     }
 
     // 游戏控制上下肢
-    open fun onGameFinish() {
-        Log.i(TAG, "onGameFinish")
+    open fun onGameAppStart() {
+        Log.i(TAG, "onGameAppStart")
+    }
+
+    // 游戏控制上下肢
+    open fun onGameAppFinish() {
+        Log.i(TAG, "onGameAppFinish")
     }
 
     companion object {

@@ -6,11 +6,9 @@ import com.psk.device.DeviceManager
 import com.psk.device.data.model.BloodPressure
 import com.psk.device.data.source.BloodPressureRepository
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.launch
 
 class BloodPressureBusinessManager(
     lifecycleScope: CoroutineScope,
@@ -45,22 +43,6 @@ class BloodPressureBusinessManager(
         gameController.updateBloodPressureConnectionState(false)
     }
 
-    override fun onGameLoading() {
-        super.onGameLoading()
-        bleManager.connect(DeviceType.BloodPressure, lifecycleScope, 3000L, {
-            Log.w(TAG, "血压仪连接成功 $it")
-            gameController.updateBloodPressureConnectionState(true)
-            lifecycleScope.launch(Dispatchers.IO) {
-                waitStart()
-                startJob()
-            }
-        }) {
-            Log.e(TAG, "血压仪连接失败 $it")
-            gameController.updateBloodPressureConnectionState(false)
-            cancelJob()
-        }
-    }
-
     override fun onGameResume() {
         super.onGameResume()
         startJob()
@@ -77,8 +59,21 @@ class BloodPressureBusinessManager(
         gameController.updateBloodPressureConnectionState(false)
     }
 
-    override fun onGameFinish() {
-        super.onGameFinish()
+    override fun onGameAppStart() {
+        super.onGameAppStart()
+        bleManager.connect(DeviceType.BloodPressure, lifecycleScope, 3000L, {
+            Log.w(TAG, "血压仪连接成功 $it")
+            gameController.updateBloodPressureConnectionState(true)
+            startJob()
+        }) {
+            Log.e(TAG, "血压仪连接失败 $it")
+            gameController.updateBloodPressureConnectionState(false)
+            cancelJob()
+        }
+    }
+
+    override fun onGameAppFinish() {
+        super.onGameAppFinish()
         cancelJob()
         gameController.updateBloodPressureConnectionState(false)
     }
