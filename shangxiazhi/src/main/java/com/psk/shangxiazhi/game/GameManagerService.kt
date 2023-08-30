@@ -15,7 +15,6 @@ import com.psk.shangxiazhi.data.model.BleScanInfo
 import com.psk.shangxiazhi.game.business.MultiBusinessManager
 import com.psk.shangxiazhi.game.business.ShangXiaZhiBusinessManager
 import com.twsz.twsystempre.GameController
-import com.twsz.twsystempre.RemoteCallback
 import com.twsz.twsystempre.TrainScene
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -100,45 +99,10 @@ class GameManagerService : Service(), KoinComponent {
                 }
             }
         }
-        val remoteCallback = object : RemoteCallback.Stub() {
-            override fun onGameLoading() {
-                multiBusinessManager.onGameLoading()
-            }
-
-            override fun onGameStart() {
-                multiBusinessManager.onGameStart()
-            }
-
-            override fun onGameResume() {
-                multiBusinessManager.onGameResume()
-            }
-
-            override fun onGamePause() {
-                multiBusinessManager.onGamePause()
-            }
-
-            override fun onGameOver() {
-                multiBusinessManager.onGameOver()
-            }
-
-            override fun onGameAppStart() {
-                multiBusinessManager.onGameAppStart()
-            }
-
-            override fun onGameAppFinish() {
-                multiBusinessManager.onGameAppFinish()
-            }
-
-        }
         lifecycleScope.launch(Dispatchers.IO) {
             // todo 如果增加蓝牙设备系列，需要在这里结合游戏app做处理。
             gameController.initGame(
-                existShangXiaZhi,
-                existHeart,
-                existBloodOxygen,
-                existBloodPressure,
-                scene,
-                remoteCallback
+                existShangXiaZhi, existHeart, existBloodOxygen, existBloodPressure, scene, multiBusinessManager
             )
         }
     }

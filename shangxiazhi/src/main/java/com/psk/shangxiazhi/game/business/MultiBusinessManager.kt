@@ -5,13 +5,14 @@ import com.psk.ble.BleManager
 import com.psk.ble.DeviceType
 import com.psk.device.DeviceManager
 import com.twsz.twsystempre.GameController
+import com.twsz.twsystempre.RemoteCallback
 import kotlinx.coroutines.CoroutineScope
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 @OptIn(KoinApiExtension::class)
-class MultiBusinessManager : KoinComponent {
+class MultiBusinessManager : RemoteCallback.Stub(), KoinComponent {
     private val bleManager by inject<BleManager>()
     private val gameController by inject<GameController>()
     private val managers = mutableMapOf<DeviceType, BaseBusinessManager<*>>()
@@ -45,49 +46,49 @@ class MultiBusinessManager : KoinComponent {
         }
     }
 
-    fun onGameLoading() {
+    override fun onGameLoading() {
         Log.i(TAG, "onGameLoading")
         managers.values.forEach {
             it.onGameLoading()
         }
     }
 
-    fun onGameStart() {
+    override fun onGameStart() {
         Log.i(TAG, "onGameStart")
         managers.values.forEach {
             it.onGameStart()
         }
     }
 
-    fun onGameResume() {
+    override fun onGameResume() {
         Log.i(TAG, "onGameResume")
         managers.values.forEach {
             it.onGameResume()
         }
     }
 
-    fun onGamePause() {
+    override fun onGamePause() {
         Log.i(TAG, "onGamePause")
         managers.values.forEach {
             it.onGamePause()
         }
     }
 
-    fun onGameOver() {
+    override fun onGameOver() {
         Log.i(TAG, "onGameOver")
         managers.values.forEach {
             it.onGameOver()
         }
     }
 
-    fun onGameAppStart() {
+    override fun onGameAppStart() {
         Log.i(TAG, "onGameAppStart")
         managers.values.forEach {
             it.onGameAppStart()
         }
     }
 
-    fun onGameAppFinish() {
+    override fun onGameAppFinish() {
         Log.i(TAG, "onGameAppFinish")
         managers.values.forEach {
             it.onGameAppFinish()
