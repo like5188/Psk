@@ -20,7 +20,6 @@ class MultiBusinessManager {
         return managers.containsKey(deviceType)
     }
 
-    // 上下肢控制游戏
     fun onStartGame() {
         Log.d(TAG, "onStartGame")
         managers.values.forEach {
@@ -28,7 +27,6 @@ class MultiBusinessManager {
         }
     }
 
-    // 上下肢控制游戏
     fun onPauseGame() {
         Log.d(TAG, "onPauseGame")
         managers.values.forEach {
@@ -36,7 +34,6 @@ class MultiBusinessManager {
         }
     }
 
-    // 上下肢控制游戏
     fun onOverGame() {
         Log.d(TAG, "onOverGame")
         managers.values.forEach {
@@ -44,7 +41,6 @@ class MultiBusinessManager {
         }
     }
 
-    // 游戏控制上下肢
     fun onGameLoading() {
         Log.i(TAG, "onGameLoading")
         managers.values.forEach {
@@ -52,7 +48,6 @@ class MultiBusinessManager {
         }
     }
 
-    // 游戏控制上下肢
     fun onGameStart() {
         Log.i(TAG, "onGameStart")
         managers.values.forEach {
@@ -60,7 +55,6 @@ class MultiBusinessManager {
         }
     }
 
-    // 游戏控制上下肢
     fun onGameResume() {
         Log.i(TAG, "onGameResume")
         managers.values.forEach {
@@ -68,7 +62,6 @@ class MultiBusinessManager {
         }
     }
 
-    // 游戏控制上下肢
     fun onGamePause() {
         Log.i(TAG, "onGamePause")
         managers.values.forEach {
@@ -76,7 +69,6 @@ class MultiBusinessManager {
         }
     }
 
-    // 游戏控制上下肢
     fun onGameOver() {
         Log.i(TAG, "onGameOver")
         managers.values.forEach {
@@ -84,7 +76,6 @@ class MultiBusinessManager {
         }
     }
 
-    // 游戏控制上下肢
     fun onGameAppStart() {
         Log.i(TAG, "onGameAppStart")
         managers.values.forEach {
@@ -92,7 +83,6 @@ class MultiBusinessManager {
         }
     }
 
-    // 游戏控制上下肢
     fun onGameAppFinish() {
         Log.i(TAG, "onGameAppFinish")
         managers.values.forEach {
