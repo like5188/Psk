@@ -187,9 +187,6 @@ class ShangXiaZhiBusinessManager(
     override fun onGameAppFinish() {
         super.onGameAppFinish()
         cancelJob()
-        // 由于 bleManager.onDestroy() 方法不会触发 connect() 方法的 onDisconnected 回调，原因见 Ble 框架的 close 方法
-        // 所以只能单独调用 updateXxxConnectionState 方法更新界面状态。
-        gameController.updateGameConnectionState(false)
     }
 
     companion object {

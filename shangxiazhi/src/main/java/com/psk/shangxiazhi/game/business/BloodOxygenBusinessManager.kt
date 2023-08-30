@@ -75,7 +75,6 @@ class BloodOxygenBusinessManager(
     override fun onGameAppFinish() {
         super.onGameAppFinish()
         cancelJob()
-        gameController.updateBloodOxygenConnectionState(false)
     }
 
     companion object {

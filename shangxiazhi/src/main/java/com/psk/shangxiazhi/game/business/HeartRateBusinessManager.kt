@@ -99,7 +99,6 @@ class HeartRateBusinessManager(
     override fun onGameAppFinish() {
         super.onGameAppFinish()
         cancelJob()
-        gameController.updateEcgConnectionState(false)
     }
 
     companion object {

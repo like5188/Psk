@@ -75,7 +75,6 @@ class BloodPressureBusinessManager(
     override fun onGameAppFinish() {
         super.onGameAppFinish()
         cancelJob()
-        gameController.updateBloodPressureConnectionState(false)
     }
 
     companion object {
