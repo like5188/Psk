@@ -184,11 +184,6 @@ class ShangXiaZhiBusinessManager(
         }
     }
 
-    override fun onGameAppFinish() {
-        super.onGameAppFinish()
-        cancelJob()
-    }
-
     companion object {
         private val TAG = ShangXiaZhiBusinessManager::class.java.simpleName
     }

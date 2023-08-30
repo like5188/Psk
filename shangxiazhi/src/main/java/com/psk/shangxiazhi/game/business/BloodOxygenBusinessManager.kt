@@ -72,11 +72,6 @@ class BloodOxygenBusinessManager(
         }
     }
 
-    override fun onGameAppFinish() {
-        super.onGameAppFinish()
-        cancelJob()
-    }
-
     companion object {
         private val TAG = BloodOxygenBusinessManager::class.java.simpleName
     }

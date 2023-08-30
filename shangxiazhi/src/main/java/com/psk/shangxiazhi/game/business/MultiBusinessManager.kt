@@ -90,7 +90,7 @@ class MultiBusinessManager : KoinComponent {
     fun onGameAppFinish() {
         Log.i(TAG, "onGameAppFinish")
         managers.values.forEach {
-            it.onGameAppFinish()
+            it.cancelJob()
         }
         gameController.destroy()
         // 由于 bleManager.onDestroy() 方法不会触发 connect() 方法的 onDisconnected 回调，原因见 Ble 框架的 close 方法
