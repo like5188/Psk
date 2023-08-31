@@ -12,6 +12,7 @@ import com.psk.common.util.showToast
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.databinding.ActivityMainBinding
 import com.psk.shangxiazhi.device.SelectDeviceDialogFragment
+import com.psk.shangxiazhi.report.ReportActivity
 import com.psk.shangxiazhi.scene.SceneActivity
 import com.psk.shangxiazhi.setting.SettingActivity
 import com.twsz.twsystempre.TrainScene
@@ -55,7 +56,9 @@ class MainActivity : AppCompatActivity() {
         mViewModel.uiState.propertyCollector(this) {
             collectDistinctProperty(MainUiState::gameManagerService) {
                 it ?: return@collectDistinctProperty
-                it.initBle(this@MainActivity)
+                it.initBle(this@MainActivity, onGameAppFinish = {
+                    ReportActivity.start()
+                })
             }
             collectDistinctProperty(MainUiState::time) {
                 mBinding.tvTime.text = it

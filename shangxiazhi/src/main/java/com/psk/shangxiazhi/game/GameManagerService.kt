@@ -44,9 +44,14 @@ class GameManagerService : Service(), KoinComponent {
      * 初始化蓝牙相关的工具类
      * @param onTip     蓝牙相关的提示
      */
-    fun initBle(activity: ComponentActivity, onTip: ((Tip) -> Unit)? = { Log.e(TAG, "onTip ${it.msg}") }) {
+    fun initBle(
+        activity: ComponentActivity,
+        onGameAppFinish: (() -> Unit)? = null,
+        onTip: ((Tip) -> Unit)? = { Log.e(TAG, "onTip ${it.msg}") }
+    ) {
         lifecycleScope = activity.lifecycleScope
         bleManager.onTip = onTip
+        multiBusinessManager.onGameAppFinish = onGameAppFinish
         lifecycleScope.launch {
             deviceManager.init()
             bleManager.init(activity)
