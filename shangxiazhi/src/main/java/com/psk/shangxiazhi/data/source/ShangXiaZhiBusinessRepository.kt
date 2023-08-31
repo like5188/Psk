@@ -1,24 +1,24 @@
 package com.psk.shangxiazhi.data.source
 
-import com.like.common.util.SPUtils
+import android.content.Context
 
 class ShangXiaZhiBusinessRepository(
     private val loginDataSource: LoginDataSource,
 ) {
-    companion object {
-        private const val SP_LOGIN = "sp_login"
+    fun getSerialNumber(context: Context): String {
+        return loginDataSource.getSerialNumber(context)
     }
 
-    suspend fun login(uuid: String?, code: String?): Boolean {
-        return loginDataSource.load(uuid, code)
+    fun login(serialNumber: String?, code: String?): Boolean {
+        return loginDataSource.login(serialNumber, code)
     }
 
     fun isLogin(): Boolean {
-        return SPUtils.getInstance().get(SP_LOGIN, false)
+        return loginDataSource.isLogin()
     }
 
     fun setLogin(isLogin: Boolean) {
-        SPUtils.getInstance().put(SP_LOGIN, isLogin)
+        loginDataSource.setLogin(isLogin)
     }
 
 }

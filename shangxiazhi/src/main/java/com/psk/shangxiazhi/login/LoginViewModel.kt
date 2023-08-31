@@ -1,5 +1,6 @@
 package com.psk.shangxiazhi.login
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.like.common.util.mvi.Event
@@ -13,15 +14,19 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
-    private val shangXiaZhiRepository: ShangXiaZhiBusinessRepository,
+    private val shangXiaZhiBusinessRepository: ShangXiaZhiBusinessRepository,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState = _uiState.asStateFlow()
 
-    fun login(uuid: String?, code: String?, progressDialog: ProgressDialog) {
+    fun getSerialNumber(context: Context): String {
+        return shangXiaZhiBusinessRepository.getSerialNumber(context)
+    }
+
+    fun login(serialNumber: String?, code: String?, progressDialog: ProgressDialog) {
         viewModelScope.launch {
             DataHandler.collectWithProgress(progressDialog, block = {
-                shangXiaZhiRepository.login(uuid, code)
+                shangXiaZhiBusinessRepository.login(serialNumber, code)
             }, onError = { throwable ->
                 _uiState.update {
                     it.copy(
@@ -39,6 +44,7 @@ class LoginViewModel(
     }
 
     fun setLogin(isLogin: Boolean) {
-        shangXiaZhiRepository.setLogin(isLogin)
+        shangXiaZhiBusinessRepository.setLogin(isLogin)
     }
+
 }

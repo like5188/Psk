@@ -33,11 +33,11 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mBinding.tvUuid.text = "1"
+        mBinding.tvSerialNumber.text = mViewModel.getSerialNumber(this)
         mBinding.btnLogin.setOnClickListener {
-            val uuid = mBinding.tvUuid.text.toString().trim()
+            val serialNumber = mBinding.tvSerialNumber.text.toString().trim()
             val code = mBinding.etCode.text.toString().trim()
-            mViewModel.login(uuid, code, progressDialog = mProgressDialog)
+            mViewModel.login(serialNumber, code, progressDialog = mProgressDialog)
         }
         collectUiState()
     }

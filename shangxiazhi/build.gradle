@@ -66,6 +66,7 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     implementation(name: 'aidl-debug', ext: 'aar')
+    implementation(name: 'Pad1601Pwd-debug', ext: 'aar')
     implementation project(':common')
     implementation project(':device')
     implementation project(':ble')
