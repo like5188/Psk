@@ -61,7 +61,6 @@
             android:layout_marginTop="30dp"
             android:drawableStart="@drawable/report_time"
             android:drawablePadding="10dp"
-            android:gravity="center_vertical"
             android:text="训练时长"
             android:textColor="#686868"
             android:textSize="14sp"
@@ -73,7 +72,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="30dp"
-            android:gravity="center_vertical"
             android:textColor="#292a2d"
             android:textSize="14sp"
             android:textStyle="bold"
@@ -87,7 +85,6 @@
             android:layout_height="wrap_content"
             android:drawableStart="@drawable/report_distance"
             android:drawablePadding="10dp"
-            android:gravity="center_vertical"
             android:text="总里程"
             android:textColor="#686868"
             android:textSize="14sp"
@@ -99,13 +96,128 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="30dp"
-            android:gravity="center_vertical"
             android:textColor="#292a2d"
             android:textSize="14sp"
             android:textStyle="bold"
             app:layout_constraintBaseline_toBaselineOf="@id/tvTimeTag"
             app:layout_constraintStart_toEndOf="@id/tvMileageTag"
             tools:text="555.50米" />
+
+        <TextView
+            android:id="@+id/tvActiveTimeTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="70dp"
+            android:layout_marginTop="15dp"
+            android:text="主动训练"
+            android:textColor="#686868"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="@id/view"
+            app:layout_constraintTop_toBottomOf="@id/tvTimeTag" />
+
+        <TextView
+            android:id="@+id/tvActiveTimeTag1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:text="时长"
+            android:textColor="#686868"
+            android:textSize="14sp"
+            app:layout_constraintBaseline_toBaselineOf="@id/tvActiveTimeTag"
+            app:layout_constraintStart_toEndOf="@id/tvActiveTimeTag" />
+
+        <TextView
+            android:id="@+id/tvActiveTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:textColor="#187aff"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintBaseline_toBaselineOf="@id/tvActiveTimeTag"
+            app:layout_constraintStart_toEndOf="@id/tvActiveTimeTag1"
+            tools:text="00秒" />
+
+        <TextView
+            android:id="@+id/tvActiveMileageTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:text="里程"
+            android:textColor="#686868"
+            android:textSize="14sp"
+            app:layout_constraintBaseline_toBaselineOf="@id/tvActiveTimeTag"
+            app:layout_constraintStart_toStartOf="@id/tvMileageTag" />
+
+        <TextView
+            android:id="@+id/tvActiveMileage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:textColor="#187aff"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintBaseline_toBaselineOf="@id/tvActiveTimeTag"
+            app:layout_constraintStart_toEndOf="@id/tvActiveMileageTag"
+            tools:text="0.00米" />
+
+        <TextView
+            android:id="@+id/tvPassiveTimeTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="70dp"
+            android:layout_marginTop="15dp"
+            android:text="被动训练"
+            android:textColor="#686868"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="@id/view"
+            app:layout_constraintTop_toBottomOf="@id/tvActiveTimeTag" />
+
+        <TextView
+            android:id="@+id/tvPassiveTimeTag1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:text="时长"
+            android:textColor="#686868"
+            android:textSize="14sp"
+            app:layout_constraintBaseline_toBaselineOf="@id/tvPassiveTimeTag"
+            app:layout_constraintStart_toEndOf="@id/tvPassiveTimeTag" />
+
+        <TextView
+            android:id="@+id/tvPassiveTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:textColor="#20ca30"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintBaseline_toBaselineOf="@id/tvPassiveTimeTag"
+            app:layout_constraintStart_toEndOf="@id/tvPassiveTimeTag1"
+            tools:text="00秒" />
+
+        <TextView
+            android:id="@+id/tvPassiveMileageTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:text="里程"
+            android:textColor="#686868"
+            android:textSize="14sp"
+            app:layout_constraintBaseline_toBaselineOf="@id/tvPassiveTimeTag"
+            app:layout_constraintStart_toStartOf="@id/tvMileageTag" />
+
+        <TextView
+            android:id="@+id/tvPassiveMileage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:textColor="#20ca30"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintBaseline_toBaselineOf="@id/tvPassiveTimeTag"
+            app:layout_constraintStart_toEndOf="@id/tvPassiveMileageTag"
+            tools:text="0.00米" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>
