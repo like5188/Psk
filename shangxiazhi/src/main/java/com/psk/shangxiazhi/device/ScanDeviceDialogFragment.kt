@@ -22,12 +22,9 @@ import com.psk.shangxiazhi.databinding.DialogFragmentScanDeviceBinding
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
-import org.koin.core.component.KoinApiExtension
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
+import org.koin.android.ext.android.inject
 
-@OptIn(KoinApiExtension::class)
-class ScanDeviceDialogFragment private constructor() : BaseDialogFragment(), KoinComponent {
+class ScanDeviceDialogFragment private constructor() : BaseDialogFragment() {
     companion object {
         private const val KEY_DEVICE_TYPE = "key_device_type"
         fun newInstance(deviceType: DeviceType): ScanDeviceDialogFragment {

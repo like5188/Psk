@@ -61,9 +61,7 @@ class MainActivity : AppCompatActivity() {
         mViewModel.uiState.propertyCollector(this) {
             collectDistinctProperty(MainUiState::gameManagerService) {
                 it ?: return@collectDistinctProperty
-                it.initBle(this@MainActivity, onGameAppFinish = {
-//                    ReportActivity.start()
-                })
+                it.initBle(this@MainActivity)
             }
             collectDistinctProperty(MainUiState::time) {
                 mBinding.tvTime.text = it
@@ -92,7 +90,9 @@ class MainActivity : AppCompatActivity() {
                 )
             ).apply {
                 onSelected = {
-                    mViewModel.uiState.value.gameManagerService?.start(it, scene, resistanceInt = 1, passiveModule = true, timeInt = 1)
+                    mViewModel.uiState.value.gameManagerService?.start(it, scene, resistanceInt = 1, passiveModule = true, timeInt = 1) {
+                        ReportActivity.start(total = it)
+                    }
                 }
                 show(this@MainActivity)
             }

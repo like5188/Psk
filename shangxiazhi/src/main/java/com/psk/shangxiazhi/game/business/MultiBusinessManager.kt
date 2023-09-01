@@ -16,7 +16,6 @@ class MultiBusinessManager : RemoteCallback.Stub(), KoinComponent {
     private val bleManager by inject<BleManager>()
     private val gameController by inject<GameController>()
     private val managers = mutableMapOf<DeviceType, BaseBusinessManager<*>>()
-    var onGameAppFinish: (() -> Unit)? = null
 
     fun add(deviceType: DeviceType, manager: BaseBusinessManager<*>) {
         managers[deviceType] = manager
@@ -99,7 +98,6 @@ class MultiBusinessManager : RemoteCallback.Stub(), KoinComponent {
         // 所以 gameController 中的连接状态相关的方法需要单独调用才能更新界面状态。
         // bleManager.onDestroy() 必须放到最后面，否则会由于蓝牙的关闭而无法执行某些需要蓝牙的方法。
         bleManager.onDestroy()
-        this.onGameAppFinish?.invoke()
     }
 
     companion object {

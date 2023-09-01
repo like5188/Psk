@@ -5,8 +5,6 @@ import com.psk.ble.DeviceType
 import com.psk.device.data.source.IRepository
 import com.psk.device.data.source.RepositoryFactory
 import com.psk.device.data.source.remote.ble.BleDataSourceFactory
-import org.koin.core.component.KoinApiExtension
-import org.koin.core.component.KoinComponent
 
 /**
  * 设备管理。使用本模块时，只需使用此工具类进行初始化，然后使用koin注入仓库来使用。
@@ -24,8 +22,7 @@ import org.koin.core.component.KoinComponent
  * 二、如果只是要添加新的蓝牙设备，那么需要以下步骤：
  * 1、新增一个DataSource。名称格式为：[扫描出来的蓝牙设备的名称前缀]_[DeviceType]Datasource；包名为：[com.psk.device.data.source.remote.ble]。
  */
-@OptIn(KoinApiExtension::class)
-class DeviceManager(private val context: Context) : KoinComponent {
+class DeviceManager(private val context: Context) {
     private val repositories = mutableMapOf<DeviceType, IRepository<*>>()
 
     suspend fun init() {

@@ -5,6 +5,8 @@ import com.psk.ble.DeviceType
 import com.psk.device.DeviceManager
 import com.psk.device.data.model.ShangXiaZhi
 import com.psk.device.data.source.ShangXiaZhiRepository
+import com.psk.shangxiazhi.data.model.ShangXiaZhiCalcCurrent
+import com.psk.shangxiazhi.data.model.ShangXiaZhiCalcTotal
 import com.twsz.twsystempre.GameData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -17,6 +19,8 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.text.DecimalFormat
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.math.max
+import kotlin.math.min
 
 @OptIn(KoinApiExtension::class)
 class ShangXiaZhiBusinessManager(
@@ -45,7 +49,9 @@ class ShangXiaZhiBusinessManager(
     var onStartGame: (() -> Unit)? = null
     var onPauseGame: (() -> Unit)? = null
     var onOverGame: (() -> Unit)? = null
+    var onReport: ((ShangXiaZhiCalcTotal) -> Unit)? = null
     private var isStart = AtomicBoolean(false)
+    private val total = ShangXiaZhiCalcTotal()
 
     private suspend fun waitStart() {
         while (!isStart.get()) {
@@ -55,70 +61,73 @@ class ShangXiaZhiBusinessManager(
 
     override suspend fun handleFlow(flow: Flow<ShangXiaZhi>) {
         Log.d(TAG, "startShangXiaZhiJob")
-        var mActiveMil = 0f// 主动里程数
-        var mPassiveMil = 0f// 被动里程数
-        var totalCal = 0f// 总卡路里
         var isFirstSpasm = false// 是否第一次痉挛
         var mFirstSpasmValue = 0// 第一次痉挛值
-        var spasm = 0// 痉挛值。注意：这里不直接使用 ShangXiaZhi 中的 spasmNum，是因为只要上下肢康复机不关机，那么它返回的痉挛次数值是一直累计的。
         // 这里不能用 distinctUntilChanged、conflate 等操作符，因为需要根据所有数据来计算里程等。必须得到每次数据。
         flow.buffer(Int.MAX_VALUE).collect { shangXiaZhi ->
-            //转速
-            val speed = shangXiaZhi.speedValue
-            //阻力
-            var resistance = 0
-            //模式
-            var model = shangXiaZhi.model.toInt()
-            if (model == 0x01) {// 被动
-                model = 1// 转换成游戏需要的 0：主动；1：被动
-                resistance = 0
-                //被动里程
-                mPassiveMil += speed * 0.5f * 1000 / 3600
-                //卡路里
-                totalCal += speed * 0.2f / 300
-            } else {// 主动
-                model = 0
-                resistance = shangXiaZhi.res
-                //主动里程
-                mActiveMil += speed * 0.5f * 1000 / 3600
-                //卡路里
-                val resParam: Float = resistance * 1.00f / 3.0f
-                totalCal += speed * 0.2f * resParam / 60
+            total.count++
+            val current = ShangXiaZhiCalcCurrent().apply {
+                speed = shangXiaZhi.speedValue
+                speedLevel = shangXiaZhi.speedLevel
+                spasmLevel = shangXiaZhi.spasmLevel
             }
-            //里程
-            val mileage = decimalFormat.format((mActiveMil + mPassiveMil).toDouble())
+            // 速度
+            total.speedTotal += current.speed
+            total.speedArv = total.speedTotal / total.count
+            total.speedMin = min(total.speedMin, current.speed)
+            total.speedMax = max(total.speedMax, current.speed)
+            //模式
+            if (shangXiaZhi.model.toInt() == 0x01) {// 被动
+                current.model = 1// 转换成游戏需要的 0：主动；1：被动
+                current.resistance = 0
+                //被动里程
+                total.passiveMil += current.speed * 0.5f * 1000 / 3600
+                //卡路里
+                total.passiveCal += current.speed * 0.2f / 300
+            } else {// 主动
+                current.model = 0
+                current.resistance = shangXiaZhi.res
+                //主动里程
+                total.activeMil += current.speed * 0.5f * 1000 / 3600
+                //卡路里
+                total.activeCal += current.speed * 0.2f * (current.resistance * 1.00f / 3.0f) / 60
+            }
+            // 阻力
+            total.resistanceTotal += current.resistance
+            total.resistanceArv = total.resistanceTotal / total.count
+            total.resistanceMin = min(total.resistanceMin, current.resistance)
+            total.resistanceMax = max(total.resistanceMax, current.resistance)
             //偏差值：范围0~30 左偏：0~14     十六进制：0x00~0x0e 中：15 	     十六进制：0x0f 右偏：16~30   十六进制：0x10~0x1e
-            val offset = shangXiaZhi.offset - 15// 转换成游戏需要的 负数：左；0：不偏移；正数：右；
+            current.offset = shangXiaZhi.offset - 15// 转换成游戏需要的 负数：左；0：不偏移；正数：右；
             // 转换成游戏需要的左边百分比 100~0
-            val offsetValue = 100 - shangXiaZhi.offset * 100 / 30
-            //痉挛
-            var spasmFlag = 0// 是否痉挛的标记
+            current.offsetValue = 100 - shangXiaZhi.offset * 100 / 30
+            //痉挛。注意：这里不直接使用 ShangXiaZhi 中的 spasmNum，是因为只要上下肢康复机不关机，那么它返回的痉挛次数值是一直累计的。
             if (shangXiaZhi.spasmNum < 100) {
                 if (!isFirstSpasm) {
                     isFirstSpasm = true
                     mFirstSpasmValue = shangXiaZhi.spasmNum
                 }
-                if (shangXiaZhi.spasmNum - mFirstSpasmValue > spasm) {
-                    spasm = shangXiaZhi.spasmNum - mFirstSpasmValue
-                    spasmFlag = 1
+                if (shangXiaZhi.spasmNum - mFirstSpasmValue > total.spasm) {
+                    total.spasm = shangXiaZhi.spasmNum - mFirstSpasmValue
+                    current.spasmFlag = 1
                 } else {
-                    spasmFlag = 0
+                    current.spasmFlag = 0
                 }
             }
             gameController.updateGameData(
                 GameData(
-                    model = model,
-                    speed = speed,
-                    speedLevel = shangXiaZhi.speedLevel,
-                    time = "00:00",
-                    mileage = mileage,
-                    cal = decimalFormat.format(totalCal),
-                    resistance = resistance,
-                    offset = offset,
-                    offsetValue = offsetValue,
-                    spasm = spasm,
-                    spasmLevel = shangXiaZhi.spasmLevel,
-                    spasmFlag = spasmFlag,
+                    model = current.model,
+                    speed = current.speed,
+                    speedLevel = current.speedLevel,
+                    time = current.time,
+                    mileage = decimalFormat.format(total.activeMil + total.passiveMil),
+                    cal = decimalFormat.format(total.activeCal + total.passiveCal),
+                    resistance = current.resistance,
+                    offset = current.offset,
+                    offsetValue = current.offsetValue,
+                    spasm = total.spasm,
+                    spasmLevel = current.spasmLevel,
+                    spasmFlag = current.spasmFlag,
                 )
             )
         }
@@ -162,6 +171,7 @@ class ShangXiaZhiBusinessManager(
     }
 
     override fun onGameOver() {
+        super.onGameOver()
         lifecycleScope.launch(Dispatchers.IO) {
             repository.over()
             cancelJob()
@@ -191,6 +201,7 @@ class ShangXiaZhiBusinessManager(
     override fun onGameAppFinish() {
         super.onGameAppFinish()
         cancelJob()
+        onReport?.invoke(total)
     }
 
     companion object {

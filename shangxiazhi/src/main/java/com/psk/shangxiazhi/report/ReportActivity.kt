@@ -12,6 +12,7 @@ import com.like.common.util.startActivity
 import com.psk.common.CommonApplication
 import com.psk.common.util.showToast
 import com.psk.shangxiazhi.R
+import com.psk.shangxiazhi.data.model.ShangXiaZhiCalcTotal
 import com.psk.shangxiazhi.databinding.ActivityReportBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -20,9 +21,11 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
  */
 class ReportActivity : AppCompatActivity() {
     companion object {
-        fun start(speedArray: IntArray, heartRateArray: IntArray) {
+        fun start(speedArray: IntArray? = null, heartRateArray: IntArray? = null, total: ShangXiaZhiCalcTotal? = null) {
             CommonApplication.sInstance.startActivity<ReportActivity>(
-                "speedArray" to speedArray, "heartRateArray" to heartRateArray
+                "speedArray" to speedArray,
+                "heartRateArray" to heartRateArray,
+                "total" to total
             )
         }
     }
@@ -32,6 +35,9 @@ class ReportActivity : AppCompatActivity() {
 
     @AutoWired
     val heartRateArray: IntArray? = null
+
+    @AutoWired
+    val total: ShangXiaZhiCalcTotal? = null
 
     private val mBinding: ActivityReportBinding by lazy {
         DataBindingUtil.setContentView(this, R.layout.activity_report)

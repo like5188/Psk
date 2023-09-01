@@ -12,6 +12,7 @@ import com.psk.ble.DeviceType
 import com.psk.ble.Tip
 import com.psk.device.DeviceManager
 import com.psk.shangxiazhi.data.model.BleScanInfo
+import com.psk.shangxiazhi.data.model.ShangXiaZhiCalcTotal
 import com.psk.shangxiazhi.game.business.MultiBusinessManager
 import com.psk.shangxiazhi.game.business.ShangXiaZhiBusinessManager
 import com.twsz.twsystempre.GameController
@@ -19,15 +20,12 @@ import com.twsz.twsystempre.TrainScene
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.koin.core.component.KoinApiExtension
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
+import org.koin.android.ext.android.inject
 
 /**
  * 游戏管理服务，如果需要和游戏app进行交互，就使用此服务。
  */
-@OptIn(KoinApiExtension::class)
-class GameManagerService : Service(), KoinComponent {
+class GameManagerService : Service() {
     companion object {
         private val TAG = GameManagerService::class.java.simpleName
     }
@@ -46,12 +44,10 @@ class GameManagerService : Service(), KoinComponent {
      */
     fun initBle(
         activity: ComponentActivity,
-        onGameAppFinish: (() -> Unit)? = null,
         onTip: ((Tip) -> Unit)? = { Log.e(TAG, "onTip ${it.msg}") }
     ) {
         lifecycleScope = activity.lifecycleScope
         bleManager.onTip = onTip
-        multiBusinessManager.onGameAppFinish = onGameAppFinish
         lifecycleScope.launch {
             deviceManager.init()
             bleManager.init(activity)
@@ -67,7 +63,8 @@ class GameManagerService : Service(), KoinComponent {
         spasmInt: Int = 3,
         resistanceInt: Int = 1,
         intelligent: Boolean = true,
-        turn2: Boolean = true
+        turn2: Boolean = true,
+        onReport: ((ShangXiaZhiCalcTotal) -> Unit)? = null
     ) {
         if (devices.isEmpty()) {
             return
@@ -96,6 +93,9 @@ class GameManagerService : Service(), KoinComponent {
                     }
                     this.onOverGame = {
                         multiBusinessManager.onOverGame()
+                    }
+                    this.onReport = {
+                        onReport?.invoke(it)
                     }
                 }
             }

@@ -15,11 +15,8 @@ import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.data.model.BleScanInfo
 import com.psk.shangxiazhi.databinding.DialogFragmentSelectDeviceBinding
 import com.psk.shangxiazhi.databinding.ViewSelectDeviceBinding
-import org.koin.core.component.KoinApiExtension
-import org.koin.core.component.KoinComponent
 
-@OptIn(KoinApiExtension::class)
-class SelectDeviceDialogFragment private constructor() : BaseDialogFragment(), KoinComponent {
+class SelectDeviceDialogFragment private constructor() : BaseDialogFragment() {
     companion object {
         private const val KEY_DEVICE_TYPES = "key_device_types"
         fun newInstance(deviceTypes: Array<DeviceType>): SelectDeviceDialogFragment {
