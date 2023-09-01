@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
             selectSceneAndDeviceAndStartGame()
         }
         mBinding.ivMedicalOrderTraining.setOnClickListener {
-            val speeds = (0..100).map {
+            val speeds = (0..300).map {
                 (0..100).random()
             }.toList().toIntArray()
             ReportActivity.start(speeds)
