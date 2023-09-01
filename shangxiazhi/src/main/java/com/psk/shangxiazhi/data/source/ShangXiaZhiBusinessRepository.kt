@@ -10,15 +10,18 @@ class ShangXiaZhiBusinessRepository(
     }
 
     fun login(serialNumber: String?, code: String?): Boolean {
+        loginDataSource.saveCode(code)
         return loginDataSource.login(serialNumber, code)
     }
 
-    fun isLogin(): Boolean {
-        return loginDataSource.isLogin()
-    }
-
-    fun setLogin(isLogin: Boolean) {
-        loginDataSource.setLogin(isLogin)
+    fun isLogin(context: Context): Boolean {
+        val serialNumber = loginDataSource.getSerialNumber(context)
+        val code = loginDataSource.getCode()
+        return try {
+            loginDataSource.login(serialNumber, code)
+        } catch (e: Exception) {
+            false
+        }
     }
 
 }

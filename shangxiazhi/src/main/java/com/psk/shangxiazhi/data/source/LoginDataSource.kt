@@ -7,7 +7,7 @@ import com.szocet.pad1601pwd.DeviceUtils
 class LoginDataSource {
 
     companion object {
-        private const val SP_LOGIN = "sp_login"
+        private const val SP_CODE = "sp_code"
     }
 
     fun getSerialNumber(context: Context): String {
@@ -24,12 +24,12 @@ class LoginDataSource {
         return DeviceUtils.calPassword(serialNumber) == code
     }
 
-    fun isLogin(): Boolean {
-        return SPUtils.getInstance().get(SP_LOGIN, false)
+    fun getCode(): String {
+        return SPUtils.getInstance().get(SP_CODE, "")
     }
 
-    fun setLogin(isLogin: Boolean) {
-        SPUtils.getInstance().put(SP_LOGIN, isLogin)
+    fun saveCode(code: String?) {
+        SPUtils.getInstance().put(SP_CODE, code)
     }
 
 }

@@ -45,7 +45,6 @@ class LoginActivity : AppCompatActivity() {
     private fun collectUiState() {
         mViewModel.uiState.propertyCollector(this) {
             collectDistinctProperty(LoginUiState::isLogin) {
-                mViewModel.setLogin(it ?: false)
                 if (it == true) {
                     MainActivity.start()
                     finish()

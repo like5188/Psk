@@ -24,7 +24,7 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         mBinding
         lifecycleScope.launch {
-            if (mViewModel.isLogin()) {
+            if (mViewModel.isLogin(this@SplashActivity)) {
                 MainActivity.start()
             } else {
                 LoginActivity.start()

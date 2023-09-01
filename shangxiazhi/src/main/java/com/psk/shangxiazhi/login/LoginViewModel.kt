@@ -43,8 +43,4 @@ class LoginViewModel(
         }
     }
 
-    fun setLogin(isLogin: Boolean) {
-        shangXiaZhiBusinessRepository.setLogin(isLogin)
-    }
-
 }
