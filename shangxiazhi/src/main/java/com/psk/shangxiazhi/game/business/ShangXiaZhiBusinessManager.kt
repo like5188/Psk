@@ -27,7 +27,11 @@ class ShangXiaZhiBusinessManager(
 ) : BaseBusinessManager<ShangXiaZhi>(lifecycleScope), KoinComponent {
     override val repository = deviceManager.createRepository<ShangXiaZhiRepository>(DeviceType.ShangXiaZhi).apply {
         enable(deviceName, deviceAddress)
-        setCallback(onStart = onStartGame, onPause = onPauseGame, onOver = onOverGame)
+        setCallback(
+            onStart = { onStartGame?.invoke() },
+            onPause = { onPauseGame?.invoke() },
+            onOver = { onOverGame?.invoke() }
+        )
     }
 
     private val decimalFormat by inject<DecimalFormat>()
