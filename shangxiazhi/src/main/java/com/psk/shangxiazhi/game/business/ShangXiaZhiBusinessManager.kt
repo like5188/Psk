@@ -60,7 +60,7 @@ class ShangXiaZhiBusinessManager(
         var totalCal = 0f// 总卡路里
         var isFirstSpasm = false// 是否第一次痉挛
         var mFirstSpasmValue = 0// 第一次痉挛值
-        var spasm = 0// 痉挛值
+        var spasm = 0// 痉挛值。注意：这里不直接使用 ShangXiaZhi 中的 spasmNum，是因为只要上下肢康复机不关机，那么它返回的痉挛次数值是一直累计的。
         // 这里不能用 distinctUntilChanged、conflate 等操作符，因为需要根据所有数据来计算里程等。必须得到每次数据。
         flow.buffer(Int.MAX_VALUE).collect { shangXiaZhi ->
             //转速
@@ -92,7 +92,7 @@ class ShangXiaZhiBusinessManager(
             // 转换成游戏需要的左边百分比 100~0
             val offsetValue = 100 - shangXiaZhi.offset * 100 / 30
             //痉挛
-            var spasmFlag = 0
+            var spasmFlag = 0// 是否痉挛的标记
             if (shangXiaZhi.spasmNum < 100) {
                 if (!isFirstSpasm) {
                     isFirstSpasm = true
