@@ -3,6 +3,8 @@ package com.psk.shangxiazhi.report
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import com.like.common.util.AutoWired
+import com.like.common.util.injectForIntentExtras
 import com.like.common.util.mvi.propertyCollector
 import com.like.common.util.startActivity
 import com.psk.common.CommonApplication
@@ -16,11 +18,15 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
  */
 class ReportActivity : AppCompatActivity() {
     companion object {
-        fun start() {
-            CommonApplication.sInstance.startActivity<ReportActivity>()
+        fun start(speedList: IntArray) {
+            CommonApplication.sInstance.startActivity<ReportActivity>(
+                "speedList" to speedList
+            )
         }
     }
 
+    @AutoWired
+    val speedList: IntArray? = null
     private val mBinding: ActivityReportBinding by lazy {
         DataBindingUtil.setContentView(this, R.layout.activity_report)
     }
@@ -28,7 +34,8 @@ class ReportActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mBinding
+        injectForIntentExtras()
+        mBinding.curveView.initChartData(speedList?.toList(), 1)
         collectUiState()
     }
 
@@ -38,6 +45,12 @@ class ReportActivity : AppCompatActivity() {
                 showToast(it)
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mBinding.curveView.destroyDrawingCache()
+        mBinding.curveView.removeAllViews()
     }
 
 }

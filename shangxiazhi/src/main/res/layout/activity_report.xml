@@ -501,6 +501,16 @@
             app:layout_constraintBaseline_toBaselineOf="@id/tvResTag"
             app:layout_constraintStart_toEndOf="@id/tvResMaxTag"
             tools:text="11" />
+
+        <com.psk.shangxiazhi.util.CurveView
+            android:id="@+id/curveView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="30dp"
+            app:layout_constraintBottom_toBottomOf="@id/view"
+            app:layout_constraintEnd_toEndOf="@id/view"
+            app:layout_constraintStart_toStartOf="@id/view"
+            app:layout_constraintTop_toBottomOf="@id/tvResTag" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

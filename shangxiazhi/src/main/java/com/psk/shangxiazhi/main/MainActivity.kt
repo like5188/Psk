@@ -40,7 +40,10 @@ class MainActivity : AppCompatActivity() {
             selectSceneAndDeviceAndStartGame()
         }
         mBinding.ivMedicalOrderTraining.setOnClickListener {
-            ReportActivity.start()
+            val speeds = (0..100).map {
+                (0..100).random()
+            }.toList().toIntArray()
+            ReportActivity.start(speeds)
         }
         mBinding.ivTrainingRecords.setOnClickListener {
             showToast("训练记录")
@@ -56,7 +59,7 @@ class MainActivity : AppCompatActivity() {
             collectDistinctProperty(MainUiState::gameManagerService) {
                 it ?: return@collectDistinctProperty
                 it.initBle(this@MainActivity, onGameAppFinish = {
-                    ReportActivity.start()
+                    ReportActivity.start(intArrayOf())
                 })
             }
             collectDistinctProperty(MainUiState::time) {
