@@ -36,7 +36,7 @@
             android:layout_marginTop="15dp"
             android:text="本次训练报告"
             android:textColor="@color/white"
-            android:textSize="38sp"
+            android:textSize="30sp"
             app:layout_constraintEnd_toEndOf="@id/guidelineRight"
             app:layout_constraintStart_toStartOf="@id/guidelineLeft"
             app:layout_constraintTop_toTopOf="parent" />

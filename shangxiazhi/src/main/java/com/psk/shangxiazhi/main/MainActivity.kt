@@ -40,8 +40,7 @@ class MainActivity : AppCompatActivity() {
             selectSceneAndDeviceAndStartGame()
         }
         mBinding.ivMedicalOrderTraining.setOnClickListener {
-            showToast("医嘱训练")
-
+            ReportActivity.start()
         }
         mBinding.ivTrainingRecords.setOnClickListener {
             showToast("训练记录")
