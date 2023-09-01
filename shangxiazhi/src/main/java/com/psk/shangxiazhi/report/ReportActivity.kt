@@ -3,6 +3,7 @@ package com.psk.shangxiazhi.report
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import com.like.common.base.addFragments
 import com.like.common.util.AutoWired
 import com.like.common.util.injectForIntentExtras
 import com.like.common.util.mvi.propertyCollector
@@ -18,15 +19,15 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
  */
 class ReportActivity : AppCompatActivity() {
     companion object {
-        fun start(speedList: IntArray) {
+        fun start(speedArray: IntArray) {
             CommonApplication.sInstance.startActivity<ReportActivity>(
-                "speedList" to speedList
+                "speedArray" to speedArray
             )
         }
     }
 
     @AutoWired
-    val speedList: IntArray? = null
+    val speedArray: IntArray? = null
     private val mBinding: ActivityReportBinding by lazy {
         DataBindingUtil.setContentView(this, R.layout.activity_report)
     }
@@ -35,7 +36,8 @@ class ReportActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         injectForIntentExtras()
-        mBinding.curveView.initChartData(speedList?.toList(), 1)
+        mBinding
+        addFragments(R.id.flContainer, 0, TrainFragment.newInstance(speedArray))
         collectUiState()
     }
 
@@ -45,12 +47,6 @@ class ReportActivity : AppCompatActivity() {
                 showToast(it)
             }
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        mBinding.curveView.destroyDrawingCache()
-        mBinding.curveView.removeAllViews()
     }
 
 }
