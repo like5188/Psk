@@ -107,7 +107,7 @@ public class CurveView extends RelativeLayout {
         }
         description.setTextColor(this.getResources().getColor(R.color.chart_text));//设置描述文字的颜色
         description.setTextSize(10f);
-        description.setXOffset(-45f);
+        description.setXOffset(-15f);
         description.setYOffset(3f);//描述文字的偏移
 
         mChart.setDescription(description);//设置图表的描述文字，会显示在图表的右下角
