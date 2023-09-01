@@ -21,17 +21,45 @@
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.8" />
 
-        <TextView
-            android:id="@+id/tvTitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:text="本次训练报告"
-            android:textColor="@color/white"
-            android:textSize="30sp"
-            app:layout_constraintEnd_toEndOf="@id/guidelineRight"
-            app:layout_constraintStart_toStartOf="@id/guidelineLeft"
-            app:layout_constraintTop_toTopOf="parent" />
+        <LinearLayout
+            android:id="@+id/llTab"
+            android:layout_width="300dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/history_report_title_bg_normal"
+            android:orientation="horizontal"
+            android:padding="5dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/tvTrain"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:background="@drawable/history_report_title_bg"
+                android:gravity="center"
+                android:text="训练记录"
+                android:textColor="@drawable/history_report_title_text_color"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvDevices"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:background="@drawable/history_report_title_bg"
+                android:gravity="center"
+                android:text="健康体测"
+                android:textColor="@drawable/history_report_title_text_color"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </LinearLayout>
 
         <FrameLayout
             android:id="@+id/flContainer"
@@ -42,7 +70,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/guidelineRight"
             app:layout_constraintStart_toStartOf="@id/guidelineLeft"
-            app:layout_constraintTop_toBottomOf="@id/tvTitle" />
+            app:layout_constraintTop_toBottomOf="@id/llTab" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
