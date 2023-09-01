@@ -1,5 +1,6 @@
 package com.psk.device.data.source.remote.ble
 
+import com.like.ble.util.isBleDeviceConnected
 import com.psk.ble.DeviceType
 import com.psk.ble.Protocol
 import com.psk.device.data.model.ShangXiaZhi
@@ -8,6 +9,7 @@ import com.psk.device.util.ShangXiaZhiDataParser
 import com.psk.device.util.ShangXiaZhiReceiver
 import com.twsz.remotecommands.RemoteCommand
 import com.twsz.remotecommands.TrunkCommandData
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 
@@ -114,17 +116,28 @@ class RKF_ShangXiaZhiDataSource : BaseShangXiaZhiDataSource(DeviceType.ShangXiaZ
         } else {
             0x01.toByte()
         }
-        bleManager.write(
-            device, RemoteCommand.generateParam(TrunkCommandData().apply {
-                this.model = model
-                this.time = time
-                this.speed = speed
-                this.spasm = spasm
-                this.intelligence = intelligence
-                this.resistance = resistance
-                this.direction = direction
-            })
-        )
+        if (!context.isBleDeviceConnected(device.address)) {
+            // 如果是未连接，则不管，因为连接成功后，会调用 setParams() 方法。
+            return
+        }
+        // 如果已经连接，就必须写入成功，否则上下肢无法运动。
+        val cmd: ByteArray = RemoteCommand.generateParam(TrunkCommandData().apply {
+            this.model = model
+            this.time = time
+            this.speed = speed
+            this.spasm = spasm
+            this.intelligence = intelligence
+            this.resistance = resistance
+            this.direction = direction
+        })
+        var result = false
+        while (!result) {
+            result = bleManager.write(device, cmd)
+            if (!result) {
+                delay(100)
+            }
+        }
+        println("RKF_ShangXiaZhiDataSource setParams success")
     }
 
 }

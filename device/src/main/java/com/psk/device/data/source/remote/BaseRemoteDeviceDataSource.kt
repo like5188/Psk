@@ -1,5 +1,6 @@
 package com.psk.device.data.source.remote
 
+import android.content.Context
 import com.psk.ble.BleManager
 import com.psk.ble.Device
 import com.psk.ble.DeviceType
@@ -14,6 +15,7 @@ abstract class BaseRemoteDeviceDataSource(
 ) : KoinComponent {
     abstract val protocol: Protocol
     protected val bleManager: BleManager by inject()
+    protected val context: Context by inject()
     protected lateinit var device: Device
         private set
 
