@@ -48,12 +48,18 @@ class ReportActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         injectForIntentExtras()
         mBinding.tvTrain.setOnClickListener {
+            mBinding.tvTrain.isSelected = true
+            mBinding.tvDevices.isSelected = false
             showFragment(trainFragment)
         }
         mBinding.tvDevices.setOnClickListener {
+            mBinding.tvTrain.isSelected = false
+            mBinding.tvDevices.isSelected = true
             showFragment(devicesFragment)
         }
         addFragments(R.id.flContainer, 0, trainFragment, devicesFragment)
+        mBinding.tvTrain.isSelected = true
+        mBinding.tvDevices.isSelected = false
         collectUiState()
     }
 
