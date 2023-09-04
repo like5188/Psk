@@ -15,20 +15,9 @@
             android:scaleType="fitXY"
             android:src="@drawable/shape_main_game_selector"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/ivMedicalOrderTraining"
+            app:layout_constraintEnd_toStartOf="@id/ivTrainingRecords"
             app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
-            android:id="@+id/ivMedicalOrderTraining"
-            android:layout_width="285dp"
-            android:layout_height="260dp"
-            android:scaleType="fitXY"
-            android:src="@drawable/shape_main_history_selector"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/ivTrainingRecords"
-            app:layout_constraintStart_toEndOf="@id/ivAutonomyTraining"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
@@ -39,7 +28,7 @@
             android:src="@drawable/shape_main_history_selector"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/ivMedicalOrderTraining"
+            app:layout_constraintStart_toEndOf="@id/ivAutonomyTraining"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
@@ -53,18 +42,6 @@
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@id/ivAutonomyTraining"
             app:layout_constraintEnd_toEndOf="@id/ivAutonomyTraining" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="50dp"
-            android:layout_marginBottom="50dp"
-            android:text="训练报告"
-            android:textColor="@color/white"
-            android:textSize="26sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@id/ivMedicalOrderTraining"
-            app:layout_constraintEnd_toEndOf="@id/ivMedicalOrderTraining" />
 
         <TextView
             android:layout_width="wrap_content"

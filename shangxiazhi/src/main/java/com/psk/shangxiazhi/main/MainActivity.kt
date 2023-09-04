@@ -39,9 +39,6 @@ class MainActivity : AppCompatActivity() {
         mBinding.ivAutonomyTraining.setOnClickListener {
             selectSceneAndDeviceAndStartGame()
         }
-        mBinding.ivMedicalOrderTraining.setOnClickListener {
-            showToast("训练报告")
-        }
         mBinding.ivTrainingRecords.setOnClickListener {
             showToast("训练记录")
         }
