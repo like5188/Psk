@@ -58,8 +58,8 @@ public class CurveView extends RelativeLayout {
         mChart = view.findViewById(R.id.line_chart);
     }
 
-    public void initChartData(List<Integer> speedList, int type) {
-        if (speedList == null || speedList.isEmpty()) {
+    public void initChartData(List<Integer> list, int type) {
+        if (list == null || list.isEmpty()) {
             return;
         }
 
@@ -67,7 +67,7 @@ public class CurveView extends RelativeLayout {
             entryList.clear();
         }
 
-        int size = speedList.size();
+        int size = list.size();
 
         //初始化数据
         if (size > 200) {
@@ -78,7 +78,7 @@ public class CurveView extends RelativeLayout {
 
             if (count == 1) {
                 for (int i = 0; i < size; i++) {
-                    entryList.add(speedList.get(i));
+                    entryList.add(list.get(i));
                 }
             } else if (count >= 2) {
                 for (int i = 0; i < size; i++) {
@@ -86,14 +86,14 @@ public class CurveView extends RelativeLayout {
                         entryList.add(totalSpeed / (count - 1));
                         totalSpeed = 0;
                     } else {
-                        totalSpeed += speedList.get(i);
+                        totalSpeed += list.get(i);
                     }
                 }
             }
 
         } else {
             for (int i = 0; i < size; i++) {
-                entryList.add(speedList.get(i));
+                entryList.add(list.get(i));
             }
         }
 
@@ -155,8 +155,15 @@ public class CurveView extends RelativeLayout {
         yAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
         yAxis.setTextSize(8);
         yAxis.setTextColor(this.getResources().getColor(R.color.chart_text));
-        yAxis.setAxisMinimum(0);
-        yAxis.setAxisMaximum(100);
+
+        int min = 0;
+        int max = 0;
+        for (Integer integer : list) {
+            min = Math.min(min, integer);
+            max = Math.max(max, integer);
+        }
+        yAxis.setAxisMinimum(min);
+        yAxis.setAxisMaximum(max);
         yAxis.setLabelCount(6, false);
         yAxis.setAxisLineWidth(2f);
         yAxis.setDrawGridLines(true);//是否展示网格线
