@@ -26,9 +26,9 @@ class TrainReport : Serializable {
     var resistanceMin: Int = -1// 最小阻力
     var resistanceMax: Int = 0// 最大阻力
 
+    val speedList = mutableListOf<Int>()// 所有转速数据集合
     var speedTotal: Int = 0// 总转速
     var speedArv: Int = 0// 平均转速
     var speedMin: Int = -1// 最小转速
     var speedMax: Int = 0// 最大转速
-    val speedList = mutableListOf<Int>()// 所有转速数据集合
 }
