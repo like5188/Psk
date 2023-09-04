@@ -22,8 +22,9 @@ class ShangXiaZhiAggregation : Serializable {
     var resistanceMin: Int = 0// 最小阻力
     var resistanceMax: Int = 0// 最大阻力
 
-    var speedTotal: Int = 0// 总速度
-    var speedArv: Int = 0// 平均速度
-    var speedMin: Int = 0// 最小速度
-    var speedMax: Int = 0// 最大速度
+    var speedTotal: Int = 0// 总转速
+    var speedArv: Int = 0// 平均转速
+    var speedMin: Int = 0// 最小转速
+    var speedMax: Int = 0// 最大转速
+    val speedList = mutableListOf<Int>()// 所有转速数据集合
 }

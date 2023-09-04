@@ -40,13 +40,7 @@ class MainActivity : AppCompatActivity() {
             selectSceneAndDeviceAndStartGame()
         }
         mBinding.ivMedicalOrderTraining.setOnClickListener {
-            val speedArray = (0..300).map {
-                (5..60).random()
-            }.toList().toIntArray()
-            val heartRateArray = (0..300).map {
-                (60..120).random()
-            }.toList().toIntArray()
-            ReportActivity.start(speedArray, heartRateArray)
+            showToast("训练报告")
         }
         mBinding.ivTrainingRecords.setOnClickListener {
             showToast("训练记录")

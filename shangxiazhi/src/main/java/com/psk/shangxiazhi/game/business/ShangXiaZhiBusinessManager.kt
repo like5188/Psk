@@ -69,6 +69,7 @@ class ShangXiaZhiBusinessManager(
                 spasmLevel = shangXiaZhi.spasmLevel
             }
             // 速度
+            aggregation.speedList.add(current.speed)
             aggregation.speedTotal += current.speed
             aggregation.speedArv = aggregation.speedTotal / aggregation.count
             aggregation.speedMin = min(aggregation.speedMin, current.speed)

@@ -15,13 +15,10 @@ import java.text.DecimalFormat
 
 class TrainFragment : BaseLazyFragment() {
     companion object {
-        private const val KEY_SPEED_ARRAY = "key_speed_array"
         private const val KEY_AGGREGATION = "key_aggregation"
-        fun newInstance(speedArray: IntArray? = null, aggregation: ShangXiaZhiAggregation? = null): TrainFragment {
+        fun newInstance(aggregation: ShangXiaZhiAggregation? = null): TrainFragment {
             return TrainFragment().apply {
-                arguments = bundleOf(
-                    KEY_SPEED_ARRAY to speedArray, KEY_AGGREGATION to aggregation
-                )
+                arguments = bundleOf(KEY_AGGREGATION to aggregation)
             }
         }
     }
@@ -35,21 +32,19 @@ class TrainFragment : BaseLazyFragment() {
     }
 
     override fun onLazyLoadData() {
-        val speedArray = arguments?.getIntArray(KEY_SPEED_ARRAY)
-        val total = arguments?.getSerializable(KEY_AGGREGATION) as? ShangXiaZhiAggregation
-        mBinding.curveView.initChartData(speedArray?.toList(), 1)
-        total?.apply {
-            mBinding.tvMileage.text = decimalFormat.format(total.activeMil + total.passiveMil)
-            mBinding.tvActiveMileage.text = decimalFormat.format(total.activeMil)
-            mBinding.tvPassiveMileage.text = decimalFormat.format(total.passiveMil)
-            mBinding.tvSpasmCount.text = "${total.spasm}次"
-            mBinding.tvPower.text = "${decimalFormat.format(total.activeCal + total.passiveCal)}千卡"
-            mBinding.tvSpeedAvg.text = total.speedArv.toString()
-            mBinding.tvSpeedMin.text = total.speedMin.toString()
-            mBinding.tvSpeedMax.text = total.speedMax.toString()
-            mBinding.tvResAvg.text = total.speedArv.toString()
-            mBinding.tvResMin.text = total.speedMin.toString()
-            mBinding.tvResMax.text = total.speedMax.toString()
+        (arguments?.getSerializable(KEY_AGGREGATION) as? ShangXiaZhiAggregation)?.apply {
+            mBinding.tvMileage.text = decimalFormat.format(activeMil + passiveMil)
+            mBinding.tvActiveMileage.text = decimalFormat.format(activeMil)
+            mBinding.tvPassiveMileage.text = decimalFormat.format(passiveMil)
+            mBinding.tvSpasmCount.text = "${spasm}次"
+            mBinding.tvPower.text = "${decimalFormat.format(activeCal + passiveCal)}千卡"
+            mBinding.tvSpeedAvg.text = speedArv.toString()
+            mBinding.tvSpeedMin.text = speedMin.toString()
+            mBinding.tvSpeedMax.text = speedMax.toString()
+            mBinding.tvResAvg.text = speedArv.toString()
+            mBinding.tvResMin.text = speedMin.toString()
+            mBinding.tvResMax.text = speedMax.toString()
+            mBinding.curveView.initChartData(speedList, 1)
         }
     }
 

@@ -21,17 +21,13 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
  */
 class ReportActivity : AppCompatActivity() {
     companion object {
-        fun start(speedArray: IntArray? = null, heartRateArray: IntArray? = null, aggregation: ShangXiaZhiAggregation? = null) {
+        fun start(heartRateArray: IntArray? = null, aggregation: ShangXiaZhiAggregation? = null) {
             CommonApplication.sInstance.startActivity<ReportActivity>(
-                "speedArray" to speedArray,
                 "heartRateArray" to heartRateArray,
                 "aggregation" to aggregation
             )
         }
     }
-
-    @AutoWired
-    val speedArray: IntArray? = null
 
     @AutoWired
     val heartRateArray: IntArray? = null
@@ -44,7 +40,7 @@ class ReportActivity : AppCompatActivity() {
     }
     private val mViewModel: ReportViewModel by viewModel()
     private val trainFragment by lazy {
-        TrainFragment.newInstance(speedArray, aggregation)
+        TrainFragment.newInstance(aggregation)
     }
     private val devicesFragment by lazy {
         DevicesFragment.newInstance(heartRateArray)
