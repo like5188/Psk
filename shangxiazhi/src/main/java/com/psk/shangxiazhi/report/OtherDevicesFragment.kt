@@ -16,11 +16,11 @@ import com.psk.shangxiazhi.databinding.FragmentReportDevicesBinding
 
 class OtherDevicesFragment : BaseLazyFragment() {
     companion object {
-        private const val KEY_REPORTS = "key_reports"
+        private const val KEY_DATA = "key_data"
         fun newInstance(reports: List<IReport>?): OtherDevicesFragment {
             return OtherDevicesFragment().apply {
                 arguments = bundleOf(
-                    KEY_REPORTS to reports
+                    KEY_DATA to reports
                 )
             }
         }
@@ -34,7 +34,7 @@ class OtherDevicesFragment : BaseLazyFragment() {
     }
 
     override fun onLazyLoadData() {
-        val reports = arguments?.getSerializable(KEY_REPORTS) as? List<IReport>
+        val reports = arguments?.getSerializable(KEY_DATA) as? List<IReport>
         reports?.forEach {
             when (it) {
                 is HeartRateReport -> {

@@ -15,10 +15,10 @@ import java.text.DecimalFormat
 
 class ShangXiaZhiFragment : BaseLazyFragment() {
     companion object {
-        private const val KEY_SHANGXIAZHI_REPORT = "key_shangXiaZhi_report"
+        private const val KEY_DATA = "key_data"
         fun newInstance(shangXiaZhiReport: ShangXiaZhiReport?): ShangXiaZhiFragment {
             return ShangXiaZhiFragment().apply {
-                arguments = bundleOf(KEY_SHANGXIAZHI_REPORT to shangXiaZhiReport)
+                arguments = bundleOf(KEY_DATA to shangXiaZhiReport)
             }
         }
     }
@@ -40,7 +40,7 @@ class ShangXiaZhiFragment : BaseLazyFragment() {
     }
 
     override fun onLazyLoadData() {
-        (arguments?.getSerializable(KEY_SHANGXIAZHI_REPORT) as? ShangXiaZhiReport)?.apply {
+        (arguments?.getSerializable(KEY_DATA) as? ShangXiaZhiReport)?.apply {
             mBinding.tvDuration.text = formatDuration(activeDuration + passiveDuration)
             mBinding.tvActiveDuration.text = formatDuration(activeDuration)
             mBinding.tvPassiveDuration.text = formatDuration(passiveDuration)
