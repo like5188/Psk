@@ -52,6 +52,5 @@ abstract class BaseBusinessManager<T>(val lifecycleScope: CoroutineScope) : Koin
     open fun onGamePause() {}
     open fun onGameOver() {}
     open fun onGameAppStart() {}
-    open fun onGameAppFinish() {}
 
 }
