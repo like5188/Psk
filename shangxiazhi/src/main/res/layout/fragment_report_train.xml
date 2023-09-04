@@ -83,7 +83,7 @@
             android:layout_height="wrap_content"
             android:drawableStart="@drawable/report_distance"
             android:drawablePadding="10dp"
-            android:text="总里程"
+            android:text="总里程(米)"
             android:textColor="#686868"
             android:textSize="14sp"
             app:layout_constraintBaseline_toBaselineOf="@id/tvTimeTag"
@@ -99,7 +99,7 @@
             android:textStyle="bold"
             app:layout_constraintBaseline_toBaselineOf="@id/tvTimeTag"
             app:layout_constraintStart_toEndOf="@id/tvMileageTag"
-            tools:text="555.50米" />
+            tools:text="555.50" />
 
         <TextView
             android:id="@+id/tvActiveTimeTag"
@@ -157,7 +157,7 @@
             android:textStyle="bold"
             app:layout_constraintBaseline_toBaselineOf="@id/tvActiveTimeTag"
             app:layout_constraintStart_toEndOf="@id/tvActiveMileageTag"
-            tools:text="0.00米" />
+            tools:text="0.00" />
 
         <TextView
             android:id="@+id/tvPassiveTimeTag"
@@ -215,7 +215,7 @@
             android:textStyle="bold"
             app:layout_constraintBaseline_toBaselineOf="@id/tvPassiveTimeTag"
             app:layout_constraintStart_toEndOf="@id/tvPassiveMileageTag"
-            tools:text="0.00米" />
+            tools:text="0.00" />
 
         <TextView
             android:id="@+id/tvSpasmCountTag"
@@ -248,7 +248,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-            android:text="痉挛强度（档)"
+            android:text="痉挛强度(档)"
             android:textColor="#686868"
             android:textSize="14sp"
             app:layout_constraintBaseline_toBaselineOf="@id/tvSpasmCountTag"
