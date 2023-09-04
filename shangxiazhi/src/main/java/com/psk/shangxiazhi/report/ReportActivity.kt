@@ -44,7 +44,7 @@ class ReportActivity : AppCompatActivity() {
     }
     private val mViewModel: ReportViewModel by viewModel()
     private val trainFragment by lazy {
-        TrainFragment.newInstance(speedArray)
+        TrainFragment.newInstance(speedArray, aggregation)
     }
     private val devicesFragment by lazy {
         DevicesFragment.newInstance(heartRateArray)

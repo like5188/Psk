@@ -16,11 +16,11 @@ import java.text.DecimalFormat
 class TrainFragment : BaseLazyFragment() {
     companion object {
         private const val KEY_SPEED_ARRAY = "key_speed_array"
-        private const val KEY_TOTAL = "key_total"
-        fun newInstance(speedArray: IntArray? = null, total: ShangXiaZhiAggregation? = null): TrainFragment {
+        private const val KEY_AGGREGATION = "key_aggregation"
+        fun newInstance(speedArray: IntArray? = null, aggregation: ShangXiaZhiAggregation? = null): TrainFragment {
             return TrainFragment().apply {
                 arguments = bundleOf(
-                    KEY_SPEED_ARRAY to speedArray, KEY_TOTAL to total
+                    KEY_SPEED_ARRAY to speedArray, KEY_AGGREGATION to aggregation
                 )
             }
         }
@@ -36,7 +36,7 @@ class TrainFragment : BaseLazyFragment() {
 
     override fun onLazyLoadData() {
         val speedArray = arguments?.getIntArray(KEY_SPEED_ARRAY)
-        val total = arguments?.getSerializable(KEY_TOTAL) as? ShangXiaZhiAggregation
+        val total = arguments?.getSerializable(KEY_AGGREGATION) as? ShangXiaZhiAggregation
         mBinding.curveView.initChartData(speedArray?.toList(), 1)
         total?.apply {
             mBinding.tvMileage.text = decimalFormat.format(total.activeMil + total.passiveMil)
