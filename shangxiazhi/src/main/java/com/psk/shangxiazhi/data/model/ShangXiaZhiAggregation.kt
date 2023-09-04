@@ -3,7 +3,7 @@ package com.psk.shangxiazhi.data.model
 import java.io.Serializable
 
 // 上下肢计算的汇总数据
-class ShangXiaZhiCalcTotal : Serializable {
+class ShangXiaZhiAggregation : Serializable {
     var count: Int = 0// 总的数据量
 
     var activeDuration: Int = 0// 主动时长

@@ -5,7 +5,7 @@ import com.psk.ble.DeviceType
 import com.psk.device.DeviceManager
 import com.psk.device.data.model.ShangXiaZhi
 import com.psk.device.data.source.ShangXiaZhiRepository
-import com.psk.shangxiazhi.data.model.ShangXiaZhiCalcTotal
+import com.psk.shangxiazhi.data.model.ShangXiaZhiAggregation
 import com.twsz.twsystempre.GameData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -44,9 +44,11 @@ class ShangXiaZhiBusinessManager(
     var onStartGame: (() -> Unit)? = null
     var onPauseGame: (() -> Unit)? = null
     var onOverGame: (() -> Unit)? = null
-    var onReport: ((ShangXiaZhiCalcTotal) -> Unit)? = null
+    var onReport: ((ShangXiaZhiAggregation) -> Unit)? = null
     private var isStart = AtomicBoolean(false)
-    private val total = ShangXiaZhiCalcTotal()
+
+    // 汇总数据
+    private val aggregation = ShangXiaZhiAggregation()
 
     private suspend fun waitStart() {
         while (!isStart.get()) {
@@ -60,40 +62,40 @@ class ShangXiaZhiBusinessManager(
         var mFirstSpasmValue = 0// 第一次痉挛值
         // 这里不能用 distinctUntilChanged、conflate 等操作符，因为需要根据所有数据来计算里程等。必须得到每次数据。
         flow.buffer(Int.MAX_VALUE).collect { shangXiaZhi ->
-            total.count++
+            aggregation.count++
             val current = GameData().apply {
                 speed = shangXiaZhi.speedValue
                 speedLevel = shangXiaZhi.speedLevel
                 spasmLevel = shangXiaZhi.spasmLevel
             }
             // 速度
-            total.speedTotal += current.speed
-            total.speedArv = total.speedTotal / total.count
-            total.speedMin = min(total.speedMin, current.speed)
-            total.speedMax = max(total.speedMax, current.speed)
+            aggregation.speedTotal += current.speed
+            aggregation.speedArv = aggregation.speedTotal / aggregation.count
+            aggregation.speedMin = min(aggregation.speedMin, current.speed)
+            aggregation.speedMax = max(aggregation.speedMax, current.speed)
             //模式
             if (shangXiaZhi.model.toInt() == 0x01) {// 被动
                 current.model = 1// 转换成游戏需要的 0：主动；1：被动
                 current.resistance = 0
                 //被动里程
-                total.passiveMil += current.speed * 0.5f * 1000 / 3600
+                aggregation.passiveMil += current.speed * 0.5f * 1000 / 3600
                 //卡路里
-                total.passiveCal += current.speed * 0.2f / 300
+                aggregation.passiveCal += current.speed * 0.2f / 300
             } else {// 主动
                 current.model = 0
                 current.resistance = shangXiaZhi.res
                 //主动里程
-                total.activeMil += current.speed * 0.5f * 1000 / 3600
+                aggregation.activeMil += current.speed * 0.5f * 1000 / 3600
                 //卡路里
-                total.activeCal += current.speed * 0.2f * (current.resistance * 1.00f / 3.0f) / 60
+                aggregation.activeCal += current.speed * 0.2f * (current.resistance * 1.00f / 3.0f) / 60
             }
-            current.mileage = decimalFormat.format(total.activeMil + total.passiveMil)
-            current.cal = decimalFormat.format(total.activeCal + total.passiveCal)
+            current.mileage = decimalFormat.format(aggregation.activeMil + aggregation.passiveMil)
+            current.cal = decimalFormat.format(aggregation.activeCal + aggregation.passiveCal)
             // 阻力
-            total.resistanceTotal += current.resistance
-            total.resistanceArv = total.resistanceTotal / total.count
-            total.resistanceMin = min(total.resistanceMin, current.resistance)
-            total.resistanceMax = max(total.resistanceMax, current.resistance)
+            aggregation.resistanceTotal += current.resistance
+            aggregation.resistanceArv = aggregation.resistanceTotal / aggregation.count
+            aggregation.resistanceMin = min(aggregation.resistanceMin, current.resistance)
+            aggregation.resistanceMax = max(aggregation.resistanceMax, current.resistance)
             //偏差值：范围0~30 左偏：0~14     十六进制：0x00~0x0e 中：15 	     十六进制：0x0f 右偏：16~30   十六进制：0x10~0x1e
             current.offset = shangXiaZhi.offset - 15// 转换成游戏需要的 负数：左；0：不偏移；正数：右；
             // 转换成游戏需要的左边百分比 100~0
@@ -104,14 +106,14 @@ class ShangXiaZhiBusinessManager(
                     isFirstSpasm = true
                     mFirstSpasmValue = shangXiaZhi.spasmNum
                 }
-                if (shangXiaZhi.spasmNum - mFirstSpasmValue > total.spasm) {
-                    total.spasm = shangXiaZhi.spasmNum - mFirstSpasmValue
+                if (shangXiaZhi.spasmNum - mFirstSpasmValue > aggregation.spasm) {
+                    aggregation.spasm = shangXiaZhi.spasmNum - mFirstSpasmValue
                     current.spasmFlag = 1
                 } else {
                     current.spasmFlag = 0
                 }
             }
-            current.spasm = total.spasm
+            current.spasm = aggregation.spasm
             gameController.updateGameData(current)
         }
     }
@@ -184,7 +186,7 @@ class ShangXiaZhiBusinessManager(
     override fun onGameAppFinish() {
         super.onGameAppFinish()
         cancelJob()
-        onReport?.invoke(total)
+        onReport?.invoke(aggregation)
     }
 
     companion object {

@@ -8,7 +8,7 @@ import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import com.like.common.base.BaseLazyFragment
 import com.psk.shangxiazhi.R
-import com.psk.shangxiazhi.data.model.ShangXiaZhiCalcTotal
+import com.psk.shangxiazhi.data.model.ShangXiaZhiAggregation
 import com.psk.shangxiazhi.databinding.FragmentReportTrainBinding
 import org.koin.android.ext.android.inject
 import java.text.DecimalFormat
@@ -17,7 +17,7 @@ class TrainFragment : BaseLazyFragment() {
     companion object {
         private const val KEY_SPEED_ARRAY = "key_speed_array"
         private const val KEY_TOTAL = "key_total"
-        fun newInstance(speedArray: IntArray? = null, total: ShangXiaZhiCalcTotal? = null): TrainFragment {
+        fun newInstance(speedArray: IntArray? = null, total: ShangXiaZhiAggregation? = null): TrainFragment {
             return TrainFragment().apply {
                 arguments = bundleOf(
                     KEY_SPEED_ARRAY to speedArray, KEY_TOTAL to total
@@ -36,7 +36,7 @@ class TrainFragment : BaseLazyFragment() {
 
     override fun onLazyLoadData() {
         val speedArray = arguments?.getIntArray(KEY_SPEED_ARRAY)
-        val total = arguments?.getSerializable(KEY_TOTAL) as? ShangXiaZhiCalcTotal
+        val total = arguments?.getSerializable(KEY_TOTAL) as? ShangXiaZhiAggregation
         mBinding.curveView.initChartData(speedArray?.toList(), 1)
         total?.apply {
             mBinding.tvMileage.text = decimalFormat.format(total.activeMil + total.passiveMil)
