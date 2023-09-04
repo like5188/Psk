@@ -156,13 +156,11 @@ public class CurveView extends RelativeLayout {
         yAxis.setTextSize(8);
         yAxis.setTextColor(this.getResources().getColor(R.color.chart_text));
 
-        int min = 0;
         int max = 0;
         for (Integer integer : list) {
-            min = Math.min(min, integer);
             max = Math.max(max, integer);
         }
-        yAxis.setAxisMinimum(min);
+        yAxis.setAxisMinimum(0);
         yAxis.setAxisMaximum(max);
         yAxis.setLabelCount(6, false);
         yAxis.setAxisLineWidth(2f);
