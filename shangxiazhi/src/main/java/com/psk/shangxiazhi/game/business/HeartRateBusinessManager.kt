@@ -86,7 +86,6 @@ class HeartRateBusinessManager(
     override fun onOverGame() {
         super.onOverGame()
         cancelJob()
-        gameController.updateEcgConnectionState(false)
     }
 
     override fun onGameResume() {
@@ -102,7 +101,6 @@ class HeartRateBusinessManager(
     override fun onGameOver() {
         super.onGameOver()
         cancelJob()
-        gameController.updateEcgConnectionState(false)
     }
 
     override fun onGameAppStart() {

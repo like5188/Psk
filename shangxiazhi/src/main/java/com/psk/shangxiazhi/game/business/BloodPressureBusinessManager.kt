@@ -49,7 +49,6 @@ class BloodPressureBusinessManager(
     override fun onOverGame() {
         super.onOverGame()
         cancelJob()
-        gameController.updateBloodPressureConnectionState(false)
     }
 
     override fun onGameResume() {
@@ -65,7 +64,6 @@ class BloodPressureBusinessManager(
     override fun onGameOver() {
         super.onGameOver()
         cancelJob()
-        gameController.updateBloodPressureConnectionState(false)
     }
 
     override fun onGameAppStart() {

@@ -51,7 +51,6 @@ class BloodOxygenBusinessManager(
     override fun onOverGame() {
         super.onOverGame()
         cancelJob()
-        gameController.updateBloodOxygenConnectionState(false)
     }
 
     override fun onGameResume() {
@@ -67,7 +66,6 @@ class BloodOxygenBusinessManager(
     override fun onGameOver() {
         super.onGameOver()
         cancelJob()
-        gameController.updateBloodOxygenConnectionState(false)
     }
 
     override fun onGameAppStart() {

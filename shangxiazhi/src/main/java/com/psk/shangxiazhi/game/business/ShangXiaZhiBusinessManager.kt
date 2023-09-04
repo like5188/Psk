@@ -152,7 +152,6 @@ class ShangXiaZhiBusinessManager(
         super.onOverGame()
         gameController.overGame()
         cancelJob()
-        gameController.updateGameConnectionState(false)
     }
 
     override fun onGameStart() {
@@ -179,7 +178,6 @@ class ShangXiaZhiBusinessManager(
         lifecycleScope.launch(Dispatchers.IO) {
             repository.over()
             cancelJob()
-            gameController.updateGameConnectionState(false)
         }
     }
 
