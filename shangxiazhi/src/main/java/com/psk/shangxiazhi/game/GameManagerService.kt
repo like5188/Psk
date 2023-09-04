@@ -116,7 +116,6 @@ class GameManagerService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         Log.d(TAG, "onDestroy")
-        multiBusinessManager.onGameAppFinish()
     }
 
     override fun onBind(intent: Intent?): IBinder {
