@@ -9,8 +9,9 @@
 
         <ImageView
             android:id="@+id/iv0"
-            android:layout_width="240dp"
-            android:layout_height="170dp"
+            android:layout_width="260dp"
+            android:layout_height="240dp"
+            android:scaleType="fitCenter"
             android:src="@drawable/scene_choose_selector_01"
             app:layout_constraintBottom_toTopOf="@id/iv2"
             app:layout_constraintEnd_toStartOf="@id/iv1"
@@ -25,15 +26,16 @@
             android:text="丛林"
             android:textColor="@color/white"
             android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="@id/iv0"
             app:layout_constraintEnd_toEndOf="@id/iv0"
-            app:layout_constraintStart_toStartOf="@id/iv0"
-            app:layout_constraintTop_toBottomOf="@id/iv0" />
+            app:layout_constraintStart_toStartOf="@id/iv0" />
 
         <ImageView
             android:id="@+id/iv1"
-            android:layout_width="240dp"
-            android:layout_height="170dp"
+            android:layout_width="260dp"
+            android:layout_height="240dp"
             android:layout_marginStart="20dp"
+            android:scaleType="fitCenter"
             android:src="@drawable/scene_choose_selector_02"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/iv0"
@@ -45,15 +47,15 @@
             android:text="沙漠"
             android:textColor="@color/white"
             android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="@id/iv1"
             app:layout_constraintEnd_toEndOf="@id/iv1"
-            app:layout_constraintStart_toStartOf="@id/iv1"
-            app:layout_constraintTop_toBottomOf="@id/iv1" />
+            app:layout_constraintStart_toStartOf="@id/iv1" />
 
         <ImageView
             android:id="@+id/iv2"
-            android:layout_width="240dp"
-            android:layout_height="170dp"
-            android:layout_marginTop="50dp"
+            android:layout_width="260dp"
+            android:layout_height="240dp"
+            android:scaleType="fitCenter"
             android:src="@drawable/scene_choose_selector_03"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/iv3"
@@ -67,15 +69,16 @@
             android:text="拉萨"
             android:textColor="@color/white"
             android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="@id/iv2"
             app:layout_constraintEnd_toEndOf="@id/iv2"
-            app:layout_constraintStart_toStartOf="@id/iv2"
-            app:layout_constraintTop_toBottomOf="@id/iv2" />
+            app:layout_constraintStart_toStartOf="@id/iv2" />
 
         <ImageView
             android:id="@+id/iv3"
-            android:layout_width="240dp"
-            android:layout_height="170dp"
+            android:layout_width="260dp"
+            android:layout_height="240dp"
             android:layout_marginStart="20dp"
+            android:scaleType="fitCenter"
             android:src="@drawable/scene_choose_selector_04"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/iv2"
@@ -87,9 +90,9 @@
             android:text="海洋"
             android:textColor="@color/white"
             android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="@id/iv3"
             app:layout_constraintEnd_toEndOf="@id/iv3"
-            app:layout_constraintStart_toStartOf="@id/iv3"
-            app:layout_constraintTop_toBottomOf="@id/iv3" />
+            app:layout_constraintStart_toStartOf="@id/iv3" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>
