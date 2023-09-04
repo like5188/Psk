@@ -72,7 +72,11 @@ class ShangXiaZhiBusinessManager(
             trainReport.speedList.add(gameData.speed)
             trainReport.speedTotal += gameData.speed
             trainReport.speedArv = trainReport.speedTotal / trainReport.count
-            trainReport.speedMin = min(trainReport.speedMin, gameData.speed)
+            trainReport.speedMin = if (trainReport.speedMin == -1) {
+                gameData.speed
+            } else {
+                min(trainReport.speedMin, gameData.speed)
+            }
             trainReport.speedMax = max(trainReport.speedMax, gameData.speed)
             //模式
             if (shangXiaZhi.model.toInt() == 0x01) {// 被动
@@ -95,7 +99,11 @@ class ShangXiaZhiBusinessManager(
             // 阻力
             trainReport.resistanceTotal += gameData.resistance
             trainReport.resistanceArv = trainReport.resistanceTotal / trainReport.count
-            trainReport.resistanceMin = min(trainReport.resistanceMin, gameData.resistance)
+            trainReport.resistanceMin = if (trainReport.resistanceMin == -1) {
+                gameData.resistance
+            } else {
+                min(trainReport.resistanceMin, gameData.resistance)
+            }
             trainReport.resistanceMax = max(trainReport.resistanceMax, gameData.resistance)
             //偏差值：范围0~30 左偏：0~14     十六进制：0x00~0x0e 中：15 	     十六进制：0x0f 右偏：16~30   十六进制：0x10~0x1e
             gameData.offset = shangXiaZhi.offset - 15// 转换成游戏需要的 负数：左；0：不偏移；正数：右；
@@ -116,7 +124,11 @@ class ShangXiaZhiBusinessManager(
             }
             trainReport.spasmLevelTotal += gameData.spasmLevel
             trainReport.spasmLevelArv = trainReport.spasmLevelTotal / trainReport.count
-            trainReport.spasmLevelMin = min(trainReport.spasmLevelMin, gameData.spasmLevel)
+            trainReport.spasmLevelMin = if (trainReport.spasmLevelMin == -1) {
+                gameData.spasmLevel
+            } else {
+                min(trainReport.spasmLevelMin, gameData.spasmLevel)
+            }
             trainReport.spasmLevelMax = max(trainReport.spasmLevelMax, gameData.spasmLevel)
             gameData.spasm = trainReport.spasm
             gameController.updateGameData(gameData)

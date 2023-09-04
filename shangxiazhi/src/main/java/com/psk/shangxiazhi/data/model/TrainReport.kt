@@ -18,17 +18,17 @@ class TrainReport : Serializable {
     var spasm: Int = 0// 痉挛次数
     var spasmLevelTotal: Int = 0 // 总痉挛等级
     var spasmLevelArv: Int = 0// 平均痉挛等级
-    var spasmLevelMin: Int = 0// 最小痉挛等级
+    var spasmLevelMin: Int = -1// 最小痉挛等级
     var spasmLevelMax: Int = 0// 最大痉挛等级
 
     var resistanceTotal: Int = 0 // 总阻力
     var resistanceArv: Int = 0// 平均阻力
-    var resistanceMin: Int = 0// 最小阻力
+    var resistanceMin: Int = -1// 最小阻力
     var resistanceMax: Int = 0// 最大阻力
 
     var speedTotal: Int = 0// 总转速
     var speedArv: Int = 0// 平均转速
-    var speedMin: Int = 0// 最小转速
+    var speedMin: Int = -1// 最小转速
     var speedMax: Int = 0// 最大转速
     val speedList = mutableListOf<Int>()// 所有转速数据集合
 }
