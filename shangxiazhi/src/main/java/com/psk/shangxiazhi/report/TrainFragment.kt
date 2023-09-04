@@ -8,17 +8,17 @@ import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import com.like.common.base.BaseLazyFragment
 import com.psk.shangxiazhi.R
-import com.psk.shangxiazhi.data.model.ShangXiaZhiAggregation
+import com.psk.shangxiazhi.data.model.TrainReport
 import com.psk.shangxiazhi.databinding.FragmentReportTrainBinding
 import org.koin.android.ext.android.inject
 import java.text.DecimalFormat
 
 class TrainFragment : BaseLazyFragment() {
     companion object {
-        private const val KEY_AGGREGATION = "key_aggregation"
-        fun newInstance(aggregation: ShangXiaZhiAggregation? = null): TrainFragment {
+        private const val KEY_TRAIN_REPORT = "key_train_report"
+        fun newInstance(trainReport: TrainReport? = null): TrainFragment {
             return TrainFragment().apply {
-                arguments = bundleOf(KEY_AGGREGATION to aggregation)
+                arguments = bundleOf(KEY_TRAIN_REPORT to trainReport)
             }
         }
     }
@@ -31,19 +31,40 @@ class TrainFragment : BaseLazyFragment() {
         return mBinding.root
     }
 
+    private fun formatDuration(duration: Int): String {
+        val min = duration / 60
+        val sec = duration % 60
+        val minStr = if (min < 10) "0$min" else "$min"
+        val secStr = if (sec < 10) "0$sec" else "$sec"
+        return if (min >= 1) "${minStr}分${secStr}秒" else "${secStr}秒"
+    }
+
     override fun onLazyLoadData() {
-        (arguments?.getSerializable(KEY_AGGREGATION) as? ShangXiaZhiAggregation)?.apply {
+        (arguments?.getSerializable(KEY_TRAIN_REPORT) as? TrainReport)?.apply {
+            mBinding.tvDuration.text = formatDuration(activeDuration + passiveDuration)
+            mBinding.tvActiveDuration.text = formatDuration(activeDuration)
+            mBinding.tvPassiveDuration.text = formatDuration(passiveDuration)
+
             mBinding.tvMileage.text = decimalFormat.format(activeMil + passiveMil)
             mBinding.tvActiveMileage.text = decimalFormat.format(activeMil)
             mBinding.tvPassiveMileage.text = decimalFormat.format(passiveMil)
-            mBinding.tvSpasmCount.text = "${spasm}次"
-            mBinding.tvPower.text = "${decimalFormat.format(activeCal + passiveCal)}千卡"
-            mBinding.tvSpeedAvg.text = speedArv.toString()
-            mBinding.tvSpeedMin.text = speedMin.toString()
-            mBinding.tvSpeedMax.text = speedMax.toString()
+
+            mBinding.tvPower.text = decimalFormat.format(activeCal + passiveCal)
+            mBinding.tvActivePower.text = decimalFormat.format(activeCal)
+            mBinding.tvPassivePower.text = decimalFormat.format(passiveCal)
+
+            mBinding.tvSpasmCount.text = spasm.toString()
+            mBinding.tvSpasmLevelAvg.text = spasmLevelArv.toString()
+            mBinding.tvSpasmLevelMin.text = spasmLevelMin.toString()
+            mBinding.tvSpasmLevelMax.text = spasmLevelMax.toString()
+
             mBinding.tvResAvg.text = speedArv.toString()
             mBinding.tvResMin.text = speedMin.toString()
             mBinding.tvResMax.text = speedMax.toString()
+
+            mBinding.tvSpeedAvg.text = speedArv.toString()
+            mBinding.tvSpeedMin.text = speedMin.toString()
+            mBinding.tvSpeedMax.text = speedMax.toString()
             mBinding.curveView.initChartData(speedList, 1)
         }
     }

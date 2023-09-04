@@ -5,7 +5,7 @@ import com.psk.ble.DeviceType
 import com.psk.device.DeviceManager
 import com.psk.device.data.model.ShangXiaZhi
 import com.psk.device.data.source.ShangXiaZhiRepository
-import com.psk.shangxiazhi.data.model.ShangXiaZhiAggregation
+import com.psk.shangxiazhi.data.model.TrainReport
 import com.twsz.twsystempre.GameData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -44,11 +44,11 @@ class ShangXiaZhiBusinessManager(
     var onStartGame: (() -> Unit)? = null
     var onPauseGame: (() -> Unit)? = null
     var onOverGame: (() -> Unit)? = null
-    var onReport: ((ShangXiaZhiAggregation) -> Unit)? = null
+    var onReport: ((TrainReport) -> Unit)? = null
     private var isStart = AtomicBoolean(false)
 
-    // 汇总数据
-    private val aggregation = ShangXiaZhiAggregation()
+    // 训练报告数据
+    private val trainReport = TrainReport()
 
     private suspend fun waitStart() {
         while (!isStart.get()) {
@@ -62,60 +62,64 @@ class ShangXiaZhiBusinessManager(
         var mFirstSpasmValue = 0// 第一次痉挛值
         // 这里不能用 distinctUntilChanged、conflate 等操作符，因为需要根据所有数据来计算里程等。必须得到每次数据。
         flow.buffer(Int.MAX_VALUE).collect { shangXiaZhi ->
-            aggregation.count++
-            val current = GameData().apply {
+            trainReport.count++
+            val gameData = GameData().apply {
                 speed = shangXiaZhi.speedValue
                 speedLevel = shangXiaZhi.speedLevel
                 spasmLevel = shangXiaZhi.spasmLevel
             }
             // 速度
-            aggregation.speedList.add(current.speed)
-            aggregation.speedTotal += current.speed
-            aggregation.speedArv = aggregation.speedTotal / aggregation.count
-            aggregation.speedMin = min(aggregation.speedMin, current.speed)
-            aggregation.speedMax = max(aggregation.speedMax, current.speed)
+            trainReport.speedList.add(gameData.speed)
+            trainReport.speedTotal += gameData.speed
+            trainReport.speedArv = trainReport.speedTotal / trainReport.count
+            trainReport.speedMin = min(trainReport.speedMin, gameData.speed)
+            trainReport.speedMax = max(trainReport.speedMax, gameData.speed)
             //模式
             if (shangXiaZhi.model.toInt() == 0x01) {// 被动
-                current.model = 1// 转换成游戏需要的 0：主动；1：被动
-                current.resistance = 0
+                gameData.model = 1// 转换成游戏需要的 0：主动；1：被动
+                gameData.resistance = 0
                 //被动里程
-                aggregation.passiveMil += current.speed * 0.5f * 1000 / 3600
+                trainReport.passiveMil += gameData.speed * 0.5f * 1000 / 3600
                 //卡路里
-                aggregation.passiveCal += current.speed * 0.2f / 300
+                trainReport.passiveCal += gameData.speed * 0.2f / 300
             } else {// 主动
-                current.model = 0
-                current.resistance = shangXiaZhi.res
+                gameData.model = 0
+                gameData.resistance = shangXiaZhi.res
                 //主动里程
-                aggregation.activeMil += current.speed * 0.5f * 1000 / 3600
+                trainReport.activeMil += gameData.speed * 0.5f * 1000 / 3600
                 //卡路里
-                aggregation.activeCal += current.speed * 0.2f * (current.resistance * 1.00f / 3.0f) / 60
+                trainReport.activeCal += gameData.speed * 0.2f * (gameData.resistance * 1.00f / 3.0f) / 60
             }
-            current.mileage = decimalFormat.format(aggregation.activeMil + aggregation.passiveMil)
-            current.cal = decimalFormat.format(aggregation.activeCal + aggregation.passiveCal)
+            gameData.mileage = decimalFormat.format(trainReport.activeMil + trainReport.passiveMil)
+            gameData.cal = decimalFormat.format(trainReport.activeCal + trainReport.passiveCal)
             // 阻力
-            aggregation.resistanceTotal += current.resistance
-            aggregation.resistanceArv = aggregation.resistanceTotal / aggregation.count
-            aggregation.resistanceMin = min(aggregation.resistanceMin, current.resistance)
-            aggregation.resistanceMax = max(aggregation.resistanceMax, current.resistance)
+            trainReport.resistanceTotal += gameData.resistance
+            trainReport.resistanceArv = trainReport.resistanceTotal / trainReport.count
+            trainReport.resistanceMin = min(trainReport.resistanceMin, gameData.resistance)
+            trainReport.resistanceMax = max(trainReport.resistanceMax, gameData.resistance)
             //偏差值：范围0~30 左偏：0~14     十六进制：0x00~0x0e 中：15 	     十六进制：0x0f 右偏：16~30   十六进制：0x10~0x1e
-            current.offset = shangXiaZhi.offset - 15// 转换成游戏需要的 负数：左；0：不偏移；正数：右；
+            gameData.offset = shangXiaZhi.offset - 15// 转换成游戏需要的 负数：左；0：不偏移；正数：右；
             // 转换成游戏需要的左边百分比 100~0
-            current.offsetValue = 100 - shangXiaZhi.offset * 100 / 30
+            gameData.offsetValue = 100 - shangXiaZhi.offset * 100 / 30
             //痉挛。注意：这里不直接使用 ShangXiaZhi 中的 spasmNum，是因为只要上下肢康复机不关机，那么它返回的痉挛次数值是一直累计的。
             if (shangXiaZhi.spasmNum < 100) {
                 if (!isFirstSpasm) {
                     isFirstSpasm = true
                     mFirstSpasmValue = shangXiaZhi.spasmNum
                 }
-                if (shangXiaZhi.spasmNum - mFirstSpasmValue > aggregation.spasm) {
-                    aggregation.spasm = shangXiaZhi.spasmNum - mFirstSpasmValue
-                    current.spasmFlag = 1
+                if (shangXiaZhi.spasmNum - mFirstSpasmValue > trainReport.spasm) {
+                    trainReport.spasm = shangXiaZhi.spasmNum - mFirstSpasmValue
+                    gameData.spasmFlag = 1
                 } else {
-                    current.spasmFlag = 0
+                    gameData.spasmFlag = 0
                 }
             }
-            current.spasm = aggregation.spasm
-            gameController.updateGameData(current)
+            trainReport.spasmLevelTotal += gameData.spasmLevel
+            trainReport.spasmLevelArv = trainReport.spasmLevelTotal / trainReport.count
+            trainReport.spasmLevelMin = min(trainReport.spasmLevelMin, gameData.spasmLevel)
+            trainReport.spasmLevelMax = max(trainReport.spasmLevelMax, gameData.spasmLevel)
+            gameData.spasm = trainReport.spasm
+            gameController.updateGameData(gameData)
         }
     }
 
@@ -187,7 +191,7 @@ class ShangXiaZhiBusinessManager(
     override fun onGameAppFinish() {
         super.onGameAppFinish()
         cancelJob()
-        onReport?.invoke(aggregation)
+        onReport?.invoke(trainReport)
     }
 
     companion object {

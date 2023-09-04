@@ -12,7 +12,7 @@ import com.psk.ble.DeviceType
 import com.psk.ble.Tip
 import com.psk.device.DeviceManager
 import com.psk.shangxiazhi.data.model.BleScanInfo
-import com.psk.shangxiazhi.data.model.ShangXiaZhiAggregation
+import com.psk.shangxiazhi.data.model.TrainReport
 import com.psk.shangxiazhi.game.business.MultiBusinessManager
 import com.psk.shangxiazhi.game.business.ShangXiaZhiBusinessManager
 import com.twsz.twsystempre.GameController
@@ -64,7 +64,7 @@ class GameManagerService : Service() {
         resistanceInt: Int = 1,
         intelligent: Boolean = true,
         turn2: Boolean = true,
-        onReport: ((ShangXiaZhiAggregation) -> Unit)? = null
+        onReport: ((TrainReport) -> Unit)? = null
     ) {
         if (devices.isEmpty()) {
             return

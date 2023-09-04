@@ -12,7 +12,7 @@ import com.like.common.util.startActivity
 import com.psk.common.CommonApplication
 import com.psk.common.util.showToast
 import com.psk.shangxiazhi.R
-import com.psk.shangxiazhi.data.model.ShangXiaZhiAggregation
+import com.psk.shangxiazhi.data.model.TrainReport
 import com.psk.shangxiazhi.databinding.ActivityReportBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -21,10 +21,10 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
  */
 class ReportActivity : AppCompatActivity() {
     companion object {
-        fun start(heartRateArray: IntArray? = null, aggregation: ShangXiaZhiAggregation? = null) {
+        fun start(heartRateArray: IntArray? = null, trainReport: TrainReport? = null) {
             CommonApplication.sInstance.startActivity<ReportActivity>(
                 "heartRateArray" to heartRateArray,
-                "aggregation" to aggregation
+                "trainReport" to trainReport
             )
         }
     }
@@ -33,14 +33,14 @@ class ReportActivity : AppCompatActivity() {
     val heartRateArray: IntArray? = null
 
     @AutoWired
-    val aggregation: ShangXiaZhiAggregation? = null
+    val trainReport: TrainReport? = null
 
     private val mBinding: ActivityReportBinding by lazy {
         DataBindingUtil.setContentView(this, R.layout.activity_report)
     }
     private val mViewModel: ReportViewModel by viewModel()
     private val trainFragment by lazy {
-        TrainFragment.newInstance(aggregation)
+        TrainFragment.newInstance(trainReport)
     }
     private val devicesFragment by lazy {
         DevicesFragment.newInstance(heartRateArray)

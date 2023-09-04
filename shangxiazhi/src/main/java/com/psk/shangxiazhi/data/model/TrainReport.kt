@@ -3,7 +3,7 @@ package com.psk.shangxiazhi.data.model
 import java.io.Serializable
 
 // 上下肢计算的汇总数据
-class ShangXiaZhiAggregation : Serializable {
+class TrainReport : Serializable {
     var count: Int = 0// 总的数据量
 
     var activeDuration: Int = 0// 主动时长
@@ -16,6 +16,10 @@ class ShangXiaZhiAggregation : Serializable {
     var passiveCal: Float = 0f// 被动卡路里
 
     var spasm: Int = 0// 痉挛次数
+    var spasmLevelTotal: Int = 0 // 总痉挛等级
+    var spasmLevelArv: Int = 0// 平均痉挛等级
+    var spasmLevelMin: Int = 0// 最小痉挛等级
+    var spasmLevelMax: Int = 0// 最大痉挛等级
 
     var resistanceTotal: Int = 0 // 总阻力
     var resistanceArv: Int = 0// 平均阻力
