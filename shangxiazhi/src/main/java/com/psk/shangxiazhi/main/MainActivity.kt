@@ -85,7 +85,7 @@ class MainActivity : AppCompatActivity() {
             ).apply {
                 onSelected = {
                     mViewModel.uiState.value.gameManagerService?.start(it, scene, resistanceInt = 1, passiveModule = true, timeInt = 1) {
-                        ReportActivity.start(trainReport = it)
+                        ReportActivity.start(reports = it)
                     }
                 }
                 show(this@MainActivity)

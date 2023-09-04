@@ -8,17 +8,17 @@ import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import com.like.common.base.BaseLazyFragment
 import com.psk.shangxiazhi.R
-import com.psk.shangxiazhi.data.model.TrainReport
+import com.psk.shangxiazhi.data.model.ShangXiaZhiReport
 import com.psk.shangxiazhi.databinding.FragmentReportTrainBinding
 import org.koin.android.ext.android.inject
 import java.text.DecimalFormat
 
-class TrainFragment : BaseLazyFragment() {
+class ShangXiaZhiFragment : BaseLazyFragment() {
     companion object {
-        private const val KEY_TRAIN_REPORT = "key_train_report"
-        fun newInstance(trainReport: TrainReport? = null): TrainFragment {
-            return TrainFragment().apply {
-                arguments = bundleOf(KEY_TRAIN_REPORT to trainReport)
+        private const val KEY_SHANGXIAZHI_REPORT = "key_shangXiaZhi_report"
+        fun newInstance(shangXiaZhiReport: ShangXiaZhiReport?): ShangXiaZhiFragment {
+            return ShangXiaZhiFragment().apply {
+                arguments = bundleOf(KEY_SHANGXIAZHI_REPORT to shangXiaZhiReport)
             }
         }
     }
@@ -40,7 +40,7 @@ class TrainFragment : BaseLazyFragment() {
     }
 
     override fun onLazyLoadData() {
-        (arguments?.getSerializable(KEY_TRAIN_REPORT) as? TrainReport)?.apply {
+        (arguments?.getSerializable(KEY_SHANGXIAZHI_REPORT) as? ShangXiaZhiReport)?.apply {
             mBinding.tvDuration.text = formatDuration(activeDuration + passiveDuration)
             mBinding.tvActiveDuration.text = formatDuration(activeDuration)
             mBinding.tvPassiveDuration.text = formatDuration(passiveDuration)

@@ -5,6 +5,8 @@ import com.psk.ble.DeviceType
 import com.psk.device.DeviceManager
 import com.psk.device.data.model.HeartRate
 import com.psk.device.data.source.HeartRateRepository
+import com.psk.shangxiazhi.data.model.HeartRateReport
+import com.psk.shangxiazhi.data.model.IReport
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -13,8 +15,11 @@ import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.math.max
+import kotlin.math.min
 
 class HeartRateBusinessManager(
     lifecycleScope: CoroutineScope,
@@ -25,12 +30,29 @@ class HeartRateBusinessManager(
     override val repository = deviceManager.createRepository<HeartRateRepository>(DeviceType.HeartRate).apply {
         enable(deviceName, deviceAddress)
     }
+    private val report = HeartRateReport()
+
+    override fun getReport(): IReport {
+        return report
+    }
 
     override suspend fun handleFlow(flow: Flow<HeartRate>) = withContext<Unit>(Dispatchers.IO) {
         Log.d(TAG, "startHeartRateJob")
         launch(Dispatchers.IO) {
             flow.filterNotNull().map {
                 it.value
+            }.onEach {
+                if (it > 0) {
+                    report.list.add(it)
+                    report.total += it
+                    report.arv = report.total / report.list.size
+                    report.min = if (report.min == -1) {
+                        it
+                    } else {
+                        min(report.min, it)
+                    }
+                    report.max = max(report.max, it)
+                }
             }.distinctUntilChanged().collect { value ->
                 gameController.updateHeartRateData(value)
             }

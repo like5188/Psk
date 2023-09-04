@@ -12,7 +12,8 @@ import com.like.common.util.startActivity
 import com.psk.common.CommonApplication
 import com.psk.common.util.showToast
 import com.psk.shangxiazhi.R
-import com.psk.shangxiazhi.data.model.TrainReport
+import com.psk.shangxiazhi.data.model.IReport
+import com.psk.shangxiazhi.data.model.ShangXiaZhiReport
 import com.psk.shangxiazhi.databinding.ActivityReportBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -21,29 +22,29 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
  */
 class ReportActivity : AppCompatActivity() {
     companion object {
-        fun start(heartRateArray: IntArray? = null, trainReport: TrainReport? = null) {
+        fun start(reports: List<IReport>) {
             CommonApplication.sInstance.startActivity<ReportActivity>(
-                "heartRateArray" to heartRateArray,
-                "trainReport" to trainReport
+                "reports" to reports
             )
         }
     }
 
     @AutoWired
-    val heartRateArray: IntArray? = null
-
-    @AutoWired
-    val trainReport: TrainReport? = null
+    val reports: List<IReport>? = null
 
     private val mBinding: ActivityReportBinding by lazy {
         DataBindingUtil.setContentView(this, R.layout.activity_report)
     }
     private val mViewModel: ReportViewModel by viewModel()
-    private val trainFragment by lazy {
-        TrainFragment.newInstance(trainReport)
+    private val shangXiaZhiFragment by lazy {
+        ShangXiaZhiFragment.newInstance(reports?.firstOrNull {
+            it is ShangXiaZhiReport
+        } as? ShangXiaZhiReport)
     }
-    private val devicesFragment by lazy {
-        DevicesFragment.newInstance(heartRateArray)
+    private val otherDevicesFragment by lazy {
+        OtherDevicesFragment.newInstance(reports?.filter {
+            it !is ShangXiaZhiReport
+        })
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,14 +53,14 @@ class ReportActivity : AppCompatActivity() {
         mBinding.tvTrain.setOnClickListener {
             mBinding.tvTrain.isSelected = true
             mBinding.tvDevices.isSelected = false
-            showFragment(trainFragment)
+            showFragment(shangXiaZhiFragment)
         }
         mBinding.tvDevices.setOnClickListener {
             mBinding.tvTrain.isSelected = false
             mBinding.tvDevices.isSelected = true
-            showFragment(devicesFragment)
+            showFragment(otherDevicesFragment)
         }
-        addFragments(R.id.flContainer, 0, trainFragment, devicesFragment)
+        addFragments(R.id.flContainer, 0, shangXiaZhiFragment, otherDevicesFragment)
         mBinding.tvTrain.isSelected = true
         mBinding.tvDevices.isSelected = false
         collectUiState()

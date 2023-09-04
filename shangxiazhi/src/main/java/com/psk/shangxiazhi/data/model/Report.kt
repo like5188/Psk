@@ -2,8 +2,12 @@ package com.psk.shangxiazhi.data.model
 
 import java.io.Serializable
 
-// 上下肢计算的汇总数据
-class TrainReport : Serializable {
+interface IReport : Serializable
+
+/**
+ * 上下肢数据报告
+ */
+class ShangXiaZhiReport : IReport {
     var count: Int = 0// 总的数据量
 
     var activeDuration: Int = 0// 主动时长
@@ -31,4 +35,30 @@ class TrainReport : Serializable {
     var speedArv: Int = 0// 平均转速
     var speedMin: Int = -1// 最小转速
     var speedMax: Int = 0// 最大转速
+}
+
+/**
+ * 心率数据报告
+ */
+class HeartRateReport : IReport {
+    val list = mutableListOf<Int>()// 所有心率数据集合
+    var total: Int = 0// 总心率
+    var arv: Int = 0// 平均心率
+    var min: Int = -1// 最小心率
+    var max: Int = 0// 最大心率
+}
+
+/**
+ * 血氧数据报告
+ */
+class BloodOxygenReport : IReport {
+    var value: Int = 0// 血氧
+}
+
+/**
+ * 血压数据报告
+ */
+class BloodPressureReport : IReport {
+    var sbp: Int = 0// 收缩压
+    var dbp: Int = 0// 舒张压
 }

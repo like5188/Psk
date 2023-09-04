@@ -5,6 +5,8 @@ import com.psk.ble.DeviceType
 import com.psk.device.DeviceManager
 import com.psk.device.data.model.BloodOxygen
 import com.psk.device.data.source.BloodOxygenRepository
+import com.psk.shangxiazhi.data.model.BloodOxygenReport
+import com.psk.shangxiazhi.data.model.IReport
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.conflate
@@ -20,9 +22,18 @@ class BloodOxygenBusinessManager(
         enable(deviceName, deviceAddress)
     }
 
+    private val report: BloodOxygenReport by lazy {
+        BloodOxygenReport()
+    }
+
+    override fun getReport(): IReport {
+        return report
+    }
+
     override suspend fun handleFlow(flow: Flow<BloodOxygen>) {
         Log.d(TAG, "startBloodOxygenJob")
         flow.distinctUntilChanged().conflate().collect { value ->
+            report.value = value.value
             gameController.updateBloodOxygenData(value.value)
         }
     }

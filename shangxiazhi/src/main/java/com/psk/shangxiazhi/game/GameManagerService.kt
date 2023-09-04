@@ -12,7 +12,7 @@ import com.psk.ble.DeviceType
 import com.psk.ble.Tip
 import com.psk.device.DeviceManager
 import com.psk.shangxiazhi.data.model.BleScanInfo
-import com.psk.shangxiazhi.data.model.TrainReport
+import com.psk.shangxiazhi.data.model.IReport
 import com.psk.shangxiazhi.game.business.MultiBusinessManager
 import com.psk.shangxiazhi.game.business.ShangXiaZhiBusinessManager
 import com.twsz.twsystempre.GameController
@@ -64,12 +64,15 @@ class GameManagerService : Service() {
         resistanceInt: Int = 1,
         intelligent: Boolean = true,
         turn2: Boolean = true,
-        onReport: ((TrainReport) -> Unit)? = null
+        onReport: ((List<IReport>) -> Unit)? = null
     ) {
         if (devices.isEmpty()) {
             return
         }
         multiBusinessManager.clear()
+        multiBusinessManager.onReport = {
+            onReport?.invoke(it)
+        }
         devices.forEach {
             val deviceType = it.key
             val bleScanInfo = it.value
@@ -93,9 +96,6 @@ class GameManagerService : Service() {
                     }
                     this.onOverGame = {
                         multiBusinessManager.onOverGame()
-                    }
-                    this.onReport = {
-                        onReport?.invoke(it)
                     }
                 }
             }

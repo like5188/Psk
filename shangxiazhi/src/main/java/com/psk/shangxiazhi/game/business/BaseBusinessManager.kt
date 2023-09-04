@@ -2,6 +2,7 @@ package com.psk.shangxiazhi.game.business
 
 import com.psk.ble.BleManager
 import com.psk.device.data.source.IRepository
+import com.psk.shangxiazhi.data.model.IReport
 import com.twsz.twsystempre.GameController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -37,6 +38,7 @@ abstract class BaseBusinessManager<T>(val lifecycleScope: CoroutineScope) : Koin
     }
 
     protected abstract suspend fun handleFlow(flow: Flow<T>)
+    abstract fun getReport(): IReport
 
     // 上下肢控制游戏
     open fun onStartGame() {}

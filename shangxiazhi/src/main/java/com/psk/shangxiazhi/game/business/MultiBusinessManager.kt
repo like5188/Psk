@@ -4,6 +4,7 @@ import android.util.Log
 import com.psk.ble.BleManager
 import com.psk.ble.DeviceType
 import com.psk.device.DeviceManager
+import com.psk.shangxiazhi.data.model.IReport
 import com.twsz.twsystempre.GameController
 import com.twsz.twsystempre.RemoteCallback
 import kotlinx.coroutines.CoroutineScope
@@ -16,6 +17,7 @@ class MultiBusinessManager : RemoteCallback.Stub(), KoinComponent {
     private val bleManager by inject<BleManager>()
     private val gameController by inject<GameController>()
     private val managers = mutableMapOf<DeviceType, BaseBusinessManager<*>>()
+    var onReport: ((List<IReport>) -> Unit)? = null
 
     fun add(deviceType: DeviceType, manager: BaseBusinessManager<*>) {
         managers[deviceType] = manager
@@ -98,6 +100,9 @@ class MultiBusinessManager : RemoteCallback.Stub(), KoinComponent {
         // 所以 gameController 中的连接状态相关的方法需要单独调用才能更新界面状态。
         // bleManager.onDestroy() 必须放到最后面，否则会由于蓝牙的关闭而无法执行某些需要蓝牙的方法。
         bleManager.onDestroy()
+        onReport?.invoke(
+            managers.values.map { it.getReport() }
+        )
     }
 
     companion object {
