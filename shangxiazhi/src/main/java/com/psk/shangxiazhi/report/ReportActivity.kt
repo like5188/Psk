@@ -21,11 +21,11 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
  */
 class ReportActivity : AppCompatActivity() {
     companion object {
-        fun start(speedArray: IntArray? = null, heartRateArray: IntArray? = null, total: ShangXiaZhiAggregation? = null) {
+        fun start(speedArray: IntArray? = null, heartRateArray: IntArray? = null, aggregation: ShangXiaZhiAggregation? = null) {
             CommonApplication.sInstance.startActivity<ReportActivity>(
                 "speedArray" to speedArray,
                 "heartRateArray" to heartRateArray,
-                "total" to total
+                "aggregation" to aggregation
             )
         }
     }
@@ -37,7 +37,7 @@ class ReportActivity : AppCompatActivity() {
     val heartRateArray: IntArray? = null
 
     @AutoWired
-    val total: ShangXiaZhiAggregation? = null
+    val aggregation: ShangXiaZhiAggregation? = null
 
     private val mBinding: ActivityReportBinding by lazy {
         DataBindingUtil.setContentView(this, R.layout.activity_report)
