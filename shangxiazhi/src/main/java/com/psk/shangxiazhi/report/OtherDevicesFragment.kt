@@ -34,8 +34,7 @@ class OtherDevicesFragment : BaseLazyFragment() {
     }
 
     override fun onLazyLoadData() {
-        val reports = arguments?.getSerializable(KEY_DATA) as? List<IReport>
-        reports?.forEach {
+        (arguments?.getSerializable(KEY_DATA) as? List<IReport>)?.forEach {
             when (it) {
                 is HeartRateReport -> {
                     mBinding.tvHeartRateAvg.text = it.arv.toString()
