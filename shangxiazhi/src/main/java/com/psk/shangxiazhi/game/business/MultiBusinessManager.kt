@@ -50,9 +50,6 @@ class MultiBusinessManager : RemoteCallback.Stub(), KoinComponent {
 
     override fun onGameLoading() {
         Log.i(TAG, "onGameLoading")
-        managers.values.forEach {
-            it.onGameLoading()
-        }
     }
 
     override fun onGameStart() {
