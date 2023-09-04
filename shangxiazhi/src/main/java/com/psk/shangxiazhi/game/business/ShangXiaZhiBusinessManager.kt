@@ -5,7 +5,6 @@ import com.psk.ble.DeviceType
 import com.psk.device.DeviceManager
 import com.psk.device.data.model.ShangXiaZhi
 import com.psk.device.data.source.ShangXiaZhiRepository
-import com.psk.shangxiazhi.data.model.ShangXiaZhiCalcCurrent
 import com.psk.shangxiazhi.data.model.ShangXiaZhiCalcTotal
 import com.twsz.twsystempre.GameData
 import kotlinx.coroutines.CoroutineScope
@@ -31,11 +30,7 @@ class ShangXiaZhiBusinessManager(
 ) : BaseBusinessManager<ShangXiaZhi>(lifecycleScope), KoinComponent {
     override val repository = deviceManager.createRepository<ShangXiaZhiRepository>(DeviceType.ShangXiaZhi).apply {
         enable(deviceName, deviceAddress)
-        setCallback(
-            onStart = { onStartGame?.invoke() },
-            onPause = { onPauseGame?.invoke() },
-            onOver = { onOverGame?.invoke() }
-        )
+        setCallback(onStart = { onStartGame?.invoke() }, onPause = { onPauseGame?.invoke() }, onOver = { onOverGame?.invoke() })
     }
 
     private val decimalFormat by inject<DecimalFormat>()
@@ -66,7 +61,7 @@ class ShangXiaZhiBusinessManager(
         // 这里不能用 distinctUntilChanged、conflate 等操作符，因为需要根据所有数据来计算里程等。必须得到每次数据。
         flow.buffer(Int.MAX_VALUE).collect { shangXiaZhi ->
             total.count++
-            val current = ShangXiaZhiCalcCurrent().apply {
+            val current = GameData().apply {
                 speed = shangXiaZhi.speedValue
                 speedLevel = shangXiaZhi.speedLevel
                 spasmLevel = shangXiaZhi.spasmLevel
@@ -92,6 +87,8 @@ class ShangXiaZhiBusinessManager(
                 //卡路里
                 total.activeCal += current.speed * 0.2f * (current.resistance * 1.00f / 3.0f) / 60
             }
+            current.mileage = decimalFormat.format(total.activeMil + total.passiveMil)
+            current.cal = decimalFormat.format(total.activeCal + total.passiveCal)
             // 阻力
             total.resistanceTotal += current.resistance
             total.resistanceArv = total.resistanceTotal / total.count
@@ -114,22 +111,8 @@ class ShangXiaZhiBusinessManager(
                     current.spasmFlag = 0
                 }
             }
-            gameController.updateGameData(
-                GameData(
-                    model = current.model,
-                    speed = current.speed,
-                    speedLevel = current.speedLevel,
-                    time = current.time,
-                    mileage = decimalFormat.format(total.activeMil + total.passiveMil),
-                    cal = decimalFormat.format(total.activeCal + total.passiveCal),
-                    resistance = current.resistance,
-                    offset = current.offset,
-                    offsetValue = current.offsetValue,
-                    spasm = total.spasm,
-                    spasmLevel = current.spasmLevel,
-                    spasmFlag = current.spasmFlag,
-                )
-            )
+            current.spasm = total.spasm
+            gameController.updateGameData(current)
         }
     }
 

@@ -27,16 +27,3 @@ class ShangXiaZhiCalcTotal : Serializable {
     var speedMin: Int = 0// 最小速度
     var speedMax: Int = 0// 最大速度
 }
-
-// 上下肢计算的当次数据
-class ShangXiaZhiCalcCurrent {
-    var time: String = ""// 当前时间
-    var model: Int = 0// 主被动模式
-    var speed: Int = 0// 转速
-    var speedLevel: Int = 0// 转速等级
-    var resistance: Int = 0//阻力
-    var offset: Int = 0// 偏差方向值
-    var offsetValue: Int = 0// 偏差值
-    var spasmLevel: Int = 0// 痉挛等级
-    var spasmFlag: Int = 0// 是否痉挛的标记
-}
