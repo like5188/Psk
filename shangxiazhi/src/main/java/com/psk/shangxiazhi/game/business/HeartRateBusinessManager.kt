@@ -116,11 +116,6 @@ class HeartRateBusinessManager(
         }
     }
 
-    override fun onGameAppFinish() {
-        super.onGameAppFinish()
-        cancelJob()
-    }
-
     companion object {
         private val TAG = HeartRateBusinessManager::class.java.simpleName
     }
