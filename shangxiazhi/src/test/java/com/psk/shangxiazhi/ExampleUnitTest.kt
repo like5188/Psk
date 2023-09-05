@@ -33,7 +33,7 @@ class ExampleUnitTest {
             AAA(115, 101),
             AAA(110, 101),
         )
-        // 1,110
+        // {100=1, 101=110}
         println(getDataTimeLines(bloodOxygenList, bloodPressureList, heartRateList, shangXiaZhiList))
     }
 
@@ -42,55 +42,43 @@ class ExampleUnitTest {
         val medicalOrderId: Long
     )
 
+
     private fun getDataTimeLines(
         bloodOxygenList: List<AAA>?,
         bloodPressureList: List<AAA>?,
         heartRateList: List<AAA>?,
         shangXiaZhiList: List<AAA>?
-    ): List<Long> {
-        val bloodOxygenTimeLines = mutableMapOf<Long, AAA>()
-        val bloodPressureTimeLines = mutableMapOf<Long, AAA>()
-        val heartRateTimeLines = mutableMapOf<Long, AAA>()
-        val shangXiaZhiTimeLines = mutableMapOf<Long, AAA>()
+    ): Map<Long, Long> {
+        // 存储每次训练的 medicalOrderId 和 训练开始时间（最早的一个时间）
+        val timeLines = mutableMapOf<Long, Long>()
+
         bloodOxygenList?.groupBy {
             it.medicalOrderId
         }?.forEach {
-            bloodOxygenTimeLines[it.key] = it.value.minBy { it.time }
+            val oldValue = timeLines.getOrDefault(it.key, Long.MAX_VALUE)
+            timeLines[it.key] = Math.min(oldValue, it.value.minOf { it.time })
         }
 
         bloodPressureList?.groupBy {
             it.medicalOrderId
         }?.forEach {
-            bloodPressureTimeLines[it.key] = it.value.minBy { it.time }
+            val oldValue = timeLines.getOrDefault(it.key, Long.MAX_VALUE)
+            timeLines[it.key] = Math.min(oldValue, it.value.minOf { it.time })
         }
 
         heartRateList?.groupBy {
             it.medicalOrderId
         }?.forEach {
-            heartRateTimeLines[it.key] = it.value.minBy { it.time }
+            val oldValue = timeLines.getOrDefault(it.key, Long.MAX_VALUE)
+            timeLines[it.key] = Math.min(oldValue, it.value.minOf { it.time })
         }
 
         shangXiaZhiList?.groupBy {
             it.medicalOrderId
         }?.forEach {
-            shangXiaZhiTimeLines[it.key] = it.value.minBy { it.time }
-        }
-        val timeLines = mutableMapOf<Long, Long>()
-        bloodOxygenTimeLines.forEach {
-            timeLines[it.key] = it.value.time
-        }
-        bloodPressureTimeLines.forEach {
             val oldValue = timeLines.getOrDefault(it.key, Long.MAX_VALUE)
-            timeLines[it.key] = Math.min(oldValue, it.value.time)
+            timeLines[it.key] = Math.min(oldValue, it.value.minOf { it.time })
         }
-        heartRateTimeLines.forEach {
-            val oldValue = timeLines.getOrDefault(it.key, Long.MAX_VALUE)
-            timeLines[it.key] = Math.min(oldValue, it.value.time)
-        }
-        shangXiaZhiTimeLines.forEach {
-            val oldValue = timeLines.getOrDefault(it.key, Long.MAX_VALUE)
-            timeLines[it.key] = Math.min(oldValue, it.value.time)
-        }
-        return timeLines.values.toList()
+        return timeLines
     }
 }
