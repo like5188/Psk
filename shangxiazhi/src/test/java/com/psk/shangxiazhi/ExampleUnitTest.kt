@@ -17,8 +17,8 @@ class ExampleUnitTest {
             AAA(114, 101),
         )
         val bloodPressureList = listOf(
-            AAA(1, 100),
             AAA(7, 100),
+            AAA(1, 100),
             AAA(112, 101),
             AAA(113, 101),
         )
@@ -30,6 +30,7 @@ class ExampleUnitTest {
             AAA(2, 100),
             AAA(4, 100),
             AAA(6, 100),
+            AAA(115, 101),
             AAA(110, 101),
         )
         // 1,110
@@ -47,29 +48,49 @@ class ExampleUnitTest {
         heartRateList: List<AAA>?,
         shangXiaZhiList: List<AAA>?
     ): List<Long> {
-        val bloodOxygenTimeLines = bloodOxygenList?.groupBy {
+        val bloodOxygenTimeLines = mutableMapOf<Long, AAA>()
+        val bloodPressureTimeLines = mutableMapOf<Long, AAA>()
+        val heartRateTimeLines = mutableMapOf<Long, AAA>()
+        val shangXiaZhiTimeLines = mutableMapOf<Long, AAA>()
+        bloodOxygenList?.groupBy {
             it.medicalOrderId
-        }?.map {
-            it.value.first().time
-        } ?: emptyList()
-        val bloodPressureTimeLines = bloodPressureList?.groupBy {
+        }?.forEach {
+            bloodOxygenTimeLines[it.key] = it.value.minBy { it.time }
+        }
+
+        bloodPressureList?.groupBy {
             it.medicalOrderId
-        }?.map {
-            it.value.first().time
-        } ?: emptyList()
-        val heartRateTimeLines = heartRateList?.groupBy {
+        }?.forEach {
+            bloodPressureTimeLines[it.key] = it.value.minBy { it.time }
+        }
+
+        heartRateList?.groupBy {
             it.medicalOrderId
-        }?.map {
-            it.value.first().time
-        } ?: emptyList()
-        val shangXiaZhiTimeLines = shangXiaZhiList?.groupBy {
+        }?.forEach {
+            heartRateTimeLines[it.key] = it.value.minBy { it.time }
+        }
+
+        shangXiaZhiList?.groupBy {
             it.medicalOrderId
-        }?.map {
-            it.value.first().time
-        } ?: emptyList()
-        val timeLines = sortedSetOf(
-            *(bloodOxygenTimeLines + bloodPressureTimeLines + heartRateTimeLines + shangXiaZhiTimeLines).toTypedArray()
-        )
-        return timeLines.toList()
+        }?.forEach {
+            shangXiaZhiTimeLines[it.key] = it.value.minBy { it.time }
+        }
+        val timeLines = mutableMapOf<Long, Long>()
+        bloodOxygenTimeLines.forEach {
+            timeLines[it.key] = it.value.time
+        }
+        bloodPressureTimeLines.forEach {
+            val oldValue = timeLines.getOrDefault(it.key, Long.MAX_VALUE)
+            timeLines[it.key] = Math.min(oldValue, it.value.time)
+        }
+        heartRateTimeLines.forEach {
+            val oldValue = timeLines.getOrDefault(it.key, Long.MAX_VALUE)
+            timeLines[it.key] = Math.min(oldValue, it.value.time)
+        }
+        shangXiaZhiTimeLines.forEach {
+            val oldValue = timeLines.getOrDefault(it.key, Long.MAX_VALUE)
+            timeLines[it.key] = Math.min(oldValue, it.value.time)
+        }
+        return timeLines.values.toList()
     }
 }
