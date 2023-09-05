@@ -17,13 +17,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.qualifier.named
 import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
 
 @OptIn(KoinApiExtension::class)
 class HistoryViewModel : ViewModel(), KoinComponent {
@@ -40,9 +41,12 @@ class HistoryViewModel : ViewModel(), KoinComponent {
     private var heartRateList: List<HeartRate>? = null
     private var shangXiaZhiList: List<ShangXiaZhi>? = null
     private var getAllHistoryDataAndEmitJob: Job? = null
+    private val cal by lazy {
+        Calendar.getInstance()
+    }
 
-    // Map<某天日期, Map<medicalOrderId, 这天中的某个时间>>
-    private lateinit var datas: Map<String, Map<Long, String>>
+    // Map<yyyy年MM月, Map<medicalOrderId, 某日某时某分>>
+    private lateinit var datas: List<DateAndData>
 
     init {
         getHistoryDataAndCache()
@@ -62,8 +66,8 @@ class HistoryViewModel : ViewModel(), KoinComponent {
             if (bloodOxygenList.isNullOrEmpty() && bloodPressureList.isNullOrEmpty() && heartRateList.isNullOrEmpty() && shangXiaZhiList.isNullOrEmpty()) {
                 return@launch
             }
-            // 获取所有训练的开始时间的集合
-//            dates = getDataTimeLines(bloodOxygenList, bloodPressureList, heartRateList, shangXiaZhiList)
+
+            datas = transform(bloodOxygenList, bloodPressureList, heartRateList, shangXiaZhiList)
 //            val lastDate = dates.values.lastOrNull()
 //            if (lastDate != null) {
 //                _uiState.update {
@@ -74,63 +78,57 @@ class HistoryViewModel : ViewModel(), KoinComponent {
     }
 
     /**
-     * @return Map<某天日期, Map<medicalOrderId, 这天中的某个时间>>
+     * 获取每次训练的开始时间（最早一条数据的时间）及 medicalOrderId
      */
-    private fun getDataTimeLines(
+    private fun transform(
         bloodOxygenList: List<BloodOxygen>?,
         bloodPressureList: List<BloodPressure>?,
         heartRateList: List<HeartRate>?,
         shangXiaZhiList: List<ShangXiaZhi>?
-    ): Map<String, Map<Long, String>> {
-        val bloodOxygenTemp = mutableMapOf<Long, BloodOxygen>()
+    ): List<DateAndData> {
+        // 存储每次训练的 medicalOrderId 和 训练开始时间（最早的一个时间）
+        val timeLines = mutableMapOf<Long, Long>()
+
         bloodOxygenList?.groupBy {
             it.medicalOrderId
         }?.forEach {
-            bloodOxygenTemp[it.key] = it.value.minBy { it.time }
+            val oldValue = timeLines.getOrDefault(it.key, Long.MAX_VALUE)
+            timeLines[it.key] = Math.min(oldValue, it.value.minOf { it.time })
         }
 
-        val bloodPressureTemp = mutableMapOf<Long, BloodPressure>()
         bloodPressureList?.groupBy {
             it.medicalOrderId
         }?.forEach {
-            bloodPressureTemp[it.key] = it.value.minBy { it.time }
+            val oldValue = timeLines.getOrDefault(it.key, Long.MAX_VALUE)
+            timeLines[it.key] = Math.min(oldValue, it.value.minOf { it.time })
         }
 
-        val heartRateTemp = mutableMapOf<Long, HeartRate>()
         heartRateList?.groupBy {
             it.medicalOrderId
         }?.forEach {
-            heartRateTemp[it.key] = it.value.minBy { it.time }
+            val oldValue = timeLines.getOrDefault(it.key, Long.MAX_VALUE)
+            timeLines[it.key] = Math.min(oldValue, it.value.minOf { it.time })
         }
 
-        val shangXiaZhiTemp = mutableMapOf<Long, ShangXiaZhi>()
         shangXiaZhiList?.groupBy {
             it.medicalOrderId
         }?.forEach {
-            shangXiaZhiTemp[it.key] = it.value.minBy { it.time }
+            val oldValue = timeLines.getOrDefault(it.key, Long.MAX_VALUE)
+            timeLines[it.key] = Math.min(oldValue, it.value.minOf { it.time })
         }
 
-        val timeLines = mutableMapOf<Long, Long>()
-        bloodOxygenTemp.forEach {
-            timeLines[it.key] = it.value.time
+        return timeLines.map {
+            cal.time = Date(it.value)
+            DateAndData(
+                year = cal.get(Calendar.YEAR),
+                month = cal.get(Calendar.MONTH) + 1,
+                day = cal.get(Calendar.DAY_OF_MONTH),
+                hour = cal.get(Calendar.HOUR),
+                minute = cal.get(Calendar.MINUTE),
+                second = cal.get(Calendar.SECOND),
+                data = it.key
+            )
         }
-        bloodPressureTemp.forEach {
-            val oldValue = timeLines.getOrDefault(it.key, Long.MAX_VALUE)
-            timeLines[it.key] = Math.min(oldValue, it.value.time)
-        }
-        heartRateTemp.forEach {
-            val oldValue = timeLines.getOrDefault(it.key, Long.MAX_VALUE)
-            timeLines[it.key] = Math.min(oldValue, it.value.time)
-        }
-        shangXiaZhiTemp.forEach {
-            val oldValue = timeLines.getOrDefault(it.key, Long.MAX_VALUE)
-            timeLines[it.key] = Math.min(oldValue, it.value.time)
-        }
-
-        val result = mutableMapOf<String, Map<Long, String>>()
-        timeLines.forEach {
-        }
-        return result
     }
 
     fun getBloodOxygenList(medicalOrderId: Long): List<BloodOxygen> {
