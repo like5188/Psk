@@ -3,11 +3,12 @@ package com.psk.shangxiazhi.history
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import com.like.common.util.mvi.propertyCollector
 import com.like.common.util.startActivity
 import com.psk.common.CommonApplication
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.databinding.ActivityHistoryBinding
-import java.util.Calendar
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
  * 历史界面
@@ -22,32 +23,62 @@ class HistoryActivity : AppCompatActivity() {
     private val mBinding: ActivityHistoryBinding by lazy {
         DataBindingUtil.setContentView(this, R.layout.activity_history)
     }
-    private val cal: Calendar by lazy {
-        Calendar.getInstance()
-    }
+    private val mViewModel: HistoryViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mBinding.tvTime.text = getTime()
         mBinding.ivLeft.setOnClickListener {
-            mBinding.tvTime.text = decrementMonthAndGet()
+            showPreTime()
         }
         mBinding.ivRight.setOnClickListener {
-            mBinding.tvTime.text = addMonthAndGet()
+            showNextTime()
+        }
+        collectUiState()
+        mViewModel.getDateList()
+    }
+
+    private fun collectUiState() {
+        mViewModel.uiState.propertyCollector(this) {
+            collectDistinctProperty(HistoryUiState::dateList) {
+                mBinding.tvTime.text = it?.lastOrNull() ?: ""
+            }
         }
     }
 
-    private fun decrementMonthAndGet(): String {
-        cal.add(Calendar.MONTH, -1)
-        return getTime()
+    private fun showPreTime() {
+        val cur = mBinding.tvTime.text.toString()
+        if (cur.isEmpty()) {
+            return
+        }
+        val dateList = mViewModel.uiState.value.dateList
+        if (dateList.isNullOrEmpty()) {
+            return
+        }
+        val index = dateList.indexOf(cur)
+        if (index < 0) {
+            return
+        }
+        if (index - 1 >= 0) {
+            mBinding.tvTime.text = dateList[index - 1]
+        }
     }
 
-    private fun addMonthAndGet(): String {
-        cal.add(Calendar.MONTH, 1)
-        return getTime()
+    private fun showNextTime() {
+        val cur = mBinding.tvTime.text.toString()
+        if (cur.isEmpty()) {
+            return
+        }
+        val dateList = mViewModel.uiState.value.dateList
+        if (dateList.isNullOrEmpty()) {
+            return
+        }
+        val index = dateList.indexOf(cur)
+        if (index < 0) {
+            return
+        }
+        if (index + 1 < dateList.size) {
+            mBinding.tvTime.text = dateList[index + 1]
+        }
     }
 
-    private fun getTime(): String {
-        return "${cal.get(Calendar.YEAR)}年${cal.get(Calendar.MONTH) + 1}月"
-    }
 }

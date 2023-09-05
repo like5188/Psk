@@ -2,6 +2,7 @@ package com.psk.shangxiazhi.util
 
 import com.psk.shangxiazhi.data.source.LoginDataSource
 import com.psk.shangxiazhi.data.source.ShangXiaZhiBusinessRepository
+import com.psk.shangxiazhi.history.HistoryViewModel
 import com.psk.shangxiazhi.login.LoginViewModel
 import com.psk.shangxiazhi.main.MainViewModel
 import com.psk.shangxiazhi.report.ReportViewModel
@@ -34,6 +35,9 @@ val shangXiaZhiModule = module {
     }
     viewModel {
         ReportViewModel()
+    }
+    viewModel {
+        HistoryViewModel()
     }
 
     //GameController
