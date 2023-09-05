@@ -14,6 +14,7 @@ import com.psk.common.util.showToast
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.databinding.ActivityMainBinding
 import com.psk.shangxiazhi.device.SelectDeviceDialogFragment
+import com.psk.shangxiazhi.history.HistoryActivity
 import com.psk.shangxiazhi.login.LoginActivity
 import com.psk.shangxiazhi.report.ReportActivity
 import com.psk.shangxiazhi.scene.SceneActivity
@@ -76,7 +77,7 @@ class MainActivity : AppCompatActivity() {
             selectSceneAndDeviceAndStartGame()
         }
         mBinding.ivTrainingRecords.setOnClickListener {
-            showToast("训练记录")
+            HistoryActivity.start()
         }
         mBinding.ivSetting.setOnClickListener {
             SettingActivity.start()
