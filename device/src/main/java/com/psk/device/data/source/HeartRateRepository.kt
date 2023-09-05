@@ -21,11 +21,12 @@ import org.koin.core.parameter.parametersOf
  */
 @OptIn(KoinApiExtension::class)
 class HeartRateRepository : KoinComponent, IRepository<HeartRate> {
-    private lateinit var dbDataSource: HeartRateDbDataSource
+    private val dbDataSource: HeartRateDbDataSource by lazy {
+        get<IDbDataSource<*>> { parametersOf(DeviceType.HeartRate) } as HeartRateDbDataSource
+    }
     private lateinit var dataSource: BaseHeartRateDataSource
 
     override fun enable(name: String, address: String) {
-        dbDataSource = get<IDbDataSource<*>> { parametersOf(DeviceType.HeartRate) } as HeartRateDbDataSource
         dataSource = get<BaseRemoteDeviceDataSource> { parametersOf(name, DeviceType.HeartRate) } as BaseHeartRateDataSource
         dataSource.enable(address)
     }

@@ -22,11 +22,12 @@ import org.koin.core.parameter.parametersOf
  */
 @OptIn(KoinApiExtension::class)
 class ShangXiaZhiRepository : KoinComponent, IRepository<ShangXiaZhi> {
-    private lateinit var dbDataSource: ShangXiaZhiDbDataSource
+    private val dbDataSource: ShangXiaZhiDbDataSource by lazy {
+        get<IDbDataSource<*>> { parametersOf(DeviceType.ShangXiaZhi) } as ShangXiaZhiDbDataSource
+    }
     private lateinit var dataSource: BaseShangXiaZhiDataSource
 
     override fun enable(name: String, address: String) {
-        dbDataSource = get<IDbDataSource<*>> { parametersOf(DeviceType.ShangXiaZhi) } as ShangXiaZhiDbDataSource
         dataSource = get<BaseRemoteDeviceDataSource> { parametersOf(name, DeviceType.ShangXiaZhi) } as BaseShangXiaZhiDataSource
         dataSource.enable(address)
     }

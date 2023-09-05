@@ -23,11 +23,12 @@ import org.koin.core.parameter.parametersOf
  */
 @OptIn(KoinApiExtension::class)
 class BloodPressureRepository : KoinComponent, IRepository<BloodPressure> {
-    private lateinit var dbDataSource: BloodPressureDbDataSource
+    private val dbDataSource: BloodPressureDbDataSource by lazy {
+        get<IDbDataSource<*>> { parametersOf(DeviceType.BloodPressure) } as BloodPressureDbDataSource
+    }
     private lateinit var dataSource: BaseBloodPressureDataSource
 
     override fun enable(name: String, address: String) {
-        dbDataSource = get<IDbDataSource<*>> { parametersOf(DeviceType.BloodPressure) } as BloodPressureDbDataSource
         dataSource = get<BaseRemoteDeviceDataSource> { parametersOf(name, DeviceType.BloodPressure) } as BaseBloodPressureDataSource
         dataSource.enable(address)
     }
