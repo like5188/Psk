@@ -73,11 +73,12 @@ class GameManagerService : Service() {
         multiBusinessManager.onReport = {
             onReport?.invoke(it)
         }
+        val medicalOrderId = System.currentTimeMillis()
         devices.forEach {
             val deviceType = it.key
             val bleScanInfo = it.value
             MultiBusinessManager.createBusinessManager(
-                lifecycleScope, deviceManager, deviceType, bleScanInfo.name, bleScanInfo.address
+                lifecycleScope, medicalOrderId, deviceManager, deviceType, bleScanInfo.name, bleScanInfo.address
             ).apply {
                 multiBusinessManager.add(deviceType, this)
                 if (this is ShangXiaZhiBusinessManager) {

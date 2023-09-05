@@ -17,7 +17,10 @@ import org.koin.core.component.inject
  * 设备相关的业务管理基类
  */
 @OptIn(KoinApiExtension::class)
-abstract class BaseBusinessManager<T>(val lifecycleScope: CoroutineScope) : KoinComponent {
+abstract class BaseBusinessManager<T>(
+    val lifecycleScope: CoroutineScope,
+    private val medicalOrderId: Long
+) : KoinComponent {
     protected val bleManager by inject<BleManager>()
     protected val gameController by inject<GameController>()
     private var job: Job? = null
@@ -28,7 +31,7 @@ abstract class BaseBusinessManager<T>(val lifecycleScope: CoroutineScope) : Koin
             return
         }
         job = lifecycleScope.launch(Dispatchers.IO) {
-            handleFlow(repository.getFlow(this, 1))
+            handleFlow(repository.getFlow(this, medicalOrderId))
         }
     }
 

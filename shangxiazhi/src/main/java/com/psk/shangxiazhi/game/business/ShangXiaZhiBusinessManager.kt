@@ -25,10 +25,11 @@ import kotlin.math.min
 @OptIn(KoinApiExtension::class)
 class ShangXiaZhiBusinessManager(
     lifecycleScope: CoroutineScope,
+    medicalOrderId: Long,
     deviceManager: DeviceManager,
     deviceName: String,
     deviceAddress: String,
-) : BaseBusinessManager<ShangXiaZhi>(lifecycleScope), KoinComponent {
+) : BaseBusinessManager<ShangXiaZhi>(lifecycleScope, medicalOrderId), KoinComponent {
     override val repository = deviceManager.createRepository<ShangXiaZhiRepository>(DeviceType.ShangXiaZhi).apply {
         enable(deviceName, deviceAddress)
         setCallback(onStart = { onStartGame?.invoke() }, onPause = { onPauseGame?.invoke() }, onOver = { onOverGame?.invoke() })

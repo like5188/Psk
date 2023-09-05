@@ -23,10 +23,11 @@ import kotlin.math.min
 
 class HeartRateBusinessManager(
     lifecycleScope: CoroutineScope,
+    medicalOrderId: Long,
     deviceManager: DeviceManager,
     deviceName: String,
     deviceAddress: String,
-) : BaseBusinessManager<HeartRate>(lifecycleScope) {
+) : BaseBusinessManager<HeartRate>(lifecycleScope, medicalOrderId) {
     override val repository = deviceManager.createRepository<HeartRateRepository>(DeviceType.HeartRate).apply {
         enable(deviceName, deviceAddress)
     }

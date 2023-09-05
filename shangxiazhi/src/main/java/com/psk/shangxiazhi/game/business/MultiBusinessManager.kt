@@ -111,6 +111,7 @@ class MultiBusinessManager : RemoteCallback.Stub(), KoinComponent {
 
         fun createBusinessManager(
             lifecycleScope: CoroutineScope,
+            medicalOrderId: Long,
             deviceManager: DeviceManager,
             deviceType: DeviceType,
             deviceName: String,
@@ -119,10 +120,20 @@ class MultiBusinessManager : RemoteCallback.Stub(), KoinComponent {
             val className = "${BaseBusinessManager::class.java.`package`?.name}.${deviceType.name}BusinessManager"
             val clazz = Class.forName(className)
             val constructor = clazz.getConstructor(
-                CoroutineScope::class.java, DeviceManager::class.java, String::class.java, String::class.java
+                CoroutineScope::class.java,
+                Long::class.java,
+                DeviceManager::class.java,
+                String::class.java,
+                String::class.java
             )
             constructor.isAccessible = true
-            return constructor.newInstance(lifecycleScope, deviceManager, deviceName, deviceAddress) as BaseBusinessManager<*>
+            return constructor.newInstance(
+                lifecycleScope,
+                medicalOrderId,
+                deviceManager,
+                deviceName,
+                deviceAddress
+            ) as BaseBusinessManager<*>
         }
     }
 }

@@ -14,10 +14,11 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 
 class BloodPressureBusinessManager(
     lifecycleScope: CoroutineScope,
+    medicalOrderId: Long,
     deviceManager: DeviceManager,
     deviceName: String,
     deviceAddress: String,
-) : BaseBusinessManager<BloodPressure>(lifecycleScope) {
+) : BaseBusinessManager<BloodPressure>(lifecycleScope, medicalOrderId) {
     override val repository = deviceManager.createRepository<BloodPressureRepository>(DeviceType.BloodPressure).apply {
         enable(deviceName, deviceAddress)
     }
