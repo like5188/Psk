@@ -20,7 +20,7 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         lifecycleScope.launch {
             var isLogin: Boolean
-            val remain = 2000 - measureTimeMillis {
+            val remain = 1000 - measureTimeMillis {
                 isLogin = mViewModel.isLogin(this@SplashActivity)
             }
             if (remain > 0) {
