@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity() {
     private val mViewModel: MainViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(R.style.Theme_app) // 取消闪屏页主页，设置为原主题
+        setTheme(R.style.Theme_App) // 取消闪屏页主页，设置为原主题
         super.onCreate(savedInstanceState)
         mViewModel.bindGameManagerService(this)
         mBinding.ivAutonomyTraining.setOnClickListener {
