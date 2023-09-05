@@ -24,7 +24,12 @@ class HistoryActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mBinding
+        mBinding.ivLeft.setOnClickListener {
+
+        }
+        mBinding.ivRight.setOnClickListener {
+
+        }
     }
 
 }

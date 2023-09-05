@@ -13,14 +13,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.3" />
+            app:layout_constraintGuide_percent="0.35" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guidelineRight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.7" />
+            app:layout_constraintGuide_percent="0.65" />
 
         <TextView
             android:id="@+id/tvTitle"
@@ -37,7 +37,7 @@
 
         <View
             android:layout_width="0dp"
-            android:layout_height="40dp"
+            android:layout_height="50dp"
             android:background="#292a2d"
             app:layout_constraintBottom_toBottomOf="@id/ivLeft"
             app:layout_constraintEnd_toStartOf="@id/guidelineRight"
@@ -47,7 +47,7 @@
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/ivLeft"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:layout_marginTop="30dp"
             android:src="@drawable/history_leftbtn_choose"
             app:layout_constraintStart_toEndOf="@id/guidelineLeft"
@@ -55,7 +55,7 @@
 
         <TextView
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:gravity="center"
             android:textColor="@color/white"
             android:textSize="24sp"
@@ -69,7 +69,7 @@
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/ivRight"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:src="@drawable/history_rightbtn_choose"
             app:layout_constraintBottom_toBottomOf="@id/ivLeft"
             app:layout_constraintEnd_toStartOf="@id/guidelineRight"
