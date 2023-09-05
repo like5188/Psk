@@ -58,6 +58,7 @@ class RKF_ShangXiaZhiDataSource : BaseShangXiaZhiDataSource(DeviceType.ShangXiaZ
                     res = res,
                     intelligence = intelligence,
                     direction = direction,
+                    medicalOrderId = medicalOrderId
                 )
                 onStart?.invoke()
                 trySend(shangXiaZhi)
