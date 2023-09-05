@@ -40,7 +40,9 @@ class HistoryViewModel : ViewModel(), KoinComponent {
     private var heartRateList: List<HeartRate>? = null
     private var shangXiaZhiList: List<ShangXiaZhi>? = null
     private var getAllHistoryDataAndEmitJob: Job? = null
-    private lateinit var dateList: List<String>
+
+    // Map<某天日期, Map<medicalOrderId, 这天中的某个时间>>
+    private lateinit var datas: Map<String, Map<Long, String>>
 
     init {
         getHistoryDataAndCache()
@@ -61,46 +63,74 @@ class HistoryViewModel : ViewModel(), KoinComponent {
                 return@launch
             }
             // 获取所有训练的开始时间的集合
-            dateList = getDataTimeLines(bloodOxygenList, bloodPressureList, heartRateList, shangXiaZhiList)
-            _uiState.update {
-                it.copy(showTime = dateList.lastOrNull())
-            }
+//            dates = getDataTimeLines(bloodOxygenList, bloodPressureList, heartRateList, shangXiaZhiList)
+//            val lastDate = dates.values.lastOrNull()
+//            if (lastDate != null) {
+//                _uiState.update {
+//                    it.copy(showTime = sdf.format(lastDate))
+//                }
+//            }
         }
     }
 
     /**
-     * 获取所有训练的开始时间的集合。
+     * @return Map<某天日期, Map<medicalOrderId, 这天中的某个时间>>
      */
     private fun getDataTimeLines(
         bloodOxygenList: List<BloodOxygen>?,
         bloodPressureList: List<BloodPressure>?,
         heartRateList: List<HeartRate>?,
         shangXiaZhiList: List<ShangXiaZhi>?
-    ): List<String> {
-        val bloodOxygenTimeLines = bloodOxygenList?.groupBy {
+    ): Map<String, Map<Long, String>> {
+        val bloodOxygenTemp = mutableMapOf<Long, BloodOxygen>()
+        bloodOxygenList?.groupBy {
             it.medicalOrderId
-        }?.map {
-            sdf.format(it.value.first().time)
-        } ?: emptyList()
-        val bloodPressureTimeLines = bloodPressureList?.groupBy {
+        }?.forEach {
+            bloodOxygenTemp[it.key] = it.value.minBy { it.time }
+        }
+
+        val bloodPressureTemp = mutableMapOf<Long, BloodPressure>()
+        bloodPressureList?.groupBy {
             it.medicalOrderId
-        }?.map {
-            sdf.format(it.value.first().time)
-        } ?: emptyList()
-        val heartRateTimeLines = heartRateList?.groupBy {
+        }?.forEach {
+            bloodPressureTemp[it.key] = it.value.minBy { it.time }
+        }
+
+        val heartRateTemp = mutableMapOf<Long, HeartRate>()
+        heartRateList?.groupBy {
             it.medicalOrderId
-        }?.map {
-            sdf.format(it.value.first().time)
-        } ?: emptyList()
-        val shangXiaZhiTimeLines = shangXiaZhiList?.groupBy {
+        }?.forEach {
+            heartRateTemp[it.key] = it.value.minBy { it.time }
+        }
+
+        val shangXiaZhiTemp = mutableMapOf<Long, ShangXiaZhi>()
+        shangXiaZhiList?.groupBy {
             it.medicalOrderId
-        }?.map {
-            sdf.format(it.value.first().time)
-        } ?: emptyList()
-        val timeLines = sortedSetOf(
-            *(bloodOxygenTimeLines + bloodPressureTimeLines + heartRateTimeLines + shangXiaZhiTimeLines).toTypedArray()
-        )
-        return timeLines.toList()
+        }?.forEach {
+            shangXiaZhiTemp[it.key] = it.value.minBy { it.time }
+        }
+
+        val timeLines = mutableMapOf<Long, Long>()
+        bloodOxygenTemp.forEach {
+            timeLines[it.key] = it.value.time
+        }
+        bloodPressureTemp.forEach {
+            val oldValue = timeLines.getOrDefault(it.key, Long.MAX_VALUE)
+            timeLines[it.key] = Math.min(oldValue, it.value.time)
+        }
+        heartRateTemp.forEach {
+            val oldValue = timeLines.getOrDefault(it.key, Long.MAX_VALUE)
+            timeLines[it.key] = Math.min(oldValue, it.value.time)
+        }
+        shangXiaZhiTemp.forEach {
+            val oldValue = timeLines.getOrDefault(it.key, Long.MAX_VALUE)
+            timeLines[it.key] = Math.min(oldValue, it.value.time)
+        }
+
+        val result = mutableMapOf<String, Map<Long, String>>()
+        timeLines.forEach {
+        }
+        return result
     }
 
     fun getBloodOxygenList(medicalOrderId: Long): List<BloodOxygen> {
@@ -124,19 +154,19 @@ class HistoryViewModel : ViewModel(), KoinComponent {
         if (cur.isNullOrEmpty()) {
             return
         }
-        val dateList = this.dateList
-        if (dateList.isEmpty()) {
-            return
-        }
-        val index = dateList.indexOf(cur)
-        if (index < 0) {
-            return
-        }
-        if (index - 1 >= 0) {
-            _uiState.update {
-                it.copy(showTime = dateList[index - 1])
-            }
-        }
+//        val dateList = this.dates
+//        if (dateList.isEmpty()) {
+//            return
+//        }
+//        val index = dateList.indexOf(cur)
+//        if (index < 0) {
+//            return
+//        }
+//        if (index - 1 >= 0) {
+//            _uiState.update {
+//                it.copy(showTime = dateList[index - 1])
+//            }
+//        }
     }
 
     fun getNextTime() {
@@ -144,19 +174,19 @@ class HistoryViewModel : ViewModel(), KoinComponent {
         if (cur.isNullOrEmpty()) {
             return
         }
-        val dateList = this.dateList
-        if (dateList.isEmpty()) {
-            return
-        }
-        val index = dateList.indexOf(cur)
-        if (index < 0) {
-            return
-        }
-        if (index + 1 >= 0) {
-            _uiState.update {
-                it.copy(showTime = dateList[index + 1])
-            }
-        }
+//        val dateList = this.dates
+//        if (dateList.isEmpty()) {
+//            return
+//        }
+//        val index = dateList.indexOf(cur)
+//        if (index < 0) {
+//            return
+//        }
+//        if (index + 1 >= 0) {
+//            _uiState.update {
+//                it.copy(showTime = dateList[index + 1])
+//            }
+//        }
     }
 
     companion object {
