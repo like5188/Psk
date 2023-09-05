@@ -1,12 +1,5 @@
 package com.psk.shangxiazhi
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 
@@ -18,28 +11,65 @@ import org.junit.Test
 class ExampleUnitTest {
     @Test
     fun addition_isCorrect() = runBlocking {
-        val job = launch {
-            testDelay(this).collectLatest {
-                println(it)
-            }
-        }
-        delay(6000)
-        job.cancel()
-        println("44444444444")
+        val bloodOxygenList = listOf(
+            AAA(5, 100),
+            AAA(3, 100),
+            AAA(114, 101),
+        )
+        val bloodPressureList = listOf(
+            AAA(1, 100),
+            AAA(7, 100),
+            AAA(112, 101),
+            AAA(113, 101),
+        )
+        val heartRateList = listOf(
+            AAA(8, 100),
+            AAA(111, 101),
+        )
+        val shangXiaZhiList = listOf(
+            AAA(2, 100),
+            AAA(4, 100),
+            AAA(6, 100),
+            AAA(110, 101),
+        )
+        // 1,110
+        println(getDataTimeLines(bloodOxygenList, bloodPressureList, heartRateList, shangXiaZhiList))
     }
 
-    /**
-     * 测试 delay 实际延迟。
-     * 由于系统资源的调度损耗，延迟会比设置的值增加10多毫秒，所以延迟10多毫秒以下毫无意义，因为根本不可能达到。
-     */
-    private fun testDelay(scope: CoroutineScope): Flow<Int> {
-        println("1111111111")
-        scope.launch {
-            flowOf(10, 11, 12).onEach { delay(1000) }.collectLatest {
-                println(it)
-            }
-        }
-        println("3333333333333")
-        return flowOf(0, 1, 2).onEach { delay(1000) }
+    data class AAA(
+        val time: Long = System.currentTimeMillis() / 1000,
+        val medicalOrderId: Long
+    )
+
+    private fun getDataTimeLines(
+        bloodOxygenList: List<AAA>?,
+        bloodPressureList: List<AAA>?,
+        heartRateList: List<AAA>?,
+        shangXiaZhiList: List<AAA>?
+    ): List<Long> {
+        val bloodOxygenTimeLines = bloodOxygenList?.groupBy {
+            it.medicalOrderId
+        }?.map {
+            it.value.first().time
+        } ?: emptyList()
+        val bloodPressureTimeLines = bloodPressureList?.groupBy {
+            it.medicalOrderId
+        }?.map {
+            it.value.first().time
+        } ?: emptyList()
+        val heartRateTimeLines = heartRateList?.groupBy {
+            it.medicalOrderId
+        }?.map {
+            it.value.first().time
+        } ?: emptyList()
+        val shangXiaZhiTimeLines = shangXiaZhiList?.groupBy {
+            it.medicalOrderId
+        }?.map {
+            it.value.first().time
+        } ?: emptyList()
+        val timeLines = sortedSetOf(
+            *(bloodOxygenTimeLines + bloodPressureTimeLines + heartRateTimeLines + shangXiaZhiTimeLines).toTypedArray()
+        )
+        return timeLines.toList()
     }
 }
