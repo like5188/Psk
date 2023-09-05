@@ -47,6 +47,17 @@ abstract class BaseDao<T> {
     abstract suspend fun delete(vararg t: T): Int
 
     /**
+     * 获取所有数据
+     */
+    suspend fun getAll(): List<T>? {
+        val query = SimpleSQLiteQuery("SELECT * FROM $tableName")
+        return getAll(query)
+    }
+
+    @RawQuery
+    protected abstract suspend fun getAll(query: SupportSQLiteQuery): List<T>?
+
+    /**
      * 获取指定医嘱id的数据
      */
     suspend fun getByMedicalOrderId(medicalOrderId: Long): List<T>? {

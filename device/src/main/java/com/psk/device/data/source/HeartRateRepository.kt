@@ -31,6 +31,10 @@ class HeartRateRepository : KoinComponent, IRepository<HeartRate> {
         dataSource.enable(address)
     }
 
+    override suspend fun getAll(): List<HeartRate>? {
+        return dbDataSource.getAll()
+    }
+
     override suspend fun getListByMedicalOrderId(medicalOrderId: Long): List<HeartRate>? {
         return dbDataSource.getByMedicalOrderId(medicalOrderId)
     }

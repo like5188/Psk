@@ -32,6 +32,10 @@ class ShangXiaZhiRepository : KoinComponent, IRepository<ShangXiaZhi> {
         dataSource.enable(address)
     }
 
+    override suspend fun getAll(): List<ShangXiaZhi>? {
+        return dbDataSource.getAll()
+    }
+
     override suspend fun getListByMedicalOrderId(medicalOrderId: Long): List<ShangXiaZhi>? {
         return dbDataSource.getByMedicalOrderId(medicalOrderId)
     }

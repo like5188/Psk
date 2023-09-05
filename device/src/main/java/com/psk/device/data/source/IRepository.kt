@@ -10,6 +10,8 @@ interface IRepository<T> {
      */
     fun enable(name: String, address: String)
 
+    suspend fun getAll(): List<T>?
+
     suspend fun getListByMedicalOrderId(medicalOrderId: Long): List<T>?
 
     fun getFlow(scope: CoroutineScope, medicalOrderId: Long, interval: Long = 1000): Flow<T>

@@ -12,6 +12,10 @@ class ShangXiaZhiDbDataSource(
         return shangXiaZhiDao.listenLatest(startTime)
     }
 
+    override suspend fun getAll(): List<ShangXiaZhi>? {
+        return shangXiaZhiDao.getAll()
+    }
+
     override suspend fun getByMedicalOrderId(medicalOrderId: Long): List<ShangXiaZhi>? {
         return shangXiaZhiDao.getByMedicalOrderId(medicalOrderId)
     }

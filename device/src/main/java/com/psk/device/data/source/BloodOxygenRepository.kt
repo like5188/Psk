@@ -33,6 +33,10 @@ class BloodOxygenRepository : KoinComponent, IRepository<BloodOxygen> {
         dataSource.enable(address)
     }
 
+    override suspend fun getAll(): List<BloodOxygen>? {
+        return dbDataSource.getAll()
+    }
+
     override suspend fun getListByMedicalOrderId(medicalOrderId: Long): List<BloodOxygen>? {
         return dbDataSource.getByMedicalOrderId(medicalOrderId)
     }

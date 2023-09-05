@@ -12,6 +12,10 @@ class HeartRateDbDataSource(
         return heartRateDao.listenLatest(startTime)
     }
 
+    override suspend fun getAll(): List<HeartRate>? {
+        return heartRateDao.getAll()
+    }
+
     override suspend fun getByMedicalOrderId(medicalOrderId: Long): List<HeartRate>? {
         return heartRateDao.getByMedicalOrderId(medicalOrderId)
     }

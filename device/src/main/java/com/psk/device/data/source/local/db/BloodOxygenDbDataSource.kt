@@ -12,6 +12,10 @@ class BloodOxygenDbDataSource(
         return bloodOxygenDao.listenLatest(startTime)
     }
 
+    override suspend fun getAll(): List<BloodOxygen>? {
+        return bloodOxygenDao.getAll()
+    }
+
     override suspend fun getByMedicalOrderId(medicalOrderId: Long): List<BloodOxygen>? {
         return bloodOxygenDao.getByMedicalOrderId(medicalOrderId)
     }
