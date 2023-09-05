@@ -19,7 +19,7 @@ class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         lifecycleScope.launch {
-            var isLogin = false
+            var isLogin: Boolean
             val remain = 2000 - measureTimeMillis {
                 isLogin = mViewModel.isLogin(this@SplashActivity)
             }
