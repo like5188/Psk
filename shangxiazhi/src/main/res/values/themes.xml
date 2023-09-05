@@ -13,14 +13,4 @@
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
-
-    <!-- 设置启动页的 style -->
-    <style name="Theme.Splash" parent="Theme.App">
-        <!-- 设置启动页背景图片 -->
-        <item name="android:windowBackground">@drawable/splash</item>
-        <!-- 设置背景图片为全屏显示 -->
-        <item name="android:windowFullscreen">true</item>
-        <!-- 设置导航栏透明 -->
-        <item name="android:navigationBarColor">@android:color/transparent</item>
-    </style>
 </resources>
