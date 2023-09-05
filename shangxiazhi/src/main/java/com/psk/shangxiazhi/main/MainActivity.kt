@@ -21,7 +21,6 @@ import com.psk.shangxiazhi.scene.SceneActivity
 import com.psk.shangxiazhi.setting.SettingActivity
 import com.twsz.twsystempre.TrainScene
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.concurrent.atomic.AtomicBoolean
@@ -60,8 +59,6 @@ class MainActivity : AppCompatActivity() {
             }
         })
         lifecycleScope.launch(Dispatchers.IO) {
-            // 让闪屏界面停留至少1秒钟
-            delay(1000)
             if (mViewModel.isLogin(this@MainActivity)) {
                 isSplash.set(false)
             } else {
