@@ -1,6 +1,5 @@
 package com.psk.shangxiazhi.history
 
-import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -41,6 +40,7 @@ class HistoryViewModel : ViewModel(), KoinComponent {
     private var heartRateList: List<HeartRate>? = null
     private var shangXiaZhiList: List<ShangXiaZhi>? = null
     private var getAllHistoryDataAndEmitJob: Job? = null
+    private lateinit var dateList: List<String>
 
     init {
         getHistoryDataAndCache()
@@ -57,29 +57,106 @@ class HistoryViewModel : ViewModel(), KoinComponent {
             Log.i(TAG, "bloodPressureList=$bloodPressureList")
             Log.i(TAG, "heartRateList=$heartRateList")
             Log.i(TAG, "shangXiaZhiList=$shangXiaZhiList")
-        }
-    }
-
-    fun getDateList() {
-        viewModelScope.launch(Dispatchers.IO) {
+            if (bloodOxygenList.isNullOrEmpty() && bloodPressureList.isNullOrEmpty() && heartRateList.isNullOrEmpty() && shangXiaZhiList.isNullOrEmpty()) {
+                return@launch
+            }
+            // 获取所有训练的开始时间的集合
+            dateList = getDataTimeLines(bloodOxygenList, bloodPressureList, heartRateList, shangXiaZhiList)
             _uiState.update {
-                it.copy(
-                    dateList = listOf(
-                        "2019年05月",
-                        "2020年01月",
-                        "2020年03月",
-                        "2020年04月",
-                        "2020年08月",
-                        "2020年11月",
-                        "2021年03月",
-                    )
-                )
+                it.copy(showTime = dateList.lastOrNull())
             }
         }
     }
 
-    fun getShangXiaZhiListByMedicalOrderId(context: Context): List<ShangXiaZhi> {
+    /**
+     * 获取所有训练的开始时间的集合。
+     */
+    private fun getDataTimeLines(
+        bloodOxygenList: List<BloodOxygen>?,
+        bloodPressureList: List<BloodPressure>?,
+        heartRateList: List<HeartRate>?,
+        shangXiaZhiList: List<ShangXiaZhi>?
+    ): List<String> {
+        val bloodOxygenTimeLines: List<String> = bloodOxygenList?.groupBy {
+            it.medicalOrderId
+        }?.map {
+            sdf.format(it.value.first().time)
+        } ?: emptyList()
+        val bloodPressureTimeLines: List<String> = bloodPressureList?.groupBy {
+            it.medicalOrderId
+        }?.map {
+            sdf.format(it.value.first().time)
+        } ?: emptyList()
+        val heartRateTimeLines: List<String> = heartRateList?.groupBy {
+            it.medicalOrderId
+        }?.map {
+            sdf.format(it.value.first().time)
+        } ?: emptyList()
+        val shangXiaZhiTimeLines: List<String> = shangXiaZhiList?.groupBy {
+            it.medicalOrderId
+        }?.map {
+            sdf.format(it.value.first().time)
+        } ?: emptyList()
+        val timeLines = sortedSetOf(
+            *(bloodOxygenTimeLines + bloodPressureTimeLines + heartRateTimeLines + shangXiaZhiTimeLines).toTypedArray()
+        )
+        return timeLines.toList()
+    }
+
+    fun getBloodOxygenList(medicalOrderId: Long): List<BloodOxygen> {
         return emptyList()
+    }
+
+    fun getBloodPressureList(medicalOrderId: Long): List<BloodPressure> {
+        return emptyList()
+    }
+
+    fun getHeartRateList(medicalOrderId: Long): List<HeartRate> {
+        return emptyList()
+    }
+
+    fun getShangXiaZhiList(medicalOrderId: Long): List<ShangXiaZhi> {
+        return emptyList()
+    }
+
+    fun getPreTime() {
+        val cur = _uiState.value.showTime
+        if (cur.isNullOrEmpty()) {
+            return
+        }
+        val dateList = this.dateList
+        if (dateList.isEmpty()) {
+            return
+        }
+        val index = dateList.indexOf(cur)
+        if (index < 0) {
+            return
+        }
+        if (index - 1 >= 0) {
+            _uiState.update {
+                it.copy(showTime = dateList[index - 1])
+            }
+        }
+    }
+
+    fun getNextTime() {
+        val cur = _uiState.value.showTime
+        if (cur.isNullOrEmpty()) {
+            return
+        }
+        val dateList = this.dateList
+        if (dateList.isEmpty()) {
+            return
+        }
+        val index = dateList.indexOf(cur)
+        if (index < 0) {
+            return
+        }
+        if (index + 1 >= 0) {
+            _uiState.update {
+                it.copy(showTime = dateList[index + 1])
+            }
+        }
     }
 
     companion object {

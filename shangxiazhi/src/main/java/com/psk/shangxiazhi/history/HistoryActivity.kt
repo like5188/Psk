@@ -28,56 +28,19 @@ class HistoryActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mBinding.ivLeft.setOnClickListener {
-            showPreTime()
+            mViewModel.getPreTime()
         }
         mBinding.ivRight.setOnClickListener {
-            showNextTime()
+            mViewModel.getNextTime()
         }
         collectUiState()
-        mViewModel.getDateList()
     }
 
     private fun collectUiState() {
         mViewModel.uiState.propertyCollector(this) {
-            collectDistinctProperty(HistoryUiState::dateList) {
-                mBinding.tvTime.text = it?.lastOrNull() ?: ""
+            collectDistinctProperty(HistoryUiState::showTime) {
+                mBinding.tvTime.text = it ?: ""
             }
-        }
-    }
-
-    private fun showPreTime() {
-        val cur = mBinding.tvTime.text.toString()
-        if (cur.isEmpty()) {
-            return
-        }
-        val dateList = mViewModel.uiState.value.dateList
-        if (dateList.isNullOrEmpty()) {
-            return
-        }
-        val index = dateList.indexOf(cur)
-        if (index < 0) {
-            return
-        }
-        if (index - 1 >= 0) {
-            mBinding.tvTime.text = dateList[index - 1]
-        }
-    }
-
-    private fun showNextTime() {
-        val cur = mBinding.tvTime.text.toString()
-        if (cur.isEmpty()) {
-            return
-        }
-        val dateList = mViewModel.uiState.value.dateList
-        if (dateList.isNullOrEmpty()) {
-            return
-        }
-        val index = dateList.indexOf(cur)
-        if (index < 0) {
-            return
-        }
-        if (index + 1 < dateList.size) {
-            mBinding.tvTime.text = dateList[index + 1]
         }
     }
 
