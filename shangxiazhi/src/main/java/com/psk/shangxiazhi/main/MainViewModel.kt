@@ -9,6 +9,7 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import com.psk.common.util.SecondCountDownTimer
+import com.psk.shangxiazhi.data.source.ShangXiaZhiBusinessRepository
 import com.psk.shangxiazhi.game.GameManagerService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,7 +22,9 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 @OptIn(KoinApiExtension::class)
-class MainViewModel : ViewModel(), KoinComponent {
+class MainViewModel(
+    private val shangXiaZhiBusinessRepository: ShangXiaZhiBusinessRepository,
+) : ViewModel(), KoinComponent {
     private val _uiState = MutableStateFlow(MainUiState())
     val uiState = _uiState.asStateFlow()
     private val sdf: SimpleDateFormat by inject(named("yyyy-MM-dd HH:mm:ss"))
@@ -58,6 +61,10 @@ class MainViewModel : ViewModel(), KoinComponent {
 
     init {
         countDownTimer.start()
+    }
+
+    fun isLogin(context: Context): Boolean {
+        return shangXiaZhiBusinessRepository.isLogin(context)
     }
 
     fun bindGameManagerService(context: Context) {
