@@ -77,22 +77,22 @@ class HistoryViewModel : ViewModel(), KoinComponent {
         heartRateList: List<HeartRate>?,
         shangXiaZhiList: List<ShangXiaZhi>?
     ): List<String> {
-        val bloodOxygenTimeLines: List<String> = bloodOxygenList?.groupBy {
+        val bloodOxygenTimeLines = bloodOxygenList?.groupBy {
             it.medicalOrderId
         }?.map {
             sdf.format(it.value.first().time)
         } ?: emptyList()
-        val bloodPressureTimeLines: List<String> = bloodPressureList?.groupBy {
+        val bloodPressureTimeLines = bloodPressureList?.groupBy {
             it.medicalOrderId
         }?.map {
             sdf.format(it.value.first().time)
         } ?: emptyList()
-        val heartRateTimeLines: List<String> = heartRateList?.groupBy {
+        val heartRateTimeLines = heartRateList?.groupBy {
             it.medicalOrderId
         }?.map {
             sdf.format(it.value.first().time)
         } ?: emptyList()
-        val shangXiaZhiTimeLines: List<String> = shangXiaZhiList?.groupBy {
+        val shangXiaZhiTimeLines = shangXiaZhiList?.groupBy {
             it.medicalOrderId
         }?.map {
             sdf.format(it.value.first().time)
