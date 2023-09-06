@@ -17,12 +17,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import org.koin.core.qualifier.named
-import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 
@@ -30,7 +29,6 @@ import java.util.Date
 class HistoryViewModel : ViewModel(), KoinComponent {
     private val _uiState = MutableStateFlow(HistoryUiState())
     val uiState = _uiState.asStateFlow()
-    private val sdf: SimpleDateFormat by inject(named("yyyy年MM月"))
     private val deviceManager by inject<DeviceManager>()
     private val bloodOxygenRepository = deviceManager.createRepository<BloodOxygenRepository>(DeviceType.BloodOxygen)
     private val bloodPressureRepository = deviceManager.createRepository<BloodPressureRepository>(DeviceType.BloodPressure)
@@ -41,7 +39,7 @@ class HistoryViewModel : ViewModel(), KoinComponent {
     private var heartRateList: List<HeartRate>? = null
     private var shangXiaZhiList: List<ShangXiaZhi>? = null
     private var getAllHistoryDataAndEmitJob: Job? = null
-    private lateinit var datas: List<DateAndData>
+    private lateinit var datas: Map<String, List<DateAndData>>
 
     init {
         getHistoryDataAndCache()
@@ -62,13 +60,17 @@ class HistoryViewModel : ViewModel(), KoinComponent {
                 return@launch
             }
 
-            datas = transform(bloodOxygenList, bloodPressureList, heartRateList, shangXiaZhiList)
-//            val lastDate = dates.values.lastOrNull()
-//            if (lastDate != null) {
-//                _uiState.update {
-//                    it.copy(showTime = sdf.format(lastDate))
-//                }
-//            }
+            datas = transform(bloodOxygenList, bloodPressureList, heartRateList, shangXiaZhiList).groupBy {
+                "${it.year}年${it.month}月"
+            }
+            _uiState.update {
+                val key = datas.keys.lastOrNull()
+                val value = datas[key]
+                it.copy(
+                    showTime = key,
+                    dateAndDataList = value
+                )
+            }
         }
     }
 
@@ -127,40 +129,29 @@ class HistoryViewModel : ViewModel(), KoinComponent {
         }
     }
 
-    fun getBloodOxygenList(medicalOrderId: Long): List<BloodOxygen> {
-        return emptyList()
-    }
-
-    fun getBloodPressureList(medicalOrderId: Long): List<BloodPressure> {
-        return emptyList()
-    }
-
-    fun getHeartRateList(medicalOrderId: Long): List<HeartRate> {
-        return emptyList()
-    }
-
-    fun getShangXiaZhiList(medicalOrderId: Long): List<ShangXiaZhi> {
-        return emptyList()
-    }
-
     fun getPreTime() {
         val cur = _uiState.value.showTime
         if (cur.isNullOrEmpty()) {
             return
         }
-//        val dateList = this.dates
-//        if (dateList.isEmpty()) {
-//            return
-//        }
-//        val index = dateList.indexOf(cur)
-//        if (index < 0) {
-//            return
-//        }
-//        if (index - 1 >= 0) {
-//            _uiState.update {
-//                it.copy(showTime = dateList[index - 1])
-//            }
-//        }
+        val dates = this.datas.keys.toList()
+        if (dates.isEmpty()) {
+            return
+        }
+        val index = dates.indexOf(cur)
+        if (index < 0) {
+            return
+        }
+        if (index - 1 >= 0) {
+            _uiState.update {
+                val key = dates[index - 1]
+                val value = this.datas[key]
+                it.copy(
+                    showTime = key,
+                    dateAndDataList = value
+                )
+            }
+        }
     }
 
     fun getNextTime() {
@@ -168,19 +159,24 @@ class HistoryViewModel : ViewModel(), KoinComponent {
         if (cur.isNullOrEmpty()) {
             return
         }
-//        val dateList = this.dates
-//        if (dateList.isEmpty()) {
-//            return
-//        }
-//        val index = dateList.indexOf(cur)
-//        if (index < 0) {
-//            return
-//        }
-//        if (index + 1 >= 0) {
-//            _uiState.update {
-//                it.copy(showTime = dateList[index + 1])
-//            }
-//        }
+        val dates = this.datas.keys.toList()
+        if (dates.isEmpty()) {
+            return
+        }
+        val index = dates.indexOf(cur)
+        if (index < 0) {
+            return
+        }
+        if (index + 1 < dates.size) {
+            _uiState.update {
+                val key = dates[index + 1]
+                val value = this.datas[key]
+                it.copy(
+                    showTime = key,
+                    dateAndDataList = value
+                )
+            }
+        }
     }
 
     companion object {

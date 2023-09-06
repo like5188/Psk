@@ -41,6 +41,9 @@ class HistoryActivity : AppCompatActivity() {
             collectDistinctProperty(HistoryUiState::showTime) {
                 mBinding.tvTime.text = it ?: ""
             }
+            collectDistinctProperty(HistoryUiState::dateAndDataList) {
+                println(it)
+            }
         }
     }
 
