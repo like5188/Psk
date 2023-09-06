@@ -13,6 +13,7 @@ import com.psk.device.data.source.BloodOxygenRepository
 import com.psk.device.data.source.BloodPressureRepository
 import com.psk.device.data.source.HeartRateRepository
 import com.psk.device.data.source.ShangXiaZhiRepository
+import com.psk.shangxiazhi.data.model.IReport
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -177,6 +178,10 @@ class HistoryViewModel : ViewModel(), KoinComponent {
                 )
             }
         }
+    }
+
+    fun getReports(medicalOrderId: Long): List<IReport> {
+        return emptyList()
     }
 
     companion object {

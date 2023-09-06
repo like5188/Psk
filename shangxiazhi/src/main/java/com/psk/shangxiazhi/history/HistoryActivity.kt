@@ -9,6 +9,7 @@ import com.like.recyclerview.layoutmanager.WrapLinearLayoutManager
 import com.psk.common.CommonApplication
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.databinding.ActivityHistoryBinding
+import com.psk.shangxiazhi.report.ReportActivity
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
@@ -29,7 +30,8 @@ class HistoryActivity : AppCompatActivity() {
         HistoryListAdapter().apply {
             addOnItemClickListener {
                 val dateAndData = currentList[it.bindingAdapterPosition]
-                println(dateAndData)
+                val medicalOrderId = dateAndData?.data ?: return@addOnItemClickListener
+                ReportActivity.start(mViewModel.getReports(medicalOrderId))
             }
         }
     }
