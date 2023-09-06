@@ -27,34 +27,8 @@ class HistoryListAdapter : BaseListAdapter<ItemHistoryBinding, DateAndData>(DIFF
 
     override fun onBindViewHolder(holder: BindingViewHolder<ItemHistoryBinding>, item: DateAndData?) {
         item ?: return
-        val month = if (item.month!! < 10) {
-            "0${item.month}"
-        } else {
-            item.month.toString()
-        }
-        val day = if (item.day!! < 10) {
-            "0${item.day}"
-        } else {
-            item.day.toString()
-        }
-        holder.binding.tvDate.text = "${month}月${day}日"
-
-        val hour = if (item.hour!! < 10) {
-            "0${item.hour}"
-        } else {
-            item.hour.toString()
-        }
-        val minute = if (item.minute!! < 10) {
-            "0${item.minute}"
-        } else {
-            item.minute.toString()
-        }
-        val second = if (item.second!! < 10) {
-            "0${item.second}"
-        } else {
-            item.second.toString()
-        }
-        holder.binding.tvTime.text = "${hour}:${minute}:${second}"
+        holder.binding.tvDate.text = "${item.month.format2()}月${item.day.format2()}日"
+        holder.binding.tvTime.text = "${item.hour.format2()}:${item.minute.format2()}:${item.second.format2()}"
     }
 
     override fun getItemViewType(position: Int, item: DateAndData?): Int {

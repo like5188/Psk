@@ -61,12 +61,7 @@ class HistoryViewModel : ViewModel(), KoinComponent {
             }
 
             datas = transform(bloodOxygenList, bloodPressureList, heartRateList, shangXiaZhiList).groupBy {
-                val month = if (it.month!! < 10) {
-                    "0${it.month}"
-                } else {
-                    it.month.toString()
-                }
-                "${it.year}年${month}月"
+                "${it.year}年${it.month.format2()}月"
             }
             _uiState.update {
                 val key = datas.keys.lastOrNull()
