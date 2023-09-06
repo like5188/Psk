@@ -8,9 +8,12 @@ import com.psk.device.data.source.BloodOxygenRepository
 import com.psk.shangxiazhi.data.model.BloodOxygenReport
 import com.psk.shangxiazhi.data.model.IReport
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class BloodOxygenBusinessManager(
     lifecycleScope: CoroutineScope,
@@ -23,18 +26,16 @@ class BloodOxygenBusinessManager(
         enable(deviceName, deviceAddress)
     }
 
-    private val report: BloodOxygenReport by lazy {
-        BloodOxygenReport()
-    }
-
     override fun getReport(): IReport {
-        return report
+        return BloodOxygenReport.report
     }
 
-    override suspend fun handleFlow(flow: Flow<BloodOxygen>) {
+    override suspend fun handleFlow(flow: Flow<BloodOxygen>) = withContext(Dispatchers.IO) {
         Log.d(TAG, "startBloodOxygenJob")
+        launch {
+            BloodOxygenReport.createForm(flow)
+        }
         flow.distinctUntilChanged().conflate().collect { value ->
-            report.value = value.value
             gameController.updateBloodOxygenData(value.value)
         }
     }

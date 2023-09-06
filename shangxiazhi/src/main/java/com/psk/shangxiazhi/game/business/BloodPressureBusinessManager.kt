@@ -8,9 +8,12 @@ import com.psk.device.data.source.BloodPressureRepository
 import com.psk.shangxiazhi.data.model.BloodPressureReport
 import com.psk.shangxiazhi.data.model.IReport
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class BloodPressureBusinessManager(
     lifecycleScope: CoroutineScope,
@@ -22,17 +25,17 @@ class BloodPressureBusinessManager(
     override val repository = deviceManager.createRepository<BloodPressureRepository>(DeviceType.BloodPressure).apply {
         enable(deviceName, deviceAddress)
     }
-    private val report = BloodPressureReport()
 
     override fun getReport(): IReport {
-        return report
+        return BloodPressureReport.report
     }
 
-    override suspend fun handleFlow(flow: Flow<BloodPressure>) {
+    override suspend fun handleFlow(flow: Flow<BloodPressure>) = withContext(Dispatchers.IO) {
         Log.d(TAG, "startBloodPressureJob")
+        launch {
+            BloodPressureReport.createForm(flow)
+        }
         flow.distinctUntilChanged().conflate().collect { value ->
-            report.sbp = value.sbp
-            report.dbp = value.dbp
             gameController.updateBloodPressureData(value.sbp, value.dbp)
         }
     }
