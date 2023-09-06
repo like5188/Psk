@@ -116,7 +116,7 @@ class HistoryViewModel : ViewModel(), KoinComponent {
 
         val cal = Calendar.getInstance()
         return timeLines.map {
-            cal.time = Date(it.value)
+            cal.time = Date(it.value * 1000L)
             DateAndData(
                 year = cal.get(Calendar.YEAR),
                 month = cal.get(Calendar.MONTH) + 1,
