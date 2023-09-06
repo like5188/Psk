@@ -12,26 +12,20 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
-import org.koin.core.component.KoinApiExtension
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
-import java.text.DecimalFormat
 import java.util.concurrent.atomic.AtomicBoolean
 
-@OptIn(KoinApiExtension::class)
 class ShangXiaZhiBusinessManager(
     lifecycleScope: CoroutineScope,
     medicalOrderId: Long,
     deviceManager: DeviceManager,
     deviceName: String,
     deviceAddress: String,
-) : BaseBusinessManager<ShangXiaZhi>(lifecycleScope, medicalOrderId), KoinComponent {
+) : BaseBusinessManager<ShangXiaZhi>(lifecycleScope, medicalOrderId) {
     override val repository = deviceManager.createRepository<ShangXiaZhiRepository>(DeviceType.ShangXiaZhi).apply {
         enable(deviceName, deviceAddress)
         setCallback(onStart = { onStartGame?.invoke() }, onPause = { onPauseGame?.invoke() }, onOver = { onOverGame?.invoke() })
     }
 
-    private val decimalFormat by inject<DecimalFormat>()
     var passiveModule: Boolean = true
     var timeInt: Int = 5
     var speedInt: Int = 20
