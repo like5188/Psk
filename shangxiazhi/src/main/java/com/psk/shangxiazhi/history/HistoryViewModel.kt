@@ -44,7 +44,7 @@ class HistoryViewModel : ViewModel(), KoinComponent {
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            val medicalOrderTimeMap = unionRepository.getMedicalOrderTime()
+            val medicalOrderTimeMap = unionRepository.getAllMedicalOrderWithTime()
             if (medicalOrderTimeMap.isNullOrEmpty()) {
                 return@launch
             }

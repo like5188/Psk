@@ -6,8 +6,8 @@ class UnionDbDataSource(
     private val unionDao: UnionDao
 ) {
 
-    suspend fun getMedicalOrderTime(): Map<Long, Long>? {
-        return unionDao.getMedicalOrderTime()
+    suspend fun getAllMedicalOrderWithTime(): Map<Long, Long>? {
+        return unionDao.getAllMedicalOrderWithTime()
     }
 
 }
