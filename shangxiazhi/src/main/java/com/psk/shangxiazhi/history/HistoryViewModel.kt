@@ -41,8 +41,6 @@ class HistoryViewModel : ViewModel(), KoinComponent {
     private var heartRateList: List<HeartRate>? = null
     private var shangXiaZhiList: List<ShangXiaZhi>? = null
     private var getAllHistoryDataAndEmitJob: Job? = null
-
-    // Map<yyyy年MM月, Map<medicalOrderId, 某日某时某分>>
     private lateinit var datas: List<DateAndData>
 
     init {
