@@ -33,7 +33,7 @@ val shangXiaZhiModule = module {
         MainViewModel(get())
     }
     viewModel {
-        HistoryViewModel()
+        HistoryViewModel(get())
     }
 
     //GameController

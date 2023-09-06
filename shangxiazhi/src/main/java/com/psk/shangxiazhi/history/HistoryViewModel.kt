@@ -20,17 +20,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.koin.core.component.KoinApiExtension
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 import java.util.Calendar
 import java.util.Date
 
-@OptIn(KoinApiExtension::class)
-class HistoryViewModel : ViewModel(), KoinComponent {
+class HistoryViewModel(deviceManager: DeviceManager) : ViewModel() {
     private val _uiState = MutableStateFlow(HistoryUiState())
     val uiState = _uiState.asStateFlow()
-    private val deviceManager by inject<DeviceManager>()
     private val bloodOxygenRepository = deviceManager.createRepository<BloodOxygenRepository>(DeviceType.BloodOxygen)
     private val bloodPressureRepository = deviceManager.createRepository<BloodPressureRepository>(DeviceType.BloodPressure)
     private val heartRateRepository = deviceManager.createRepository<HeartRateRepository>(DeviceType.HeartRate)
