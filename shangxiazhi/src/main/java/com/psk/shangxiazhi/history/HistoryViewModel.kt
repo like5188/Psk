@@ -41,9 +41,6 @@ class HistoryViewModel : ViewModel(), KoinComponent {
     private var heartRateList: List<HeartRate>? = null
     private var shangXiaZhiList: List<ShangXiaZhi>? = null
     private var getAllHistoryDataAndEmitJob: Job? = null
-    private val cal by lazy {
-        Calendar.getInstance()
-    }
 
     // Map<yyyy年MM月, Map<medicalOrderId, 某日某时某分>>
     private lateinit var datas: List<DateAndData>
@@ -117,6 +114,7 @@ class HistoryViewModel : ViewModel(), KoinComponent {
             timeLines[it.key] = Math.min(oldValue, it.value.minOf { it.time })
         }
 
+        val cal = Calendar.getInstance()
         return timeLines.map {
             cal.time = Date(it.value)
             DateAndData(
