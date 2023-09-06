@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="item"
+            type="com.psk.shangxiazhi.history.DateAndData" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/setting_bg_choose"
+        android:clickable="true"
+        android:focusable="true"
+        android:orientation="horizontal"
+        android:paddingStart="15dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="15dp"
+        android:paddingBottom="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{``+item.month+`月`+item.day+`日`}"
+            android:textColor="@drawable/setting_text_color_choose"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            tools:text="01月01日" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:gravity="end"
+            android:text="@{``+item.hour+`:`+item.minute+`:`+item.second}"
+            android:textColor="@drawable/setting_text_color_choose"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            tools:text="12:12:12" />
+    </LinearLayout>
+
+</layout>
+
+
+
+
+
+

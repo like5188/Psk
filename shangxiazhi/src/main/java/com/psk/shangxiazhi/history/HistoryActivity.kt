@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.like.common.util.mvi.propertyCollector
 import com.like.common.util.startActivity
+import com.like.recyclerview.layoutmanager.WrapLinearLayoutManager
 import com.psk.common.CommonApplication
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.databinding.ActivityHistoryBinding
@@ -24,6 +25,14 @@ class HistoryActivity : AppCompatActivity() {
         DataBindingUtil.setContentView(this, R.layout.activity_history)
     }
     private val mViewModel: HistoryViewModel by viewModel()
+    private val mItemAdapter by lazy {
+        HistoryListAdapter().apply {
+            addOnItemClickListener {
+                val dateAndData = currentList[it.bindingAdapterPosition]
+                println(dateAndData)
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +42,8 @@ class HistoryActivity : AppCompatActivity() {
         mBinding.ivRight.setOnClickListener {
             mViewModel.getNextTime()
         }
+        mBinding.rv.layoutManager = WrapLinearLayoutManager(this)
+        mBinding.rv.adapter = mItemAdapter
         collectUiState()
     }
 
@@ -42,7 +53,7 @@ class HistoryActivity : AppCompatActivity() {
                 mBinding.tvTime.text = it ?: ""
             }
             collectDistinctProperty(HistoryUiState::dateAndDataList) {
-                println(it)
+                mItemAdapter.submitList(it)
             }
         }
     }

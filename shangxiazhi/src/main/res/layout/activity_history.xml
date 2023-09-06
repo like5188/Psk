@@ -76,5 +76,15 @@
             app:layout_constraintEnd_toStartOf="@id/guidelineRight"
             app:layout_constraintTop_toTopOf="@id/ivLeft" />
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginBottom="40dp"
+            android:background="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/guidelineRight"
+            app:layout_constraintStart_toEndOf="@id/guidelineLeft"
+            app:layout_constraintTop_toBottomOf="@id/ivLeft" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
