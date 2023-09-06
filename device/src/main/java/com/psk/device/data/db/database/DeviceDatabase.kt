@@ -7,6 +7,7 @@ import com.psk.device.data.db.dao.BloodOxygenDao
 import com.psk.device.data.db.dao.BloodPressureDao
 import com.psk.device.data.db.dao.HeartRateDao
 import com.psk.device.data.db.dao.ShangXiaZhiDao
+import com.psk.device.data.db.dao.UnionDao
 import com.psk.device.data.model.BloodOxygen
 import com.psk.device.data.model.BloodPressure
 import com.psk.device.data.model.HeartRate
@@ -29,4 +30,5 @@ abstract class DeviceDatabase : RoomDatabase() {
     abstract fun bloodPressureDao(): BloodPressureDao
     abstract fun heartRateDao(): HeartRateDao
     abstract fun shangXiaZhiDao(): ShangXiaZhiDao
+    abstract fun unionDao(): UnionDao
 }

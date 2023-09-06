@@ -1,6 +1,5 @@
 package com.psk.shangxiazhi.history
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.psk.ble.DeviceType
@@ -35,6 +34,7 @@ class HistoryViewModel : ViewModel(), KoinComponent {
     private val bloodPressureRepository = deviceManager.createRepository<BloodPressureRepository>(DeviceType.BloodPressure)
     private val heartRateRepository = deviceManager.createRepository<HeartRateRepository>(DeviceType.HeartRate)
     private val shangXiaZhiRepository = deviceManager.createRepository<ShangXiaZhiRepository>(DeviceType.ShangXiaZhi)
+    private val unionRepository = deviceManager.unionRepository
     private var bloodOxygenList: List<BloodOxygen>? = null
     private var bloodPressureList: List<BloodPressure>? = null
     private var heartRateList: List<HeartRate>? = null
@@ -43,25 +43,24 @@ class HistoryViewModel : ViewModel(), KoinComponent {
     private lateinit var datas: Map<String, List<DateAndData>>
 
     init {
-        getHistoryDataAndCache()
-    }
-
-    private fun getHistoryDataAndCache() {
-        // 获取历史数据并缓存起来
         viewModelScope.launch(Dispatchers.IO) {
-            bloodOxygenList = bloodOxygenRepository.getAll()
-            bloodPressureList = bloodPressureRepository.getAll()
-            heartRateList = heartRateRepository.getAll()
-            shangXiaZhiList = shangXiaZhiRepository.getAll()
-            Log.i(TAG, "bloodOxygenList=$bloodOxygenList")
-            Log.i(TAG, "bloodPressureList=$bloodPressureList")
-            Log.i(TAG, "heartRateList=$heartRateList")
-            Log.i(TAG, "shangXiaZhiList=$shangXiaZhiList")
-            if (bloodOxygenList.isNullOrEmpty() && bloodPressureList.isNullOrEmpty() && heartRateList.isNullOrEmpty() && shangXiaZhiList.isNullOrEmpty()) {
+            val medicalOrderTimeMap = unionRepository.getMedicalOrderTime()
+            if (medicalOrderTimeMap.isNullOrEmpty()) {
                 return@launch
             }
-
-            datas = transform(bloodOxygenList, bloodPressureList, heartRateList, shangXiaZhiList).groupBy {
+            val cal = Calendar.getInstance()
+            datas = medicalOrderTimeMap.map {
+                cal.time = Date(it.value * 1000L)
+                DateAndData(
+                    year = cal.get(Calendar.YEAR),
+                    month = cal.get(Calendar.MONTH) + 1,
+                    day = cal.get(Calendar.DAY_OF_MONTH),
+                    hour = cal.get(Calendar.HOUR),
+                    minute = cal.get(Calendar.MINUTE),
+                    second = cal.get(Calendar.SECOND),
+                    data = it.key
+                )
+            }.groupBy {
                 "${it.year}年${it.month.format2()}月"
             }
             _uiState.update {
@@ -72,61 +71,6 @@ class HistoryViewModel : ViewModel(), KoinComponent {
                     dateAndDataList = value
                 )
             }
-        }
-    }
-
-    /**
-     * 获取每次训练的开始时间（最早一条数据的时间）及 medicalOrderId
-     */
-    private fun transform(
-        bloodOxygenList: List<BloodOxygen>?,
-        bloodPressureList: List<BloodPressure>?,
-        heartRateList: List<HeartRate>?,
-        shangXiaZhiList: List<ShangXiaZhi>?
-    ): List<DateAndData> {
-        // 存储每次训练的 medicalOrderId 和 训练开始时间（最早的一个时间）
-        val timeLines = mutableMapOf<Long, Long>()
-
-        bloodOxygenList?.groupBy {
-            it.medicalOrderId
-        }?.forEach {
-            val oldValue = timeLines.getOrDefault(it.key, Long.MAX_VALUE)
-            timeLines[it.key] = Math.min(oldValue, it.value.minOf { it.time })
-        }
-
-        bloodPressureList?.groupBy {
-            it.medicalOrderId
-        }?.forEach {
-            val oldValue = timeLines.getOrDefault(it.key, Long.MAX_VALUE)
-            timeLines[it.key] = Math.min(oldValue, it.value.minOf { it.time })
-        }
-
-        heartRateList?.groupBy {
-            it.medicalOrderId
-        }?.forEach {
-            val oldValue = timeLines.getOrDefault(it.key, Long.MAX_VALUE)
-            timeLines[it.key] = Math.min(oldValue, it.value.minOf { it.time })
-        }
-
-        shangXiaZhiList?.groupBy {
-            it.medicalOrderId
-        }?.forEach {
-            val oldValue = timeLines.getOrDefault(it.key, Long.MAX_VALUE)
-            timeLines[it.key] = Math.min(oldValue, it.value.minOf { it.time })
-        }
-
-        val cal = Calendar.getInstance()
-        return timeLines.map {
-            cal.time = Date(it.value * 1000L)
-            DateAndData(
-                year = cal.get(Calendar.YEAR),
-                month = cal.get(Calendar.MONTH) + 1,
-                day = cal.get(Calendar.DAY_OF_MONTH),
-                hour = cal.get(Calendar.HOUR),
-                minute = cal.get(Calendar.MINUTE),
-                second = cal.get(Calendar.SECOND),
-                data = it.key
-            )
         }
     }
 

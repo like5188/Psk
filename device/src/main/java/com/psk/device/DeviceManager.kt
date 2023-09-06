@@ -4,6 +4,7 @@ import android.content.Context
 import com.psk.ble.DeviceType
 import com.psk.device.data.source.IRepository
 import com.psk.device.data.source.RepositoryFactory
+import com.psk.device.data.source.UnionRepository
 import com.psk.device.data.source.remote.ble.BleDataSourceFactory
 
 /**
@@ -22,8 +23,12 @@ import com.psk.device.data.source.remote.ble.BleDataSourceFactory
  * 二、如果只是要添加新的蓝牙设备，那么需要以下步骤：
  * 1、新增一个DataSource。名称格式为：[扫描出来的蓝牙设备的名称前缀]_[DeviceType]Datasource；包名为：[com.psk.device.data.source.remote.ble]。
  */
-class DeviceManager(private val context: Context) {
+class DeviceManager(
+    private val context: Context,
+    val unionRepository: UnionRepository,
+) {
     private val repositories = mutableMapOf<DeviceType, IRepository<*>>()
+
 
     suspend fun init() {
         // [BleDataSourceFactory]必须放在扫描之前初始化，否则扫描时，如果要用到[DeviceType.containsDevice]方法就没效果。
