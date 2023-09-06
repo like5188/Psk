@@ -3,6 +3,7 @@ package com.psk.shangxiazhi.history
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.lifecycleScope
 import com.like.common.util.mvi.propertyCollector
 import com.like.common.util.startActivity
 import com.like.recyclerview.layoutmanager.WrapLinearLayoutManager
@@ -10,6 +11,7 @@ import com.psk.common.CommonApplication
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.databinding.ActivityHistoryBinding
 import com.psk.shangxiazhi.report.ReportActivity
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
@@ -31,7 +33,9 @@ class HistoryActivity : AppCompatActivity() {
             addOnItemClickListener {
                 val dateAndData = currentList[it.bindingAdapterPosition]
                 val medicalOrderId = dateAndData?.data ?: return@addOnItemClickListener
-                ReportActivity.start(mViewModel.getReports(medicalOrderId))
+                lifecycleScope.launch {
+                    ReportActivity.start(mViewModel.getReports(medicalOrderId))
+                }
             }
         }
     }
