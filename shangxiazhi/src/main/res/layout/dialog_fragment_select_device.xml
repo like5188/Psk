@@ -23,7 +23,7 @@
             android:id="@+id/btnConfirm"
             android:layout_width="450dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="30dp"
             android:background="@drawable/setting_bg_choose"
             android:gravity="center"
             android:paddingStart="15dp"

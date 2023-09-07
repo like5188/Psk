@@ -43,7 +43,7 @@ class SelectDeviceDialogFragment private constructor() : BaseDialogFragment() {
                 true
             )
             binding.tvDeviceTypeDes.text = deviceType.des
-            binding.tvName.setOnClickListener {
+            binding.root.setOnClickListener {
                 ScanDeviceDialogFragment.newInstance(deviceType).apply {
                     onSelected = {
                         selectDeviceMap[deviceType] = it
