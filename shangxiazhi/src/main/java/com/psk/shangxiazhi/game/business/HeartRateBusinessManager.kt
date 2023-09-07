@@ -63,36 +63,6 @@ class HeartRateBusinessManager(
         }
     }
 
-    override fun onStartGame() {
-        super.onStartGame()
-        startJob()
-    }
-
-    override fun onPauseGame() {
-        super.onPauseGame()
-        cancelJob()
-    }
-
-    override fun onOverGame() {
-        super.onOverGame()
-        cancelJob()
-    }
-
-    override fun onGameResume() {
-        super.onGameResume()
-        startJob()
-    }
-
-    override fun onGamePause() {
-        super.onGamePause()
-        cancelJob()
-    }
-
-    override fun onGameOver() {
-        super.onGameOver()
-        cancelJob()
-    }
-
     override fun onGameAppStart() {
         super.onGameAppStart()
         bleManager.connect(DeviceType.HeartRate, lifecycleScope, 3000L, {

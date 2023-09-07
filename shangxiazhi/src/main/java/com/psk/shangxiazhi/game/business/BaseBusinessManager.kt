@@ -52,16 +52,33 @@ abstract class BaseBusinessManager<Data, Repository : IRepository<Data>>(
     abstract fun getReport(): IReport
 
     // 上下肢控制游戏
-    open fun onStartGame() {}
-    open fun onPauseGame() {}
-    open fun onOverGame() {}
+    open fun onStartGame() {
+        startJob()
+    }
+
+    open fun onPauseGame() {
+        cancelJob()
+    }
+
+    open fun onOverGame() {
+        cancelJob()
+    }
 
     // 游戏控制上下肢
     open fun onGameLoading() {}
     open fun onGameStart() {}
-    open fun onGameResume() {}
-    open fun onGamePause() {}
-    open fun onGameOver() {}
+    open fun onGameResume() {
+        startJob()
+    }
+
+    open fun onGamePause() {
+        cancelJob()
+    }
+
+    open fun onGameOver() {
+        cancelJob()
+    }
+
     open fun onGameAppStart() {}
     open fun onGameAppFinish() {}
 

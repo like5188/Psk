@@ -57,43 +57,36 @@ class ShangXiaZhiBusinessManager(
     }
 
     override fun onStartGame() {
-        super.onStartGame()
         gameController.startGame()
     }
 
     override fun onPauseGame() {
-        super.onPauseGame()
         // 此处不能调用 cancelJob()，因为上下肢需要靠接收数据来判断命令。取消了就收不到数据了。
         gameController.pauseGame()
     }
 
     override fun onOverGame() {
-        super.onOverGame()
         gameController.overGame()
         cancelJob()
     }
 
     override fun onGameStart() {
-        super.onGameStart()
         isStart.compareAndSet(false, true)
     }
 
     override fun onGameResume() {
-        super.onGameResume()
         lifecycleScope.launch(Dispatchers.IO) {
             repository.resume()
         }
     }
 
     override fun onGamePause() {
-        super.onGamePause()
         lifecycleScope.launch(Dispatchers.IO) {
             repository.pause()
         }
     }
 
     override fun onGameOver() {
-        super.onGameOver()
         lifecycleScope.launch(Dispatchers.IO) {
             repository.over()
             cancelJob()
