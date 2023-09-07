@@ -64,9 +64,7 @@ abstract class BaseBusinessManager<Data, Repository : IRepository<Data>>(
 
     // 游戏控制上下肢
     open fun onGameLoading() {}
-    open fun onGameStart() {
-        bleManager.connect(deviceType, lifecycleScope, 3000L, ::onConnected, ::onDisconnected)
-    }
+    open fun onGameStart() {}
 
     open fun onGameResume() {
         startJob()
@@ -80,7 +78,10 @@ abstract class BaseBusinessManager<Data, Repository : IRepository<Data>>(
         cancelJob()
     }
 
-    open fun onGameAppStart() {}
+    open fun onGameAppStart() {
+        bleManager.connect(deviceType, lifecycleScope, 3000L, ::onConnected, ::onDisconnected)
+    }
+
     open fun onGameAppFinish() {}
 
     abstract fun getReport(): IReport
