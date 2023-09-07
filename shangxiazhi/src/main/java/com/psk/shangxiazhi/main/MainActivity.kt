@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.ViewTreeObserver
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.lifecycleScope
 import com.like.common.util.mvi.propertyCollector
 import com.like.common.util.startActivity
 import com.psk.ble.DeviceType
@@ -19,6 +20,8 @@ import com.psk.shangxiazhi.report.ReportActivity
 import com.psk.shangxiazhi.scene.SceneActivity
 import com.psk.shangxiazhi.setting.SettingActivity
 import com.twsz.twsystempre.TrainScene
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -55,11 +58,13 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
-        if (mViewModel.isLogin(this@MainActivity)) {
-            isSplash.set(false)
-        } else {
-            LoginActivity.start()
-            finish()
+        lifecycleScope.launch(Dispatchers.Main) {
+            if (mViewModel.isLogin(this@MainActivity)) {
+                isSplash.set(false)
+            } else {
+                LoginActivity.start()
+                finish()
+            }
         }
     }
 
