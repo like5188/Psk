@@ -125,8 +125,20 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private var firstTime: Long = 0
+    override fun onBackPressed() {
+        val secondTime = System.currentTimeMillis()
+        if (secondTime - firstTime > 2000) {
+            showToast("再按一次退出程序")
+            firstTime = secondTime
+        } else {
+            super.onBackPressed()
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         mViewModel.unbindGameManagerService(this)
     }
+
 }
