@@ -24,10 +24,14 @@ class HeartRateBusinessManager(
     deviceManager: DeviceManager,
     deviceName: String,
     deviceAddress: String,
-) : BaseBusinessManager<HeartRate>(lifecycleScope, medicalOrderId) {
-    override val repository = deviceManager.createRepository<HeartRateRepository>(DeviceType.HeartRate).apply {
-        enable(deviceName, deviceAddress)
-    }
+) : BaseBusinessManager<HeartRate, HeartRateRepository>(
+    lifecycleScope,
+    medicalOrderId,
+    deviceManager,
+    deviceName,
+    deviceAddress,
+    DeviceType.HeartRate
+) {
 
     override fun getReport(): IReport {
         return HeartRateReport.report

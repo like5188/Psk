@@ -20,12 +20,9 @@ class ShangXiaZhiBusinessManager(
     deviceManager: DeviceManager,
     deviceName: String,
     deviceAddress: String,
-) : BaseBusinessManager<ShangXiaZhi>(lifecycleScope, medicalOrderId) {
-    override val repository = deviceManager.createRepository<ShangXiaZhiRepository>(DeviceType.ShangXiaZhi).apply {
-        enable(deviceName, deviceAddress)
-        setCallback(onStart = { onStartGame?.invoke() }, onPause = { onPauseGame?.invoke() }, onOver = { onOverGame?.invoke() })
-    }
-
+) : BaseBusinessManager<ShangXiaZhi, ShangXiaZhiRepository>(
+    lifecycleScope, medicalOrderId, deviceManager, deviceName, deviceAddress, DeviceType.ShangXiaZhi
+) {
     var passiveModule: Boolean = true
     var timeInt: Int = 5
     var speedInt: Int = 20
@@ -37,6 +34,10 @@ class ShangXiaZhiBusinessManager(
     var onPauseGame: (() -> Unit)? = null
     var onOverGame: (() -> Unit)? = null
     private var isStart = AtomicBoolean(false)
+
+    init {
+        repository.setCallback(onStart = { onStartGame?.invoke() }, onPause = { onPauseGame?.invoke() }, onOver = { onOverGame?.invoke() })
+    }
 
     override fun getReport(): IReport {
         return ShangXiaZhiReport.report

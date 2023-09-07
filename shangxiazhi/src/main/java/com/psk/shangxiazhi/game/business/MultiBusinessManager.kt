@@ -16,10 +16,10 @@ import org.koin.core.component.inject
 class MultiBusinessManager : RemoteCallback.Stub(), KoinComponent {
     private val bleManager by inject<BleManager>()
     private val gameController by inject<GameController>()
-    private val managers = mutableMapOf<DeviceType, BaseBusinessManager<*>>()
+    private val managers = mutableMapOf<DeviceType, BaseBusinessManager<*, *>>()
     var onReport: ((List<IReport>) -> Unit)? = null
 
-    fun add(deviceType: DeviceType, manager: BaseBusinessManager<*>) {
+    fun add(deviceType: DeviceType, manager: BaseBusinessManager<*, *>) {
         managers[deviceType] = manager
     }
 
@@ -116,7 +116,7 @@ class MultiBusinessManager : RemoteCallback.Stub(), KoinComponent {
             deviceType: DeviceType,
             deviceName: String,
             deviceAddress: String
-        ): BaseBusinessManager<*> {
+        ): BaseBusinessManager<*, *> {
             val className = "${BaseBusinessManager::class.java.`package`?.name}.${deviceType.name}BusinessManager"
             val clazz = Class.forName(className)
             val constructor = clazz.getConstructor(
@@ -133,7 +133,7 @@ class MultiBusinessManager : RemoteCallback.Stub(), KoinComponent {
                 deviceManager,
                 deviceName,
                 deviceAddress
-            ) as BaseBusinessManager<*>
+            ) as BaseBusinessManager<*, *>
         }
     }
 }

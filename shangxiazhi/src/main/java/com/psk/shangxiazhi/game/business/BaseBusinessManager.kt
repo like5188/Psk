@@ -1,6 +1,8 @@
 package com.psk.shangxiazhi.game.business
 
 import com.psk.ble.BleManager
+import com.psk.ble.DeviceType
+import com.psk.device.DeviceManager
 import com.psk.device.data.source.IRepository
 import com.psk.shangxiazhi.data.model.IReport
 import com.twsz.twsystempre.GameController
@@ -17,14 +19,20 @@ import org.koin.core.component.inject
  * 设备相关的业务管理基类
  */
 @OptIn(KoinApiExtension::class)
-abstract class BaseBusinessManager<T>(
+abstract class BaseBusinessManager<Data, Repository : IRepository<Data>>(
     val lifecycleScope: CoroutineScope,
-    private val medicalOrderId: Long
+    private val medicalOrderId: Long,
+    deviceManager: DeviceManager,
+    deviceName: String,
+    deviceAddress: String,
+    deviceType: DeviceType,
 ) : KoinComponent {
     protected val bleManager by inject<BleManager>()
     protected val gameController by inject<GameController>()
+    protected val repository: Repository = deviceManager.createRepository<Repository>(deviceType).apply {
+        enable(deviceName, deviceAddress)
+    }
     private var job: Job? = null
-    protected abstract val repository: IRepository<T>
 
     fun startJob() {
         if (job != null) {
@@ -40,7 +48,7 @@ abstract class BaseBusinessManager<T>(
         job = null
     }
 
-    protected abstract suspend fun handleFlow(flow: Flow<T>)
+    protected abstract suspend fun handleFlow(flow: Flow<Data>)
     abstract fun getReport(): IReport
 
     // 上下肢控制游戏

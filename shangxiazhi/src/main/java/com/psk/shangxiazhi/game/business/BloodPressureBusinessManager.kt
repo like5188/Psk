@@ -21,10 +21,14 @@ class BloodPressureBusinessManager(
     deviceManager: DeviceManager,
     deviceName: String,
     deviceAddress: String,
-) : BaseBusinessManager<BloodPressure>(lifecycleScope, medicalOrderId) {
-    override val repository = deviceManager.createRepository<BloodPressureRepository>(DeviceType.BloodPressure).apply {
-        enable(deviceName, deviceAddress)
-    }
+) : BaseBusinessManager<BloodPressure, BloodPressureRepository>(
+    lifecycleScope,
+    medicalOrderId,
+    deviceManager,
+    deviceName,
+    deviceAddress,
+    DeviceType.BloodPressure
+) {
 
     override fun getReport(): IReport {
         return BloodPressureReport.report
