@@ -1,6 +1,7 @@
 package com.psk.shangxiazhi.game.business
 
 import android.util.Log
+import com.psk.ble.Device
 import com.psk.ble.DeviceType
 import com.psk.device.DeviceManager
 import com.psk.device.data.model.BloodPressure
@@ -44,17 +45,16 @@ class BloodPressureBusinessManager(
         }
     }
 
-    override fun onGameAppStart() {
-        super.onGameAppStart()
-        bleManager.connect(DeviceType.BloodPressure, lifecycleScope, 3000L, {
-            Log.w(TAG, "血压仪连接成功 $it")
-            gameController.updateBloodPressureConnectionState(true)
-            startJob()
-        }) {
-            Log.e(TAG, "血压仪连接失败 $it")
-            gameController.updateBloodPressureConnectionState(false)
-            cancelJob()
-        }
+    override fun onConnected(device: Device) {
+        Log.w(TAG, "血压仪连接成功 $device")
+        gameController.updateBloodPressureConnectionState(true)
+        startJob()
+    }
+
+    override fun onDisconnected(device: Device) {
+        Log.e(TAG, "血压仪连接失败 $device")
+        gameController.updateBloodPressureConnectionState(false)
+        cancelJob()
     }
 
     companion object {

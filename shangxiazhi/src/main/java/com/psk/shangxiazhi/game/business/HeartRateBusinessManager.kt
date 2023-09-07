@@ -1,6 +1,7 @@
 package com.psk.shangxiazhi.game.business
 
 import android.util.Log
+import com.psk.ble.Device
 import com.psk.ble.DeviceType
 import com.psk.device.DeviceManager
 import com.psk.device.data.model.HeartRate
@@ -63,17 +64,16 @@ class HeartRateBusinessManager(
         }
     }
 
-    override fun onGameAppStart() {
-        super.onGameAppStart()
-        bleManager.connect(DeviceType.HeartRate, lifecycleScope, 3000L, {
-            Log.w(TAG, "心电仪连接成功 $it")
-            gameController.updateEcgConnectionState(true)
-            startJob()
-        }) {
-            Log.e(TAG, "心电仪连接失败 $it")
-            gameController.updateEcgConnectionState(false)
-            cancelJob()
-        }
+    override fun onConnected(device: Device) {
+        Log.w(TAG, "心电仪连接成功 $device")
+        gameController.updateEcgConnectionState(true)
+        startJob()
+    }
+
+    override fun onDisconnected(device: Device) {
+        Log.e(TAG, "心电仪连接失败 $device")
+        gameController.updateEcgConnectionState(false)
+        cancelJob()
     }
 
     companion object {

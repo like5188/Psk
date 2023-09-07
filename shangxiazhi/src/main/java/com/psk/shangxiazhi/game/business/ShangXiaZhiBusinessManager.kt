@@ -1,6 +1,7 @@
 package com.psk.shangxiazhi.game.business
 
 import android.util.Log
+import com.psk.ble.Device
 import com.psk.ble.DeviceType
 import com.psk.device.DeviceManager
 import com.psk.device.data.model.ShangXiaZhi
@@ -43,17 +44,29 @@ class ShangXiaZhiBusinessManager(
         return ShangXiaZhiReport.report
     }
 
-    private suspend fun waitStart() {
-        while (!isStart.get()) {
-            delay(10)
-        }
-    }
-
     override suspend fun handleFlow(flow: Flow<ShangXiaZhi>) {
         Log.d(TAG, "startShangXiaZhiJob")
         ShangXiaZhiReport.createForm(flow).collect {
             gameController.updateGameData(it)
         }
+    }
+
+    override fun onConnected(device: Device) {
+        Log.w(TAG, "上下肢连接成功 $device")
+        gameController.updateGameConnectionState(true)
+        lifecycleScope.launch(Dispatchers.IO) {
+            waitStart()// 等待游戏开始运行后再开始设置数据
+            startJob()
+            delay(100)
+            //设置上下肢参数，设置好后，如果是被动模式，上下肢会自动运行
+            repository.setParams(passiveModule, timeInt, speedInt, spasmInt, resistanceInt, intelligent, turn2)
+        }
+    }
+
+    override fun onDisconnected(device: Device) {
+        Log.e(TAG, "上下肢连接失败 $device")
+        gameController.updateGameConnectionState(false)
+        cancelJob()
     }
 
     override fun onStartGame() {
@@ -93,22 +106,9 @@ class ShangXiaZhiBusinessManager(
         }
     }
 
-    override fun onGameAppStart() {
-        super.onGameAppStart()
-        bleManager.connect(DeviceType.ShangXiaZhi, lifecycleScope, 3000L, {
-            Log.w(TAG, "上下肢连接成功 $it")
-            gameController.updateGameConnectionState(true)
-            lifecycleScope.launch(Dispatchers.IO) {
-                waitStart()// 等待游戏开始运行后再开始设置数据
-                startJob()
-                delay(100)
-                //设置上下肢参数，设置好后，如果是被动模式，上下肢会自动运行
-                repository.setParams(passiveModule, timeInt, speedInt, spasmInt, resistanceInt, intelligent, turn2)
-            }
-        }) {
-            Log.e(TAG, "上下肢连接失败 $it")
-            gameController.updateGameConnectionState(false)
-            cancelJob()
+    private suspend fun waitStart() {
+        while (!isStart.get()) {
+            delay(10)
         }
     }
 

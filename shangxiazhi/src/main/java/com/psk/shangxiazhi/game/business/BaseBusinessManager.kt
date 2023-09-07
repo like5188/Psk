@@ -1,6 +1,7 @@
 package com.psk.shangxiazhi.game.business
 
 import com.psk.ble.BleManager
+import com.psk.ble.Device
 import com.psk.ble.DeviceType
 import com.psk.device.DeviceManager
 import com.psk.device.data.source.IRepository
@@ -25,14 +26,14 @@ abstract class BaseBusinessManager<Data, Repository : IRepository<Data>>(
     deviceManager: DeviceManager,
     deviceName: String,
     deviceAddress: String,
-    deviceType: DeviceType,
+    private val deviceType: DeviceType,
 ) : KoinComponent {
-    protected val bleManager by inject<BleManager>()
+    private var job: Job? = null
+    private val bleManager by inject<BleManager>()
     protected val gameController by inject<GameController>()
     protected val repository: Repository = deviceManager.createRepository<Repository>(deviceType).apply {
         enable(deviceName, deviceAddress)
     }
-    private var job: Job? = null
 
     fun startJob() {
         if (job != null) {
@@ -47,9 +48,6 @@ abstract class BaseBusinessManager<Data, Repository : IRepository<Data>>(
         job?.cancel()
         job = null
     }
-
-    protected abstract suspend fun handleFlow(flow: Flow<Data>)
-    abstract fun getReport(): IReport
 
     // 上下肢控制游戏
     open fun onStartGame() {
@@ -66,7 +64,10 @@ abstract class BaseBusinessManager<Data, Repository : IRepository<Data>>(
 
     // 游戏控制上下肢
     open fun onGameLoading() {}
-    open fun onGameStart() {}
+    open fun onGameStart() {
+        bleManager.connect(deviceType, lifecycleScope, 3000L, ::onConnected, ::onDisconnected)
+    }
+
     open fun onGameResume() {
         startJob()
     }
@@ -82,4 +83,8 @@ abstract class BaseBusinessManager<Data, Repository : IRepository<Data>>(
     open fun onGameAppStart() {}
     open fun onGameAppFinish() {}
 
+    abstract fun getReport(): IReport
+    protected abstract suspend fun handleFlow(flow: Flow<Data>)
+    protected abstract fun onConnected(device: Device)
+    protected abstract fun onDisconnected(device: Device)
 }

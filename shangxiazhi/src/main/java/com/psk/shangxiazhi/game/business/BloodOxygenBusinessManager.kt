@@ -1,6 +1,7 @@
 package com.psk.shangxiazhi.game.business
 
 import android.util.Log
+import com.psk.ble.Device
 import com.psk.ble.DeviceType
 import com.psk.device.DeviceManager
 import com.psk.device.data.model.BloodOxygen
@@ -44,17 +45,16 @@ class BloodOxygenBusinessManager(
         }
     }
 
-    override fun onGameAppStart() {
-        super.onGameAppStart()
-        bleManager.connect(DeviceType.BloodOxygen, lifecycleScope, 3000L, {
-            Log.w(TAG, "血氧仪连接成功 $it")
-            gameController.updateBloodOxygenConnectionState(true)
-            startJob()
-        }) {
-            Log.e(TAG, "血氧仪连接失败 $it")
-            gameController.updateBloodOxygenConnectionState(false)
-            cancelJob()
-        }
+    override fun onConnected(device: Device) {
+        Log.w(TAG, "血氧仪连接成功 $device")
+        gameController.updateBloodOxygenConnectionState(true)
+        startJob()
+    }
+
+    override fun onDisconnected(device: Device) {
+        Log.e(TAG, "血氧仪连接失败 $device")
+        gameController.updateBloodOxygenConnectionState(false)
+        cancelJob()
     }
 
     companion object {
