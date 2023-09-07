@@ -59,6 +59,7 @@ class MainActivity : AppCompatActivity() {
             }
         })
         lifecycleScope.launch(Dispatchers.Main) {
+            // 必须在主线程，否则在平板中没问题，但是在机顶盒中无法执行下面的代码。原因未知。
             if (mViewModel.isLogin(this@MainActivity)) {
                 isSplash.set(false)
             } else {
