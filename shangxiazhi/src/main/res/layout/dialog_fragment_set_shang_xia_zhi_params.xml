@@ -17,7 +17,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:layout_marginBottom="40dp"
+            android:layout_marginBottom="15dp"
             android:gravity="center"
             android:text="上下肢康复机参数设置"
             android:textColor="#99FFFFFF"
@@ -130,11 +130,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="30dp"
                 android:layout_marginTop="30dp"
-                app:min="1"
-                app:max="3"
-                app:step="2"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/btnForward" />
+                app:layout_constraintTop_toBottomOf="@id/btnForward"
+                app:max="3"
+                app:min="1"
+                app:step="2" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.appcompat.widget.AppCompatButton
