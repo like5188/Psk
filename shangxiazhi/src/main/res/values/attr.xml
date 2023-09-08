@@ -6,6 +6,7 @@
         <attr name="maxNumber" format="integer" />
         <attr name="minNumber" format="integer" />
         <attr name="numberStep" format="integer" />
+        <attr name="numberPerLevel" format="integer" />
         <attr name="curNumber" format="integer" />
         <attr name="maxLevel" format="integer" />
     </declare-styleable>

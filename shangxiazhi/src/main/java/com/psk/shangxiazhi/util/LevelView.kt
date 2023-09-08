@@ -23,6 +23,7 @@ class LevelView(context: Context, attrs: AttributeSet) : LinearLayout(context, a
     private var maxNumber: Int = 0// 真实数据的最大值
     private var minNumber: Int = 0// 真实数据的最小值
     private var numberStep: Int = 0// 真实数据步进，即点一次加减号，真实数据改变的数值
+    private var numberPerLevel: Int = 0// 每个等级对应多少真实数据数值
     private val curNumber = ObservableInt(0)// 当前真实数据。（因为一个进度有可能表示多个数值）
 
     private var maxLevel = 1
@@ -42,6 +43,7 @@ class LevelView(context: Context, attrs: AttributeSet) : LinearLayout(context, a
             maxNumber = a.getInt(R.styleable.LevelView_maxNumber, 0)
             minNumber = a.getInt(R.styleable.LevelView_minNumber, 0)
             numberStep = a.getInt(R.styleable.LevelView_numberStep, 0)
+            numberPerLevel = a.getInt(R.styleable.LevelView_numberPerLevel, 0)
             curNumber = a.getInt(R.styleable.LevelView_curNumber, 0)
             maxLevel = a.getInt(R.styleable.LevelView_maxLevel, 0)
         } finally {
@@ -55,6 +57,9 @@ class LevelView(context: Context, attrs: AttributeSet) : LinearLayout(context, a
         }
         if (numberStep <= 0) {
             throw IllegalArgumentException("LevelView numberStep is invalid")
+        }
+        if (numberPerLevel <= 0) {
+            throw IllegalArgumentException("LevelView numberPerLevel is invalid")
         }
         if (curNumber < minNumber || curNumber > maxNumber) {
             throw IllegalArgumentException("LevelView curNumber is invalid")
@@ -117,8 +122,7 @@ class LevelView(context: Context, attrs: AttributeSet) : LinearLayout(context, a
             } else {
                 newNumber
             }
-            val needChangeLevel = onChangeListener.onMinus(curLevel, newNumber)
-            if (needChangeLevel) {
+            if (newNumber / numberPerLevel < curLevel) {
                 val newLevel = curLevel - 1
                 curLevel = if (newLevel <= minLevel) {
                     minLevel
@@ -155,8 +159,7 @@ class LevelView(context: Context, attrs: AttributeSet) : LinearLayout(context, a
             } else {
                 newNumber
             }
-            val needChangeLevel = onChangeListener.onAdd(curLevel, newNumber)
-            if (needChangeLevel) {
+            if (newNumber / numberPerLevel > curLevel) {
                 val newLevel = curLevel + 1
                 curLevel = if (newLevel >= maxLevel) {
                     maxLevel

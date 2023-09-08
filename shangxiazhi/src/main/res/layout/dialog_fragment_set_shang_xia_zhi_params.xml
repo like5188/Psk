@@ -152,6 +152,7 @@
                 app:maxLevel="12"
                 app:maxNumber="60"
                 app:minNumber="5"
+                app:numberPerLevel="5"
                 app:numberStep="5" />
 
             <TextView
@@ -179,6 +180,7 @@
                 app:maxLevel="12"
                 app:maxNumber="12"
                 app:minNumber="1"
+                app:numberPerLevel="1"
                 app:numberStep="1" />
 
             <TextView
@@ -206,6 +208,7 @@
                 app:maxLevel="12"
                 app:maxNumber="30"
                 app:minNumber="5"
+                app:numberPerLevel="5"
                 app:numberStep="1" />
 
             <TextView
@@ -233,6 +236,7 @@
                 app:maxLevel="12"
                 app:maxNumber="12"
                 app:minNumber="1"
+                app:numberPerLevel="1"
                 app:numberStep="1" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
