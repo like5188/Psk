@@ -125,13 +125,94 @@
                 app:layout_constraintStart_toEndOf="@id/btnForward"
                 app:layout_constraintTop_toTopOf="@id/btnForward" />
 
+            <TextView
+                android:id="@+id/tvSpeedTag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="速度调节"
+                android:textColor="#00C4B9"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="@id/levelViewSpeed"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/levelViewSpeed" />
+
             <com.psk.shangxiazhi.util.LevelView
+                android:id="@+id/levelViewSpeed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="30dp"
                 android:layout_marginTop="30dp"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toEndOf="@id/tvSpeedTag"
                 app:layout_constraintTop_toBottomOf="@id/btnForward"
+                app:max="3"
+                app:min="1"
+                app:step="2" />
+
+            <TextView
+                android:id="@+id/tvSpasmTag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="痉挛强度"
+                android:textColor="#00C4B9"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="@id/levelViewSpasm"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/levelViewSpasm" />
+
+            <com.psk.shangxiazhi.util.LevelView
+                android:id="@+id/levelViewSpasm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="30dp"
+                android:layout_marginTop="30dp"
+                app:layout_constraintStart_toEndOf="@id/tvSpasmTag"
+                app:layout_constraintTop_toBottomOf="@id/levelViewSpeed"
+                app:max="3"
+                app:min="1"
+                app:step="2" />
+
+            <TextView
+                android:id="@+id/tvTimeTag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="时间控制"
+                android:textColor="#00C4B9"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="@id/levelViewTime"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/levelViewTime" />
+
+            <com.psk.shangxiazhi.util.LevelView
+                android:id="@+id/levelViewTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="30dp"
+                android:layout_marginTop="30dp"
+                app:layout_constraintStart_toEndOf="@id/tvTimeTag"
+                app:layout_constraintTop_toBottomOf="@id/levelViewSpasm"
+                app:max="3"
+                app:min="1"
+                app:step="2" />
+
+            <TextView
+                android:id="@+id/tvResistanceTag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="阻力调节"
+                android:textColor="#00C4B9"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="@id/levelViewResistance"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/levelViewResistance" />
+
+            <com.psk.shangxiazhi.util.LevelView
+                android:id="@+id/levelViewResistance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="30dp"
+                android:layout_marginTop="30dp"
+                app:layout_constraintStart_toEndOf="@id/tvResistanceTag"
+                app:layout_constraintTop_toBottomOf="@id/levelViewTime"
                 app:max="3"
                 app:min="1"
                 app:step="2" />
