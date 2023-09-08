@@ -77,10 +77,10 @@ class ShangXiaZhiRepository : KoinComponent, IRepository<ShangXiaZhi> {
      * 设置上下肢参数，设置好后，如果是被动模式，上下肢会自动运行
      *
      * @param passiveModule     被动模式
-     * @param timeInt           时间 5-30 min
-     * @param speedInt          速度 5-60 rpm
-     * @param spasmInt          痉挛等级 1-12
-     * @param resistanceInt     阻力 1-12
+     * @param timeInt           时间 5-30 min// 被动模式
+     * @param speedInt          速度 5-60 rpm// 被动模式
+     * @param spasmInt          痉挛等级 1-12// 被动模式
+     * @param resistanceInt     阻力 1-12// 主动模式
      * @param intelligent       智能模式
      * @param turn2             正转
      */
