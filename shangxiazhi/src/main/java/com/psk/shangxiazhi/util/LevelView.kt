@@ -30,8 +30,6 @@ class LevelView(context: Context, attrs: AttributeSet) : LinearLayout(context, a
     private val minLevel = 1
     private var curLevel = 1// 当前等级，和 addLevelView() 方法添加的 levelView 一一对应
 
-    lateinit var onChangeListener: OnChangeListener
-
     init {
         orientation = HORIZONTAL
         gravity = Gravity.CENTER_VERTICAL
@@ -175,19 +173,4 @@ class LevelView(context: Context, attrs: AttributeSet) : LinearLayout(context, a
         }
     }
 
-    interface OnChangeListener {
-
-        /**
-         * 当点击加号时触发。
-         * @param level     当前等级（尚未改变，等待返回值确定是否改变）
-         * @param number    当前真实数值（已经改变）
-         * @return 是否改变当前等级
-         */
-        fun onAdd(level: Int, number: Int): Boolean
-
-        /**
-         * 当点击减号时触发。
-         */
-        fun onMinus(level: Int, number: Int): Boolean
-    }
 }
