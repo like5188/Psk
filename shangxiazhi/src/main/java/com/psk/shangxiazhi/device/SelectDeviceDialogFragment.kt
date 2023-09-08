@@ -44,18 +44,21 @@ class SelectDeviceDialogFragment private constructor() : BaseDialogFragment() {
             )
             binding.tvDeviceTypeDes.text = deviceType.des
             binding.root.setOnClickListener {
-                ScanDeviceDialogFragment.newInstance(deviceType).apply {
-                    onSelected = {
-                        selectDeviceMap[deviceType] = it
-                        binding.tvName.text = it.name
-                    }
-                    show(this@SelectDeviceDialogFragment)
-                }
+//                ScanDeviceDialogFragment.newInstance(deviceType).apply {
+//                    onSelected = {
+//                        selectDeviceMap[deviceType] = it
+//                        binding.tvName.text = it.name
+//                    }
+//                    show(this@SelectDeviceDialogFragment)
+//                }
+                SetShangXiaZhiPramsDialogFragment.newInstance().show(requireActivity())
             }
         }
         mBinding.btnConfirm.setOnClickListener {
             if (selectDeviceMap.isEmpty()) {
                 context?.showToast("请先选择设备")
+            } else if (selectDeviceMap.containsKey(DeviceType.ShangXiaZhi)) {
+
             } else {
                 onSelected?.invoke(selectDeviceMap)
                 dismiss()

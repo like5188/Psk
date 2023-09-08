@@ -6,23 +6,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import com.like.common.base.BaseDialogFragment
-import com.psk.ble.DeviceType
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.data.model.BleScanInfo
 import com.psk.shangxiazhi.databinding.DialogFragmentSetShangXiaZhiParamsBinding
 
 class SetShangXiaZhiPramsDialogFragment private constructor() : BaseDialogFragment() {
     companion object {
-        private const val KEY_DEVICE_TYPE = "key_device_type"
-        fun newInstance(deviceType: DeviceType): SetShangXiaZhiPramsDialogFragment {
-            return SetShangXiaZhiPramsDialogFragment().apply {
-                arguments = bundleOf(
-                    KEY_DEVICE_TYPE to deviceType
-                )
-            }
+        fun newInstance(): SetShangXiaZhiPramsDialogFragment {
+            return SetShangXiaZhiPramsDialogFragment()
         }
     }
 
