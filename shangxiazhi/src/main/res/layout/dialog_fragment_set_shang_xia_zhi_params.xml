@@ -202,7 +202,7 @@
                 android:layout_marginTop="30dp"
                 app:curNumber="5"
                 app:desPrefix=""
-                app:desSuffix=":00"
+                app:desSuffix="分钟"
                 app:layout_constraintStart_toEndOf="@id/tvTimeTag"
                 app:layout_constraintTop_toBottomOf="@id/levelViewSpasm"
                 app:maxLevel="12"
