@@ -11,6 +11,7 @@ import com.psk.ble.BleManager
 import com.psk.ble.DeviceType
 import com.psk.ble.Tip
 import com.psk.device.DeviceManager
+import com.psk.device.data.model.ShangXiaZhiParams
 import com.psk.shangxiazhi.data.model.BleScanInfo
 import com.psk.shangxiazhi.data.model.IReport
 import com.psk.shangxiazhi.game.business.MultiBusinessManager
@@ -57,13 +58,7 @@ class GameManagerService : Service() {
     fun start(
         devices: Map<DeviceType, BleScanInfo>,
         scene: TrainScene,
-        passiveModule: Boolean = true,
-        time: Int = 5,
-        speedLevel: Int = 3,
-        spasmLevel: Int = 3,
-        resistance: Int = 1,
-        intelligent: Boolean = true,
-        turn2: Boolean = true,
+        params: ShangXiaZhiParams,
         onReport: ((List<IReport>) -> Unit)? = null
     ) {
         if (devices.isEmpty()) {
@@ -82,13 +77,7 @@ class GameManagerService : Service() {
             ).apply {
                 multiBusinessManager.add(deviceType, this)
                 if (this is ShangXiaZhiBusinessManager) {
-                    this.passiveModule = passiveModule
-                    this.time = time
-                    this.speedLevel = speedLevel
-                    this.spasmLevel = spasmLevel
-                    this.resistance = resistance
-                    this.intelligent = intelligent
-                    this.turn2 = turn2
+                    this.shangXiaZhiParams = params
                     this.onStartGame = {
                         multiBusinessManager.onStartGame()
                     }

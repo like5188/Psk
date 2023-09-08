@@ -2,6 +2,7 @@ package com.psk.device.data.source
 
 import com.psk.ble.DeviceType
 import com.psk.device.data.model.ShangXiaZhi
+import com.psk.device.data.model.ShangXiaZhiParams
 import com.psk.device.data.source.local.IDbDataSource
 import com.psk.device.data.source.local.db.ShangXiaZhiDbDataSource
 import com.psk.device.data.source.remote.BaseRemoteDeviceDataSource
@@ -73,9 +74,7 @@ class ShangXiaZhiRepository : KoinComponent, IRepository<ShangXiaZhi> {
         dataSource.over()
     }
 
-    suspend fun setParams(
-        passiveModule: Boolean, time: Int, speedLevel: Int, spasmLevel: Int, resistance: Int, intelligent: Boolean, turn2: Boolean
-    ) {
-        dataSource.setParams(passiveModule, time, speedLevel, spasmLevel, resistance, intelligent, turn2)
+    suspend fun setParams(params: ShangXiaZhiParams) {
+        dataSource.setParams(params)
     }
 }

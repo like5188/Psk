@@ -4,11 +4,11 @@ import com.like.ble.util.isBleDeviceConnected
 import com.psk.ble.DeviceType
 import com.psk.ble.Protocol
 import com.psk.device.data.model.ShangXiaZhi
+import com.psk.device.data.model.ShangXiaZhiParams
 import com.psk.device.data.source.remote.BaseShangXiaZhiDataSource
 import com.psk.device.util.ShangXiaZhiDataParser
 import com.psk.device.util.ShangXiaZhiReceiver
 import com.twsz.remotecommands.RemoteCommand
-import com.twsz.remotecommands.TrunkCommandData
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
@@ -90,43 +90,13 @@ class RKF_ShangXiaZhiDataSource : BaseShangXiaZhiDataSource(DeviceType.ShangXiaZ
         bleManager.write(device, RemoteCommand.generateStopParam())
     }
 
-    override suspend fun setParams(
-        passiveModule: Boolean, time: Int, speedLevel: Int, spasmLevel: Int, resistance: Int, intelligent: Boolean, turn2: Boolean
-    ) {
-        // 主被动模式
-        val model = if (passiveModule) {
-            0x01.toByte()
-        } else {
-            0x02.toByte()
-        }
-
-        // 智能
-        val intelligence = if (intelligent) {
-            0x00.toByte()
-        } else {
-            0x01.toByte()
-        }
-
-        // 方向
-        val direction = if (turn2) {
-            0x00.toByte()
-        } else {
-            0x01.toByte()
-        }
+    override suspend fun setParams(params: ShangXiaZhiParams) {
         if (!context.isBleDeviceConnected(device.address)) {
             // 如果是未连接，则不管，因为连接成功后，会调用 setParams() 方法。
             return
         }
         // 如果已经连接，就必须写入成功，否则上下肢无法运动。
-        val cmd: ByteArray = RemoteCommand.generateParam(TrunkCommandData().apply {
-            this.model = model
-            this.time = time.toByte()
-            this.speed = speedLevel.toByte()
-            this.spasm = spasmLevel.toByte()
-            this.intelligence = intelligence
-            this.resistance = resistance.toByte()
-            this.direction = direction
-        })
+        val cmd: ByteArray = RemoteCommand.generateParam(params.toTrunkCommandData())
         var result = false
         while (!result) {
             result = bleManager.write(device, cmd)

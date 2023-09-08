@@ -5,6 +5,7 @@ import com.psk.ble.Device
 import com.psk.ble.DeviceType
 import com.psk.device.DeviceManager
 import com.psk.device.data.model.ShangXiaZhi
+import com.psk.device.data.model.ShangXiaZhiParams
 import com.psk.device.data.source.ShangXiaZhiRepository
 import com.psk.shangxiazhi.data.model.IReport
 import com.psk.shangxiazhi.data.model.ShangXiaZhiReport
@@ -24,13 +25,7 @@ class ShangXiaZhiBusinessManager(
 ) : BaseBusinessManager<ShangXiaZhi, ShangXiaZhiRepository>(
     lifecycleScope, medicalOrderId, deviceManager, deviceName, deviceAddress, DeviceType.ShangXiaZhi
 ) {
-    var passiveModule: Boolean = true
-    var time: Int = 5
-    var speedLevel: Int = 3
-    var spasmLevel: Int = 3
-    var resistance: Int = 1
-    var intelligent: Boolean = true
-    var turn2: Boolean = true
+    var shangXiaZhiParams: ShangXiaZhiParams? = null
     var onStartGame: (() -> Unit)? = null
     var onPauseGame: (() -> Unit)? = null
     var onOverGame: (() -> Unit)? = null
@@ -57,9 +52,11 @@ class ShangXiaZhiBusinessManager(
         lifecycleScope.launch(Dispatchers.IO) {
             waitStart()// 等待游戏开始运行后再开始设置数据
             startJob()
-            delay(100)
-            //设置上下肢参数，设置好后，如果是被动模式，上下肢会自动运行
-            repository.setParams(passiveModule, time, speedLevel, spasmLevel, resistance, intelligent, turn2)
+            shangXiaZhiParams?.let {
+                delay(100)
+                //设置上下肢参数，设置好后，如果是被动模式，上下肢会自动运行
+                repository.setParams(it)
+            }
         }
     }
 

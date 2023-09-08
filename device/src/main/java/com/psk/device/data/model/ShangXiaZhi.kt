@@ -3,6 +3,7 @@ package com.psk.device.data.model
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
+import com.twsz.remotecommands.TrunkCommandData
 
 // 上下肢传递过来的数据
 @Entity
@@ -53,5 +54,61 @@ data class ShangXiaZhi(
         result = 31 * result + direction
         result = 31 * result + curTime.hashCode()
         return result
+    }
+}
+
+/**
+ * 初始化上下肢时需要的参数，设置好后，如果是被动模式，上下肢会自动运行
+ *
+ * @param passiveModule     被动模式
+ * @param time              时间 5-30 min// 被动模式
+ * @param speedLevel        速度等级 1-12// 被动模式
+ * @param spasmLevel        痉挛等级 1-12// 被动模式
+ * @param resistance        阻力 1-12// 主动模式
+ * @param intelligent       智能模式
+ * @param turn2             正转
+ */
+data class ShangXiaZhiParams(
+    val passiveModule: Boolean,
+    val time: Int,
+    val speedLevel: Int,
+    val spasmLevel: Int,
+    val resistance: Int,
+    val intelligent: Boolean,
+    val turn2: Boolean
+) {
+    /**
+     * 转换成上下肢设备需要的参数
+     */
+    fun toTrunkCommandData(): TrunkCommandData {
+        // 主被动模式
+        val model = if (passiveModule) {
+            0x01.toByte()
+        } else {
+            0x02.toByte()
+        }
+
+        // 智能
+        val intelligence = if (intelligent) {
+            0x00.toByte()
+        } else {
+            0x01.toByte()
+        }
+
+        // 方向
+        val direction = if (turn2) {
+            0x00.toByte()
+        } else {
+            0x01.toByte()
+        }
+        return TrunkCommandData().also {
+            it.model = model
+            it.time = time.toByte()
+            it.speed = speedLevel.toByte()
+            it.spasm = spasmLevel.toByte()
+            it.intelligence = intelligence
+            it.resistance = resistance.toByte()
+            it.direction = direction
+        }
     }
 }
