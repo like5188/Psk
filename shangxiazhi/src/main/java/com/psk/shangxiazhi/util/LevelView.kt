@@ -124,7 +124,7 @@ class LevelView(context: Context, attrs: AttributeSet) : LinearLayout(context, a
             } else {
                 newNumber
             }
-            if (newNumber / numberPerLevel < curLevel) {
+            if (newNumber / numberPerLevel < curLevel) {// 需要改变等级
                 val newLevel = curLevel - 1
                 curLevel = if (newLevel <= minLevel) {
                     minLevel
@@ -161,7 +161,7 @@ class LevelView(context: Context, attrs: AttributeSet) : LinearLayout(context, a
             } else {
                 newNumber
             }
-            if (newNumber / numberPerLevel > curLevel) {
+            if (newNumber / numberPerLevel > curLevel) {// 需要改变等级
                 val newLevel = curLevel + 1
                 curLevel = if (newLevel >= maxLevel) {
                     maxLevel
