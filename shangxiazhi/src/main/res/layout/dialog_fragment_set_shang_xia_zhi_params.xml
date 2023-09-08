@@ -142,11 +142,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="30dp"
                 android:layout_marginTop="30dp"
+                app:desPrefix=""
+                app:desSuffix="rpm"
                 app:layout_constraintStart_toEndOf="@id/tvSpeedTag"
                 app:layout_constraintTop_toBottomOf="@id/btnForward"
-                app:max="3"
-                app:min="1"
-                app:step="2" />
+                app:max="60"
+                app:min="5"
+                app:step="5" />
 
             <TextView
                 android:id="@+id/tvSpasmTag"
@@ -165,11 +167,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="30dp"
                 android:layout_marginTop="30dp"
+                app:desPrefix="第"
+                app:desSuffix="档"
                 app:layout_constraintStart_toEndOf="@id/tvSpasmTag"
                 app:layout_constraintTop_toBottomOf="@id/levelViewSpeed"
-                app:max="3"
+                app:max="12"
                 app:min="1"
-                app:step="2" />
+                app:step="1" />
 
             <TextView
                 android:id="@+id/tvTimeTag"
@@ -188,11 +192,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="30dp"
                 android:layout_marginTop="30dp"
+                app:desPrefix=""
+                app:desSuffix=":00"
                 app:layout_constraintStart_toEndOf="@id/tvTimeTag"
                 app:layout_constraintTop_toBottomOf="@id/levelViewSpasm"
-                app:max="3"
-                app:min="1"
-                app:step="2" />
+                app:max="30"
+                app:min="5"
+                app:step="5" />
 
             <TextView
                 android:id="@+id/tvResistanceTag"
@@ -211,11 +217,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="30dp"
                 android:layout_marginTop="30dp"
+                app:desPrefix="第"
+                app:desSuffix="档"
                 app:layout_constraintStart_toEndOf="@id/tvResistanceTag"
                 app:layout_constraintTop_toBottomOf="@id/levelViewTime"
-                app:max="3"
+                app:max="12"
                 app:min="1"
-                app:step="2" />
+                app:step="1" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.appcompat.widget.AppCompatButton
