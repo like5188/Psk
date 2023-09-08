@@ -116,7 +116,7 @@ class MainActivity : AppCompatActivity() {
                 )
             ).apply {
                 onSelected = {
-                    mViewModel.uiState.value.gameManagerService?.start(it, scene, resistanceInt = 1, passiveModule = true, timeInt = 1) {
+                    mViewModel.uiState.value.gameManagerService?.start(it, scene, passiveModule = true, time = 1) {
                         ReportActivity.start(reports = it)
                     }
                 }

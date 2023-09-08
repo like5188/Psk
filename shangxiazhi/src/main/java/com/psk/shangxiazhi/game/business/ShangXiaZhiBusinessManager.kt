@@ -25,10 +25,10 @@ class ShangXiaZhiBusinessManager(
     lifecycleScope, medicalOrderId, deviceManager, deviceName, deviceAddress, DeviceType.ShangXiaZhi
 ) {
     var passiveModule: Boolean = true
-    var timeInt: Int = 5
-    var speedInt: Int = 20
-    var spasmInt: Int = 3
-    var resistanceInt: Int = 1
+    var time: Int = 5
+    var speedLevel: Int = 3
+    var spasmLevel: Int = 3
+    var resistance: Int = 1
     var intelligent: Boolean = true
     var turn2: Boolean = true
     var onStartGame: (() -> Unit)? = null
@@ -59,7 +59,7 @@ class ShangXiaZhiBusinessManager(
             startJob()
             delay(100)
             //设置上下肢参数，设置好后，如果是被动模式，上下肢会自动运行
-            repository.setParams(passiveModule, timeInt, speedInt, spasmInt, resistanceInt, intelligent, turn2)
+            repository.setParams(passiveModule, time, speedLevel, spasmLevel, resistance, intelligent, turn2)
         }
     }
 

@@ -91,27 +91,23 @@ class RKF_ShangXiaZhiDataSource : BaseShangXiaZhiDataSource(DeviceType.ShangXiaZ
     }
 
     override suspend fun setParams(
-        passiveModule: Boolean, timeInt: Int, speedInt: Int, spasmInt: Int, resistanceInt: Int, intelligent: Boolean, turn2: Boolean
+        passiveModule: Boolean, time: Int, speedLevel: Int, spasmLevel: Int, resistance: Int, intelligent: Boolean, turn2: Boolean
     ) {
-        //被动
+        // 主被动模式
         val model = if (passiveModule) {
             0x01.toByte()
         } else {
             0x02.toByte()
         }
 
-        val time = timeInt.toByte()
-        val speed = (speedInt / 5).toByte()
-        val spasm = spasmInt.toByte()
-        val resistance = resistanceInt.toByte()
-
-        //智能
+        // 智能
         val intelligence = if (intelligent) {
             0x00.toByte()
         } else {
             0x01.toByte()
         }
 
+        // 方向
         val direction = if (turn2) {
             0x00.toByte()
         } else {
@@ -124,11 +120,11 @@ class RKF_ShangXiaZhiDataSource : BaseShangXiaZhiDataSource(DeviceType.ShangXiaZ
         // 如果已经连接，就必须写入成功，否则上下肢无法运动。
         val cmd: ByteArray = RemoteCommand.generateParam(TrunkCommandData().apply {
             this.model = model
-            this.time = time
-            this.speed = speed
-            this.spasm = spasm
+            this.time = time.toByte()
+            this.speed = speedLevel.toByte()
+            this.spasm = spasmLevel.toByte()
             this.intelligence = intelligence
-            this.resistance = resistance
+            this.resistance = resistance.toByte()
             this.direction = direction
         })
         var result = false

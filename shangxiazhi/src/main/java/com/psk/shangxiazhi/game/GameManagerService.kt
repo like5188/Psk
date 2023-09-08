@@ -58,10 +58,10 @@ class GameManagerService : Service() {
         devices: Map<DeviceType, BleScanInfo>,
         scene: TrainScene,
         passiveModule: Boolean = true,
-        timeInt: Int = 5,
-        speedInt: Int = 20,
-        spasmInt: Int = 3,
-        resistanceInt: Int = 1,
+        time: Int = 5,
+        speedLevel: Int = 3,
+        spasmLevel: Int = 3,
+        resistance: Int = 1,
         intelligent: Boolean = true,
         turn2: Boolean = true,
         onReport: ((List<IReport>) -> Unit)? = null
@@ -83,10 +83,10 @@ class GameManagerService : Service() {
                 multiBusinessManager.add(deviceType, this)
                 if (this is ShangXiaZhiBusinessManager) {
                     this.passiveModule = passiveModule
-                    this.timeInt = timeInt
-                    this.speedInt = speedInt
-                    this.spasmInt = spasmInt
-                    this.resistanceInt = resistanceInt
+                    this.time = time
+                    this.speedLevel = speedLevel
+                    this.spasmLevel = spasmLevel
+                    this.resistance = resistance
                     this.intelligent = intelligent
                     this.turn2 = turn2
                     this.onStartGame = {
