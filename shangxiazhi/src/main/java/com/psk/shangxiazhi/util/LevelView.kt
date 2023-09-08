@@ -17,22 +17,16 @@ import com.like.common.util.dp
 import com.psk.shangxiazhi.R
 
 class LevelView(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
-    // 真实数据的最小值
-    private var min: Int = 0
-
-    // 真实数据的最大值
-    private var max: Int = 0
-
-    // 真实数据的步进
-    private var step: Int = 0
+    private var min: Int = 0// 真实数据的最小值
+    private var max: Int = 0// 真实数据的最大值
+    private var step: Int = 0// 真实数据的步进
+    private val curNumber = ObservableInt(0)// 当前真实数据。（因为一个进度有可能表示多个数值）
     private var desPrefix: String = ""
     private var desSuffix: String = ""
 
-    // 当前等级，和 addLevelView() 方法添加的 levelView 一一对应
-    private val curLevel = ObservableInt(0)
-
-    // 当前真实数据。（因为一个进度有可能表示多个数值）
-    private val curNumber = ObservableInt(0)
+    private val minLevel = 1
+    private var maxLevel = 1
+    private val curLevel = ObservableInt(0)// 当前等级，和 addLevelView() 方法添加的 levelView 一一对应
 
     init {
         orientation = HORIZONTAL
@@ -57,7 +51,8 @@ class LevelView(context: Context, attrs: AttributeSet) : LinearLayout(context, a
             throw IllegalArgumentException("LevelView count is invalid")
         }
 
-        addLevelView((max - min) / step + 1)
+        maxLevel = (max - min) / step + 1
+        addLevelView()
         addLessView()
         addDesView()
         addAddView()
@@ -85,11 +80,11 @@ class LevelView(context: Context, attrs: AttributeSet) : LinearLayout(context, a
                 }
             }
         })
-        curLevel.set(1)
+        curLevel.set(minLevel)
     }
 
-    private fun addLevelView(count: Int) {
-        repeat(count) {
+    private fun addLevelView() {
+        repeat(maxLevel) {
             val view = View(context)
             view.setBackgroundResource(R.drawable.background_control_selector_commend_color)
             LayoutParams(10.dp, 40.dp).apply {
