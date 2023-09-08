@@ -23,12 +23,12 @@ class LevelView(context: Context, attrs: AttributeSet) : LinearLayout(context, a
     private var maxNumber: Int = 0// 真实数据的最大值
     private var minNumber: Int = 0// 真实数据的最小值
     private var numberStep: Int = 0// 真实数据步进，即点一次加减号，真实数据改变的数值
-    private var numberPerLevel: Int = 0// 每个等级对应多少真实数据数值
-    private val curNumber = ObservableInt(0)// 当前真实数据。（因为一个进度有可能表示多个数值）
+    private var numberPerLevel: Int = 0// 每个等级对应多少真实数据数值（因为一个进度有可能表示多个数值）
+    private val curNumber = ObservableInt(0)// 当前真实数据。
 
     private var maxLevel = 1// 最大等级
     private val minLevel = 1// 最小等级
-    private var curLevel = 1// 当前等级，和 addLevelView() 方法添加的 levelView 一一对应
+    private var curLevel = 1// 当前等级
 
     init {
         orientation = HORIZONTAL
@@ -96,6 +96,10 @@ class LevelView(context: Context, attrs: AttributeSet) : LinearLayout(context, a
         })
         this.curNumber.set(curNumber)
     }
+
+    fun getLevel() = curLevel
+
+    fun getNumber() = curNumber.get()
 
     private fun addLevelView() {
         repeat(maxLevel) {
