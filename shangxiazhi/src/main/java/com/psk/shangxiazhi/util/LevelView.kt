@@ -111,24 +111,23 @@ class LevelView(context: Context, attrs: AttributeSet) : LinearLayout(context, a
         val view = AppCompatImageView(context)
         view.setImageResource(R.drawable.less_enable)
         view.setOnClickListener {
-            val number = curNumber.get() - numberStep
-            curNumber.set(
-                if (number <= minNumber) {
-                    minNumber
-                } else {
-                    number
-                }
-            )
-            val needChangeLevel = onChangeListener.onMinus(curLevel, curNumber.get())
-            if (!needChangeLevel) {
-                return@setOnClickListener
-            }
-            val level = curLevel + 1
-            curLevel = if (level <= minLevel) {
-                minLevel
+            var newNumber = curNumber.get() - numberStep
+            newNumber = if (newNumber <= minNumber) {
+                minNumber
             } else {
-                level
+                newNumber
             }
+            val needChangeLevel = onChangeListener.onMinus(curLevel, newNumber)
+            if (needChangeLevel) {
+                val newLevel = curLevel - 1
+                curLevel = if (newLevel <= minLevel) {
+                    minLevel
+                } else {
+                    newLevel
+                }
+            }
+            // 触发界面更新
+            curNumber.set(newNumber)
         }
         LayoutParams(30.dp, 30.dp).apply {
             marginStart = 20.dp
@@ -150,24 +149,23 @@ class LevelView(context: Context, attrs: AttributeSet) : LinearLayout(context, a
         val view = AppCompatImageView(context)
         view.setImageResource(R.drawable.add_enable)
         view.setOnClickListener {
-            val number = curNumber.get() + numberStep
-            curNumber.set(
-                if (number >= maxNumber) {
-                    maxNumber
-                } else {
-                    number
-                }
-            )
-            val needChangeLevel = onChangeListener.onAdd(curLevel, curNumber.get())
-            if (!needChangeLevel) {
-                return@setOnClickListener
-            }
-            val level = curLevel + 1
-            curLevel = if (level >= maxLevel) {
-                maxLevel
+            var newNumber = curNumber.get() + numberStep
+            newNumber = if (newNumber >= maxNumber) {
+                maxNumber
             } else {
-                level
+                newNumber
             }
+            val needChangeLevel = onChangeListener.onAdd(curLevel, newNumber)
+            if (needChangeLevel) {
+                val newLevel = curLevel + 1
+                curLevel = if (newLevel >= maxLevel) {
+                    maxLevel
+                } else {
+                    newLevel
+                }
+            }
+            // 触发界面更新
+            curNumber.set(newNumber)
         }
         LayoutParams(30.dp, 30.dp).apply {
             addView(view, this)
