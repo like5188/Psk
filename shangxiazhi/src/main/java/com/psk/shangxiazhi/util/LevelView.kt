@@ -26,8 +26,8 @@ class LevelView(context: Context, attrs: AttributeSet) : LinearLayout(context, a
     private var numberPerLevel: Int = 0// 每个等级对应多少真实数据数值
     private val curNumber = ObservableInt(0)// 当前真实数据。（因为一个进度有可能表示多个数值）
 
-    private var maxLevel = 1
-    private val minLevel = 1
+    private var maxLevel = 1// 最大等级
+    private val minLevel = 1// 最小等级
     private var curLevel = 1// 当前等级，和 addLevelView() 方法添加的 levelView 一一对应
 
     init {
