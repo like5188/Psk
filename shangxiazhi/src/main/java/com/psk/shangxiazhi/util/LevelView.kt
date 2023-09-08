@@ -20,25 +20,28 @@ class LevelView(context: Context, attrs: AttributeSet) : LinearLayout(context, a
     private var desPrefix: String = ""// 描述前缀
     private var desSuffix: String = ""// 描述后缀
 
-    private var minNumber: Int = 0// 真实数据的最小值
     private var maxNumber: Int = 0// 真实数据的最大值
-    private var numberPerLevel: Int = 0// 每个等级代表的真实数据步进
-    private var curNumber = 0// 当前真实数据。（因为一个进度有可能表示多个数值）
+    private var minNumber: Int = 0// 真实数据的最小值
+    private var numberStep: Int = 0// 真实数据步进，即点一次加减号，真实数据改变的数值
+    private val curNumber = ObservableInt(0)// 当前真实数据。（因为一个进度有可能表示多个数值）
 
-    private val minLevel = 1
     private var maxLevel = 1
-    private val curLevel = ObservableInt(0)// 当前等级，和 addLevelView() 方法添加的 levelView 一一对应
+    private val minLevel = 1
+    private var curLevel = 1// 当前等级，和 addLevelView() 方法添加的 levelView 一一对应
+
+    lateinit var onChangeListener: OnChangeListener
 
     init {
         orientation = HORIZONTAL
         gravity = Gravity.CENTER_VERTICAL
         val a = context.obtainStyledAttributes(attrs, R.styleable.LevelView)
+        var curNumber = 0
         try {
             desPrefix = a.getString(R.styleable.LevelView_desPrefix) ?: ""
             desSuffix = a.getString(R.styleable.LevelView_desSuffix) ?: ""
-            minNumber = a.getInt(R.styleable.LevelView_minNumber, 0)
             maxNumber = a.getInt(R.styleable.LevelView_maxNumber, 0)
-            numberPerLevel = a.getInt(R.styleable.LevelView_numberPerLevel, 0)
+            minNumber = a.getInt(R.styleable.LevelView_minNumber, 0)
+            numberStep = a.getInt(R.styleable.LevelView_numberStep, 0)
             curNumber = a.getInt(R.styleable.LevelView_curNumber, 0)
             maxLevel = a.getInt(R.styleable.LevelView_maxLevel, 0)
         } finally {
@@ -50,8 +53,8 @@ class LevelView(context: Context, attrs: AttributeSet) : LinearLayout(context, a
         if (maxNumber <= 0) {
             throw IllegalArgumentException("LevelView maxNumber is invalid")
         }
-        if (numberPerLevel <= 0) {
-            throw IllegalArgumentException("LevelView numberPerLevel is invalid")
+        if (numberStep <= 0) {
+            throw IllegalArgumentException("LevelView numberStep is invalid")
         }
         if (curNumber < minNumber || curNumber > maxNumber) {
             throw IllegalArgumentException("LevelView curNumber is invalid")
@@ -61,34 +64,34 @@ class LevelView(context: Context, attrs: AttributeSet) : LinearLayout(context, a
         }
 
         addLevelView()
-        addLessView()
+        addMinusView()
         addDesView()
         addAddView()
-        curLevel.addOnPropertyChangedCallback(object : OnPropertyChangedCallback() {
+        this.curNumber.addOnPropertyChangedCallback(object : OnPropertyChangedCallback() {
             override fun onPropertyChanged(sender: Observable, propertyId: Int) {
-                val level = (sender as ObservableInt).get()
+                val number = (sender as ObservableInt).get()
                 children.forEachIndexed { index, view ->
                     when {
                         index == childCount - 1 -> {// 加号图片
-                            view.isEnabled = level < maxNumber
+                            view.isEnabled = number < maxNumber
                         }
 
                         index == childCount - 2 && view is TextView -> {// 描述文本
-                            view.text = "$desPrefix$level$desSuffix"
+                            view.text = "$desPrefix$number$desSuffix"
                         }
 
                         index == childCount - 3 -> {//减号图片
-                            view.isEnabled = level > minNumber
+                            view.isEnabled = number > minNumber
                         }
 
                         else -> {// 等级进度视图
-                            view.isSelected = index <= level - 1
+                            view.isSelected = index <= curLevel - 1
                         }
                     }
                 }
             }
         })
-        curLevel.set(minLevel)
+        this.curNumber.set(curNumber)
     }
 
     private fun addLevelView() {
@@ -104,15 +107,27 @@ class LevelView(context: Context, attrs: AttributeSet) : LinearLayout(context, a
         }
     }
 
-    private fun addLessView() {
+    private fun addMinusView() {
         val view = AppCompatImageView(context)
         view.setImageResource(R.drawable.less_enable)
         view.setOnClickListener {
-            val newNumber = curNumber - numberPerLevel
-            if (level <= minNumber) {
-                curLevel.set(minNumber)
+            val number = curNumber.get() - numberStep
+            curNumber.set(
+                if (number <= minNumber) {
+                    minNumber
+                } else {
+                    number
+                }
+            )
+            val needChangeLevel = onChangeListener.onMinus(curLevel, curNumber.get())
+            if (!needChangeLevel) {
+                return@setOnClickListener
+            }
+            val level = curLevel + 1
+            curLevel = if (level <= minLevel) {
+                minLevel
             } else {
-                curLevel.set(level)
+                level
             }
         }
         LayoutParams(30.dp, 30.dp).apply {
@@ -135,11 +150,23 @@ class LevelView(context: Context, attrs: AttributeSet) : LinearLayout(context, a
         val view = AppCompatImageView(context)
         view.setImageResource(R.drawable.add_enable)
         view.setOnClickListener {
-            val level = curLevel.get() + 1
-            if (level >= maxNumber) {
-                curLevel.set(maxNumber)
+            val number = curNumber.get() + numberStep
+            curNumber.set(
+                if (number >= maxNumber) {
+                    maxNumber
+                } else {
+                    number
+                }
+            )
+            val needChangeLevel = onChangeListener.onAdd(curLevel, curNumber.get())
+            if (!needChangeLevel) {
+                return@setOnClickListener
+            }
+            val level = curLevel + 1
+            curLevel = if (level >= maxLevel) {
+                maxLevel
             } else {
-                curLevel.set(level)
+                level
             }
         }
         LayoutParams(30.dp, 30.dp).apply {
@@ -147,4 +174,19 @@ class LevelView(context: Context, attrs: AttributeSet) : LinearLayout(context, a
         }
     }
 
+    interface OnChangeListener {
+
+        /**
+         * 当点击加号时触发。
+         * @param level     当前等级（尚未改变，等待返回值确定是否改变）
+         * @param number    当前真实数值（已经改变）
+         * @return 是否改变当前等级
+         */
+        fun onAdd(level: Int, number: Int): Boolean
+
+        /**
+         * 当点击减号时触发。
+         */
+        fun onMinus(level: Int, number: Int): Boolean
+    }
 }
