@@ -37,10 +37,12 @@ class BleManager(private val context: Context) {
 
     fun addDevices(vararg devices: Device) {
         devices.forEach {
-            if (!connectManagers.containsKey(it)) {
-                connectManagers[it] = ConnectManager(context, it).apply {
-                    this.onTip = this@BleManager.onTip
-                }
+            if (connectManagers.containsKey(it)) {
+                connectManagers[it]?.close()
+                connectManagers.remove(it)
+            }
+            connectManagers[it] = ConnectManager(context, it).apply {
+                this.onTip = this@BleManager.onTip
             }
         }
     }
