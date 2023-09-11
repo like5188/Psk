@@ -76,7 +76,6 @@ class LevelView(context: Context, attrs: AttributeSet) : LinearLayout(context, a
                 children.forEachIndexed { index, view ->
                     when {
                         index == childCount - 1 -> {// 加号图片
-                            view.isEnabled = number < maxNumber
                         }
 
                         index == childCount - 2 && view is TextView -> {// 描述文本
@@ -84,7 +83,6 @@ class LevelView(context: Context, attrs: AttributeSet) : LinearLayout(context, a
                         }
 
                         index == childCount - 3 -> {//减号图片
-                            view.isEnabled = number > minNumber
                         }
 
                         else -> {// 等级进度视图
@@ -118,6 +116,9 @@ class LevelView(context: Context, attrs: AttributeSet) : LinearLayout(context, a
         val view = AppCompatImageView(context)
         view.setImageResource(R.drawable.less_enable)
         view.setOnClickListener {
+            if (curNumber.get() <= minNumber) {
+                return@setOnClickListener
+            }
             var newNumber = curNumber.get() - numberStep
             newNumber = if (newNumber <= minNumber) {
                 minNumber
@@ -155,6 +156,9 @@ class LevelView(context: Context, attrs: AttributeSet) : LinearLayout(context, a
         val view = AppCompatImageView(context)
         view.setImageResource(R.drawable.add_enable)
         view.setOnClickListener {
+            if (curNumber.get() >= maxNumber) {
+                return@setOnClickListener
+            }
             var newNumber = curNumber.get() + numberStep
             newNumber = if (newNumber >= maxNumber) {
                 maxNumber
