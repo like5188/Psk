@@ -2,17 +2,17 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <data>
+
+        <import type="android.view.View" />
+    </data>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/black"
         android:gravity="center_horizontal"
         android:orientation="vertical">
-
-        <Space
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
 
         <TextView
             android:layout_width="match_parent"
@@ -21,7 +21,7 @@
             android:gravity="center"
             android:text="上下肢康复机参数设置"
             android:textColor="#99FFFFFF"
-            android:textSize="28sp"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -46,6 +46,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="30dp"
+                android:checked="true"
                 app:layout_constraintStart_toEndOf="@id/tvSmartModeTag"
                 app:layout_constraintTop_toTopOf="parent"
                 app:switchMinWidth="60dp"
@@ -79,6 +80,7 @@
                     android:layout_height="40dp"
                     android:background="@drawable/background_control_selector_color"
                     android:button="@null"
+                    android:checked="true"
                     android:gravity="center"
                     android:paddingStart="20dp"
                     android:paddingEnd="20dp"
@@ -130,6 +132,7 @@
                     android:layout_height="40dp"
                     android:background="@drawable/background_control_selector_color"
                     android:button="@null"
+                    android:checked="true"
                     android:gravity="center"
                     android:paddingStart="20dp"
                     android:paddingEnd="20dp"
@@ -160,6 +163,7 @@
                 android:text="速度调节"
                 android:textColor="#00C4B9"
                 android:textSize="18sp"
+                android:visibility="@{rbPassive.checked?View.VISIBLE:View.GONE}"
                 app:layout_constraintBottom_toBottomOf="@id/levelViewSpeed"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@id/levelViewSpeed" />
@@ -170,6 +174,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="30dp"
                 android:layout_marginTop="30dp"
+                android:visibility="@{rbPassive.checked?View.VISIBLE:View.GONE}"
                 app:curNumber="5"
                 app:desPrefix=""
                 app:desSuffix="rpm"
@@ -188,6 +193,7 @@
                 android:text="痉挛强度"
                 android:textColor="#00C4B9"
                 android:textSize="18sp"
+                android:visibility="@{rbPassive.checked?View.VISIBLE:View.GONE}"
                 app:layout_constraintBottom_toBottomOf="@id/levelViewSpasm"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@id/levelViewSpasm" />
@@ -198,6 +204,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="30dp"
                 android:layout_marginTop="30dp"
+                android:visibility="@{rbPassive.checked?View.VISIBLE:View.GONE}"
                 app:curNumber="1"
                 app:desPrefix="第"
                 app:desSuffix="档"
@@ -216,6 +223,7 @@
                 android:text="时间控制"
                 android:textColor="#00C4B9"
                 android:textSize="18sp"
+                android:visibility="@{rbPassive.checked?View.VISIBLE:View.GONE}"
                 app:layout_constraintBottom_toBottomOf="@id/levelViewTime"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@id/levelViewTime" />
@@ -226,6 +234,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="30dp"
                 android:layout_marginTop="30dp"
+                android:visibility="@{rbPassive.checked?View.VISIBLE:View.GONE}"
                 app:curNumber="5"
                 app:desPrefix=""
                 app:desSuffix="分钟"
@@ -244,6 +253,7 @@
                 android:text="阻力调节"
                 android:textColor="#00C4B9"
                 android:textSize="18sp"
+                android:visibility="@{rbActive.checked?View.VISIBLE:View.GONE}"
                 app:layout_constraintBottom_toBottomOf="@id/levelViewResistance"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@id/levelViewResistance" />
@@ -254,6 +264,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="30dp"
                 android:layout_marginTop="30dp"
+                android:visibility="@{rbActive.checked?View.VISIBLE:View.GONE}"
                 app:curNumber="1"
                 app:desPrefix="第"
                 app:desSuffix="档"
@@ -283,9 +294,5 @@
             android:textColor="@drawable/setting_text_color_choose"
             android:textSize="28sp" />
 
-        <Space
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
     </LinearLayout>
 </layout>
