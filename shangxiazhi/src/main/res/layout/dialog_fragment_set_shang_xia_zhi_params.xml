@@ -75,10 +75,11 @@
 
                 <RadioButton
                     android:id="@+id/rbPassiveTraining"
-                    android:layout_width="wrap_content"
+                    android:layout_width="110dp"
                     android:layout_height="40dp"
                     android:background="@drawable/background_control_selector_color"
                     android:button="@null"
+                    android:gravity="center"
                     android:paddingStart="20dp"
                     android:paddingEnd="20dp"
                     android:text="被动训练"
@@ -87,11 +88,12 @@
 
                 <RadioButton
                     android:id="@+id/rbActiveTraining"
-                    android:layout_width="wrap_content"
+                    android:layout_width="110dp"
                     android:layout_height="40dp"
                     android:layout_marginStart="20dp"
                     android:background="@drawable/background_control_selector_color"
                     android:button="@null"
+                    android:gravity="center"
                     android:paddingStart="20dp"
                     android:paddingEnd="20dp"
                     android:text="主动训练"
@@ -107,36 +109,49 @@
                 android:text="转动方向"
                 android:textColor="#00C4B9"
                 android:textSize="18sp"
-                app:layout_constraintBottom_toBottomOf="@id/btnForward"
+                app:layout_constraintBottom_toBottomOf="@id/rgOrientation"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/btnForward" />
+                app:layout_constraintTop_toTopOf="@id/rgOrientation" />
 
-            <TextView
-                android:id="@+id/btnForward"
-                android:layout_width="104dp"
-                android:layout_height="40dp"
+            <RadioGroup
+                android:id="@+id/rgOrientation"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="30dp"
                 android:layout_marginTop="30dp"
-                android:background="@drawable/background_control_selector_color"
-                android:gravity="center"
-                android:text="正 转"
-                android:textColor="@drawable/text_control_selector_color"
-                android:textSize="16sp"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/tvOrientationTag"
-                app:layout_constraintTop_toBottomOf="@id/rgPassiveTraining" />
+                app:layout_constraintTop_toBottomOf="@id/rgPassiveTraining">
 
-            <TextView
-                android:id="@+id/btnReversion"
-                android:layout_width="104dp"
-                android:layout_height="40dp"
-                android:layout_marginStart="20dp"
-                android:background="@drawable/background_control_selector_color"
-                android:gravity="center"
-                android:text="反 转"
-                android:textColor="@drawable/text_control_selector_color"
-                android:textSize="16sp"
-                app:layout_constraintStart_toEndOf="@id/btnForward"
-                app:layout_constraintTop_toTopOf="@id/btnForward" />
+                <RadioButton
+                    android:id="@+id/rbForward"
+                    android:layout_width="110dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/background_control_selector_color"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:text="正 转"
+                    android:textColor="@drawable/text_control_selector_color"
+                    android:textSize="16sp" />
+
+                <RadioButton
+                    android:id="@+id/rbReversion"
+                    android:layout_width="110dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="20dp"
+                    android:background="@drawable/background_control_selector_color"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:text="反 转"
+                    android:textColor="@drawable/text_control_selector_color"
+                    android:textSize="16sp" />
+
+            </RadioGroup>
 
             <TextView
                 android:id="@+id/tvSpeedTag"
@@ -159,7 +174,7 @@
                 app:desPrefix=""
                 app:desSuffix="rpm"
                 app:layout_constraintStart_toEndOf="@id/tvSpeedTag"
-                app:layout_constraintTop_toBottomOf="@id/btnForward"
+                app:layout_constraintTop_toBottomOf="@id/rgOrientation"
                 app:maxLevel="12"
                 app:maxNumber="60"
                 app:minNumber="5"
