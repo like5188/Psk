@@ -9,8 +9,10 @@ import android.view.WindowManager
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import com.like.common.base.BaseDialogFragment
+import com.like.common.util.visible
 import com.psk.ble.DeviceType
 import com.psk.common.util.showToast
+import com.psk.device.data.model.ShangXiaZhiParams
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.data.model.BleScanInfo
 import com.psk.shangxiazhi.databinding.DialogFragmentSelectDeviceBinding
@@ -18,23 +20,24 @@ import com.psk.shangxiazhi.databinding.ViewSelectDeviceBinding
 
 class SelectDeviceDialogFragment private constructor() : BaseDialogFragment() {
     companion object {
-        private const val KEY_DATA = "key_data"
+        private const val KEY_DEVICE_TYPES = "key_device_types"
         fun newInstance(deviceTypes: Array<DeviceType>): SelectDeviceDialogFragment {
             return SelectDeviceDialogFragment().apply {
                 arguments = bundleOf(
-                    KEY_DATA to deviceTypes
+                    KEY_DEVICE_TYPES to deviceTypes
                 )
             }
         }
     }
 
     private lateinit var mBinding: DialogFragmentSelectDeviceBinding
-    var onSelected: ((Map<DeviceType, BleScanInfo>) -> Unit)? = null
+    var onSelected: ((deviceMap: Map<DeviceType, BleScanInfo>, shangXiaZhiParams: ShangXiaZhiParams?) -> Unit)? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.dialog_fragment_select_device, container, true)
         val selectDeviceMap = mutableMapOf<DeviceType, BleScanInfo>()
-        val deviceTypes = arguments?.getSerializable(KEY_DATA) as? Array<DeviceType>
+        var shangXiaZhiParams: ShangXiaZhiParams? = null
+        val deviceTypes = arguments?.getSerializable(KEY_DEVICE_TYPES) as? Array<DeviceType>
         deviceTypes?.forEach { deviceType ->
             val binding = DataBindingUtil.inflate<ViewSelectDeviceBinding>(
                 inflater,
@@ -43,11 +46,21 @@ class SelectDeviceDialogFragment private constructor() : BaseDialogFragment() {
                 true
             )
             binding.tvDeviceTypeDes.text = deviceType.des
-            binding.root.setOnClickListener {
+            binding.ll.setOnClickListener {
                 ScanDeviceDialogFragment.newInstance(deviceType).apply {
                     onSelected = {
                         selectDeviceMap[deviceType] = it
                         binding.tvName.text = it.name
+                        if (deviceType == DeviceType.ShangXiaZhi) {
+                            binding.tvFun.visible()
+                            binding.tvFun.setOnClickListener {
+                                SetShangXiaZhiPramsDialogFragment.newInstance().apply {
+                                    onSelected = {
+                                        shangXiaZhiParams = it
+                                    }
+                                }.show(this@SelectDeviceDialogFragment)
+                            }
+                        }
                     }
                 }.show(requireActivity())
             }
@@ -55,14 +68,10 @@ class SelectDeviceDialogFragment private constructor() : BaseDialogFragment() {
         mBinding.btnConfirm.setOnClickListener {
             if (selectDeviceMap.isEmpty()) {
                 context?.showToast("请先选择设备")
-            } else if (selectDeviceMap.containsKey(DeviceType.ShangXiaZhi)) {
-                SetShangXiaZhiPramsDialogFragment.newInstance().apply {
-                    onSelected = {
-
-                    }
-                }.show(requireActivity())
+            } else if (selectDeviceMap.containsKey(DeviceType.ShangXiaZhi) && shangXiaZhiParams == null) {
+                context?.showToast("请先设置上下肢参数")
             } else {
-                onSelected?.invoke(selectDeviceMap)
+                onSelected?.invoke(selectDeviceMap, shangXiaZhiParams)
                 dismiss()
             }
         }

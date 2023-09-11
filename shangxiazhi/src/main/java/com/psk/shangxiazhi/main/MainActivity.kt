@@ -11,7 +11,6 @@ import com.like.common.util.startActivity
 import com.psk.ble.DeviceType
 import com.psk.common.CommonApplication
 import com.psk.common.util.showToast
-import com.psk.device.data.model.ShangXiaZhiParams
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.databinding.ActivityMainBinding
 import com.psk.shangxiazhi.device.SelectDeviceDialogFragment
@@ -116,12 +115,8 @@ class MainActivity : AppCompatActivity() {
                     DeviceType.HeartRate,
                 )
             ).apply {
-                onSelected = {
-                    mViewModel.uiState.value.gameManagerService?.start(
-                        it, scene, ShangXiaZhiParams(
-                            passiveModule = true, time = 1, speedLevel = 3, spasmLevel = 3, resistance = 3, intelligent = true, turn2 = true
-                        )
-                    ) {
+                onSelected = { deviceMap, shangXiaZhiParams ->
+                    mViewModel.uiState.value.gameManagerService?.start(deviceMap, scene, shangXiaZhiParams) {
                         ReportActivity.start(reports = it)
                     }
                 }

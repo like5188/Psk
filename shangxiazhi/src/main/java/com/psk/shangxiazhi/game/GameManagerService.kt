@@ -58,7 +58,7 @@ class GameManagerService : Service() {
     fun start(
         devices: Map<DeviceType, BleScanInfo>,
         scene: TrainScene,
-        params: ShangXiaZhiParams,
+        params: ShangXiaZhiParams?,
         onReport: ((List<IReport>) -> Unit)? = null
     ) {
         if (devices.isEmpty()) {
