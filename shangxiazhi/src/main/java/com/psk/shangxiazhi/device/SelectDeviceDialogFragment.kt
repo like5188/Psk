@@ -18,11 +18,11 @@ import com.psk.shangxiazhi.databinding.ViewSelectDeviceBinding
 
 class SelectDeviceDialogFragment private constructor() : BaseDialogFragment() {
     companion object {
-        private const val KEY_DEVICE_TYPES = "key_device_types"
+        private const val KEY_DATA = "key_data"
         fun newInstance(deviceTypes: Array<DeviceType>): SelectDeviceDialogFragment {
             return SelectDeviceDialogFragment().apply {
                 arguments = bundleOf(
-                    KEY_DEVICE_TYPES to deviceTypes
+                    KEY_DATA to deviceTypes
                 )
             }
         }
@@ -34,7 +34,7 @@ class SelectDeviceDialogFragment private constructor() : BaseDialogFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.dialog_fragment_select_device, container, true)
         val selectDeviceMap = mutableMapOf<DeviceType, BleScanInfo>()
-        val deviceTypes = arguments?.getSerializable(KEY_DEVICE_TYPES) as? Array<DeviceType>
+        val deviceTypes = arguments?.getSerializable(KEY_DATA) as? Array<DeviceType>
         deviceTypes?.forEach { deviceType ->
             val binding = DataBindingUtil.inflate<ViewSelectDeviceBinding>(
                 inflater,
