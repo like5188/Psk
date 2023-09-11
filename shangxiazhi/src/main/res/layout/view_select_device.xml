@@ -53,10 +53,10 @@
             android:paddingTop="10dp"
             android:paddingEnd="15dp"
             android:paddingBottom="10dp"
-            android:text="设置参数 >"
             android:textColor="@color/white"
             android:textSize="20sp"
             android:visibility="gone"
+            tools:text="设置参数 >"
             tools:visibility="visible" />
     </LinearLayout>
 </layout>

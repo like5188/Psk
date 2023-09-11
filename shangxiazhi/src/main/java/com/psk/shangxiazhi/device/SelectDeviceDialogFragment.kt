@@ -18,6 +18,9 @@ import com.psk.shangxiazhi.data.model.BleScanInfo
 import com.psk.shangxiazhi.databinding.DialogFragmentSelectDeviceBinding
 import com.psk.shangxiazhi.databinding.ViewSelectDeviceBinding
 
+/**
+ * 选择设备
+ */
 class SelectDeviceDialogFragment private constructor() : BaseDialogFragment() {
     companion object {
         private const val KEY_DEVICE_TYPES = "key_device_types"
@@ -31,19 +34,17 @@ class SelectDeviceDialogFragment private constructor() : BaseDialogFragment() {
     }
 
     private lateinit var mBinding: DialogFragmentSelectDeviceBinding
-    var onSelected: ((deviceMap: Map<DeviceType, BleScanInfo>, shangXiaZhiParams: ShangXiaZhiParams?) -> Unit)? = null
+    var onSelected: ((deviceMap: Map<DeviceType, BleScanInfo>, shangXiaZhiParams: ShangXiaZhiParams?, targetHeartRate: Int) -> Unit)? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.dialog_fragment_select_device, container, true)
         val selectDeviceMap = mutableMapOf<DeviceType, BleScanInfo>()
         var shangXiaZhiParams: ShangXiaZhiParams? = null
+        var targetHeartRate = 0
         val deviceTypes = arguments?.getSerializable(KEY_DEVICE_TYPES) as? Array<DeviceType>
         deviceTypes?.forEach { deviceType ->
             val binding = DataBindingUtil.inflate<ViewSelectDeviceBinding>(
-                inflater,
-                R.layout.view_select_device,
-                mBinding.llContainer,
-                true
+                inflater, R.layout.view_select_device, mBinding.llContainer, true
             )
             binding.tvDeviceTypeDes.text = deviceType.des
             binding.ll.setOnClickListener {
@@ -51,17 +52,41 @@ class SelectDeviceDialogFragment private constructor() : BaseDialogFragment() {
                     onSelected = {
                         selectDeviceMap[deviceType] = it
                         binding.tvName.text = it.name
-                        if (deviceType == DeviceType.ShangXiaZhi) {
-                            binding.tvFun.visible()
-                            binding.tvFun.setOnClickListener {
-                                SetShangXiaZhiPramsDialogFragment.newInstance().apply {
-                                    onSelected = {
-                                        shangXiaZhiParams = it
-                                        binding.tvFun.text = "修改参数 >"
-                                    }
-                                }.show(this@SelectDeviceDialogFragment)
+                        when (deviceType) {
+                            DeviceType.ShangXiaZhi -> {
+                                if (binding.tvFun.text.isEmpty()) {
+                                    binding.tvFun.text = "设置参数 >"
+                                }
+                                binding.tvFun.visible()
+                                binding.tvFun.setOnClickListener {
+                                    SetShangXiaZhiPramsDialogFragment.newInstance().apply {
+                                        onSelected = {
+                                            shangXiaZhiParams = it
+                                            binding.tvFun.text = "修改参数 >"
+                                        }
+                                    }.show(this@SelectDeviceDialogFragment)
+                                }
+                                binding.tvFun.requestFocus()
                             }
-                            binding.tvFun.requestFocus()
+
+                            DeviceType.HeartRate -> {
+                                // 靶心率=[(220-年龄）-静态心率]*(达到最大心率的一定百分比，通常为60%---80%)+静态心率
+                                if (binding.tvFun.text.isEmpty()) {
+                                    binding.tvFun.text = "测量靶心率 >"
+                                }
+                                binding.tvFun.visible()
+                                binding.tvFun.setOnClickListener {
+                                    MeasureTargetHeartRateDialogFragment.newInstance().apply {
+                                        onSelected = {
+                                            targetHeartRate = it
+                                            binding.tvFun.text = "重新测量 >"
+                                        }
+                                    }.show(this@SelectDeviceDialogFragment)
+                                }
+                                binding.tvFun.requestFocus()
+                            }
+
+                            else -> {}
                         }
                     }
                 }.show(requireActivity())
@@ -72,8 +97,10 @@ class SelectDeviceDialogFragment private constructor() : BaseDialogFragment() {
                 context?.showToast("请先选择设备")
             } else if (selectDeviceMap.containsKey(DeviceType.ShangXiaZhi) && shangXiaZhiParams == null) {
                 context?.showToast("请先设置上下肢参数")
+            } else if (selectDeviceMap.containsKey(DeviceType.HeartRate) && targetHeartRate == 0) {
+                context?.showToast("请先测量靶心率")
             } else {
-                onSelected?.invoke(selectDeviceMap, shangXiaZhiParams)
+                onSelected?.invoke(selectDeviceMap, shangXiaZhiParams, targetHeartRate)
                 dismiss()
             }
         }

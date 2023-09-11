@@ -115,7 +115,8 @@ class MainActivity : AppCompatActivity() {
                     DeviceType.HeartRate,
                 )
             ).apply {
-                onSelected = { deviceMap, shangXiaZhiParams ->
+                onSelected = { deviceMap, shangXiaZhiParams, targetHeartRate ->
+                    // todo targetHeartRate 没有使用
                     mViewModel.uiState.value.gameManagerService?.start(deviceMap, scene, shangXiaZhiParams) {
                         ReportActivity.start(reports = it)
                     }

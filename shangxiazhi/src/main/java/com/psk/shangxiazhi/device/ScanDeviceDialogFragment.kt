@@ -24,6 +24,9 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
+/**
+ * 扫描指定设备类型的设备
+ */
 class ScanDeviceDialogFragment private constructor() : BaseDialogFragment() {
     companion object {
         private const val KEY_DEVICE_TYPE = "key_device_type"

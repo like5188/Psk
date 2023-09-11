@@ -12,6 +12,9 @@ import com.psk.device.data.model.ShangXiaZhiParams
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.databinding.DialogFragmentSetShangXiaZhiParamsBinding
 
+/**
+ * 设置上下肢康复机参数
+ */
 class SetShangXiaZhiPramsDialogFragment private constructor() : BaseDialogFragment() {
     companion object {
         fun newInstance(): SetShangXiaZhiPramsDialogFragment {
