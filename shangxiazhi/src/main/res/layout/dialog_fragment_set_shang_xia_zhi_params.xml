@@ -2,17 +2,6 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <data>
-
-        <variable
-            name="passiveMode"
-            type="androidx.databinding.ObservableInt" />
-
-        <variable
-            name="orientationMode"
-            type="androidx.databinding.ObservableInt" />
-    </data>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -48,12 +37,12 @@
                 android:text="智能模式"
                 android:textColor="#00C4B9"
                 android:textSize="18sp"
-                app:layout_constraintBottom_toBottomOf="@id/btnSmartMode"
+                app:layout_constraintBottom_toBottomOf="@id/switchSmartMode"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/btnSmartMode" />
+                app:layout_constraintTop_toTopOf="@id/switchSmartMode" />
 
             <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/btnSmartMode"
+                android:id="@+id/switchSmartMode"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="30dp"
@@ -69,37 +58,47 @@
                 android:text="训练模式"
                 android:textColor="#00C4B9"
                 android:textSize="18sp"
-                app:layout_constraintBottom_toBottomOf="@id/btnPassiveTraining"
+                app:layout_constraintBottom_toBottomOf="@id/rgPassiveTraining"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/btnPassiveTraining" />
+                app:layout_constraintTop_toTopOf="@id/rgPassiveTraining" />
 
-
-            <TextView
-                android:id="@+id/btnPassiveTraining"
-                android:layout_width="104dp"
-                android:layout_height="40dp"
+            <RadioGroup
+                android:id="@+id/rgPassiveTraining"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="30dp"
                 android:layout_marginTop="30dp"
-                android:background="@drawable/background_control_selector_color"
-                android:gravity="center"
-                android:text="被动训练"
-                android:textColor="@drawable/text_control_selector_color"
-                android:textSize="16sp"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/tvPassiveTrainingTag"
-                app:layout_constraintTop_toBottomOf="@id/btnSmartMode" />
+                app:layout_constraintTop_toBottomOf="@id/switchSmartMode">
 
-            <TextView
-                android:id="@+id/btnActiveTraining"
-                android:layout_width="104dp"
-                android:layout_height="40dp"
-                android:layout_marginStart="20dp"
-                android:background="@drawable/background_control_selector_color"
-                android:gravity="center"
-                android:text="主动训练"
-                android:textColor="@drawable/text_control_selector_color"
-                android:textSize="16sp"
-                app:layout_constraintStart_toEndOf="@id/btnPassiveTraining"
-                app:layout_constraintTop_toTopOf="@id/btnPassiveTraining" />
+                <RadioButton
+                    android:id="@+id/rbPassiveTraining"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:background="@drawable/background_control_selector_color"
+                    android:button="@null"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:text="被动训练"
+                    android:textColor="@drawable/text_control_selector_color"
+                    android:textSize="16sp" />
+
+                <RadioButton
+                    android:id="@+id/rbActiveTraining"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="20dp"
+                    android:background="@drawable/background_control_selector_color"
+                    android:button="@null"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:text="主动训练"
+                    android:textColor="@drawable/text_control_selector_color"
+                    android:textSize="16sp" />
+
+            </RadioGroup>
 
             <TextView
                 android:id="@+id/tvOrientationTag"
@@ -124,7 +123,7 @@
                 android:textColor="@drawable/text_control_selector_color"
                 android:textSize="16sp"
                 app:layout_constraintStart_toEndOf="@id/tvOrientationTag"
-                app:layout_constraintTop_toBottomOf="@id/btnActiveTraining" />
+                app:layout_constraintTop_toBottomOf="@id/rgPassiveTraining" />
 
             <TextView
                 android:id="@+id/btnReversion"

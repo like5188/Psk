@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.databinding.DataBindingUtil
-import androidx.databinding.ObservableInt
 import com.like.common.base.BaseDialogFragment
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.data.model.BleScanInfo
@@ -21,8 +20,6 @@ class SetShangXiaZhiPramsDialogFragment private constructor() : BaseDialogFragme
     }
 
     private lateinit var mBinding: DialogFragmentSetShangXiaZhiParamsBinding
-    private val passiveMode = ObservableInt(0)
-    private val orientationMode = ObservableInt(0)
     var onSelected: ((BleScanInfo) -> Unit)? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
