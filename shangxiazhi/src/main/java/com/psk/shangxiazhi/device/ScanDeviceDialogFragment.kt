@@ -101,8 +101,8 @@ class ScanDeviceDialogFragment private constructor() : BaseDialogFragment() {
     }
 
     override fun onDestroy() {
-        bleManager.onDestroy()
         super.onDestroy()
+        bleManager.onDestroy()
     }
 
     override fun initLayoutParams(layoutParams: WindowManager.LayoutParams) {
