@@ -61,6 +61,7 @@ class SelectDeviceDialogFragment private constructor() : BaseDialogFragment() {
                                     }
                                 }.show(this@SelectDeviceDialogFragment)
                             }
+                            binding.tvFun.requestFocus()
                         }
                     }
                 }.show(requireActivity())
