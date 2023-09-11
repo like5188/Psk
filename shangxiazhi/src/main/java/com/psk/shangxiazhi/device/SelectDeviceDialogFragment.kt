@@ -49,9 +49,9 @@ class SelectDeviceDialogFragment private constructor() : BaseDialogFragment() {
             binding.tvDeviceTypeDes.text = deviceType.des
             binding.ll.setOnClickListener {
                 ScanDeviceDialogFragment.newInstance(deviceType).apply {
-                    onSelected = {
-                        selectDeviceMap[deviceType] = it
-                        binding.tvName.text = it.name
+                    onSelected = { bleSanInfo ->
+                        selectDeviceMap[deviceType] = bleSanInfo
+                        binding.tvName.text = bleSanInfo.name
                         when (deviceType) {
                             DeviceType.ShangXiaZhi -> {
                                 if (binding.tvFun.text.isEmpty()) {
@@ -76,7 +76,7 @@ class SelectDeviceDialogFragment private constructor() : BaseDialogFragment() {
                                 }
                                 binding.tvFun.visible()
                                 binding.tvFun.setOnClickListener {
-                                    MeasureTargetHeartRateDialogFragment.newInstance().apply {
+                                    MeasureTargetHeartRateDialogFragment.newInstance(bleSanInfo.name, bleSanInfo.address).apply {
                                         onSelected = {
                                             targetHeartRate = it
                                             binding.tvFun.text = "重新测量 >"
