@@ -1,8 +1,6 @@
 rootProject.name='Psk'
-include ':recovery'
 include ':device'
 include ':LuckyEcgChart'
-include ':remotecontrol'
 include ':shangxiazhi'
 include ':common'
 include ':ble'
