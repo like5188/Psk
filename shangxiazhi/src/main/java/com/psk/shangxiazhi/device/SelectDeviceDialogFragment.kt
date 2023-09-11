@@ -57,6 +57,7 @@ class SelectDeviceDialogFragment private constructor() : BaseDialogFragment() {
                                 SetShangXiaZhiPramsDialogFragment.newInstance().apply {
                                     onSelected = {
                                         shangXiaZhiParams = it
+                                        binding.tvFun.text = "修改参数 >"
                                     }
                                 }.show(this@SelectDeviceDialogFragment)
                             }
