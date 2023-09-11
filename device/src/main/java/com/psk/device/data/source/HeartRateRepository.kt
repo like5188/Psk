@@ -48,4 +48,8 @@ class HeartRateRepository : KoinComponent, IRepository<HeartRate> {
         return dbDataSource.listenLatest(System.currentTimeMillis() / 1000).filterNotNull()
     }
 
+    suspend fun fetch(): Flow<HeartRate> {
+        return dataSource.fetch(-1)
+    }
+
 }

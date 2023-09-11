@@ -70,7 +70,6 @@ class SelectDeviceDialogFragment private constructor() : BaseDialogFragment() {
                             }
 
                             DeviceType.HeartRate -> {
-                                // 靶心率=[(220-年龄）-静态心率]*(达到最大心率的一定百分比，通常为60%---80%)+静态心率
                                 if (binding.tvFun.text.isEmpty()) {
                                     binding.tvFun.text = "测量靶心率 >"
                                 }

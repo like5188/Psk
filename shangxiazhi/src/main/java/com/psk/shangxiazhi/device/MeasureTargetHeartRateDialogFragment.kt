@@ -61,10 +61,15 @@ class MeasureTargetHeartRateDialogFragment private constructor() : BaseDialogFra
             return
         }
         job = lifecycleScope.launch(Dispatchers.IO) {
-            repository.getFlow(lifecycleScope, 1).filterNotNull().map {
+            repository.fetch().filterNotNull().map {
                 it.value
             }.distinctUntilChanged().collect { value ->
+                println("心率：$value")
                 mBinding.tvHeartRate.text = value.toString()
+                // 靶心率=[(220-年龄)-静态心率]*(达到最大心率的一定百分比，通常为60%---80%)+静态心率
+                val age = mBinding.etAge.text.trim().toString().toIntOrDefault(0)
+                val targetHeartRate = ((220 - age) - value) * (0.7) + value
+                mBinding.tvTargetHeartRate.text = targetHeartRate.toString()
             }
         }
     }
@@ -93,12 +98,19 @@ class MeasureTargetHeartRateDialogFragment private constructor() : BaseDialogFra
                 return@setOnClickListener
             }
             bleManager.connect(DeviceType.HeartRate, lifecycleScope, 3000L, {
+                println("心电仪连接成功")
                 startJob()
             }) {
+                println("心电仪连接失败")
                 cancelJob()
             }
         }
         mBinding.btnConfirm.setOnClickListener {
+            val targetHeartRate = mBinding.tvTargetHeartRate.text.toString().toIntOrDefault(0)
+            if (targetHeartRate <= 0) {
+                requireContext().showToast("靶心率尚未计算成功，请先测量心率")
+                return@setOnClickListener
+            }
             onSelected?.invoke(1)
             dismiss()
         }
