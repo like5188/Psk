@@ -125,8 +125,7 @@ class MainActivity : AppCompatActivity() {
                         ReportActivity.start(reports = it)
                     }
                 }
-                show(this@MainActivity)
-            }
+            }.show(this@MainActivity)
         }
     }
 
