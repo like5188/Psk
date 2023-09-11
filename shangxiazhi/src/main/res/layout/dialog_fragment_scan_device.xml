@@ -14,7 +14,7 @@
             android:layout_height="60dp"
             android:gravity="center"
             android:textColor="#99FFFFFF"
-            android:textSize="20sp"
+            android:textSize="24sp"
             android:textStyle="bold"
             tools:text="扫描中，请稍后……" />
 
