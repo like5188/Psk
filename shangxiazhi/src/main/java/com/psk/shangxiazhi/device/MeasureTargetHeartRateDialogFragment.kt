@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 
 /**
@@ -45,8 +46,8 @@ class MeasureTargetHeartRateDialogFragment private constructor() : BaseDialogFra
     }
 
     private val bleManager by inject<BleManager>()
-    private val deviceManager by inject<DeviceManager>()
     private val repository: HeartRateRepository by lazy {
+        val deviceManager = get<DeviceManager>()
         deviceManager.createRepository<HeartRateRepository>(DeviceType.HeartRate).apply {
             enable(arguments?.getString(KEY_DEVICE_NAME) ?: "", arguments?.getString(KEY_DEVICE_ADDRESS) ?: "")
         }
