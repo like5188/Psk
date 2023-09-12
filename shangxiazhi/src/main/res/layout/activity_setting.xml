@@ -10,12 +10,11 @@
 
         <TextView
             android:layout_width="450dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:layout_marginBottom="40dp"
+            android:layout_height="60dp"
+            android:gravity="center"
             android:text="设置"
-            android:textColor="@drawable/setting_text_color_choose"
-            android:textSize="30sp"
+            android:textColor="#99FFFFFF"
+            android:textSize="24sp"
             android:textStyle="bold" />
 
         <LinearLayout
@@ -42,7 +41,7 @@
                 android:layout_marginStart="10dp"
                 android:text="当前版本"
                 android:textColor="@drawable/setting_text_color_choose"
-                android:textSize="28sp" />
+                android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/tvVersion"
@@ -51,7 +50,7 @@
                 android:gravity="end"
                 android:textColor="@drawable/setting_text_color_choose"
                 android:textColorHint="@drawable/setting_text_color_choose"
-                android:textSize="28sp" />
+                android:textSize="20sp" />
 
         </LinearLayout>
 
