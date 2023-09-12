@@ -46,12 +46,7 @@ class MeasureTargetHeartRateDialogFragment private constructor() : BaseDialogFra
     }
 
     private val bleManager by inject<BleManager>()
-    private val repository: HeartRateRepository by lazy {
-        val deviceManager = get<DeviceManager>()
-        deviceManager.createRepository<HeartRateRepository>(DeviceType.HeartRate).apply {
-            enable(arguments?.getString(KEY_DEVICE_NAME) ?: "", arguments?.getString(KEY_DEVICE_ADDRESS) ?: "")
-        }
-    }
+    private val repository = get<DeviceManager>().createRepository<HeartRateRepository>(DeviceType.HeartRate)
     private lateinit var mBinding: DialogFragmentMeasureTargetHeartRateBinding
     var onSelected: ((Int) -> Unit)? = null
     private var job: Job? = null
@@ -91,6 +86,7 @@ class MeasureTargetHeartRateDialogFragment private constructor() : BaseDialogFra
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.dialog_fragment_measure_target_heart_rate, container, true)
+        repository.enable(arguments?.getString(KEY_DEVICE_NAME) ?: "", arguments?.getString(KEY_DEVICE_ADDRESS) ?: "")
         mBinding.btnMeasure.setOnClickListener {
             val age = mBinding.etAge.text.trim().toString().toIntOrDefault(0)
             if (age <= 0) {

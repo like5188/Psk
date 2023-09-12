@@ -31,10 +31,8 @@ abstract class BaseBusinessManager<Data, Repository : IRepository<Data>>(
     private var job: Job? = null
     private val bleManager by inject<BleManager>()
     protected val gameController by inject<GameController>()
-    protected val repository: Repository by lazy {
-        deviceManager.createRepository<Repository>(deviceType).apply {
-            enable(deviceName, deviceAddress)
-        }
+    protected val repository: Repository = deviceManager.createRepository<Repository>(deviceType).apply {
+        enable(deviceName, deviceAddress)
     }
 
     fun startJob() {
