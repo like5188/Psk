@@ -23,6 +23,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.get
@@ -55,15 +56,15 @@ class MeasureTargetHeartRateDialogFragment private constructor() : BaseDialogFra
         if (job != null) {
             return
         }
-        job = lifecycleScope.launch(Dispatchers.IO) {
+        job = lifecycleScope.launch(Dispatchers.Main) {
             repository.fetch().filterNotNull().map {
                 it.value
-            }.distinctUntilChanged().collect { value ->
+            }.distinctUntilChanged().flowOn(Dispatchers.IO).collect { value ->
                 println("心率：$value")
                 mBinding.tvHeartRate.text = value.toString()
                 // 靶心率=[(220-年龄)-静态心率]*(达到最大心率的一定百分比，通常为60%---80%)+静态心率
                 val age = mBinding.etAge.text.trim().toString().toIntOrDefault(0)
-                val targetHeartRate = ((220 - age) - value) * (0.7) + value
+                val targetHeartRate = (((220 - age) - value) * (0.7) + value).toInt()
                 mBinding.tvTargetHeartRate.text = targetHeartRate.toString()
             }
         }
