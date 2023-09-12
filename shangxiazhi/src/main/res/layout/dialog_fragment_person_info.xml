@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
-
-    <data>
-
-        <import type="android.view.View" />
-    </data>
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -20,7 +14,7 @@
             android:layout_height="60dp"
             android:layout_marginBottom="15dp"
             android:gravity="center"
-            android:text="靶心率测量"
+            android:text="基本信息"
             android:textColor="#99FFFFFF"
             android:textSize="24sp"
             android:textStyle="bold" />
@@ -32,73 +26,56 @@
             android:layout_marginEnd="15dp">
 
             <TextView
-                android:id="@+id/tvHeartRateTag"
+                android:id="@+id/tvAgeTag"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="当前心率"
+                android:text="年龄"
                 android:textColor="#00C4B9"
                 android:textSize="18sp"
-                app:layout_constraintBottom_toBottomOf="@id/tvHeartRate"
+                app:layout_constraintBottom_toBottomOf="@id/etAge"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/tvHeartRate" />
+                app:layout_constraintTop_toTopOf="@id/etAge" />
 
-            <TextView
-                android:id="@+id/tvHeartRate"
+            <EditText
+                android:id="@+id/etAge"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="80dp"
                 android:layout_marginTop="15dp"
                 android:layout_marginEnd="15dp"
-                android:textColor="@color/white"
-                android:textSize="40sp"
-                app:layout_constraintEnd_toStartOf="@id/btnMeasure"
-                app:layout_constraintStart_toEndOf="@id/tvHeartRateTag"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="11" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnMeasure"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:layout_marginEnd="15dp"
-                android:background="@drawable/setting_bg_choose"
-                android:gravity="center"
-                android:paddingStart="15dp"
-                android:paddingTop="10dp"
-                android:paddingEnd="15dp"
-                android:paddingBottom="10dp"
-                android:text="开始测量"
-                android:textColor="@drawable/setting_text_color_choose"
-                android:textSize="20sp"
-                app:layout_constraintBottom_toBottomOf="@id/tvHeartRate"
+                android:background="@drawable/shape_rectangle_border_selector"
+                android:hint="请输入您的年龄"
+                android:inputType="number"
+                android:padding="10dp"
+                android:paddingStart="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/tvHeartRate" />
+                app:layout_constraintStart_toEndOf="@id/tvAgeTag"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/tvTargetHeartRateTag"
+                android:id="@+id/tvWeightTag"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="目标心率"
+                android:text="体重(斤)"
                 android:textColor="#00C4B9"
                 android:textSize="18sp"
-                app:layout_constraintBottom_toBottomOf="@id/tvTargetHeartRate"
+                app:layout_constraintBottom_toBottomOf="@id/etWeight"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/tvTargetHeartRate" />
+                app:layout_constraintTop_toTopOf="@id/etWeight" />
 
-            <TextView
-                android:id="@+id/tvTargetHeartRate"
+            <EditText
+                android:id="@+id/etWeight"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
-                android:layout_marginEnd="15dp"
-                android:gravity="center_vertical"
-                android:textColor="@color/white"
-                android:textSize="40sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@id/tvHeartRate"
-                app:layout_constraintTop_toBottomOf="@id/tvHeartRate"
-                tools:text="11~12" />
+                android:background="@drawable/shape_rectangle_border_selector"
+                android:hint="请输入您的体重"
+                android:inputType="number"
+                android:padding="10dp"
+                android:paddingStart="10dp"
+                app:layout_constraintEnd_toEndOf="@id/etAge"
+                app:layout_constraintStart_toStartOf="@id/etAge"
+                app:layout_constraintTop_toBottomOf="@id/etAge" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

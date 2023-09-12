@@ -1,6 +1,5 @@
 package com.psk.shangxiazhi.main
 
-import android.app.Activity
 import android.os.Bundle
 import android.view.ViewTreeObserver
 import androidx.appcompat.app.AppCompatActivity
@@ -8,18 +7,14 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.like.common.util.mvi.propertyCollector
 import com.like.common.util.startActivity
-import com.psk.ble.DeviceType
 import com.psk.common.CommonApplication
 import com.psk.common.util.showToast
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.databinding.ActivityMainBinding
-import com.psk.shangxiazhi.device.SelectDeviceDialogFragment
 import com.psk.shangxiazhi.history.HistoryActivity
 import com.psk.shangxiazhi.login.LoginActivity
-import com.psk.shangxiazhi.report.ReportActivity
-import com.psk.shangxiazhi.scene.SceneActivity
 import com.psk.shangxiazhi.setting.SettingActivity
-import com.twsz.twsystempre.TrainScene
+import com.psk.shangxiazhi.train.TrainActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -70,9 +65,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun init() {
-        mViewModel.bindGameManagerService(this@MainActivity)
         mBinding.ivAutonomyTraining.setOnClickListener {
-            selectSceneAndDeviceAndStartGame()
+            TrainActivity.start()
         }
         mBinding.ivTrainingRecords.setOnClickListener {
             HistoryActivity.start()
@@ -85,43 +79,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun collectUiState() {
         mViewModel.uiState.propertyCollector(this) {
-            collectDistinctProperty(MainUiState::gameManagerService) {
-                it ?: return@collectDistinctProperty
-                it.initBle(this@MainActivity)
-            }
             collectDistinctProperty(MainUiState::time) {
                 mBinding.tvTime.text = it
             }
             collectEventProperty(MainUiState::toastEvent) {
                 showToast(it)
             }
-        }
-    }
-
-    /**
-     * 选择场景、设备，并启动游戏app
-     */
-    private fun selectSceneAndDeviceAndStartGame() {
-        SceneActivity.start(this) {
-            if (it.resultCode != Activity.RESULT_OK) {
-                return@start
-            }
-            val scene = it.data?.getSerializableExtra(SceneActivity.KEY_DATA) as? TrainScene ?: return@start
-            SelectDeviceDialogFragment.newInstance(
-                arrayOf(
-                    DeviceType.ShangXiaZhi,
-                    DeviceType.BloodOxygen,
-                    DeviceType.BloodPressure,
-                    DeviceType.HeartRate,
-                )
-            ).apply {
-                onSelected = { deviceMap, shangXiaZhiParams, targetHeartRate ->
-                    // todo targetHeartRate 没有使用
-                    mViewModel.uiState.value.gameManagerService?.start(deviceMap, scene, shangXiaZhiParams) {
-                        ReportActivity.start(reports = it)
-                    }
-                }
-            }.show(this@MainActivity)
         }
     }
 
@@ -134,11 +97,6 @@ class MainActivity : AppCompatActivity() {
         } else {
             super.onBackPressed()
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        mViewModel.unbindGameManagerService(this)
     }
 
 }

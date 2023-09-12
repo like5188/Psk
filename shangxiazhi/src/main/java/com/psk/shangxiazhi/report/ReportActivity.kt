@@ -19,15 +19,42 @@ import com.psk.shangxiazhi.databinding.ActivityReportBinding
  */
 class ReportActivity : AppCompatActivity() {
     companion object {
-        fun start(reports: List<IReport>) {
+        fun start(
+            reports: List<IReport>?,
+            minTargetHeartRate: Int,
+            maxTargetHeartRate: Int,
+            met: Int,
+            bloodPressureBefore: Int,
+            bloodPressureAfter: Int
+        ) {
             CommonApplication.sInstance.startActivity<ReportActivity>(
-                "reports" to reports
+                "reports" to reports,
+                "minTargetHeartRate" to minTargetHeartRate,
+                "maxTargetHeartRate" to maxTargetHeartRate,
+                "met" to met,
+                "bloodPressureBefore" to bloodPressureBefore,
+                "bloodPressureAfter" to bloodPressureAfter,
             )
         }
     }
 
     @AutoWired
     val reports: List<IReport>? = null
+
+    @AutoWired
+    val minTargetHeartRate: Int = 0
+
+    @AutoWired
+    val maxTargetHeartRate: Int = 0
+
+    @AutoWired
+    val met: Int = 0
+
+    @AutoWired
+    val bloodPressureBefore: Int = 0
+
+    @AutoWired
+    val bloodPressureAfter: Int = 0
 
     private val mBinding: ActivityReportBinding by lazy {
         DataBindingUtil.setContentView(this, R.layout.activity_report)

@@ -34,7 +34,8 @@ class HistoryActivity : AppCompatActivity() {
                 val dateAndData = currentList[it.bindingAdapterPosition]
                 val medicalOrderId = dateAndData?.data ?: return@addOnItemClickListener
                 lifecycleScope.launch {
-                    ReportActivity.start(mViewModel.getReports(medicalOrderId))
+                    // todo
+//                    ReportActivity.start(mViewModel.getReports(medicalOrderId))
                 }
             }
         }

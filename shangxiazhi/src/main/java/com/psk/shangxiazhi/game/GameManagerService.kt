@@ -61,7 +61,7 @@ class GameManagerService : Service() {
         params: ShangXiaZhiParams?,
         onReport: ((List<IReport>) -> Unit)? = null
     ) {
-        if (devices.isEmpty()) {
+        if (!devices.containsKey(DeviceType.ShangXiaZhi)) {
             return
         }
         multiBusinessManager.clear()
@@ -93,7 +93,6 @@ class GameManagerService : Service() {
         lifecycleScope.launch(Dispatchers.IO) {
             // todo 如果增加蓝牙设备系列，需要在这里结合游戏app做处理。
             gameController.initGame(
-                devices.containsKey(DeviceType.ShangXiaZhi),
                 devices.containsKey(DeviceType.HeartRate),
                 devices.containsKey(DeviceType.BloodOxygen),
                 devices.containsKey(DeviceType.BloodPressure),
