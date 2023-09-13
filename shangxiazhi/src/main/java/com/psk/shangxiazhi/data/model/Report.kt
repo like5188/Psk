@@ -73,6 +73,7 @@ class ShangXiaZhiReport : IReport {
                     speed = shangXiaZhi.speed
                     speedLevel = shangXiaZhi.speedLevel
                     spasmLevel = shangXiaZhi.spasmLevel
+                    resistance = shangXiaZhi.resistance
                 }
                 // 速度
                 report.speedList.add(gameData.speed)
@@ -87,14 +88,12 @@ class ShangXiaZhiReport : IReport {
                 //模式
                 if (shangXiaZhi.model.toInt() == 0x01) {// 被动
                     gameData.model = 1// 转换成游戏需要的 0：主动；1：被动
-                    gameData.resistance = 0
                     //被动里程
                     report.passiveMil += gameData.speed * 0.5f * 1000 / 3600
                     //卡路里
                     report.passiveCal += gameData.speed * 0.2f / 300
                 } else {// 主动
                     gameData.model = 0
-                    gameData.resistance = shangXiaZhi.resistance
                     //主动里程
                     report.activeMil += gameData.speed * 0.5f * 1000 / 3600
                     //卡路里
@@ -128,17 +127,15 @@ class ShangXiaZhiReport : IReport {
                 // 转换成游戏需要的左边百分比 100~0
                 gameData.offsetValue = 100 - shangXiaZhi.offset * 100 / 30
                 //痉挛。注意：这里不直接使用 ShangXiaZhi 中的 spasm，是因为只要上下肢康复机不关机，那么它返回的痉挛次数值是一直累计的。
-                if (shangXiaZhi.spasm < 100) {
-                    if (!isFirstSpasm) {
-                        isFirstSpasm = true
-                        mFirstSpasm = shangXiaZhi.spasm
-                    }
-                    if (shangXiaZhi.spasm - mFirstSpasm > report.spasm) {
-                        report.spasm = shangXiaZhi.spasm - mFirstSpasm
-                        gameData.spasmFlag = 1
-                    } else {
-                        gameData.spasmFlag = 0
-                    }
+                if (!isFirstSpasm) {
+                    isFirstSpasm = true
+                    mFirstSpasm = shangXiaZhi.spasm
+                }
+                if (shangXiaZhi.spasm - mFirstSpasm > report.spasm) {
+                    report.spasm = shangXiaZhi.spasm - mFirstSpasm
+                    gameData.spasmFlag = 1
+                } else {
+                    gameData.spasmFlag = 0
                 }
                 report.spasmLevelList.add(gameData.spasmLevel)
                 report.spasmLevelTotal += gameData.spasmLevel
