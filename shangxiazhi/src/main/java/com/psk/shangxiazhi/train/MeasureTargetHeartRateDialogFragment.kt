@@ -74,7 +74,7 @@ class MeasureTargetHeartRateDialogFragment private constructor() : BaseDialogFra
         }
         lifecycleScope.launch(Dispatchers.IO) {
             // 测量一分钟
-            delay(5000)
+            delay(60000)
             cancelJob()
             val targetHeartRate = calc()
             mBinding.tvTargetHeartRate.text = "${targetHeartRate.first}~${targetHeartRate.second}"
