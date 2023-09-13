@@ -42,9 +42,9 @@ class RKF_ShangXiaZhiDataSource : BaseShangXiaZhiDataSource(DeviceType.ShangXiaZ
                 speedLevel: Int,
                 speed: Int,
                 offset: Int,
-                spasmNum: Int,
+                spasm: Int,
                 spasmLevel: Int,
-                resistanceLevel: Int,
+                resistance: Int,
                 intelligence: Byte,
                 direction: Byte
             ) {
@@ -53,9 +53,9 @@ class RKF_ShangXiaZhiDataSource : BaseShangXiaZhiDataSource(DeviceType.ShangXiaZ
                     speedLevel = speedLevel,
                     speed = speed,
                     offset = offset,
-                    spasmNum = spasmNum,
+                    spasm = spasm,
                     spasmLevel = spasmLevel,
-                    resistanceLevel = resistanceLevel,
+                    resistance = resistance,
                     intelligence = intelligence,
                     direction = direction,
                     medicalOrderId = medicalOrderId

@@ -53,7 +53,7 @@ class ShangXiaZhiFragment : BaseLazyFragment() {
             mBinding.tvActivePower.text = decimalFormat.format(activeCal)
             mBinding.tvPassivePower.text = decimalFormat.format(passiveCal)
 
-            mBinding.tvSpasmNum.text = spasmNum.toString()
+            mBinding.tvSpasm.text = spasm.toString()
             mBinding.tvSpasmLevelAvg.text = spasmLevelArv.toString()
             mBinding.tvSpasmLevelMin.text = spasmLevelMin.toString()
             mBinding.tvSpasmLevelMax.text = spasmLevelMax.toString()

@@ -42,12 +42,12 @@ class ShangXiaZhiDataParser {
             val speedLevel: Int = byteBuffer.get().toInt()
             val speedValue: Int = byteBuffer.get().toInt()
             val offset: Int = byteBuffer.get().toInt()
-            val spasmNum: Int = byteBuffer.get().toInt()
+            val spasm: Int = byteBuffer.get().toInt()
             val spasmLevel: Int = byteBuffer.get().toInt()
             val res: Int = byteBuffer.get().toInt()
             val intelligence: Byte = byteBuffer.get()
             val direction: Byte = byteBuffer.get()
-            receiver?.onReceive(model, speedLevel, speedValue, offset, spasmNum, spasmLevel, res, intelligence, direction)
+            receiver?.onReceive(model, speedLevel, speedValue, offset, spasm, spasmLevel, res, intelligence, direction)
         }
     }
 
@@ -75,9 +75,9 @@ interface ShangXiaZhiReceiver {
         speedLevel: Int,
         speed: Int,
         offset: Int,
-        spasmNum: Int,
+        spasm: Int,
         spasmLevel: Int,
-        resistanceLevel: Int,
+        resistance: Int,
         intelligence: Byte,
         direction: Byte
     )

@@ -40,18 +40,18 @@ class SetShangXiaZhiPramsDialogFragment private constructor() : BaseDialogFragme
                     time = time,
                     speedLevel = speedLevel,
                     spasmLevel = spasmLevel,
-                    resistanceLevel = 0,
+                    resistance = 0,
                     intelligent = intelligent,
                     forward = turn2
                 )
             } else {
-                val resistanceLevel: Int = mBinding.levelViewResistance.getLevel()
+                val resistance: Int = mBinding.levelViewResistance.getLevel()
                 ShangXiaZhiParams(
                     passiveModule = passiveModule,
                     time = 0,
                     speedLevel = 0,
                     spasmLevel = 0,
-                    resistanceLevel = resistanceLevel,
+                    resistance = resistance,
                     intelligent = intelligent,
                     forward = turn2
                 )
