@@ -38,25 +38,25 @@ class ShangXiaZhiReport : IReport {
     val spasmLevelList = mutableListOf<Int>()// 所有痉挛等级数据集合
     var spasmLevelTotal: Int = 0 // 总痉挛等级
     var spasmLevelArv: Int = 0// 平均痉挛等级
-    var spasmLevelMin: Int = -1// 最小痉挛等级
+    var spasmLevelMin: Int = 0// 最小痉挛等级
     var spasmLevelMax: Int = 0// 最大痉挛等级
 
     val resistanceList = mutableListOf<Int>()// 所有阻力数据集合
     var resistanceTotal: Int = 0 // 总阻力
     var resistanceArv: Int = 0// 平均阻力
-    var resistanceMin: Int = -1// 最小阻力
+    var resistanceMin: Int = 0// 最小阻力
     var resistanceMax: Int = 0// 最大阻力
 
     val powerList = mutableListOf<Int>()// 所有功率数据集合
     var powerTotal: Int = 0// 总功率
     var powerArv: Int = 0// 平均功率
-    var powerMin: Int = -1// 最小功率
+    var powerMin: Int = 0// 最小功率
     var powerMax: Int = 0// 最大功率
 
     val speedList = mutableListOf<Int>()// 所有转速数据集合
     var speedTotal: Int = 0// 总转速
     var speedArv: Int = 0// 平均转速
-    var speedMin: Int = -1// 最小转速
+    var speedMin: Int = 0// 最小转速
     var speedMax: Int = 0// 最大转速
 
     companion object {
@@ -79,7 +79,7 @@ class ShangXiaZhiReport : IReport {
                 report.speedList.add(gameData.speed)
                 report.speedTotal += gameData.speed
                 report.speedArv = report.speedTotal / report.count
-                report.speedMin = if (report.speedMin == -1) {
+                report.speedMin = if (report.speedMin <= 0) {
                     gameData.speed
                 } else {
                     min(report.speedMin, gameData.speed)
@@ -105,7 +105,7 @@ class ShangXiaZhiReport : IReport {
                 report.resistanceList.add(gameData.resistance)
                 report.resistanceTotal += gameData.resistance
                 report.resistanceArv = report.resistanceTotal / report.count
-                report.resistanceMin = if (report.resistanceMin == -1) {
+                report.resistanceMin = if (report.resistanceMin <= 0) {
                     gameData.resistance
                 } else {
                     min(report.resistanceMin, gameData.resistance)
@@ -116,7 +116,7 @@ class ShangXiaZhiReport : IReport {
                 report.powerTotal += power
                 report.powerArv = report.powerTotal / report.count
                 report.powerList.add(power)
-                report.powerMin = if (report.powerMin == -1) {
+                report.powerMin = if (report.powerMin <= 0) {
                     power
                 } else {
                     min(report.powerMin, power)
@@ -140,7 +140,7 @@ class ShangXiaZhiReport : IReport {
                 report.spasmLevelList.add(gameData.spasmLevel)
                 report.spasmLevelTotal += gameData.spasmLevel
                 report.spasmLevelArv = report.spasmLevelTotal / report.count
-                report.spasmLevelMin = if (report.spasmLevelMin == -1) {
+                report.spasmLevelMin = if (report.spasmLevelMin <= 0) {
                     gameData.spasmLevel
                 } else {
                     min(report.spasmLevelMin, gameData.spasmLevel)
@@ -160,7 +160,7 @@ class HeartRateReport : IReport {
     val list = mutableListOf<Int>()// 所有心率数据集合
     var total: Int = 0// 总心率
     var arv: Int = 0// 平均心率
-    var min: Int = -1// 最小心率
+    var min: Int = 0// 最小心率
     var max: Int = 0// 最大心率
 
     companion object {
@@ -175,7 +175,7 @@ class HeartRateReport : IReport {
                 report.list.add(it)
                 report.total += it
                 report.arv = report.total / report.list.size
-                report.min = if (report.min == -1) {
+                report.min = if (report.min <= 0) {
                     it
                 } else {
                     min(report.min, it)
