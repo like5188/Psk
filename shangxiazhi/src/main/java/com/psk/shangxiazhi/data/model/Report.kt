@@ -23,8 +23,6 @@ interface IReport : Serializable
  * 上下肢数据报告
  */
 class ShangXiaZhiReport : IReport {
-    var count: Int = 0// 总的数据量
-
     var activeDuration: Int = 0// 主动时长
     var passiveDuration: Int = 0// 被动时长
 
@@ -68,7 +66,6 @@ class ShangXiaZhiReport : IReport {
             var mFirstSpasm = 0// 第一次痉挛次数（因为上下肢关机之前的痉挛次数是累计的）
             // 这里不能用 distinctUntilChanged、conflate 等操作符，因为需要根据所有数据来计算里程等。必须得到每次数据。
             return flow.buffer(Int.MAX_VALUE).map { shangXiaZhi ->
-                report.count++
                 val gameData = GameData().apply {
                     speed = shangXiaZhi.speed
                     speedLevel = shangXiaZhi.speedLevel
@@ -78,7 +75,7 @@ class ShangXiaZhiReport : IReport {
                 // 速度
                 report.speedList.add(gameData.speed)
                 report.speedTotal += gameData.speed
-                report.speedArv = report.speedTotal / report.count
+                report.speedArv = report.speedTotal / report.speedList.size
                 report.speedMin = if (report.speedMin <= 0) {
                     gameData.speed
                 } else {
@@ -104,7 +101,7 @@ class ShangXiaZhiReport : IReport {
                 // 阻力
                 report.resistanceList.add(gameData.resistance)
                 report.resistanceTotal += gameData.resistance
-                report.resistanceArv = report.resistanceTotal / report.count
+                report.resistanceArv = report.resistanceTotal / report.resistanceList.size
                 report.resistanceMin = if (report.resistanceMin <= 0) {
                     gameData.resistance
                 } else {
@@ -115,7 +112,7 @@ class ShangXiaZhiReport : IReport {
                 val power = ((gameData.resistance + 3) * gameData.speed * 0.134).toInt()
                 report.powerList.add(power)
                 report.powerTotal += power
-                report.powerArv = report.powerTotal / report.count
+                report.powerArv = report.powerTotal / report.powerList.size
                 report.powerMin = if (report.powerMin <= 0) {
                     power
                 } else {
@@ -139,7 +136,7 @@ class ShangXiaZhiReport : IReport {
                 }
                 report.spasmLevelList.add(gameData.spasmLevel)
                 report.spasmLevelTotal += gameData.spasmLevel
-                report.spasmLevelArv = report.spasmLevelTotal / report.count
+                report.spasmLevelArv = report.spasmLevelTotal / report.spasmLevelList.size
                 report.spasmLevelMin = if (report.spasmLevelMin <= 0) {
                     gameData.spasmLevel
                 } else {
