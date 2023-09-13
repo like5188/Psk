@@ -74,7 +74,7 @@
                 android:id="@+id/tvTargetHeartRateTag"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="目标心率"
+                android:text="靶心率"
                 android:textColor="#00C4B9"
                 android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="@id/tvTargetHeartRate"
