@@ -7,283 +7,289 @@
         <import type="android.view.View" />
     </data>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/black"
+        android:background="@drawable/main_bg"
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.25" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineRight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.75" />
+
         <TextView
-            android:layout_width="match_parent"
+            android:id="@+id/tvTitle"
+            android:layout_width="0dp"
             android:layout_height="60dp"
-            android:layout_marginBottom="15dp"
             android:gravity="center"
             android:text="上下肢康复机参数设置"
             android:textColor="#99FFFFFF"
             android:textSize="24sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@id/guidelineRight"
+            app:layout_constraintStart_toStartOf="@id/guidelineLeft"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/tvSmartModeTag"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:layout_marginEnd="15dp">
+            android:text="智能模式"
+            android:textColor="#00C4B9"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="@id/switchSmartMode"
+            app:layout_constraintStart_toStartOf="@id/guidelineLeft"
+            app:layout_constraintTop_toTopOf="@id/switchSmartMode" />
 
-            <TextView
-                android:id="@+id/tvSmartModeTag"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="智能模式"
-                android:textColor="#00C4B9"
-                android:textSize="18sp"
-                app:layout_constraintBottom_toBottomOf="@id/switchSmartMode"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/switchSmartMode" />
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switchSmartMode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:checked="true"
+            app:layout_constraintStart_toEndOf="@id/tvSmartModeTag"
+            app:layout_constraintTop_toBottomOf="@id/tvTitle"
+            app:switchMinWidth="60dp"
+            app:trackTint="#E6E6E6" />
 
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/switchSmartMode"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="30dp"
+        <TextView
+            android:id="@+id/tvPassiveModeTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="训练模式"
+            android:textColor="#00C4B9"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="@id/rgPassiveMode"
+            app:layout_constraintStart_toStartOf="@id/guidelineLeft"
+            app:layout_constraintTop_toTopOf="@id/rgPassiveMode" />
+
+        <RadioGroup
+            android:id="@+id/rgPassiveMode"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="30dp"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toEndOf="@id/tvPassiveModeTag"
+            app:layout_constraintTop_toBottomOf="@id/switchSmartMode">
+
+            <RadioButton
+                android:id="@+id/rbPassive"
+                android:layout_width="110dp"
+                android:layout_height="40dp"
+                android:background="@drawable/background_control_selector_color"
+                android:button="@null"
                 android:checked="true"
-                app:layout_constraintStart_toEndOf="@id/tvSmartModeTag"
-                app:layout_constraintTop_toTopOf="parent"
-                app:switchMinWidth="60dp"
-                app:trackTint="#E6E6E6" />
+                android:gravity="center"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:text="被 动"
+                android:textColor="@drawable/text_control_selector_color"
+                android:textSize="16sp" />
 
-            <TextView
-                android:id="@+id/tvPassiveModeTag"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="训练模式"
-                android:textColor="#00C4B9"
-                android:textSize="18sp"
-                app:layout_constraintBottom_toBottomOf="@id/rgPassiveMode"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/rgPassiveMode" />
+            <RadioButton
+                android:id="@+id/rbActive"
+                android:layout_width="110dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="20dp"
+                android:background="@drawable/background_control_selector_color"
+                android:button="@null"
+                android:gravity="center"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:text="主 动"
+                android:textColor="@drawable/text_control_selector_color"
+                android:textSize="16sp" />
 
-            <RadioGroup
-                android:id="@+id/rgPassiveMode"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="30dp"
-                android:layout_marginTop="30dp"
-                android:orientation="horizontal"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/tvPassiveModeTag"
-                app:layout_constraintTop_toBottomOf="@id/switchSmartMode">
+        </RadioGroup>
 
-                <RadioButton
-                    android:id="@+id/rbPassive"
-                    android:layout_width="110dp"
-                    android:layout_height="40dp"
-                    android:background="@drawable/background_control_selector_color"
-                    android:button="@null"
-                    android:checked="true"
-                    android:gravity="center"
-                    android:paddingStart="20dp"
-                    android:paddingEnd="20dp"
-                    android:text="被 动"
-                    android:textColor="@drawable/text_control_selector_color"
-                    android:textSize="16sp" />
+        <TextView
+            android:id="@+id/tvOrientationTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="转动方向"
+            android:textColor="#00C4B9"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="@id/rgOrientation"
+            app:layout_constraintStart_toStartOf="@id/guidelineLeft"
+            app:layout_constraintTop_toTopOf="@id/rgOrientation" />
 
-                <RadioButton
-                    android:id="@+id/rbActive"
-                    android:layout_width="110dp"
-                    android:layout_height="40dp"
-                    android:layout_marginStart="20dp"
-                    android:background="@drawable/background_control_selector_color"
-                    android:button="@null"
-                    android:gravity="center"
-                    android:paddingStart="20dp"
-                    android:paddingEnd="20dp"
-                    android:text="主 动"
-                    android:textColor="@drawable/text_control_selector_color"
-                    android:textSize="16sp" />
+        <RadioGroup
+            android:id="@+id/rgOrientation"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="30dp"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toEndOf="@id/tvOrientationTag"
+            app:layout_constraintTop_toBottomOf="@id/rgPassiveMode">
 
-            </RadioGroup>
+            <RadioButton
+                android:id="@+id/rbForward"
+                android:layout_width="110dp"
+                android:layout_height="40dp"
+                android:background="@drawable/background_control_selector_color"
+                android:button="@null"
+                android:checked="true"
+                android:gravity="center"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:text="正 转"
+                android:textColor="@drawable/text_control_selector_color"
+                android:textSize="16sp" />
 
-            <TextView
-                android:id="@+id/tvOrientationTag"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="转动方向"
-                android:textColor="#00C4B9"
-                android:textSize="18sp"
-                app:layout_constraintBottom_toBottomOf="@id/rgOrientation"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/rgOrientation" />
+            <RadioButton
+                android:id="@+id/rbReversion"
+                android:layout_width="110dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="20dp"
+                android:background="@drawable/background_control_selector_color"
+                android:button="@null"
+                android:gravity="center"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:text="反 转"
+                android:textColor="@drawable/text_control_selector_color"
+                android:textSize="16sp" />
 
-            <RadioGroup
-                android:id="@+id/rgOrientation"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="30dp"
-                android:layout_marginTop="30dp"
-                android:orientation="horizontal"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/tvOrientationTag"
-                app:layout_constraintTop_toBottomOf="@id/rgPassiveMode">
+        </RadioGroup>
 
-                <RadioButton
-                    android:id="@+id/rbForward"
-                    android:layout_width="110dp"
-                    android:layout_height="40dp"
-                    android:background="@drawable/background_control_selector_color"
-                    android:button="@null"
-                    android:checked="true"
-                    android:gravity="center"
-                    android:paddingStart="20dp"
-                    android:paddingEnd="20dp"
-                    android:text="正 转"
-                    android:textColor="@drawable/text_control_selector_color"
-                    android:textSize="16sp" />
+        <TextView
+            android:id="@+id/tvSpeedTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="速度调节"
+            android:textColor="#00C4B9"
+            android:textSize="18sp"
+            android:visibility="@{rbPassive.checked?View.VISIBLE:View.GONE}"
+            app:layout_constraintBottom_toBottomOf="@id/levelViewSpeed"
+            app:layout_constraintStart_toStartOf="@id/guidelineLeft"
+            app:layout_constraintTop_toTopOf="@id/levelViewSpeed" />
 
-                <RadioButton
-                    android:id="@+id/rbReversion"
-                    android:layout_width="110dp"
-                    android:layout_height="40dp"
-                    android:layout_marginStart="20dp"
-                    android:background="@drawable/background_control_selector_color"
-                    android:button="@null"
-                    android:gravity="center"
-                    android:paddingStart="20dp"
-                    android:paddingEnd="20dp"
-                    android:text="反 转"
-                    android:textColor="@drawable/text_control_selector_color"
-                    android:textSize="16sp" />
+        <com.psk.shangxiazhi.util.LevelView
+            android:id="@+id/levelViewSpeed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="30dp"
+            android:visibility="@{rbPassive.checked?View.VISIBLE:View.GONE}"
+            app:curNumber="5"
+            app:desPrefix=""
+            app:desSuffix="rpm"
+            app:layout_constraintStart_toEndOf="@id/tvSpeedTag"
+            app:layout_constraintTop_toBottomOf="@id/rgOrientation"
+            app:maxLevel="12"
+            app:maxNumber="60"
+            app:minNumber="5"
+            app:numberPerLevel="5"
+            app:numberStep="5" />
 
-            </RadioGroup>
+        <TextView
+            android:id="@+id/tvSpasmTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="痉挛强度"
+            android:textColor="#00C4B9"
+            android:textSize="18sp"
+            android:visibility="@{rbPassive.checked?View.VISIBLE:View.GONE}"
+            app:layout_constraintBottom_toBottomOf="@id/levelViewSpasm"
+            app:layout_constraintStart_toStartOf="@id/guidelineLeft"
+            app:layout_constraintTop_toTopOf="@id/levelViewSpasm" />
 
-            <TextView
-                android:id="@+id/tvSpeedTag"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="速度调节"
-                android:textColor="#00C4B9"
-                android:textSize="18sp"
-                android:visibility="@{rbPassive.checked?View.VISIBLE:View.GONE}"
-                app:layout_constraintBottom_toBottomOf="@id/levelViewSpeed"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/levelViewSpeed" />
+        <com.psk.shangxiazhi.util.LevelView
+            android:id="@+id/levelViewSpasm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="30dp"
+            android:visibility="@{rbPassive.checked?View.VISIBLE:View.GONE}"
+            app:curNumber="1"
+            app:desPrefix="第"
+            app:desSuffix="档"
+            app:layout_constraintStart_toEndOf="@id/tvSpasmTag"
+            app:layout_constraintTop_toBottomOf="@id/levelViewSpeed"
+            app:maxLevel="12"
+            app:maxNumber="12"
+            app:minNumber="1"
+            app:numberPerLevel="1"
+            app:numberStep="1" />
 
-            <com.psk.shangxiazhi.util.LevelView
-                android:id="@+id/levelViewSpeed"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="30dp"
-                android:layout_marginTop="30dp"
-                android:visibility="@{rbPassive.checked?View.VISIBLE:View.GONE}"
-                app:curNumber="5"
-                app:desPrefix=""
-                app:desSuffix="rpm"
-                app:layout_constraintStart_toEndOf="@id/tvSpeedTag"
-                app:layout_constraintTop_toBottomOf="@id/rgOrientation"
-                app:maxLevel="12"
-                app:maxNumber="60"
-                app:minNumber="5"
-                app:numberPerLevel="5"
-                app:numberStep="5" />
+        <TextView
+            android:id="@+id/tvTimeTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="时间控制"
+            android:textColor="#00C4B9"
+            android:textSize="18sp"
+            android:visibility="@{rbPassive.checked?View.VISIBLE:View.GONE}"
+            app:layout_constraintBottom_toBottomOf="@id/levelViewTime"
+            app:layout_constraintStart_toStartOf="@id/guidelineLeft"
+            app:layout_constraintTop_toTopOf="@id/levelViewTime" />
 
-            <TextView
-                android:id="@+id/tvSpasmTag"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="痉挛强度"
-                android:textColor="#00C4B9"
-                android:textSize="18sp"
-                android:visibility="@{rbPassive.checked?View.VISIBLE:View.GONE}"
-                app:layout_constraintBottom_toBottomOf="@id/levelViewSpasm"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/levelViewSpasm" />
+        <com.psk.shangxiazhi.util.LevelView
+            android:id="@+id/levelViewTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="30dp"
+            android:visibility="@{rbPassive.checked?View.VISIBLE:View.GONE}"
+            app:curNumber="5"
+            app:desPrefix=""
+            app:desSuffix="分钟"
+            app:layout_constraintStart_toEndOf="@id/tvTimeTag"
+            app:layout_constraintTop_toBottomOf="@id/levelViewSpasm"
+            app:maxLevel="12"
+            app:maxNumber="30"
+            app:minNumber="5"
+            app:numberPerLevel="5"
+            app:numberStep="1" />
 
-            <com.psk.shangxiazhi.util.LevelView
-                android:id="@+id/levelViewSpasm"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="30dp"
-                android:layout_marginTop="30dp"
-                android:visibility="@{rbPassive.checked?View.VISIBLE:View.GONE}"
-                app:curNumber="1"
-                app:desPrefix="第"
-                app:desSuffix="档"
-                app:layout_constraintStart_toEndOf="@id/tvSpasmTag"
-                app:layout_constraintTop_toBottomOf="@id/levelViewSpeed"
-                app:maxLevel="12"
-                app:maxNumber="12"
-                app:minNumber="1"
-                app:numberPerLevel="1"
-                app:numberStep="1" />
+        <TextView
+            android:id="@+id/tvResistanceTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="阻力调节"
+            android:textColor="#00C4B9"
+            android:textSize="18sp"
+            android:visibility="@{rbActive.checked?View.VISIBLE:View.GONE}"
+            app:layout_constraintBottom_toBottomOf="@id/levelViewResistance"
+            app:layout_constraintStart_toStartOf="@id/guidelineLeft"
+            app:layout_constraintTop_toTopOf="@id/levelViewResistance" />
 
-            <TextView
-                android:id="@+id/tvTimeTag"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="时间控制"
-                android:textColor="#00C4B9"
-                android:textSize="18sp"
-                android:visibility="@{rbPassive.checked?View.VISIBLE:View.GONE}"
-                app:layout_constraintBottom_toBottomOf="@id/levelViewTime"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/levelViewTime" />
-
-            <com.psk.shangxiazhi.util.LevelView
-                android:id="@+id/levelViewTime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="30dp"
-                android:layout_marginTop="30dp"
-                android:visibility="@{rbPassive.checked?View.VISIBLE:View.GONE}"
-                app:curNumber="5"
-                app:desPrefix=""
-                app:desSuffix="分钟"
-                app:layout_constraintStart_toEndOf="@id/tvTimeTag"
-                app:layout_constraintTop_toBottomOf="@id/levelViewSpasm"
-                app:maxLevel="12"
-                app:maxNumber="30"
-                app:minNumber="5"
-                app:numberPerLevel="5"
-                app:numberStep="1" />
-
-            <TextView
-                android:id="@+id/tvResistanceTag"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="阻力调节"
-                android:textColor="#00C4B9"
-                android:textSize="18sp"
-                android:visibility="@{rbActive.checked?View.VISIBLE:View.GONE}"
-                app:layout_constraintBottom_toBottomOf="@id/levelViewResistance"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/levelViewResistance" />
-
-            <com.psk.shangxiazhi.util.LevelView
-                android:id="@+id/levelViewResistance"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="30dp"
-                android:layout_marginTop="30dp"
-                android:visibility="@{rbActive.checked?View.VISIBLE:View.GONE}"
-                app:curNumber="1"
-                app:desPrefix="第"
-                app:desSuffix="档"
-                app:layout_constraintStart_toEndOf="@id/tvResistanceTag"
-                app:layout_constraintTop_toBottomOf="@id/levelViewTime"
-                app:maxLevel="12"
-                app:maxNumber="12"
-                app:minNumber="1"
-                app:numberPerLevel="1"
-                app:numberStep="1" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        <com.psk.shangxiazhi.util.LevelView
+            android:id="@+id/levelViewResistance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="30dp"
+            android:visibility="@{rbActive.checked?View.VISIBLE:View.GONE}"
+            app:curNumber="1"
+            app:desPrefix="第"
+            app:desSuffix="档"
+            app:layout_constraintStart_toEndOf="@id/tvResistanceTag"
+            app:layout_constraintTop_toBottomOf="@id/levelViewTime"
+            app:maxLevel="12"
+            app:maxNumber="12"
+            app:minNumber="1"
+            app:numberPerLevel="1"
+            app:numberStep="1" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnConfirm"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
             android:layout_marginTop="30dp"
-            android:layout_marginEnd="15dp"
             android:background="@drawable/setting_bg_choose"
             android:gravity="center"
             android:paddingStart="15dp"
@@ -292,7 +298,10 @@
             android:paddingBottom="10dp"
             android:text="确定"
             android:textColor="@drawable/setting_text_color_choose"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="@id/guidelineRight"
+            app:layout_constraintStart_toStartOf="@id/guidelineLeft"
+            app:layout_constraintTop_toBottomOf="@id/levelViewResistance" />
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
