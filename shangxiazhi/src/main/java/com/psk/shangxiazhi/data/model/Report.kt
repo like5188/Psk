@@ -113,9 +113,9 @@ class ShangXiaZhiReport : IReport {
                 report.resistanceMax = max(report.resistanceMax, gameData.resistance)
                 // 功率
                 val power = ((gameData.resistance + 3) * gameData.speed * 0.134).toInt()
+                report.powerList.add(power)
                 report.powerTotal += power
                 report.powerArv = report.powerTotal / report.count
-                report.powerList.add(power)
                 report.powerMin = if (report.powerMin <= 0) {
                     power
                 } else {
