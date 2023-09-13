@@ -111,4 +111,8 @@ data class ShangXiaZhiParams(
             it.direction = direction
         }
     }
+
+    override fun toString(): String {
+        return "训练模式:$passiveModule, 时间:$time, 速度等级:$speedLevel, 痉挛等级:$spasmLevel, 阻力:$resistance, 智能模式:$intelligent, 正转:$turn2)"
+    }
 }

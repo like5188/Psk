@@ -91,6 +91,7 @@ class TrainActivity : AppCompatActivity() {
             SetShangXiaZhiPramsDialogFragment.newInstance().apply {
                 onSelected = {
                     shangXiaZhiParams = it
+                    mBinding.tvSetShangXiaZhiParams.text = it.toString()
                 }
             }.show(this)
         }
