@@ -45,6 +45,10 @@ class ShangXiaZhiReport : IReport {
     var resistanceMin: Int = -1// 最小阻力
     var resistanceMax: Int = 0// 最大阻力
 
+    val powerList = mutableListOf<Int>()// 所有功率数据集合
+    var minPower: Int = -1// 最小功率
+    var maxPower: Int = 0// 最大功率
+
     val speedList = mutableListOf<Int>()// 所有转速数据集合
     var speedTotal: Int = 0// 总转速
     var speedArv: Int = 0// 平均转速
@@ -103,6 +107,15 @@ class ShangXiaZhiReport : IReport {
                     min(report.resistanceMin, gameData.resistanceLevel)
                 }
                 report.resistanceMax = max(report.resistanceMax, gameData.resistanceLevel)
+                // 功率
+                val power = ((gameData.resistanceLevel + 3) * gameData.speed * 0.134).toInt()
+                report.powerList.add(power)
+                report.minPower = if (report.minPower == -1) {
+                    power
+                } else {
+                    min(report.minPower, power)
+                }
+                report.maxPower = max(report.maxPower, power)
                 //偏差值：范围0~30 左偏：0~14     十六进制：0x00~0x0e 中：15 	     十六进制：0x0f 右偏：16~30   十六进制：0x10~0x1e
                 gameData.offset = shangXiaZhi.offset - 15// 转换成游戏需要的 负数：左；0：不偏移；正数：右；
                 // 转换成游戏需要的左边百分比 100~0
