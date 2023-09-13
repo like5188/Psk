@@ -17,7 +17,7 @@ data class ShangXiaZhi(
     val offset: Int = 0,//偏移：范围0~30 左偏：0~14     十六进制：0x00~0x0e 中：15 	     十六进制：0x0f 右偏：16~30   十六进制：0x10~0x1e
     val spasm: Int = 0,//痉挛次数：范围0~
     val spasmLevel: Int = 0,//痉挛等级：范围1~12   十六进制：0x01~0x0c
-    val resistance: Int = 0,//阻力：范围1~12           十六进制：0x01~0x0c
+    val resistance: Int = 0,//阻力(被动模式永远返回1)：范围1~12           十六进制：0x01~0x0c
     val intelligence: Byte = 0,//智能： 0x40 表示 关闭 0x41 表示 打开
     val direction: Byte = 0,//正反转： 0x50 表示 反转 0x51 表示 正转
     val medicalOrderId: Long = 0,
