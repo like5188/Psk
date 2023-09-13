@@ -79,30 +79,30 @@ class ShangXiaZhiReport : IReport {
                 //模式
                 if (shangXiaZhi.model.toInt() == 0x01) {// 被动
                     gameData.model = 1// 转换成游戏需要的 0：主动；1：被动
-                    gameData.resistance = 0
+                    gameData.resistanceLevel = 0
                     //被动里程
                     report.passiveMil += gameData.speed * 0.5f * 1000 / 3600
                     //卡路里
                     report.passiveCal += gameData.speed * 0.2f / 300
                 } else {// 主动
                     gameData.model = 0
-                    gameData.resistance = shangXiaZhi.resistanceLevel
+                    gameData.resistanceLevel = shangXiaZhi.resistanceLevel
                     //主动里程
                     report.activeMil += gameData.speed * 0.5f * 1000 / 3600
                     //卡路里
-                    report.activeCal += gameData.speed * 0.2f * (gameData.resistance * 1.00f / 3.0f) / 60
+                    report.activeCal += gameData.speed * 0.2f * (gameData.resistanceLevel * 1.00f / 3.0f) / 60
                 }
                 gameData.mileage = decimalFormat.format(report.activeMil + report.passiveMil)
                 gameData.cal = decimalFormat.format(report.activeCal + report.passiveCal)
                 // 阻力
-                report.resistanceTotal += gameData.resistance
+                report.resistanceTotal += gameData.resistanceLevel
                 report.resistanceArv = report.resistanceTotal / report.count
                 report.resistanceMin = if (report.resistanceMin == -1) {
-                    gameData.resistance
+                    gameData.resistanceLevel
                 } else {
-                    min(report.resistanceMin, gameData.resistance)
+                    min(report.resistanceMin, gameData.resistanceLevel)
                 }
-                report.resistanceMax = max(report.resistanceMax, gameData.resistance)
+                report.resistanceMax = max(report.resistanceMax, gameData.resistanceLevel)
                 //偏差值：范围0~30 左偏：0~14     十六进制：0x00~0x0e 中：15 	     十六进制：0x0f 右偏：16~30   十六进制：0x10~0x1e
                 gameData.offset = shangXiaZhi.offset - 15// 转换成游戏需要的 负数：左；0：不偏移；正数：右；
                 // 转换成游戏需要的左边百分比 100~0
@@ -128,7 +128,7 @@ class ShangXiaZhiReport : IReport {
                     min(report.spasmLevelMin, gameData.spasmLevel)
                 }
                 report.spasmLevelMax = max(report.spasmLevelMax, gameData.spasmLevel)
-                gameData.spasm = report.spasmNum
+                gameData.spasmNum = report.spasmNum
                 gameData
             }
         }
