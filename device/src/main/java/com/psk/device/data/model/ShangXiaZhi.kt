@@ -113,6 +113,6 @@ data class ShangXiaZhiParams(
     }
 
     override fun toString(): String {
-        return "训练模式:$passiveModule, 时间:$time, 速度等级:$speedLevel, 痉挛等级:$spasmLevel, 阻力:$resistance, 智能模式:$intelligent, 正转:$turn2)"
+        return "${if (passiveModule) "被动模式" else "主动模式"}, ${time}分钟, ${if (intelligent) "智能模式" else ""}, ${if (turn2) "正转" else "反转"},\n速度等级:$speedLevel, 痉挛等级:$spasmLevel, 阻力等级:$resistance"
     }
 }

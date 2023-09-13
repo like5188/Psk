@@ -41,12 +41,13 @@
                 android:id="@+id/tvDevice"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
                 android:layout_weight="1"
                 android:gravity="end"
                 android:hint="去选择 >"
                 android:textColor="@color/white"
                 android:textColorHint="#99FFFFFF"
-                android:textSize="20sp" />
+                android:textSize="18sp" />
 
         </LinearLayout>
 
@@ -73,12 +74,13 @@
                 android:id="@+id/tvScene"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
                 android:layout_weight="1"
                 android:gravity="end"
                 android:hint="去选择 >"
                 android:textColor="@color/white"
                 android:textColorHint="#99FFFFFF"
-                android:textSize="20sp" />
+                android:textSize="18sp" />
 
         </LinearLayout>
 
@@ -97,7 +99,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="设置上下肢参数"
+                android:text="上下肢参数"
                 android:textColor="@color/white"
                 android:textSize="20sp" />
 
@@ -105,12 +107,13 @@
                 android:id="@+id/tvSetShangXiaZhiParams"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
                 android:layout_weight="1"
                 android:gravity="end"
                 android:hint="去设置 >"
                 android:textColor="@color/white"
                 android:textColorHint="#99FFFFFF"
-                android:textSize="20sp" />
+                android:textSize="18sp" />
 
         </LinearLayout>
 
@@ -137,12 +140,13 @@
                 android:id="@+id/tvPersonInfo"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
                 android:layout_weight="1"
                 android:gravity="end"
                 android:hint="去填写 >"
                 android:textColor="@color/white"
                 android:textColorHint="#99FFFFFF"
-                android:textSize="20sp" />
+                android:textSize="18sp" />
 
         </LinearLayout>
 
@@ -163,7 +167,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="测量靶心率"
+                android:text="靶心率"
                 android:textColor="@color/white"
                 android:textSize="20sp" />
 
@@ -171,12 +175,13 @@
                 android:id="@+id/tvTargetHeartRate"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
                 android:layout_weight="1"
                 android:gravity="end"
                 android:hint="去测量 >"
                 android:textColor="@color/white"
                 android:textColorHint="#99FFFFFF"
-                android:textSize="20sp" />
+                android:textSize="18sp" />
 
         </LinearLayout>
 
@@ -197,7 +202,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="运动前测量血压"
+                android:text="运动前血压"
                 android:textColor="@color/white"
                 android:textSize="20sp" />
 
@@ -205,12 +210,13 @@
                 android:id="@+id/tvBloodPressureBefore"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
                 android:layout_weight="1"
                 android:gravity="end"
                 android:hint="去测量 >"
                 android:textColor="@color/white"
                 android:textColorHint="#99FFFFFF"
-                android:textSize="20sp" />
+                android:textSize="18sp" />
 
         </LinearLayout>
 
@@ -231,7 +237,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="运动后测量血压"
+                android:text="运动后血压"
                 android:textColor="@color/white"
                 android:textSize="20sp" />
 
@@ -239,12 +245,13 @@
                 android:id="@+id/tvBloodPressureAfter"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
                 android:layout_weight="1"
                 android:gravity="end"
                 android:hint="去测量 >"
                 android:textColor="@color/white"
                 android:textColorHint="#99FFFFFF"
-                android:textSize="20sp" />
+                android:textSize="18sp" />
 
         </LinearLayout>
 
