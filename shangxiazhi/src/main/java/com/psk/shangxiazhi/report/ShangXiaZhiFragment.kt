@@ -62,6 +62,10 @@ class ShangXiaZhiFragment : BaseLazyFragment() {
             mBinding.tvResistanceMin.text = resistanceMin.toString()
             mBinding.tvResistanceMax.text = resistanceMax.toString()
 
+            mBinding.tvPowerAvg.text = powerArv.toString()
+            mBinding.tvPowerMin.text = powerMin.toString()
+            mBinding.tvPowerMax.text = powerMax.toString()
+
             mBinding.tvSpeedAvg.text = speedArv.toString()
             mBinding.tvSpeedMin.text = speedMin.toString()
             mBinding.tvSpeedMax.text = speedMax.toString()

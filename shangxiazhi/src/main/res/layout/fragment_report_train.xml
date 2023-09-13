@@ -58,7 +58,16 @@
             android:background="@drawable/shape_report_title_bg"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/tvResTag" />
+            app:layout_constraintTop_toTopOf="@id/tvResistanceTag" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="-10dp"
+            android:background="@drawable/shape_report_title_bg"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tvPowerTag" />
 
         <View
             android:layout_width="0dp"
@@ -403,7 +412,7 @@
             tools:text="11" />
 
         <TextView
-            android:id="@+id/tvResTag"
+            android:id="@+id/tvResistanceTag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="50dp"
@@ -417,15 +426,15 @@
             app:layout_constraintTop_toBottomOf="@id/tvSpasmLevelTag" />
 
         <TextView
-            android:id="@+id/tvResAvgTag"
+            android:id="@+id/tvResistanceAvgTag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="30dp"
             android:text="平均"
             android:textColor="#686868"
             android:textSize="14sp"
-            app:layout_constraintBaseline_toBaselineOf="@id/tvResTag"
-            app:layout_constraintStart_toEndOf="@id/tvResTag" />
+            app:layout_constraintBaseline_toBaselineOf="@id/tvResistanceTag"
+            app:layout_constraintStart_toEndOf="@id/tvResistanceTag" />
 
         <TextView
             android:id="@+id/tvResistanceAvg"
@@ -435,8 +444,8 @@
             android:textColor="#292a2d"
             android:textSize="14sp"
             android:textStyle="bold"
-            app:layout_constraintBaseline_toBaselineOf="@id/tvResTag"
-            app:layout_constraintStart_toEndOf="@id/tvResAvgTag"
+            app:layout_constraintBaseline_toBaselineOf="@id/tvResistanceTag"
+            app:layout_constraintStart_toEndOf="@id/tvResistanceAvgTag"
             tools:text="111" />
 
         <TextView
@@ -447,7 +456,7 @@
             android:text="最低"
             android:textColor="#686868"
             android:textSize="14sp"
-            app:layout_constraintBaseline_toBaselineOf="@id/tvResTag"
+            app:layout_constraintBaseline_toBaselineOf="@id/tvResistanceTag"
             app:layout_constraintStart_toEndOf="@id/tvResistanceAvg" />
 
         <TextView
@@ -458,7 +467,7 @@
             android:textColor="#292a2d"
             android:textSize="14sp"
             android:textStyle="bold"
-            app:layout_constraintBaseline_toBaselineOf="@id/tvResTag"
+            app:layout_constraintBaseline_toBaselineOf="@id/tvResistanceTag"
             app:layout_constraintStart_toEndOf="@id/tvResistanceMinTag"
             tools:text="1111" />
 
@@ -470,7 +479,7 @@
             android:text="最高"
             android:textColor="#686868"
             android:textSize="14sp"
-            app:layout_constraintBaseline_toBaselineOf="@id/tvResTag"
+            app:layout_constraintBaseline_toBaselineOf="@id/tvResistanceTag"
             app:layout_constraintStart_toEndOf="@id/tvResistanceMin" />
 
         <TextView
@@ -481,8 +490,91 @@
             android:textColor="#292a2d"
             android:textSize="14sp"
             android:textStyle="bold"
-            app:layout_constraintBaseline_toBaselineOf="@id/tvResTag"
+            app:layout_constraintBaseline_toBaselineOf="@id/tvResistanceTag"
             app:layout_constraintStart_toEndOf="@id/tvResistanceMaxTag"
+            tools:text="11" />
+
+        <TextView
+            android:id="@+id/tvPowerTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="50dp"
+            android:layout_marginTop="30dp"
+            android:drawableStart="@drawable/report_speed"
+            android:drawablePadding="10dp"
+            android:text="功率(w)"
+            android:textColor="#686868"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvResistanceTag" />
+
+        <TextView
+            android:id="@+id/tvPowerAvgTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:text="平均"
+            android:textColor="#686868"
+            android:textSize="14sp"
+            app:layout_constraintBaseline_toBaselineOf="@id/tvPowerTag"
+            app:layout_constraintStart_toEndOf="@id/tvPowerTag" />
+
+        <TextView
+            android:id="@+id/tvPowerAvg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:textColor="#292a2d"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintBaseline_toBaselineOf="@id/tvPowerTag"
+            app:layout_constraintStart_toEndOf="@id/tvPowerAvgTag"
+            tools:text="111" />
+
+        <TextView
+            android:id="@+id/tvPowerMinTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:text="最低"
+            android:textColor="#686868"
+            android:textSize="14sp"
+            app:layout_constraintBaseline_toBaselineOf="@id/tvPowerTag"
+            app:layout_constraintStart_toEndOf="@id/tvPowerAvg" />
+
+        <TextView
+            android:id="@+id/tvPowerMin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:textColor="#292a2d"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintBaseline_toBaselineOf="@id/tvPowerTag"
+            app:layout_constraintStart_toEndOf="@id/tvPowerMinTag"
+            tools:text="1111" />
+
+        <TextView
+            android:id="@+id/tvPowerMaxTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:text="最高"
+            android:textColor="#686868"
+            android:textSize="14sp"
+            app:layout_constraintBaseline_toBaselineOf="@id/tvPowerTag"
+            app:layout_constraintStart_toEndOf="@id/tvPowerMin" />
+
+        <TextView
+            android:id="@+id/tvPowerMax"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:textColor="#292a2d"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintBaseline_toBaselineOf="@id/tvPowerTag"
+            app:layout_constraintStart_toEndOf="@id/tvPowerMaxTag"
             tools:text="11" />
 
         <TextView
@@ -497,7 +589,7 @@
             android:textColor="#686868"
             android:textSize="14sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvResAvgTag" />
+            app:layout_constraintTop_toBottomOf="@id/tvPowerAvgTag" />
 
         <TextView
             android:id="@+id/tvSpeedAvgTag"
