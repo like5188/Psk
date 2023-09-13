@@ -49,7 +49,7 @@
             android:background="@drawable/shape_report_title_bg"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/tvPowerTag" />
+            app:layout_constraintTop_toTopOf="@id/tvCalTag" />
 
         <View
             android:layout_width="0dp"
@@ -214,7 +214,7 @@
             tools:text="0.00" />
 
         <TextView
-            android:id="@+id/tvPowerTag"
+            android:id="@+id/tvCalTag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="50dp"
@@ -228,61 +228,61 @@
             app:layout_constraintTop_toBottomOf="@id/tvActiveMileageTag" />
 
         <TextView
-            android:id="@+id/tvPower"
+            android:id="@+id/tvCal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="15dp"
             android:textColor="#292a2d"
             android:textSize="14sp"
             android:textStyle="bold"
-            app:layout_constraintBaseline_toBaselineOf="@id/tvPowerTag"
-            app:layout_constraintStart_toEndOf="@id/tvPowerTag"
+            app:layout_constraintBaseline_toBaselineOf="@id/tvCalTag"
+            app:layout_constraintStart_toEndOf="@id/tvCalTag"
             tools:text="555.50" />
 
         <TextView
-            android:id="@+id/tvActivePowerTag"
+            android:id="@+id/tvActiveCalTag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="30dp"
             android:text="主动"
             android:textColor="#686868"
             android:textSize="14sp"
-            app:layout_constraintBaseline_toBaselineOf="@id/tvPowerTag"
-            app:layout_constraintStart_toEndOf="@id/tvPower" />
+            app:layout_constraintBaseline_toBaselineOf="@id/tvCalTag"
+            app:layout_constraintStart_toEndOf="@id/tvCal" />
 
         <TextView
-            android:id="@+id/tvActivePower"
+            android:id="@+id/tvActiveCal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="15dp"
             android:textColor="#187aff"
             android:textSize="14sp"
             android:textStyle="bold"
-            app:layout_constraintBaseline_toBaselineOf="@id/tvPowerTag"
-            app:layout_constraintStart_toEndOf="@id/tvActivePowerTag"
+            app:layout_constraintBaseline_toBaselineOf="@id/tvCalTag"
+            app:layout_constraintStart_toEndOf="@id/tvActiveCalTag"
             tools:text="0.00" />
 
         <TextView
-            android:id="@+id/tvPassivePowerTag"
+            android:id="@+id/tvPassiveCalTag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="30dp"
             android:text="被动"
             android:textColor="#686868"
             android:textSize="14sp"
-            app:layout_constraintBaseline_toBaselineOf="@id/tvPowerTag"
-            app:layout_constraintStart_toEndOf="@id/tvActivePower" />
+            app:layout_constraintBaseline_toBaselineOf="@id/tvCalTag"
+            app:layout_constraintStart_toEndOf="@id/tvActiveCal" />
 
         <TextView
-            android:id="@+id/tvPassivePower"
+            android:id="@+id/tvPassiveCal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="15dp"
             android:textColor="#20ca30"
             android:textSize="14sp"
             android:textStyle="bold"
-            app:layout_constraintBaseline_toBaselineOf="@id/tvPowerTag"
-            app:layout_constraintStart_toEndOf="@id/tvPassivePowerTag"
+            app:layout_constraintBaseline_toBaselineOf="@id/tvCalTag"
+            app:layout_constraintStart_toEndOf="@id/tvPassiveCalTag"
             tools:text="0.00" />
 
         <TextView
@@ -297,7 +297,7 @@
             android:textColor="#686868"
             android:textSize="14sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvActivePowerTag" />
+            app:layout_constraintTop_toBottomOf="@id/tvActiveCalTag" />
 
         <TextView
             android:id="@+id/tvSpasmCountTag"

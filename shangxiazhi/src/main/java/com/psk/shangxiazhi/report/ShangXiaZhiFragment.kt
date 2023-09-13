@@ -49,9 +49,9 @@ class ShangXiaZhiFragment : BaseLazyFragment() {
             mBinding.tvActiveMileage.text = decimalFormat.format(activeMil)
             mBinding.tvPassiveMileage.text = decimalFormat.format(passiveMil)
 
-            mBinding.tvPower.text = decimalFormat.format(activeCal + passiveCal)
-            mBinding.tvActivePower.text = decimalFormat.format(activeCal)
-            mBinding.tvPassivePower.text = decimalFormat.format(passiveCal)
+            mBinding.tvCal.text = decimalFormat.format(activeCal + passiveCal)
+            mBinding.tvActiveCal.text = decimalFormat.format(activeCal)
+            mBinding.tvPassiveCal.text = decimalFormat.format(passiveCal)
 
             mBinding.tvSpasm.text = spasm.toString()
             mBinding.tvSpasmLevelAvg.text = spasmLevelArv.toString()
