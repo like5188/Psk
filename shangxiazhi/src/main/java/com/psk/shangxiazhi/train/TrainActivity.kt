@@ -65,6 +65,16 @@ class TrainActivity : AppCompatActivity() {
                     if (it.containsKey(DeviceType.HeartRate)) {
                         mBinding.llTargetHeartRate.visible()
                     }
+                    val sb = StringBuilder()
+                    it.forEach {
+                        val deviceType = it.key
+                        val deviceName = it.value.name
+                        if (sb.isNotEmpty()) {
+                            sb.append("\n")
+                        }
+                        sb.append(deviceType.des).append(" : ").append(deviceName)
+                    }
+                    mBinding.tvDevice.text = sb.toString()
                 }
             }.show(this)
         }
@@ -74,6 +84,7 @@ class TrainActivity : AppCompatActivity() {
                     return@start
                 }
                 scene = it.data?.getSerializableExtra(SceneActivity.KEY_DATA) as? TrainScene
+                mBinding.tvScene.text = scene?.des ?: ""
             }
         }
         mBinding.llSetShangXiaZhiParams.setOnClickListener {
