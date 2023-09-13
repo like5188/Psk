@@ -93,7 +93,7 @@ class TrainActivity : AppCompatActivity() {
                 if (it.resultCode != Activity.RESULT_OK) {
                     return@start
                 }
-                scene = it.data?.getSerializableExtra(SceneActivity.KEY_DATA) as? TrainScene
+                scene = it.data?.getSerializableExtra(SceneActivity.KEY_SCENE) as? TrainScene
                 mBinding.tvScene.text = scene?.des ?: ""
             }
         }

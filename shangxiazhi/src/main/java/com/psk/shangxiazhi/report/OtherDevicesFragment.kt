@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import com.like.common.base.BaseLazyFragment
+import com.psk.device.data.model.HealthInfo
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.data.model.BloodOxygenReport
 import com.psk.shangxiazhi.data.model.BloodPressureReport
@@ -16,11 +17,13 @@ import com.psk.shangxiazhi.databinding.FragmentReportDevicesBinding
 
 class OtherDevicesFragment : BaseLazyFragment() {
     companion object {
-        private const val KEY_DATA = "key_data"
-        fun newInstance(reports: List<IReport>?): OtherDevicesFragment {
+        private const val KEY_HEALTH_INFO = "key_health_info"
+        private const val KEY_REPORTS = "key_reports"
+        fun newInstance(healthInfo: HealthInfo?, reports: List<IReport>?): OtherDevicesFragment {
             return OtherDevicesFragment().apply {
                 arguments = bundleOf(
-                    KEY_DATA to reports
+                    KEY_HEALTH_INFO to healthInfo,
+                    KEY_REPORTS to reports
                 )
             }
         }
@@ -34,7 +37,11 @@ class OtherDevicesFragment : BaseLazyFragment() {
     }
 
     override fun onLazyLoadData() {
-        (arguments?.getSerializable(KEY_DATA) as? List<IReport>)?.forEach {
+        arguments?.getParcelable<HealthInfo>(KEY_HEALTH_INFO)?.apply {
+            mBinding.tvTargetHeartRate.text = "$minTargetHeartRate~$maxTargetHeartRate"
+            mBinding.tvMet.text = met.toString()
+        }
+        (arguments?.getSerializable(KEY_REPORTS) as? List<IReport>)?.forEach {
             when (it) {
                 is HeartRateReport -> {
                     mBinding.tvHeartRateAvg.text = it.arv.toString()

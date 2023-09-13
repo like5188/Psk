@@ -18,7 +18,7 @@ import com.twsz.twsystempre.TrainScene
  */
 class SceneActivity : AppCompatActivity() {
     companion object {
-        const val KEY_DATA = "key_data"
+        const val KEY_SCENE = "key_scene"
         fun start(
             activity: ComponentActivity,
             callback: ActivityResultCallback<ActivityResult>
@@ -51,7 +51,7 @@ class SceneActivity : AppCompatActivity() {
 
     private fun setResultAndFinish(scene: TrainScene) {
         val intent = Intent()
-        intent.putExtra(KEY_DATA, scene)
+        intent.putExtra(KEY_SCENE, scene)
         setResult(Activity.RESULT_OK, intent)
         finish()
     }

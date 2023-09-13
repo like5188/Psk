@@ -46,7 +46,7 @@ class ReportActivity : AppCompatActivity() {
         } as? ShangXiaZhiReport)
     }
     private val otherDevicesFragment by lazy {
-        OtherDevicesFragment.newInstance(reports?.filter {
+        OtherDevicesFragment.newInstance(healthInfo, reports?.filter {
             it !is ShangXiaZhiReport
         })
     }
