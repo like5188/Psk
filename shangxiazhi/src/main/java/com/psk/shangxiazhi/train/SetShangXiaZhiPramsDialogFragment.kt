@@ -42,7 +42,7 @@ class SetShangXiaZhiPramsDialogFragment private constructor() : BaseDialogFragme
                     spasmLevel = spasmLevel,
                     resistanceLevel = 0,
                     intelligent = intelligent,
-                    turn2 = turn2
+                    forward = turn2
                 )
             } else {
                 val resistanceLevel: Int = mBinding.levelViewResistance.getLevel()
@@ -53,7 +53,7 @@ class SetShangXiaZhiPramsDialogFragment private constructor() : BaseDialogFragme
                     spasmLevel = 0,
                     resistanceLevel = resistanceLevel,
                     intelligent = intelligent,
-                    turn2 = turn2
+                    forward = turn2
                 )
             }
             onSelected?.invoke(shangXiaZhiParams)

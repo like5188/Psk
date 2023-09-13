@@ -66,7 +66,7 @@ data class ShangXiaZhi(
  * @param spasmLevel        痉挛等级 1-12// 被动模式
  * @param resistanceLevel   阻力等级 1-12// 主动模式
  * @param intelligent       智能模式
- * @param turn2             正转
+ * @param forward           正转
  */
 data class ShangXiaZhiParams(
     val passiveModule: Boolean,
@@ -75,7 +75,7 @@ data class ShangXiaZhiParams(
     val spasmLevel: Int,
     val resistanceLevel: Int,
     val intelligent: Boolean,
-    val turn2: Boolean
+    val forward: Boolean
 ) {
     /**
      * 转换成上下肢设备需要的参数
@@ -96,7 +96,7 @@ data class ShangXiaZhiParams(
         }
 
         // 方向
-        val direction = if (turn2) {
+        val direction = if (forward) {
             0x00.toByte()
         } else {
             0x01.toByte()
@@ -113,6 +113,6 @@ data class ShangXiaZhiParams(
     }
 
     override fun toString(): String {
-        return "${if (passiveModule) "被动模式" else "主动模式"}, ${time}分钟, ${if (intelligent) "智能模式" else ""}, ${if (turn2) "正转" else "反转"},\n速度等级:$speedLevel, 痉挛等级:$spasmLevel, 阻力等级:$resistanceLevel"
+        return "${if (passiveModule) "被动模式" else "主动模式"}, ${time}分钟, ${if (intelligent) "智能模式" else ""}, ${if (forward) "正转" else "反转"},\n速度等级:$speedLevel, 痉挛等级:$spasmLevel, 阻力等级:$resistanceLevel"
     }
 }
