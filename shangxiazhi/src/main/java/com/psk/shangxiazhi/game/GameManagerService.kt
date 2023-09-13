@@ -56,6 +56,7 @@ class GameManagerService : Service() {
     }
 
     fun start(
+        medicalOrderId: Long,
         devices: Map<DeviceType, BleScanInfo>,
         scene: TrainScene,
         params: ShangXiaZhiParams?,
@@ -68,7 +69,6 @@ class GameManagerService : Service() {
         multiBusinessManager.onReport = {
             onReport?.invoke(it)
         }
-        val medicalOrderId = System.currentTimeMillis()
         devices.forEach {
             val deviceType = it.key
             val bleScanInfo = it.value

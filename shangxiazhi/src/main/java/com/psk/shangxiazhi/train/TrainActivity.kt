@@ -45,6 +45,7 @@ class TrainActivity : AppCompatActivity() {
     private var bloodPressureBefore = 0
     private var bloodPressureAfter = 0
     private var reports: List<IReport>? = null
+    private val medicalOrderId = System.currentTimeMillis()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -124,7 +125,7 @@ class TrainActivity : AppCompatActivity() {
                 showToast("请填写基本信息中的体重")
                 return@setOnClickListener
             }
-            mViewModel.uiState.value.gameManagerService?.start(deviceMap, scene!!, shangXiaZhiParams) {
+            mViewModel.uiState.value.gameManagerService?.start(medicalOrderId, deviceMap, scene!!, shangXiaZhiParams) {
                 reports = it
             }
         }
