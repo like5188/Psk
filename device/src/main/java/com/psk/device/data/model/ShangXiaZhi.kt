@@ -13,11 +13,11 @@ data class ShangXiaZhi(
     val time: Long = System.currentTimeMillis() / 1000,
     var model: Byte = 0,//模式： 0x01 表示  被动 0x02 表示  主动
     val speedLevel: Int = 0,//速度档位：范围0~12           十六进制：0x00~0x3c
-    val speedValue: Int = 0,//速度圈数：范围0~
+    val speed: Int = 0,//速度圈数：范围0~
     val offset: Int = 0,//偏移：范围0~30 左偏：0~14     十六进制：0x00~0x0e 中：15 	     十六进制：0x0f 右偏：16~30   十六进制：0x10~0x1e
     val spasmNum: Int = 0,//痉挛次数：范围0~
     val spasmLevel: Int = 0,//痉挛等级：范围1~12   十六进制：0x01~0x0c
-    val res: Int = 0,//阻力：范围1~12           十六进制：0x01~0x0c
+    val resistanceLevel: Int = 0,//阻力：范围1~12           十六进制：0x01~0x0c
     val intelligence: Byte = 0,//智能： 0x40 表示 关闭 0x41 表示 打开
     val direction: Byte = 0,//正反转： 0x50 表示 反转 0x51 表示 正转
     val medicalOrderId: Long = 0,
@@ -30,11 +30,11 @@ data class ShangXiaZhi(
 
         if (model != other.model) return false
         if (speedLevel != other.speedLevel) return false
-        if (speedValue != other.speedValue) return false
+        if (speed != other.speed) return false
         if (offset != other.offset) return false
         if (spasmNum != other.spasmNum) return false
         if (spasmLevel != other.spasmLevel) return false
-        if (res != other.res) return false
+        if (resistanceLevel != other.resistanceLevel) return false
         if (intelligence != other.intelligence) return false
         if (direction != other.direction) return false
         if (curTime != other.curTime) return false
@@ -45,11 +45,11 @@ data class ShangXiaZhi(
     override fun hashCode(): Int {
         var result = model.toInt()
         result = 31 * result + speedLevel
-        result = 31 * result + speedValue
+        result = 31 * result + speed
         result = 31 * result + offset
         result = 31 * result + spasmNum
         result = 31 * result + spasmLevel
-        result = 31 * result + res
+        result = 31 * result + resistanceLevel
         result = 31 * result + intelligence
         result = 31 * result + direction
         result = 31 * result + curTime.hashCode()
@@ -64,7 +64,7 @@ data class ShangXiaZhi(
  * @param time              时间 5-30 min// 被动模式
  * @param speedLevel        速度等级 1-12// 被动模式
  * @param spasmLevel        痉挛等级 1-12// 被动模式
- * @param resistance        阻力 1-12// 主动模式
+ * @param resistanceLevel   阻力 1-12// 主动模式
  * @param intelligent       智能模式
  * @param turn2             正转
  */
@@ -73,7 +73,7 @@ data class ShangXiaZhiParams(
     val time: Int,
     val speedLevel: Int,
     val spasmLevel: Int,
-    val resistance: Int,
+    val resistanceLevel: Int,
     val intelligent: Boolean,
     val turn2: Boolean
 ) {
@@ -107,12 +107,12 @@ data class ShangXiaZhiParams(
             it.speed = speedLevel.toByte()
             it.spasm = spasmLevel.toByte()
             it.intelligence = intelligence
-            it.resistance = resistance.toByte()
+            it.resistance = resistanceLevel.toByte()
             it.direction = direction
         }
     }
 
     override fun toString(): String {
-        return "${if (passiveModule) "被动模式" else "主动模式"}, ${time}分钟, ${if (intelligent) "智能模式" else ""}, ${if (turn2) "正转" else "反转"},\n速度等级:$speedLevel, 痉挛等级:$spasmLevel, 阻力等级:$resistance"
+        return "${if (passiveModule) "被动模式" else "主动模式"}, ${time}分钟, ${if (intelligent) "智能模式" else ""}, ${if (turn2) "正转" else "反转"},\n速度等级:$speedLevel, 痉挛等级:$spasmLevel, 阻力等级:$resistanceLevel"
     }
 }

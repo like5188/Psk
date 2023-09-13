@@ -311,7 +311,7 @@
             app:layout_constraintStart_toEndOf="@id/tvSpasmTag" />
 
         <TextView
-            android:id="@+id/tvSpasmCount"
+            android:id="@+id/tvSpasmNum"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="15dp"
@@ -331,7 +331,7 @@
             android:textColor="#686868"
             android:textSize="14sp"
             app:layout_constraintBaseline_toBaselineOf="@id/tvSpasmTag"
-            app:layout_constraintStart_toEndOf="@id/tvSpasmCount" />
+            app:layout_constraintStart_toEndOf="@id/tvSpasmNum" />
 
         <TextView
             android:id="@+id/tvSpasmLevelAvgTag"
@@ -428,7 +428,7 @@
             app:layout_constraintStart_toEndOf="@id/tvResTag" />
 
         <TextView
-            android:id="@+id/tvResAvg"
+            android:id="@+id/tvResistanceAvg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="15dp"
@@ -440,7 +440,7 @@
             tools:text="111" />
 
         <TextView
-            android:id="@+id/tvResMinTag"
+            android:id="@+id/tvResistanceMinTag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="30dp"
@@ -448,10 +448,10 @@
             android:textColor="#686868"
             android:textSize="14sp"
             app:layout_constraintBaseline_toBaselineOf="@id/tvResTag"
-            app:layout_constraintStart_toEndOf="@id/tvResAvg" />
+            app:layout_constraintStart_toEndOf="@id/tvResistanceAvg" />
 
         <TextView
-            android:id="@+id/tvResMin"
+            android:id="@+id/tvResistanceMin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="15dp"
@@ -459,11 +459,11 @@
             android:textSize="14sp"
             android:textStyle="bold"
             app:layout_constraintBaseline_toBaselineOf="@id/tvResTag"
-            app:layout_constraintStart_toEndOf="@id/tvResMinTag"
+            app:layout_constraintStart_toEndOf="@id/tvResistanceMinTag"
             tools:text="1111" />
 
         <TextView
-            android:id="@+id/tvResMaxTag"
+            android:id="@+id/tvResistanceMaxTag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="30dp"
@@ -471,10 +471,10 @@
             android:textColor="#686868"
             android:textSize="14sp"
             app:layout_constraintBaseline_toBaselineOf="@id/tvResTag"
-            app:layout_constraintStart_toEndOf="@id/tvResMin" />
+            app:layout_constraintStart_toEndOf="@id/tvResistanceMin" />
 
         <TextView
-            android:id="@+id/tvResMax"
+            android:id="@+id/tvResistanceMax"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="15dp"
@@ -482,7 +482,7 @@
             android:textSize="14sp"
             android:textStyle="bold"
             app:layout_constraintBaseline_toBaselineOf="@id/tvResTag"
-            app:layout_constraintStart_toEndOf="@id/tvResMaxTag"
+            app:layout_constraintStart_toEndOf="@id/tvResistanceMaxTag"
             tools:text="11" />
 
         <TextView

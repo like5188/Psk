@@ -34,7 +34,7 @@ class ShangXiaZhiReport : IReport {
     var activeCal: Float = 0f// 主动卡路里
     var passiveCal: Float = 0f// 被动卡路里
 
-    var spasm: Int = 0// 痉挛次数
+    var spasmNum: Int = 0// 痉挛次数
     var spasmLevelTotal: Int = 0 // 总痉挛等级
     var spasmLevelArv: Int = 0// 平均痉挛等级
     var spasmLevelMin: Int = -1// 最小痉挛等级
@@ -57,12 +57,12 @@ class ShangXiaZhiReport : IReport {
         fun createForm(flow: Flow<ShangXiaZhi>): Flow<GameData> {
             report = ShangXiaZhiReport()
             var isFirstSpasm = false// 是否第一次痉挛
-            var mFirstSpasmValue = 0// 第一次痉挛值
+            var mFirstSpasmNum = 0// 第一次痉挛次数（因为上下肢关机之前的痉挛次数是累计的）
             // 这里不能用 distinctUntilChanged、conflate 等操作符，因为需要根据所有数据来计算里程等。必须得到每次数据。
             return flow.buffer(Int.MAX_VALUE).map { shangXiaZhi ->
                 report.count++
                 val gameData = GameData().apply {
-                    speed = shangXiaZhi.speedValue
+                    speed = shangXiaZhi.speed
                     speedLevel = shangXiaZhi.speedLevel
                     spasmLevel = shangXiaZhi.spasmLevel
                 }
@@ -86,7 +86,7 @@ class ShangXiaZhiReport : IReport {
                     report.passiveCal += gameData.speed * 0.2f / 300
                 } else {// 主动
                     gameData.model = 0
-                    gameData.resistance = shangXiaZhi.res
+                    gameData.resistance = shangXiaZhi.resistanceLevel
                     //主动里程
                     report.activeMil += gameData.speed * 0.5f * 1000 / 3600
                     //卡路里
@@ -111,10 +111,10 @@ class ShangXiaZhiReport : IReport {
                 if (shangXiaZhi.spasmNum < 100) {
                     if (!isFirstSpasm) {
                         isFirstSpasm = true
-                        mFirstSpasmValue = shangXiaZhi.spasmNum
+                        mFirstSpasmNum = shangXiaZhi.spasmNum
                     }
-                    if (shangXiaZhi.spasmNum - mFirstSpasmValue > report.spasm) {
-                        report.spasm = shangXiaZhi.spasmNum - mFirstSpasmValue
+                    if (shangXiaZhi.spasmNum - mFirstSpasmNum > report.spasmNum) {
+                        report.spasmNum = shangXiaZhi.spasmNum - mFirstSpasmNum
                         gameData.spasmFlag = 1
                     } else {
                         gameData.spasmFlag = 0
@@ -128,7 +128,7 @@ class ShangXiaZhiReport : IReport {
                     min(report.spasmLevelMin, gameData.spasmLevel)
                 }
                 report.spasmLevelMax = max(report.spasmLevelMax, gameData.spasmLevel)
-                gameData.spasm = report.spasm
+                gameData.spasm = report.spasmNum
                 gameData
             }
         }

@@ -73,11 +73,11 @@ interface ShangXiaZhiReceiver {
     fun onReceive(
         model: Byte,
         speedLevel: Int,
-        speedValue: Int,
+        speed: Int,
         offset: Int,
         spasmNum: Int,
         spasmLevel: Int,
-        res: Int,
+        resistanceLevel: Int,
         intelligence: Byte,
         direction: Byte
     )

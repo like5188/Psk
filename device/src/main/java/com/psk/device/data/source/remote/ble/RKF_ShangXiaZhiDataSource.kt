@@ -40,22 +40,22 @@ class RKF_ShangXiaZhiDataSource : BaseShangXiaZhiDataSource(DeviceType.ShangXiaZ
             override fun onReceive(
                 model: Byte,
                 speedLevel: Int,
-                speedValue: Int,
+                speed: Int,
                 offset: Int,
                 spasmNum: Int,
                 spasmLevel: Int,
-                res: Int,
+                resistanceLevel: Int,
                 intelligence: Byte,
                 direction: Byte
             ) {
                 val shangXiaZhi = ShangXiaZhi(
                     model = model,
                     speedLevel = speedLevel,
-                    speedValue = speedValue,
+                    speed = speed,
                     offset = offset,
                     spasmNum = spasmNum,
                     spasmLevel = spasmLevel,
-                    res = res,
+                    resistanceLevel = resistanceLevel,
                     intelligence = intelligence,
                     direction = direction,
                     medicalOrderId = medicalOrderId
