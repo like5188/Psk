@@ -134,6 +134,7 @@ class TrainActivity : AppCompatActivity() {
                 onSelected = { minTargetHeartRate: Int, maxTargetHeartRate: Int ->
                     healthInfo.minTargetHeartRate = minTargetHeartRate
                     healthInfo.maxTargetHeartRate = maxTargetHeartRate
+                    mBinding.tvTargetHeartRate.text = "$minTargetHeartRate~$maxTargetHeartRate"
                 }
             }.show(this)
         }
@@ -142,6 +143,7 @@ class TrainActivity : AppCompatActivity() {
             MeasureBloodPressureDialogFragment.newInstance(bleSanInfo.name, bleSanInfo.address).apply {
                 onSelected = {
                     healthInfo.bloodPressureBefore = it
+                    mBinding.tvBloodPressureBefore.text = it.toString()
                 }
             }.show(this)
         }
@@ -150,6 +152,7 @@ class TrainActivity : AppCompatActivity() {
             MeasureBloodPressureDialogFragment.newInstance(bleSanInfo.name, bleSanInfo.address).apply {
                 onSelected = {
                     healthInfo.bloodPressureAfter = it
+                    mBinding.tvBloodPressureAfter.text = it.toString()
                 }
             }.show(this)
         }
@@ -191,9 +194,8 @@ class TrainActivity : AppCompatActivity() {
                 showToast("获取报告失败")
                 return@setOnClickListener
             }
-            healthInfo.met = ((shangXiaZhiReport.activeCal + shangXiaZhiReport.passiveCal) /
-                    (shangXiaZhiReport.activeDuration + shangXiaZhiReport.passiveDuration) /
-                    healthInfo.weight / 0.0167f).toInt()
+            healthInfo.met =
+                ((shangXiaZhiReport.activeCal + shangXiaZhiReport.passiveCal) / (shangXiaZhiReport.activeDuration + shangXiaZhiReport.passiveDuration) / healthInfo.weight / 0.0167f).toInt()
             mViewModel.saveHealthInfo(healthInfo)
             ReportActivity.start(reports, healthInfo)
         }
