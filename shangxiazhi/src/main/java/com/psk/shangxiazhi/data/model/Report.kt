@@ -76,10 +76,12 @@ class ShangXiaZhiReport : IReport {
                 report.speedList.add(gameData.speed)
                 report.speedTotal += gameData.speed
                 report.speedArv = report.speedTotal / report.speedList.size
-                report.speedMin = if (report.speedMin <= 0) {
-                    gameData.speed
-                } else {
-                    min(report.speedMin, gameData.speed)
+                if (gameData.speed > 0) {
+                    report.speedMin = if (report.speedMin <= 0) {
+                        gameData.speed
+                    } else {
+                        min(report.speedMin, gameData.speed)
+                    }
                 }
                 report.speedMax = max(report.speedMax, gameData.speed)
                 //模式
@@ -102,10 +104,12 @@ class ShangXiaZhiReport : IReport {
                 report.resistanceList.add(gameData.resistance)
                 report.resistanceTotal += gameData.resistance
                 report.resistanceArv = report.resistanceTotal / report.resistanceList.size
-                report.resistanceMin = if (report.resistanceMin <= 0) {
-                    gameData.resistance
-                } else {
-                    min(report.resistanceMin, gameData.resistance)
+                if (gameData.resistance > 0) {
+                    report.resistanceMin = if (report.resistanceMin <= 0) {
+                        gameData.resistance
+                    } else {
+                        min(report.resistanceMin, gameData.resistance)
+                    }
                 }
                 report.resistanceMax = max(report.resistanceMax, gameData.resistance)
                 // 功率
@@ -113,10 +117,12 @@ class ShangXiaZhiReport : IReport {
                 report.powerList.add(power)
                 report.powerTotal += power
                 report.powerArv = report.powerTotal / report.powerList.size
-                report.powerMin = if (report.powerMin <= 0) {
-                    power
-                } else {
-                    min(report.powerMin, power)
+                if (power > 0) {
+                    report.powerMin = if (report.powerMin <= 0) {
+                        power
+                    } else {
+                        min(report.powerMin, power)
+                    }
                 }
                 report.powerMax = max(report.powerMax, power)
                 //偏差值：范围0~30 左偏：0~14     十六进制：0x00~0x0e 中：15 	     十六进制：0x0f 右偏：16~30   十六进制：0x10~0x1e
@@ -137,10 +143,12 @@ class ShangXiaZhiReport : IReport {
                 report.spasmLevelList.add(gameData.spasmLevel)
                 report.spasmLevelTotal += gameData.spasmLevel
                 report.spasmLevelArv = report.spasmLevelTotal / report.spasmLevelList.size
-                report.spasmLevelMin = if (report.spasmLevelMin <= 0) {
-                    gameData.spasmLevel
-                } else {
-                    min(report.spasmLevelMin, gameData.spasmLevel)
+                if (gameData.spasmLevel > 0) {
+                    report.spasmLevelMin = if (report.spasmLevelMin <= 0) {
+                        gameData.spasmLevel
+                    } else {
+                        min(report.spasmLevelMin, gameData.spasmLevel)
+                    }
                 }
                 report.spasmLevelMax = max(report.spasmLevelMax, gameData.spasmLevel)
                 gameData.spasm = report.spasm
