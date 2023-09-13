@@ -137,7 +137,7 @@ class LevelView(context: Context, attrs: AttributeSet) : LinearLayout(context, a
             curNumber.set(newNumber)
         }
         LayoutParams(30.dp, 30.dp).apply {
-            marginStart = 20.dp
+            marginStart = 30.dp
             addView(view, this)
         }
     }
@@ -147,7 +147,7 @@ class LevelView(context: Context, attrs: AttributeSet) : LinearLayout(context, a
         view.setTextColor(Color.parseColor("#00C4B9"))
         view.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
         view.gravity = Gravity.CENTER
-        LayoutParams(65.dp, LayoutParams.WRAP_CONTENT).apply {
+        LayoutParams(80.dp, LayoutParams.WRAP_CONTENT).apply {
             addView(view, this)
         }
     }
