@@ -72,7 +72,7 @@ class TrainActivity : AppCompatActivity() {
                         if (sb.isNotEmpty()) {
                             sb.append("\n")
                         }
-                        sb.append(deviceType.des).append(" : ").append(deviceName)
+                        sb.append(deviceType.des).append(":").append(deviceName)
                     }
                     mBinding.tvDevice.text = sb.toString()
                 }
@@ -100,6 +100,7 @@ class TrainActivity : AppCompatActivity() {
                 onSelected = { age, weight ->
                     healthInfo.age = age
                     healthInfo.weight = weight
+                    mBinding.tvPersonInfo.text = "年龄:$age, 体重:${weight}"
                 }
             }.show(this)
         }
