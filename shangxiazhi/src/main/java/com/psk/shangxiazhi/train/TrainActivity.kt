@@ -4,6 +4,7 @@ import android.app.Activity
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import com.like.common.util.gone
 import com.like.common.util.mvi.propertyCollector
 import com.like.common.util.startActivity
 import com.like.common.util.visible
@@ -141,6 +142,8 @@ class TrainActivity : AppCompatActivity() {
             mViewModel.uiState.value.gameManagerService?.start(medicalOrderId, deviceMap, scene!!, shangXiaZhiParams) {
                 reports = it
             }
+            mBinding.btnTrain.gone()
+            mBinding.btnReport.visible()
         }
         mBinding.btnReport.setOnClickListener {
             val deviceMap = this.deviceMap

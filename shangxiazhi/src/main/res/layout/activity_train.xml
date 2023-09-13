@@ -267,14 +267,17 @@
             android:id="@+id/btnReport"
             android:layout_width="450dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
             android:background="@drawable/setting_bg_choose"
             android:gravity="center"
             android:paddingStart="15dp"
             android:paddingTop="10dp"
             android:paddingEnd="15dp"
             android:paddingBottom="10dp"
-            android:text="查看报告"
+            android:text="查看本次训练报告"
             android:textColor="@drawable/setting_text_color_choose"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            android:visibility="gone"
+            tools:visibility="visible" />
     </LinearLayout>
 </layout>
