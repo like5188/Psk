@@ -58,12 +58,22 @@ class TrainActivity : AppCompatActivity() {
             ).apply {
                 onSelected = {
                     deviceMap = it
+                    healthInfo.met = 0
+                    healthInfo.minTargetHeartRate = 0
+                    healthInfo.maxTargetHeartRate = 0
+                    healthInfo.bloodPressureBefore = null
+                    healthInfo.bloodPressureAfter = null
                     if (it.containsKey(DeviceType.BloodPressure)) {
                         mBinding.llBloodPressureBefore.visible()
                         mBinding.llBloodPressureAfter.visible()
+                    } else {
+                        mBinding.llBloodPressureBefore.gone()
+                        mBinding.llBloodPressureAfter.gone()
                     }
                     if (it.containsKey(DeviceType.HeartRate)) {
                         mBinding.llTargetHeartRate.visible()
+                    } else {
+                        mBinding.llTargetHeartRate.gone()
                     }
                     val sb = StringBuilder()
                     it.forEach {
@@ -100,7 +110,17 @@ class TrainActivity : AppCompatActivity() {
                 onSelected = { age, weight ->
                     healthInfo.age = age
                     healthInfo.weight = weight
-                    mBinding.tvPersonInfo.text = "年龄:$age, 体重:${weight}"
+                    val sb = StringBuilder()
+                    if (age > 0) {
+                        sb.append("年龄:").append(age)
+                    }
+                    if (weight > 0) {
+                        if (sb.isNotEmpty()) {
+                            sb.append(", ")
+                        }
+                        sb.append("体重:").append(weight)
+                    }
+                    mBinding.tvPersonInfo.text = sb.toString()
                 }
             }.show(this)
         }

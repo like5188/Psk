@@ -79,12 +79,16 @@ class MeasureBloodPressureDialogFragment private constructor() : BaseDialogFragm
         mBinding = DataBindingUtil.inflate(inflater, R.layout.dialog_fragment_measure_blood_pressure, container, true)
         repository.enable(arguments?.getString(KEY_DEVICE_NAME) ?: "", arguments?.getString(KEY_DEVICE_ADDRESS) ?: "")
         mBinding.btnMeasure.setOnClickListener {
-            bleManager.connect(DeviceType.BloodPressure, lifecycleScope, 3000L, {
-                println("血压仪连接成功")
+            if (bleManager.isConnected(DeviceType.BloodPressure)) {
                 startJob()
-            }) {
-                println("血压仪连接失败")
-                cancelJob()
+            } else {
+                bleManager.connect(DeviceType.BloodPressure, lifecycleScope, 3000L, {
+                    println("血压仪连接成功")
+                    startJob()
+                }) {
+                    println("血压仪连接失败")
+                    cancelJob()
+                }
             }
         }
         mBinding.btnConfirm.setOnClickListener {

@@ -22,6 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -62,6 +63,8 @@ class MeasureTargetHeartRateDialogFragment private constructor() : BaseDialogFra
             heartRates.clear()
             repository.fetch().filterNotNull().map {
                 it.value
+            }.filter {
+                it > 0
             }.onEach {
                 heartRates.add(it)
             }.distinctUntilChanged().flowOn(Dispatchers.IO).collect {
@@ -71,7 +74,7 @@ class MeasureTargetHeartRateDialogFragment private constructor() : BaseDialogFra
         }
         lifecycleScope.launch(Dispatchers.IO) {
             // 测量一分钟
-            delay(60000)
+            delay(5000)
             cancelJob()
             val targetHeartRate = calc()
             mBinding.tvTargetHeartRate.text = "${targetHeartRate.first}~${targetHeartRate.second}"
@@ -85,8 +88,9 @@ class MeasureTargetHeartRateDialogFragment private constructor() : BaseDialogFra
         }
         val heartRate = heartRates.average().toInt()
         val age = arguments?.getInt(KEY_AGE) ?: 0
-        val minTargetHeartRate = (((220 - age) - heartRate) * (0.6) + heartRate).toInt()
-        val maxTargetHeartRate = (((220 - age) - heartRate) * (0.8) + heartRate).toInt()
+        val minTargetHeartRate = (((220 - age) - heartRate) * 0.6 + heartRate).toInt()
+        val maxTargetHeartRate = (((220 - age) - heartRate) * 0.8 + heartRate).toInt()
+        println("heartRates=$heartRates arv=$heartRate min=$minTargetHeartRate max=$maxTargetHeartRate")
         return Pair(minTargetHeartRate, maxTargetHeartRate)
     }
 
@@ -109,12 +113,16 @@ class MeasureTargetHeartRateDialogFragment private constructor() : BaseDialogFra
         mBinding = DataBindingUtil.inflate(inflater, R.layout.dialog_fragment_measure_target_heart_rate, container, true)
         repository.enable(arguments?.getString(KEY_DEVICE_NAME) ?: "", arguments?.getString(KEY_DEVICE_ADDRESS) ?: "")
         mBinding.btnMeasure.setOnClickListener {
-            bleManager.connect(DeviceType.HeartRate, lifecycleScope, 3000L, {
-                println("心电仪连接成功")
+            if (bleManager.isConnected(DeviceType.HeartRate)) {
                 startJob()
-            }) {
-                println("心电仪连接失败")
-                cancelJob()
+            } else {
+                bleManager.connect(DeviceType.HeartRate, lifecycleScope, 3000L, {
+                    println("心电仪连接成功")
+                    startJob()
+                }) {
+                    println("心电仪连接失败")
+                    cancelJob()
+                }
             }
         }
         mBinding.btnConfirm.setOnClickListener {

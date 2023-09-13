@@ -59,6 +59,10 @@ data class BloodPressure(
         return 0
     }
 
+    override fun toString(): String {
+        return "收缩压:$sbp, 舒张压:$dbp"
+    }
+
     companion object CREATOR : Parcelable.Creator<BloodPressure> {
         override fun createFromParcel(parcel: Parcel): BloodPressure {
             return BloodPressure(parcel)
@@ -68,4 +72,6 @@ data class BloodPressure(
             return arrayOfNulls(size)
         }
     }
+
+
 }
