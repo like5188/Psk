@@ -1,26 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/main_bg"
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.25" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineRight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.75" />
+
         <TextView
-            android:layout_width="450dp"
+            android:id="@+id/tvTitle"
+            android:layout_width="0dp"
             android:layout_height="60dp"
             android:gravity="center"
             android:text="准备训练"
             android:textColor="#99FFFFFF"
             android:textSize="24sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@id/guidelineRight"
+            app:layout_constraintStart_toStartOf="@id/guidelineLeft"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
             android:id="@+id/llDevice"
-            android:layout_width="450dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="@drawable/setting_bg_choose"
             android:gravity="center_vertical"
@@ -28,7 +47,10 @@
             android:paddingStart="15dp"
             android:paddingTop="10dp"
             android:paddingEnd="15dp"
-            android:paddingBottom="10dp">
+            android:paddingBottom="10dp"
+            app:layout_constraintEnd_toEndOf="@id/guidelineRight"
+            app:layout_constraintStart_toStartOf="@id/guidelineLeft"
+            app:layout_constraintTop_toBottomOf="@id/tvTitle">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -53,7 +75,7 @@
 
         <LinearLayout
             android:id="@+id/llScene"
-            android:layout_width="450dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="@drawable/setting_bg_choose"
             android:gravity="center_vertical"
@@ -61,7 +83,10 @@
             android:paddingStart="15dp"
             android:paddingTop="10dp"
             android:paddingEnd="15dp"
-            android:paddingBottom="10dp">
+            android:paddingBottom="10dp"
+            app:layout_constraintEnd_toEndOf="@id/guidelineRight"
+            app:layout_constraintStart_toStartOf="@id/guidelineLeft"
+            app:layout_constraintTop_toBottomOf="@id/llDevice">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -86,7 +111,7 @@
 
         <LinearLayout
             android:id="@+id/llSetShangXiaZhiParams"
-            android:layout_width="450dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="@drawable/setting_bg_choose"
             android:gravity="center_vertical"
@@ -94,7 +119,10 @@
             android:paddingStart="15dp"
             android:paddingTop="10dp"
             android:paddingEnd="15dp"
-            android:paddingBottom="10dp">
+            android:paddingBottom="10dp"
+            app:layout_constraintEnd_toEndOf="@id/guidelineRight"
+            app:layout_constraintStart_toStartOf="@id/guidelineLeft"
+            app:layout_constraintTop_toBottomOf="@id/llScene">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -119,7 +147,7 @@
 
         <LinearLayout
             android:id="@+id/llPersonInfo"
-            android:layout_width="450dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="@drawable/setting_bg_choose"
             android:gravity="center_vertical"
@@ -127,7 +155,10 @@
             android:paddingStart="15dp"
             android:paddingTop="10dp"
             android:paddingEnd="15dp"
-            android:paddingBottom="10dp">
+            android:paddingBottom="10dp"
+            app:layout_constraintEnd_toEndOf="@id/guidelineRight"
+            app:layout_constraintStart_toStartOf="@id/guidelineLeft"
+            app:layout_constraintTop_toBottomOf="@id/llSetShangXiaZhiParams">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -152,7 +183,7 @@
 
         <LinearLayout
             android:id="@+id/llTargetHeartRate"
-            android:layout_width="450dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="@drawable/setting_bg_choose"
             android:gravity="center_vertical"
@@ -162,6 +193,9 @@
             android:paddingEnd="15dp"
             android:paddingBottom="10dp"
             android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@id/guidelineRight"
+            app:layout_constraintStart_toStartOf="@id/guidelineLeft"
+            app:layout_constraintTop_toBottomOf="@id/llPersonInfo"
             tools:visibility="visible">
 
             <TextView
@@ -187,7 +221,7 @@
 
         <LinearLayout
             android:id="@+id/llBloodPressureBefore"
-            android:layout_width="450dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="@drawable/setting_bg_choose"
             android:gravity="center_vertical"
@@ -197,6 +231,9 @@
             android:paddingEnd="15dp"
             android:paddingBottom="10dp"
             android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@id/guidelineRight"
+            app:layout_constraintStart_toStartOf="@id/guidelineLeft"
+            app:layout_constraintTop_toBottomOf="@id/llTargetHeartRate"
             tools:visibility="visible">
 
             <TextView
@@ -222,7 +259,7 @@
 
         <LinearLayout
             android:id="@+id/llBloodPressureAfter"
-            android:layout_width="450dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="@drawable/setting_bg_choose"
             android:gravity="center_vertical"
@@ -232,6 +269,9 @@
             android:paddingEnd="15dp"
             android:paddingBottom="10dp"
             android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@id/guidelineRight"
+            app:layout_constraintStart_toStartOf="@id/guidelineLeft"
+            app:layout_constraintTop_toBottomOf="@id/llBloodPressureBefore"
             tools:visibility="visible">
 
             <TextView
@@ -257,7 +297,7 @@
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnTrain"
-            android:layout_width="450dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
             android:background="@drawable/setting_bg_choose"
@@ -268,11 +308,14 @@
             android:paddingBottom="10dp"
             android:text="开始训练"
             android:textColor="@drawable/setting_text_color_choose"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="@id/guidelineRight"
+            app:layout_constraintStart_toStartOf="@id/guidelineLeft"
+            app:layout_constraintTop_toBottomOf="@id/llBloodPressureAfter" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnReport"
-            android:layout_width="450dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
             android:background="@drawable/setting_bg_choose"
@@ -285,6 +328,9 @@
             android:textColor="@drawable/setting_text_color_choose"
             android:textSize="20sp"
             android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@id/guidelineRight"
+            app:layout_constraintStart_toStartOf="@id/guidelineLeft"
+            app:layout_constraintTop_toBottomOf="@id/btnTrain"
             tools:visibility="visible" />
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
