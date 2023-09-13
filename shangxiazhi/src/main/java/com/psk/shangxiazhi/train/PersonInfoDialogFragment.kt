@@ -31,12 +31,8 @@ class PersonInfoDialogFragment private constructor() : BaseDialogFragment() {
         mBinding.btnConfirm.setOnClickListener {
             val age = mBinding.etAge.text.trim().toString().toIntOrDefault(0)
             val weight = mBinding.etWeight.text.trim().toString().toIntOrDefault(0)
-            if (age <= 0) {
-                requireContext().showToast("请输入您的年龄")
-                return@setOnClickListener
-            }
-            if (weight <= 0) {
-                requireContext().showToast("请输入您的体重")
+            if (age <= 0 && weight <= 0) {
+                requireContext().showToast("请输入您的基本信息")
                 return@setOnClickListener
             }
             onSelected?.invoke(age, weight)

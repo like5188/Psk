@@ -104,7 +104,7 @@ class TrainActivity : AppCompatActivity() {
             }.show(this)
         }
         mBinding.llBloodPressureBefore.setOnClickListener {
-            val bleSanInfo = deviceMap?.get(DeviceType.HeartRate) ?: return@setOnClickListener
+            val bleSanInfo = deviceMap?.get(DeviceType.BloodPressure) ?: return@setOnClickListener
             MeasureBloodPressureDialogFragment.newInstance(bleSanInfo.name, bleSanInfo.address).apply {
                 onSelected = {
                     healthInfo.bloodPressureBefore = it
@@ -112,7 +112,7 @@ class TrainActivity : AppCompatActivity() {
             }.show(this)
         }
         mBinding.llBloodPressureAfter.setOnClickListener {
-            val bleSanInfo = deviceMap?.get(DeviceType.HeartRate) ?: return@setOnClickListener
+            val bleSanInfo = deviceMap?.get(DeviceType.BloodPressure) ?: return@setOnClickListener
             MeasureBloodPressureDialogFragment.newInstance(bleSanInfo.name, bleSanInfo.address).apply {
                 onSelected = {
                     healthInfo.bloodPressureAfter = it
@@ -120,6 +120,7 @@ class TrainActivity : AppCompatActivity() {
             }.show(this)
         }
         mBinding.btnTrain.setOnClickListener {
+            println(scene)
             val deviceMap = this.deviceMap
             if (deviceMap.isNullOrEmpty()) {
                 showToast("请先选择设备")
