@@ -37,7 +37,7 @@ val shangXiaZhiModule = module {
         HistoryViewModel(get())
     }
     viewModel {
-        TrainViewModel()
+        TrainViewModel(get())
     }
 
     //GameController

@@ -8,17 +8,22 @@ import android.os.IBinder
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.psk.device.DeviceManager
+import com.psk.device.data.model.HealthInfo
 import com.psk.shangxiazhi.game.GameManagerService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 
 @OptIn(KoinApiExtension::class)
-class TrainViewModel : ViewModel(), KoinComponent {
+class TrainViewModel(deviceManager: DeviceManager) : ViewModel(), KoinComponent {
     private val _uiState = MutableStateFlow(TrainUiState())
     val uiState = _uiState.asStateFlow()
+    private val healthInfoRepository = deviceManager.healthInfoRepository
 
     //创建一个ServiceConnection回调，通过IBinder进行交互
     private val localConnection = object : ServiceConnection {
@@ -47,6 +52,12 @@ class TrainViewModel : ViewModel(), KoinComponent {
             Log.w(TAG, "unbindGameManagerService")
             context.unbindService(localConnection)
         } catch (e: Exception) {
+        }
+    }
+
+    fun saveHealthInfo(data: HealthInfo) {
+        viewModelScope.launch {
+            healthInfoRepository.save(data)
         }
     }
 

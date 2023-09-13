@@ -131,12 +131,10 @@ class MeasureTargetHeartRateDialogFragment private constructor() : BaseDialogFra
 
     override fun initLayoutParams(layoutParams: WindowManager.LayoutParams) {
         // 宽高
-        resources.displayMetrics?.widthPixels?.let {
-            layoutParams.width = (it * 0.5).toInt() - 1
-        }
+        layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT
         layoutParams.height = WindowManager.LayoutParams.MATCH_PARENT
         // 位置
-        layoutParams.gravity = Gravity.END
+        layoutParams.gravity = Gravity.CENTER
         // 透明度
         layoutParams.dimAmount = 0.6f
     }

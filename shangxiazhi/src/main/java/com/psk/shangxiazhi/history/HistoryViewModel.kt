@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.psk.ble.DeviceType
 import com.psk.device.DeviceManager
+import com.psk.device.data.model.HealthInfo
 import com.psk.device.data.source.BloodOxygenRepository
 import com.psk.device.data.source.BloodPressureRepository
 import com.psk.device.data.source.HeartRateRepository
@@ -31,6 +32,7 @@ class HistoryViewModel(deviceManager: DeviceManager) : ViewModel() {
     private val heartRateRepository = deviceManager.createRepository<HeartRateRepository>(DeviceType.HeartRate)
     private val shangXiaZhiRepository = deviceManager.createRepository<ShangXiaZhiRepository>(DeviceType.ShangXiaZhi)
     private val unionRepository = deviceManager.unionRepository
+    private val healthInfoRepository = deviceManager.healthInfoRepository
     private lateinit var datas: Map<String, List<DateAndData>>
 
     init {
@@ -139,6 +141,10 @@ class HistoryViewModel(deviceManager: DeviceManager) : ViewModel() {
             result.add(ShangXiaZhiReport.report)
         }
         return result
+    }
+
+    suspend fun getHealthInfo(medicalOrderId: Long): HealthInfo? {
+        return healthInfoRepository.getByMedicalOrderId(medicalOrderId)
     }
 
 }

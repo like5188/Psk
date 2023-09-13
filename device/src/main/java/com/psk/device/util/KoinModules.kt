@@ -5,8 +5,10 @@ import com.psk.device.DeviceManager
 import com.psk.device.data.db.DeviceDatabaseManager
 import com.psk.device.data.db.dao.BaseDao
 import com.psk.device.data.db.database.DeviceDatabase
+import com.psk.device.data.source.HealthInfoRepository
 import com.psk.device.data.source.UnionRepository
 import com.psk.device.data.source.local.db.DbDataSourceFactory
+import com.psk.device.data.source.local.db.HealthInfoDbDataSource
 import com.psk.device.data.source.local.db.UnionDbDataSource
 import com.psk.device.data.source.remote.ble.BleDataSourceFactory
 import org.koin.dsl.module
@@ -43,6 +45,14 @@ val deviceModule = module {
     factory {
         UnionRepository(get())
     }
+    //HealthInfoDbDataSource
+    factory {
+        HealthInfoDbDataSource(get<DeviceDatabase>().healthInfoDao())
+    }
+    //HealthInfoRepository
+    factory {
+        HealthInfoRepository(get())
+    }
 
     //ServerDatabase
     single {
@@ -51,7 +61,7 @@ val deviceModule = module {
     }
     // DeviceManager
     single {
-        DeviceManager(get(), get())
+        DeviceManager(get(), get(), get())
     }
 
 }

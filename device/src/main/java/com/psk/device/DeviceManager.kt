@@ -2,6 +2,7 @@ package com.psk.device
 
 import android.content.Context
 import com.psk.ble.DeviceType
+import com.psk.device.data.source.HealthInfoRepository
 import com.psk.device.data.source.IRepository
 import com.psk.device.data.source.RepositoryFactory
 import com.psk.device.data.source.UnionRepository
@@ -26,6 +27,7 @@ import com.psk.device.data.source.remote.ble.BleDataSourceFactory
 class DeviceManager(
     private val context: Context,
     val unionRepository: UnionRepository,
+    val healthInfoRepository: HealthInfoRepository,
 ) {
     private val repositories = mutableMapOf<DeviceType, IRepository<*>>()
 

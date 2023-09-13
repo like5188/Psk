@@ -15,7 +15,7 @@
             android:layout_height="60dp"
             android:layout_marginBottom="15dp"
             android:gravity="center"
-            android:text="靶心率测量"
+            android:text="血压测量"
             android:textColor="#99FFFFFF"
             android:textSize="24sp"
             android:textStyle="bold" />
@@ -27,18 +27,18 @@
             android:layout_marginEnd="15dp">
 
             <TextView
-                android:id="@+id/tvHeartRateTag"
+                android:id="@+id/tvSbpTag"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="当前心率"
+                android:text="收缩压"
                 android:textColor="#00C4B9"
                 android:textSize="18sp"
-                app:layout_constraintBottom_toBottomOf="@id/tvHeartRate"
+                app:layout_constraintBottom_toBottomOf="@id/tvSbp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/tvHeartRate" />
+                app:layout_constraintTop_toTopOf="@id/tvSbp" />
 
             <TextView
-                android:id="@+id/tvHeartRate"
+                android:id="@+id/tvSbp"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="80dp"
@@ -47,7 +47,7 @@
                 android:textColor="@color/white"
                 android:textSize="40sp"
                 app:layout_constraintEnd_toStartOf="@id/btnMeasure"
-                app:layout_constraintStart_toEndOf="@id/tvHeartRateTag"
+                app:layout_constraintStart_toEndOf="@id/tvSbpTag"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="11" />
 
@@ -71,18 +71,18 @@
                 app:layout_constraintTop_toTopOf="@id/tvHeartRate" />
 
             <TextView
-                android:id="@+id/tvTargetHeartRateTag"
+                android:id="@+id/tvDbpTag"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="目标心率"
+                android:text="舒张压"
                 android:textColor="#00C4B9"
                 android:textSize="18sp"
-                app:layout_constraintBottom_toBottomOf="@id/tvTargetHeartRate"
+                app:layout_constraintBottom_toBottomOf="@id/tvDbp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/tvTargetHeartRate" />
+                app:layout_constraintTop_toTopOf="@id/tvDbp" />
 
             <TextView
-                android:id="@+id/tvTargetHeartRate"
+                android:id="@+id/tvDbp"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
@@ -91,9 +91,9 @@
                 android:textColor="@color/white"
                 android:textSize="40sp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@id/tvHeartRate"
-                app:layout_constraintTop_toBottomOf="@id/tvHeartRate"
-                tools:text="11~12" />
+                app:layout_constraintStart_toStartOf="@id/tvSbp"
+                app:layout_constraintTop_toBottomOf="@id/tvSbp"
+                tools:text="11" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

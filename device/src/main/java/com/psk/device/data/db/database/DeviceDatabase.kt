@@ -5,11 +5,13 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.psk.device.data.db.dao.BloodOxygenDao
 import com.psk.device.data.db.dao.BloodPressureDao
+import com.psk.device.data.db.dao.HealthInfoDao
 import com.psk.device.data.db.dao.HeartRateDao
 import com.psk.device.data.db.dao.ShangXiaZhiDao
 import com.psk.device.data.db.dao.UnionDao
 import com.psk.device.data.model.BloodOxygen
 import com.psk.device.data.model.BloodPressure
+import com.psk.device.data.model.HealthInfo
 import com.psk.device.data.model.HeartRate
 import com.psk.device.data.model.ShangXiaZhi
 import com.psk.device.util.Converters
@@ -21,7 +23,8 @@ import com.psk.device.util.Converters
         BloodOxygen::class,
         BloodPressure::class,
         HeartRate::class,
-        ShangXiaZhi::class
+        ShangXiaZhi::class,
+        HealthInfo::class
     ],
 )
 @TypeConverters(Converters::class)
@@ -31,4 +34,5 @@ abstract class DeviceDatabase : RoomDatabase() {
     abstract fun heartRateDao(): HeartRateDao
     abstract fun shangXiaZhiDao(): ShangXiaZhiDao
     abstract fun unionDao(): UnionDao
+    abstract fun healthInfoDao(): HealthInfoDao
 }

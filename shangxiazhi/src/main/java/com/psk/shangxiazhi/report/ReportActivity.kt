@@ -9,6 +9,7 @@ import com.like.common.util.AutoWired
 import com.like.common.util.injectForIntentExtras
 import com.like.common.util.startActivity
 import com.psk.common.CommonApplication
+import com.psk.device.data.model.HealthInfo
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.data.model.IReport
 import com.psk.shangxiazhi.data.model.ShangXiaZhiReport
@@ -21,19 +22,11 @@ class ReportActivity : AppCompatActivity() {
     companion object {
         fun start(
             reports: List<IReport>?,
-            minTargetHeartRate: Int,
-            maxTargetHeartRate: Int,
-            met: Int,
-            bloodPressureBefore: Int,
-            bloodPressureAfter: Int
+            healthInfo: HealthInfo?
         ) {
             CommonApplication.sInstance.startActivity<ReportActivity>(
                 "reports" to reports,
-                "minTargetHeartRate" to minTargetHeartRate,
-                "maxTargetHeartRate" to maxTargetHeartRate,
-                "met" to met,
-                "bloodPressureBefore" to bloodPressureBefore,
-                "bloodPressureAfter" to bloodPressureAfter,
+                "healthInfo" to healthInfo,
             )
         }
     }
@@ -42,19 +35,7 @@ class ReportActivity : AppCompatActivity() {
     val reports: List<IReport>? = null
 
     @AutoWired
-    val minTargetHeartRate: Int = 0
-
-    @AutoWired
-    val maxTargetHeartRate: Int = 0
-
-    @AutoWired
-    val met: Int = 0
-
-    @AutoWired
-    val bloodPressureBefore: Int = 0
-
-    @AutoWired
-    val bloodPressureAfter: Int = 0
+    val healthInfo: HealthInfo? = null
 
     private val mBinding: ActivityReportBinding by lazy {
         DataBindingUtil.setContentView(this, R.layout.activity_report)

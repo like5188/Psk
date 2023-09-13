@@ -54,4 +54,7 @@ class BloodPressureRepository : KoinComponent, IRepository<BloodPressure> {
         return dbDataSource.listenLatest(System.currentTimeMillis() / 1000).filterNotNull()
     }
 
+    suspend fun fetch(): BloodPressure? {
+        return dataSource.fetch(-1)
+    }
 }
