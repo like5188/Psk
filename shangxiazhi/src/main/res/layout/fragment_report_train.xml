@@ -410,7 +410,7 @@
             android:layout_marginTop="30dp"
             android:drawableStart="@drawable/report_speed"
             android:drawablePadding="10dp"
-            android:text="阻力(档)"
+            android:text="阻力(N.m)"
             android:textColor="#686868"
             android:textSize="14sp"
             app:layout_constraintStart_toStartOf="parent"
