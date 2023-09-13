@@ -7,22 +7,39 @@
         android:layout_height="match_parent"
         android:background="@drawable/main_bg">
 
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.35" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineRight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.65" />
+
         <View
             android:id="@+id/bg"
-            android:layout_width="338dp"
-            android:layout_height="330dp"
+            android:layout_width="0dp"
+            android:layout_height="310dp"
             android:background="@drawable/shape_corners_grey_login"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/guidelineRight"
+            app:layout_constraintStart_toStartOf="@id/guidelineLeft"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/ivTitle"
-            android:layout_width="187dp"
+            android:layout_width="0dp"
             android:layout_height="36dp"
             android:layout_gravity="center"
-            android:layout_marginTop="40dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginEnd="15dp"
+            android:scaleType="fitCenter"
             android:src="@drawable/login_title"
             app:layout_constraintEnd_toEndOf="@id/bg"
             app:layout_constraintStart_toStartOf="@id/bg"
