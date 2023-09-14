@@ -60,7 +60,7 @@ data class BloodPressure(
     }
 
     override fun toString(): String {
-        return "收缩压:$sbp, 舒张压:$dbp"
+        return "${sbp}/${dbp}"
     }
 
     companion object CREATOR : Parcelable.Creator<BloodPressure> {

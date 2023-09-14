@@ -114,18 +114,7 @@
             app:layout_constraintTop_toBottomOf="@id/tvMetTag" />
 
         <TextView
-            android:id="@+id/tvDbpTag"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="30dp"
-            android:text="舒张压"
-            android:textColor="#686868"
-            android:textSize="14sp"
-            app:layout_constraintBaseline_toBaselineOf="@id/tvBloodPressureTag"
-            app:layout_constraintStart_toEndOf="@id/tvBloodPressureTag" />
-
-        <TextView
-            android:id="@+id/tvDbp"
+            android:id="@+id/tvBloodPressure"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="15dp"
@@ -133,22 +122,22 @@
             android:textSize="14sp"
             android:textStyle="bold"
             app:layout_constraintBaseline_toBaselineOf="@id/tvBloodPressureTag"
-            app:layout_constraintStart_toEndOf="@id/tvDbpTag"
-            tools:text="111" />
+            app:layout_constraintStart_toEndOf="@id/tvBloodPressureTag"
+            tools:text="111/66" />
 
         <TextView
-            android:id="@+id/tvSbpTag"
+            android:id="@+id/tvBloodPressureBeforeTag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="30dp"
-            android:text="收缩压"
+            android:text="运动前"
             android:textColor="#686868"
             android:textSize="14sp"
             app:layout_constraintBaseline_toBaselineOf="@id/tvBloodPressureTag"
-            app:layout_constraintStart_toEndOf="@id/tvDbp" />
+            app:layout_constraintStart_toEndOf="@id/tvBloodPressure" />
 
         <TextView
-            android:id="@+id/tvSbp"
+            android:id="@+id/tvBloodPressureBefore"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="15dp"
@@ -156,8 +145,31 @@
             android:textSize="14sp"
             android:textStyle="bold"
             app:layout_constraintBaseline_toBaselineOf="@id/tvBloodPressureTag"
-            app:layout_constraintStart_toEndOf="@id/tvSbpTag"
-            tools:text="111" />
+            app:layout_constraintStart_toEndOf="@id/tvBloodPressureBeforeTag"
+            tools:text="111/66" />
+
+        <TextView
+            android:id="@+id/tvBloodPressureAfterTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:text="运动后"
+            android:textColor="#686868"
+            android:textSize="14sp"
+            app:layout_constraintBaseline_toBaselineOf="@id/tvBloodPressureTag"
+            app:layout_constraintStart_toEndOf="@id/tvBloodPressureBefore" />
+
+        <TextView
+            android:id="@+id/tvBloodPressureAfter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:textColor="#292a2d"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintBaseline_toBaselineOf="@id/tvBloodPressureTag"
+            app:layout_constraintStart_toEndOf="@id/tvBloodPressureAfterTag"
+            tools:text="111/66" />
 
         <TextView
             android:id="@+id/tvBloodOxygenTag"
@@ -169,7 +181,7 @@
             android:textColor="#686868"
             android:textSize="14sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvDbpTag" />
+            app:layout_constraintTop_toBottomOf="@id/tvBloodPressureTag" />
 
         <TextView
             android:id="@+id/tvBloodOxygen"

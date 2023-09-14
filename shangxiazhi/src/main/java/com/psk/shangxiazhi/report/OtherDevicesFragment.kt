@@ -40,6 +40,16 @@ class OtherDevicesFragment : BaseLazyFragment() {
         arguments?.getParcelable<HealthInfo>(KEY_HEALTH_INFO)?.apply {
             mBinding.tvTargetHeartRate.text = "$minTargetHeartRate~$maxTargetHeartRate"
             mBinding.tvMet.text = met.toString()
+            mBinding.tvBloodPressureBefore.text = if (bloodPressureBefore == null) {
+                ""
+            } else {
+                "${bloodPressureBefore!!.sbp}/${bloodPressureBefore!!.dbp}"
+            }
+            mBinding.tvBloodPressureAfter.text = if (bloodPressureAfter == null) {
+                ""
+            } else {
+                "${bloodPressureAfter!!.sbp}/${bloodPressureAfter!!.dbp}"
+            }
         }
         (arguments?.getSerializable(KEY_REPORTS) as? List<IReport>)?.forEach {
             when (it) {
@@ -55,8 +65,7 @@ class OtherDevicesFragment : BaseLazyFragment() {
                 }
 
                 is BloodPressureReport -> {
-                    mBinding.tvDbp.text = it.dbp.toString()
-                    mBinding.tvSbp.text = it.sbp.toString()
+                    mBinding.tvBloodPressure.text = "${it.sbp}/${it.dbp}"
                 }
             }
         }
