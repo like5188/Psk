@@ -82,7 +82,7 @@ class MainActivity : AppCompatActivity() {
             collectDistinctProperty(MainUiState::time) {
                 mBinding.tvTime.text = it
             }
-            collectEventProperty(MainUiState::toastEvent) {
+            collectNotHandledEventProperty(MainUiState::toastEvent) {
                 showToast(it)
             }
         }

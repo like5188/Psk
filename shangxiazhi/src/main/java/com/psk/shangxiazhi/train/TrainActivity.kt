@@ -1,6 +1,5 @@
 package com.psk.shangxiazhi.train
 
-import android.app.Activity
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -8,18 +7,10 @@ import com.like.common.util.gone
 import com.like.common.util.mvi.propertyCollector
 import com.like.common.util.startActivity
 import com.like.common.util.visible
-import com.psk.ble.DeviceType
 import com.psk.common.CommonApplication
 import com.psk.common.util.showToast
-import com.psk.device.data.model.HealthInfo
 import com.psk.shangxiazhi.R
-import com.psk.shangxiazhi.data.model.BleScanInfo
-import com.psk.shangxiazhi.data.model.IReport
-import com.psk.shangxiazhi.data.model.ShangXiaZhiReport
 import com.psk.shangxiazhi.databinding.ActivityTrainBinding
-import com.psk.shangxiazhi.report.ReportActivity
-import com.psk.shangxiazhi.scene.SceneActivity
-import com.twsz.twsystempre.TrainScene
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
@@ -36,163 +27,95 @@ class TrainActivity : AppCompatActivity() {
         DataBindingUtil.setContentView(this, R.layout.activity_train)
     }
     private val mViewModel: TrainViewModel by viewModel()
-    private var deviceMap: Map<DeviceType, BleScanInfo>? = null
-    private var scene: TrainScene? = null
-    private var reports: List<IReport>? = null
-    private val medicalOrderId = System.currentTimeMillis()
-    private val healthInfo = HealthInfo(medicalOrderId = medicalOrderId)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mViewModel.bindGameManagerService(this)
         mBinding.llDevice.setOnClickListener {
-            SelectDeviceDialogFragment.newInstance(
-                arrayOf(
-                    DeviceType.ShangXiaZhi,
-                    DeviceType.BloodOxygen,
-                    DeviceType.BloodPressure,
-                    DeviceType.HeartRate,
-                )
-            ).apply {
-                onSelected = {
-                    deviceMap = it
-                    healthInfo.met = 0
-                    healthInfo.minTargetHeartRate = 0
-                    healthInfo.maxTargetHeartRate = 0
-                    healthInfo.bloodPressureBefore = null
-                    healthInfo.bloodPressureAfter = null
-                    if (it.containsKey(DeviceType.BloodPressure)) {
-                        mBinding.llBloodPressureBefore.visible()
-                        mBinding.llBloodPressureAfter.visible()
-                    } else {
-                        mBinding.llBloodPressureBefore.gone()
-                        mBinding.llBloodPressureAfter.gone()
-                    }
-                    if (it.containsKey(DeviceType.HeartRate)) {
-                        mBinding.llTargetHeartRate.visible()
-                    } else {
-                        mBinding.llTargetHeartRate.gone()
-                    }
-                    val sb = StringBuilder()
-                    it.forEach {
-                        val deviceType = it.key
-                        val deviceName = it.value.name
-                        if (sb.isNotEmpty()) {
-                            sb.append("\n")
-                        }
-                        sb.append(deviceType.des).append(":").append(deviceName)
-                    }
-                    mBinding.tvDevice.text = sb.toString()
-                }
-            }.show(this)
+            mViewModel.selectDevices(this)
         }
         mBinding.llScene.setOnClickListener {
-            SceneActivity.start(this) {
-                if (it.resultCode != Activity.RESULT_OK) {
-                    return@start
-                }
-                scene = it.data?.getSerializableExtra(SceneActivity.KEY_SCENE) as? TrainScene
-                mBinding.tvScene.text = scene?.des ?: ""
-            }
+            mViewModel.selectTrainScene(this)
         }
         mBinding.llPersonInfo.setOnClickListener {
-            PersonInfoDialogFragment.newInstance().apply {
-                onSelected = { age, weight ->
-                    healthInfo.age = age
-                    healthInfo.weight = weight
-                    val sb = StringBuilder()
-                    if (age > 0) {
-                        sb.append("年龄:").append(age)
-                    }
-                    if (weight > 0) {
-                        if (sb.isNotEmpty()) {
-                            sb.append(", ")
-                        }
-                        sb.append("体重:").append(weight)
-                    }
-                    mBinding.tvPersonInfo.text = sb.toString()
-                }
-            }.show(this)
+            mViewModel.setPersonInfo(this)
         }
         mBinding.llTargetHeartRate.setOnClickListener {
-            if (healthInfo.age == 0) {
-                showToast("请填写基本信息中的年龄")
-                return@setOnClickListener
-            }
-            val bleSanInfo = deviceMap?.get(DeviceType.HeartRate) ?: return@setOnClickListener
-            MeasureTargetHeartRateDialogFragment.newInstance(healthInfo.age, bleSanInfo.name, bleSanInfo.address).apply {
-                onSelected = { minTargetHeartRate: Int, maxTargetHeartRate: Int ->
-                    healthInfo.minTargetHeartRate = minTargetHeartRate
-                    healthInfo.maxTargetHeartRate = maxTargetHeartRate
-                    mBinding.tvTargetHeartRate.text = "$minTargetHeartRate~$maxTargetHeartRate"
-                }
-            }.show(this)
+            mViewModel.measureTargetHeart(this)
         }
         mBinding.llBloodPressureBefore.setOnClickListener {
-            val bleSanInfo = deviceMap?.get(DeviceType.BloodPressure) ?: return@setOnClickListener
-            MeasureBloodPressureDialogFragment.newInstance(bleSanInfo.name, bleSanInfo.address).apply {
-                onSelected = {
-                    healthInfo.bloodPressureBefore = it
-                    mBinding.tvBloodPressureBefore.text = it.toString()
-                }
-            }.show(this)
+            mViewModel.measureBloodPressureBefore(this)
         }
         mBinding.llBloodPressureAfter.setOnClickListener {
-            val bleSanInfo = deviceMap?.get(DeviceType.BloodPressure) ?: return@setOnClickListener
-            MeasureBloodPressureDialogFragment.newInstance(bleSanInfo.name, bleSanInfo.address).apply {
-                onSelected = {
-                    healthInfo.bloodPressureAfter = it
-                    mBinding.tvBloodPressureAfter.text = it.toString()
-                }
-            }.show(this)
+            mViewModel.measureBloodPressureAfter(this)
         }
         mBinding.btnTrain.setOnClickListener {
-            println(scene)
-            val deviceMap = this.deviceMap
-            if (deviceMap.isNullOrEmpty()) {
-                showToast("请先选择设备")
-                return@setOnClickListener
+            if (mViewModel.train()) {
+                mBinding.btnTrain.gone()
+                mBinding.btnReport.visible()
             }
-            if (scene == null) {
-                showToast("请选择游戏场景")
-                return@setOnClickListener
-            }
-            if (healthInfo.weight == 0) {
-                showToast("请填写基本信息中的体重")
-                return@setOnClickListener
-            }
-            mViewModel.uiState.value.gameManagerService?.start(medicalOrderId, deviceMap, scene!!) {
-                reports = it
-            }
-            mBinding.btnTrain.gone()
-            mBinding.btnReport.visible()
         }
         mBinding.btnReport.setOnClickListener {
-            val deviceMap = this.deviceMap
-            if (deviceMap.isNullOrEmpty()) {
-                showToast("请先选择设备进行训练")
-                return@setOnClickListener
-            }
-            val shangXiaZhiReport = reports?.firstOrNull {
-                it is ShangXiaZhiReport
-            } as? ShangXiaZhiReport
-            if (shangXiaZhiReport == null) {
-                showToast("获取报告失败")
-                return@setOnClickListener
-            }
-            healthInfo.met =
-                ((shangXiaZhiReport.activeCal + shangXiaZhiReport.passiveCal) / (shangXiaZhiReport.activeDuration + shangXiaZhiReport.passiveDuration) / healthInfo.weight / 0.0167f).toInt()
-            mViewModel.saveHealthInfo(healthInfo)
-            ReportActivity.start(reports, healthInfo)
+            mViewModel.report()
         }
         collectUiState()
     }
 
     private fun collectUiState() {
         mViewModel.uiState.propertyCollector(this) {
+            collectNotHandledEventProperty(TrainUiState::toastEvent) {
+                showToast(it)
+            }
             collectDistinctProperty(TrainUiState::gameManagerService) {
                 it ?: return@collectDistinctProperty
                 it.initBle(this@TrainActivity)
+            }
+            collectDistinctProperty(TrainUiState::existBloodPressure) {
+                if (it) {
+                    mBinding.llBloodPressureBefore.visible()
+                    mBinding.llBloodPressureAfter.visible()
+                } else {
+                    mBinding.llBloodPressureBefore.gone()
+                    mBinding.llBloodPressureAfter.gone()
+                }
+            }
+            collectDistinctProperty(TrainUiState::existHeartRate) {
+                if (it) {
+                    mBinding.llTargetHeartRate.visible()
+                } else {
+                    mBinding.llTargetHeartRate.gone()
+                }
+            }
+            collectDistinctProperty(TrainUiState::deviceMap) {
+                val sb = StringBuilder()
+                it?.forEach {
+                    val deviceType = it.key
+                    val deviceName = it.value.name
+                    if (sb.isNotEmpty()) {
+                        sb.append("\n")
+                    }
+                    sb.append(deviceType.des).append(":").append(deviceName)
+                }
+                mBinding.tvDevice.text = sb.toString()
+            }
+            collectDistinctProperty(TrainUiState::healthInfo) {
+                val sb = StringBuilder()
+                if (it != null && it.age > 0) {
+                    sb.append("年龄:").append(it.age)
+                }
+                if (it != null && it.weight > 0) {
+                    if (sb.isNotEmpty()) {
+                        sb.append(", ")
+                    }
+                    sb.append("体重:").append(it.weight)
+                }
+                mBinding.tvPersonInfo.text = sb.toString()
+                mBinding.tvTargetHeartRate.text = "${it?.minTargetHeartRate ?: ""}~${it?.maxTargetHeartRate ?: ""}"
+                mBinding.tvBloodPressureBefore.text = it?.bloodPressureBefore?.toString() ?: ""
+                mBinding.tvBloodPressureAfter.text = it?.bloodPressureAfter?.toString() ?: ""
+            }
+            collectDistinctProperty(TrainUiState::scene) {
+                mBinding.tvScene.text = it?.des ?: ""
             }
         }
     }

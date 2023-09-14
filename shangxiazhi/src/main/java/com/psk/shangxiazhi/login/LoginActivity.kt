@@ -50,7 +50,7 @@ class LoginActivity : AppCompatActivity() {
                     finish()
                 }
             }
-            collectEventProperty(LoginUiState::toastEvent) {
+            collectNotHandledEventProperty(LoginUiState::toastEvent) {
                 showToast(it)
             }
         }
