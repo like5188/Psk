@@ -61,7 +61,7 @@ data class ShangXiaZhi(
  * 初始化上下肢时需要的参数，设置好后，如果是被动模式，上下肢会自动运行
  *
  * @param passiveModule     被动模式
- * @param time              时间 5-30 min// 被动模式
+ * @param time              时间 1-30 min// 被动模式
  * @param speedLevel        速度等级 1-12// 被动模式
  * @param spasmLevel        痉挛等级 1-12// 被动模式
  * @param resistance        阻力 1-12// 主动模式
