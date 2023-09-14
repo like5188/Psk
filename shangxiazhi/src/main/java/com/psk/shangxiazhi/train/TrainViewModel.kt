@@ -156,6 +156,15 @@ class TrainViewModel(deviceManager: DeviceManager) : ViewModel(), KoinComponent 
     }
 
     fun measureBloodPressureAfter(activity: FragmentActivity) {
+        val reports = _uiState.value.reports
+        if (reports.isNullOrEmpty()) {
+            _uiState.update {
+                it.copy(
+                    toastEvent = Event(ToastEvent(text = "请先进行训练"))
+                )
+            }
+            return
+        }
         val deviceMap = _uiState.value.deviceMap
         val bleSanInfo = deviceMap?.get(DeviceType.BloodPressure) ?: return
         MeasureBloodPressureDialogFragment.newInstance(bleSanInfo.name, bleSanInfo.address).apply {
