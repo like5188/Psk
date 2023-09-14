@@ -74,8 +74,6 @@ class TrainActivity : AppCompatActivity() {
                 mBinding.llBloodPressureBefore.gone()
                 mBinding.llBloodPressureAfter.gone()
                 mBinding.llTargetHeartRate.gone()
-                mBinding.btnTrain.gone()
-                mBinding.btnReport.gone()
                 if (it.isNullOrEmpty()) {
                     return@collectDistinctProperty
                 }
@@ -88,7 +86,6 @@ class TrainActivity : AppCompatActivity() {
                 if (it.containsKey(DeviceType.HeartRate)) {
                     mBinding.llTargetHeartRate.visible()
                 }
-                mBinding.btnTrain.visible()
                 val sb = StringBuilder()
                 it.forEach {
                     val deviceType = it.key
@@ -123,12 +120,6 @@ class TrainActivity : AppCompatActivity() {
             }
             collectDistinctProperty(TrainUiState::scene) {
                 mBinding.tvScene.text = it?.des ?: ""
-            }
-            collectDistinctProperty(TrainUiState::reports) {
-                if (!it.isNullOrEmpty()) {
-                    mBinding.btnTrain.gone()
-                    mBinding.btnReport.visible()
-                }
             }
         }
     }
