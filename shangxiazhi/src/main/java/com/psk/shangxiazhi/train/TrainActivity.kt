@@ -12,7 +12,6 @@ import com.psk.ble.DeviceType
 import com.psk.common.CommonApplication
 import com.psk.common.util.showToast
 import com.psk.device.data.model.HealthInfo
-import com.psk.device.data.model.ShangXiaZhiParams
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.data.model.BleScanInfo
 import com.psk.shangxiazhi.data.model.IReport
@@ -39,7 +38,6 @@ class TrainActivity : AppCompatActivity() {
     private val mViewModel: TrainViewModel by viewModel()
     private var deviceMap: Map<DeviceType, BleScanInfo>? = null
     private var scene: TrainScene? = null
-    private var shangXiaZhiParams: ShangXiaZhiParams? = null
     private var reports: List<IReport>? = null
     private val medicalOrderId = System.currentTimeMillis()
     private val healthInfo = HealthInfo(medicalOrderId = medicalOrderId)
@@ -96,14 +94,6 @@ class TrainActivity : AppCompatActivity() {
                 scene = it.data?.getSerializableExtra(SceneActivity.KEY_SCENE) as? TrainScene
                 mBinding.tvScene.text = scene?.des ?: ""
             }
-        }
-        mBinding.llSetShangXiaZhiParams.setOnClickListener {
-            SetShangXiaZhiPramsDialogFragment.newInstance().apply {
-                onSelected = {
-                    shangXiaZhiParams = it
-                    mBinding.tvSetShangXiaZhiParams.text = it.toString()
-                }
-            }.show(this)
         }
         mBinding.llPersonInfo.setOnClickListener {
             PersonInfoDialogFragment.newInstance().apply {
@@ -171,7 +161,7 @@ class TrainActivity : AppCompatActivity() {
                 showToast("请填写基本信息中的体重")
                 return@setOnClickListener
             }
-            mViewModel.uiState.value.gameManagerService?.start(medicalOrderId, deviceMap, scene!!, shangXiaZhiParams) {
+            mViewModel.uiState.value.gameManagerService?.start(medicalOrderId, deviceMap, scene!!) {
                 reports = it
             }
             mBinding.btnTrain.gone()

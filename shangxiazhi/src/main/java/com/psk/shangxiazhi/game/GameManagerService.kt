@@ -11,7 +11,6 @@ import com.psk.ble.BleManager
 import com.psk.ble.DeviceType
 import com.psk.ble.Tip
 import com.psk.device.DeviceManager
-import com.psk.device.data.model.ShangXiaZhiParams
 import com.psk.shangxiazhi.data.model.BleScanInfo
 import com.psk.shangxiazhi.data.model.IReport
 import com.psk.shangxiazhi.game.business.MultiBusinessManager
@@ -59,7 +58,6 @@ class GameManagerService : Service() {
         medicalOrderId: Long,
         devices: Map<DeviceType, BleScanInfo>,
         scene: TrainScene,
-        params: ShangXiaZhiParams?,
         onReport: ((List<IReport>) -> Unit)? = null
     ) {
         if (!devices.containsKey(DeviceType.ShangXiaZhi)) {
@@ -77,7 +75,6 @@ class GameManagerService : Service() {
             ).apply {
                 multiBusinessManager.add(deviceType, this)
                 if (this is ShangXiaZhiBusinessManager) {
-                    this.shangXiaZhiParams = params
                     this.onStartGame = {
                         multiBusinessManager.onStartGame()
                     }
