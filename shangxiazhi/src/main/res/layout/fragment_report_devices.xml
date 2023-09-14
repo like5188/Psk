@@ -265,7 +265,7 @@
             tools:text="111" />
 
         <com.psk.shangxiazhi.util.CurveView
-            android:id="@+id/curveView"
+            android:id="@+id/curveViewHeartRate"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginTop="10dp"

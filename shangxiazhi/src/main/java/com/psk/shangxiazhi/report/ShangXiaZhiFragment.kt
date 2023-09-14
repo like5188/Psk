@@ -65,18 +65,21 @@ class ShangXiaZhiFragment : BaseLazyFragment() {
             mBinding.tvPowerAvg.text = powerArv.toString()
             mBinding.tvPowerMin.text = powerMin.toString()
             mBinding.tvPowerMax.text = powerMax.toString()
+            mBinding.curveViewPower.initChartData(speedList, "功率")
 
             mBinding.tvSpeedAvg.text = speedArv.toString()
             mBinding.tvSpeedMin.text = speedMin.toString()
             mBinding.tvSpeedMax.text = speedMax.toString()
-            mBinding.curveView.initChartData(speedList, "转速")
+            mBinding.curveViewSpeed.initChartData(speedList, "转速")
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        mBinding.curveView.destroyDrawingCache()
-        mBinding.curveView.removeAllViews()
+        mBinding.curveViewPower.destroyDrawingCache()
+        mBinding.curveViewPower.removeAllViews()
+        mBinding.curveViewSpeed.destroyDrawingCache()
+        mBinding.curveViewSpeed.removeAllViews()
     }
 
 }

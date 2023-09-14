@@ -47,7 +47,7 @@ class OtherDevicesFragment : BaseLazyFragment() {
                     mBinding.tvHeartRateAvg.text = it.arv.toString()
                     mBinding.tvHeartRateMin.text = it.min.toString()
                     mBinding.tvHeartRateMax.text = it.max.toString()
-                    mBinding.curveView.initChartData(it.list, "心率")
+                    mBinding.curveViewHeartRate.initChartData(it.list, "心率")
                 }
 
                 is BloodOxygenReport -> {
@@ -64,8 +64,8 @@ class OtherDevicesFragment : BaseLazyFragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        mBinding.curveView.destroyDrawingCache()
-        mBinding.curveView.removeAllViews()
+        mBinding.curveViewHeartRate.destroyDrawingCache()
+        mBinding.curveViewHeartRate.removeAllViews()
     }
 
 }
