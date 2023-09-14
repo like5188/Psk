@@ -38,7 +38,7 @@
 
         <LinearLayout
             android:id="@+id/llVersion"
-            android:layout_width="450dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="@drawable/setting_bg_choose"
             android:gravity="center_vertical"
