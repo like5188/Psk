@@ -78,7 +78,7 @@ class TrainViewModel(deviceManager: DeviceManager) : ViewModel(), KoinComponent 
                 _uiState.update {
                     it.copy(
                         deviceMap = deviceMap,
-                        healthInfo = HealthInfo(medicalOrderId = System.currentTimeMillis()),
+                        healthInfo = HealthInfo(),
                         scene = null,
                         reports = null
                     )
@@ -200,7 +200,15 @@ class TrainViewModel(deviceManager: DeviceManager) : ViewModel(), KoinComponent 
             }
             return
         }
-        _uiState.value.gameManagerService?.start(healthInfo.medicalOrderId, deviceMap, scene) { reports ->
+        val medicalOrderId = System.currentTimeMillis()
+        _uiState.update {
+            it.copy(
+                healthInfo = it.healthInfo?.copy(
+                    medicalOrderId = medicalOrderId
+                ),
+            )
+        }
+        _uiState.value.gameManagerService?.start(medicalOrderId, deviceMap, scene) { reports ->
             _uiState.update {
                 it.copy(
                     reports = reports

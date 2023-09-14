@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
 @Entity
 data class HealthInfo(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val medicalOrderId: Long,
+    val medicalOrderId: Long = 0,
     val age: Int = 0,// 年龄
     val weight: Int = 0,// 体重（kg）
     val met: Int = 0,// met值
