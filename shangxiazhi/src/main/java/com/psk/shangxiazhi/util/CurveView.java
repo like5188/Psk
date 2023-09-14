@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import android.view.View;
 import android.widget.RelativeLayout;
 
 import androidx.core.content.ContextCompat;
@@ -53,9 +52,10 @@ public class CurveView extends RelativeLayout {
     }
 
     private void initView() {
-
-        View view = View.inflate(getContext(), R.layout.item_curve_view, this);
-        mChart = view.findViewById(R.id.line_chart);
+        mChart = new LineChart(getContext());
+        mChart.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.white));
+        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        addView(mChart, lp);
     }
 
     public void initChartData(List<Integer> list, int type) {
