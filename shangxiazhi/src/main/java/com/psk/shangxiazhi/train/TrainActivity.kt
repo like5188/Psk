@@ -167,10 +167,6 @@ class TrainActivity : AppCompatActivity() {
                 showToast("请选择游戏场景")
                 return@setOnClickListener
             }
-            if (shangXiaZhiParams == null) {
-                showToast("请设置上下肢参数")
-                return@setOnClickListener
-            }
             if (healthInfo.weight == 0) {
                 showToast("请填写基本信息中的体重")
                 return@setOnClickListener
