@@ -17,7 +17,6 @@ import com.psk.ble.DeviceType
 import com.psk.common.util.ToastEvent
 import com.psk.device.DeviceManager
 import com.psk.device.data.model.HealthInfo
-import com.psk.shangxiazhi.data.model.IReport
 import com.psk.shangxiazhi.data.model.ShangXiaZhiReport
 import com.psk.shangxiazhi.game.GameManagerService
 import com.psk.shangxiazhi.report.ReportActivity
@@ -35,8 +34,6 @@ class TrainViewModel(deviceManager: DeviceManager) : ViewModel(), KoinComponent 
     private val _uiState = MutableStateFlow(TrainUiState())
     val uiState = _uiState.asStateFlow()
     private val healthInfoRepository = deviceManager.healthInfoRepository
-    private val medicalOrderId = System.currentTimeMillis()
-    private var reports: List<IReport>? = null
 
     //创建一个ServiceConnection回调，通过IBinder进行交互
     private val localConnection = object : ServiceConnection {
@@ -68,12 +65,6 @@ class TrainViewModel(deviceManager: DeviceManager) : ViewModel(), KoinComponent 
         }
     }
 
-    fun saveHealthInfo(data: HealthInfo) {
-        viewModelScope.launch {
-            healthInfoRepository.save(data)
-        }
-    }
-
     fun selectDevices(activity: FragmentActivity) {
         SelectDeviceDialogFragment.newInstance(
             arrayOf(
@@ -87,9 +78,9 @@ class TrainViewModel(deviceManager: DeviceManager) : ViewModel(), KoinComponent 
                 _uiState.update {
                     it.copy(
                         deviceMap = deviceMap,
-                        existBloodPressure = deviceMap.containsKey(DeviceType.BloodPressure),
-                        existHeartRate = deviceMap.containsKey(DeviceType.HeartRate),
-                        healthInfo = HealthInfo(medicalOrderId = medicalOrderId)
+                        healthInfo = HealthInfo(medicalOrderId = System.currentTimeMillis()),
+                        scene = null,
+                        reports = null
                     )
                 }
             }
@@ -180,7 +171,7 @@ class TrainViewModel(deviceManager: DeviceManager) : ViewModel(), KoinComponent 
         }.show(activity)
     }
 
-    fun train(): Boolean {
+    fun train() {
         val deviceMap = _uiState.value.deviceMap
         if (deviceMap.isNullOrEmpty()) {
             _uiState.update {
@@ -188,7 +179,7 @@ class TrainViewModel(deviceManager: DeviceManager) : ViewModel(), KoinComponent 
                     toastEvent = Event(ToastEvent(text = "请先选择设备"))
                 )
             }
-            return false
+            return
         }
         val scene = _uiState.value.scene
         if (scene == null) {
@@ -197,21 +188,26 @@ class TrainViewModel(deviceManager: DeviceManager) : ViewModel(), KoinComponent 
                     toastEvent = Event(ToastEvent(text = "请选择游戏场景"))
                 )
             }
-            return false
+            return
         }
-        val weight = _uiState.value.healthInfo?.weight
+        val healthInfo = _uiState.value.healthInfo
+        val weight = healthInfo?.weight
         if (weight == null || weight == 0) {
             _uiState.update {
                 it.copy(
                     toastEvent = Event(ToastEvent(text = "请填写基本信息中的体重"))
                 )
             }
-            return false
+            return
         }
-        _uiState.value.gameManagerService?.start(medicalOrderId, deviceMap, scene) {
-            reports = it
+        _uiState.value.gameManagerService?.start(healthInfo.medicalOrderId, deviceMap, scene) { reports ->
+            _uiState.update {
+                it.copy(
+                    reports = reports
+                )
+            }
         }
-        return true
+        return
     }
 
     fun report() {
@@ -224,6 +220,7 @@ class TrainViewModel(deviceManager: DeviceManager) : ViewModel(), KoinComponent 
             }
             return
         }
+        val reports = _uiState.value.reports
         val shangXiaZhiReport = reports?.firstOrNull {
             it is ShangXiaZhiReport
         } as? ShangXiaZhiReport
@@ -259,7 +256,9 @@ class TrainViewModel(deviceManager: DeviceManager) : ViewModel(), KoinComponent 
                 healthInfo = newHealthInfo,
             )
         }
-        saveHealthInfo(newHealthInfo)
+        viewModelScope.launch {
+            healthInfoRepository.save(newHealthInfo)
+        }
         ReportActivity.start(reports, newHealthInfo)
     }
 

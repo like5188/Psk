@@ -7,6 +7,7 @@ import com.like.common.util.gone
 import com.like.common.util.mvi.propertyCollector
 import com.like.common.util.startActivity
 import com.like.common.util.visible
+import com.psk.ble.DeviceType
 import com.psk.common.CommonApplication
 import com.psk.common.util.showToast
 import com.psk.shangxiazhi.R
@@ -50,10 +51,7 @@ class TrainActivity : AppCompatActivity() {
             mViewModel.measureBloodPressureAfter(this)
         }
         mBinding.btnTrain.setOnClickListener {
-            if (mViewModel.train()) {
-                mBinding.btnTrain.gone()
-                mBinding.btnReport.visible()
-            }
+            mViewModel.train()
         }
         mBinding.btnReport.setOnClickListener {
             mViewModel.report()
@@ -70,25 +68,29 @@ class TrainActivity : AppCompatActivity() {
                 it ?: return@collectDistinctProperty
                 it.initBle(this@TrainActivity)
             }
-            collectDistinctProperty(TrainUiState::existBloodPressure) {
-                if (it) {
+            collectDistinctProperty(TrainUiState::deviceMap) {
+                mBinding.llScene.gone()
+                mBinding.llPersonInfo.gone()
+                mBinding.llBloodPressureBefore.gone()
+                mBinding.llBloodPressureAfter.gone()
+                mBinding.llTargetHeartRate.gone()
+                mBinding.btnTrain.gone()
+                mBinding.btnReport.gone()
+                if (it.isNullOrEmpty()) {
+                    return@collectDistinctProperty
+                }
+                mBinding.llScene.visible()
+                mBinding.llPersonInfo.visible()
+                if (it.containsKey(DeviceType.BloodPressure)) {
                     mBinding.llBloodPressureBefore.visible()
                     mBinding.llBloodPressureAfter.visible()
-                } else {
-                    mBinding.llBloodPressureBefore.gone()
-                    mBinding.llBloodPressureAfter.gone()
                 }
-            }
-            collectDistinctProperty(TrainUiState::existHeartRate) {
-                if (it) {
+                if (it.containsKey(DeviceType.HeartRate)) {
                     mBinding.llTargetHeartRate.visible()
-                } else {
-                    mBinding.llTargetHeartRate.gone()
                 }
-            }
-            collectDistinctProperty(TrainUiState::deviceMap) {
+                mBinding.btnTrain.visible()
                 val sb = StringBuilder()
-                it?.forEach {
+                it.forEach {
                     val deviceType = it.key
                     val deviceName = it.value.name
                     if (sb.isNotEmpty()) {
@@ -99,23 +101,34 @@ class TrainActivity : AppCompatActivity() {
                 mBinding.tvDevice.text = sb.toString()
             }
             collectDistinctProperty(TrainUiState::healthInfo) {
+                it ?: return@collectDistinctProperty
                 val sb = StringBuilder()
-                if (it != null && it.age > 0) {
+                if (it.age > 0) {
                     sb.append("年龄:").append(it.age)
                 }
-                if (it != null && it.weight > 0) {
+                if (it.weight > 0) {
                     if (sb.isNotEmpty()) {
                         sb.append(", ")
                     }
                     sb.append("体重:").append(it.weight)
                 }
                 mBinding.tvPersonInfo.text = sb.toString()
-                mBinding.tvTargetHeartRate.text = "${it?.minTargetHeartRate ?: ""}~${it?.maxTargetHeartRate ?: ""}"
-                mBinding.tvBloodPressureBefore.text = it?.bloodPressureBefore?.toString() ?: ""
-                mBinding.tvBloodPressureAfter.text = it?.bloodPressureAfter?.toString() ?: ""
+                mBinding.tvTargetHeartRate.text = if (it.minTargetHeartRate == 0 || it.maxTargetHeartRate == 0) {
+                    ""
+                } else {
+                    "${it.minTargetHeartRate}~${it.maxTargetHeartRate}"
+                }
+                mBinding.tvBloodPressureBefore.text = it.bloodPressureBefore?.toString() ?: ""
+                mBinding.tvBloodPressureAfter.text = it.bloodPressureAfter?.toString() ?: ""
             }
             collectDistinctProperty(TrainUiState::scene) {
                 mBinding.tvScene.text = it?.des ?: ""
+            }
+            collectDistinctProperty(TrainUiState::reports) {
+                if (!it.isNullOrEmpty()) {
+                    mBinding.btnTrain.gone()
+                    mBinding.btnReport.visible()
+                }
             }
         }
     }
