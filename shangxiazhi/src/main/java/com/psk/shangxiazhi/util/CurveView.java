@@ -58,7 +58,7 @@ public class CurveView extends RelativeLayout {
         addView(mChart, lp);
     }
 
-    public void initChartData(List<Integer> list, int type) {
+    public void initChartData(List<Integer> list, String yLabel) {
         if (list == null || list.isEmpty()) {
             return;
         }
@@ -176,11 +176,7 @@ public class CurveView extends RelativeLayout {
             entries.add(new Entry(i, entryList.get(i)));
         }
 
-        if (type == 1) {
-            setChartData(entries);
-        } else {
-            setHeartChartData(entries);
-        }
+        setChartData(entries, yLabel);
 
         //去除折线图上的小圆圈
         List<ILineDataSet> sets = mChart.getData().getDataSets();
@@ -196,7 +192,7 @@ public class CurveView extends RelativeLayout {
 
     }
 
-    private void setChartData(ArrayList<Entry> yVals1) {
+    private void setChartData(ArrayList<Entry> yVals1, String label) {
 
         mChart.invalidate();
         mChart.notifyDataSetChanged();
@@ -211,7 +207,7 @@ public class CurveView extends RelativeLayout {
             mChart.getData().notifyDataChanged();
             mChart.notifyDataSetChanged();
         } else {
-            set1 = new LineDataSet(yVals1, "转速");
+            set1 = new LineDataSet(yVals1, label);
             set1.setColor(Color.parseColor("#FF4081"));
             set1.setLineWidth(1f);
             //是否绘制阴影
@@ -226,37 +222,5 @@ public class CurveView extends RelativeLayout {
             mChart.setData(data);
         }
     }
-
-    private void setHeartChartData(ArrayList<Entry> yVals1) {
-
-        mChart.invalidate();
-        mChart.notifyDataSetChanged();
-        LineDataSet set1;
-
-        if (mChart.getData() != null && mChart.getData().getDataSetCount() > 0) {
-
-            set1 = (LineDataSet) mChart.getData().getDataSetByIndex(0);
-
-            set1.setValues(yVals1);
-
-            mChart.getData().notifyDataChanged();
-            mChart.notifyDataSetChanged();
-        } else {
-            set1 = new LineDataSet(yVals1, "心率");
-            set1.setColor(Color.parseColor("#FF4081"));
-            set1.setLineWidth(1f);
-            //是否绘制阴影
-            set1.setDrawFilled(true);
-            Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.fade_right);
-            set1.setFillDrawable(drawable);
-
-            LineData data = new LineData(set1);
-            data.setValueTextColor(Color.WHITE);
-            data.setValueTextSize(9f);
-
-            mChart.setData(data);
-        }
-    }
-
 
 }

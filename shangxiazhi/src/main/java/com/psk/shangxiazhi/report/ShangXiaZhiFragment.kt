@@ -69,7 +69,7 @@ class ShangXiaZhiFragment : BaseLazyFragment() {
             mBinding.tvSpeedAvg.text = speedArv.toString()
             mBinding.tvSpeedMin.text = speedMin.toString()
             mBinding.tvSpeedMax.text = speedMax.toString()
-            mBinding.curveView.initChartData(speedList, 1)
+            mBinding.curveView.initChartData(speedList, "转速")
         }
     }
 

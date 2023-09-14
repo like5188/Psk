@@ -47,7 +47,7 @@ class OtherDevicesFragment : BaseLazyFragment() {
                     mBinding.tvHeartRateAvg.text = it.arv.toString()
                     mBinding.tvHeartRateMin.text = it.min.toString()
                     mBinding.tvHeartRateMax.text = it.max.toString()
-                    mBinding.curveView.initChartData(it.list, 2)
+                    mBinding.curveView.initChartData(it.list, "心率")
                 }
 
                 is BloodOxygenReport -> {
