@@ -13,7 +13,7 @@ class HealthInfoRepository(
         return healthInfoDbDataSource.getByMedicalOrderId(medicalOrderId)?.firstOrNull()
     }
 
-    suspend fun save(data: HealthInfo) {
-        healthInfoDbDataSource.save(data)
+    suspend fun insertOrUpdate(data: HealthInfo) {
+        healthInfoDbDataSource.insertOrUpdate(data)
     }
 }

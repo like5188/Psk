@@ -274,7 +274,7 @@ class TrainViewModel(deviceManager: DeviceManager) : ViewModel(), KoinComponent 
             )
         }
         viewModelScope.launch {
-            healthInfoRepository.save(newHealthInfo)
+            healthInfoRepository.insertOrUpdate(newHealthInfo)
         }
         ReportActivity.start(reports, newHealthInfo)
     }

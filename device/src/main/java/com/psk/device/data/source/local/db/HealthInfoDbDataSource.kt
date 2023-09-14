@@ -11,8 +11,8 @@ class HealthInfoDbDataSource(
         return healthInfoDao.getByMedicalOrderId(medicalOrderId)
     }
 
-    suspend fun save(data: HealthInfo) {
-        healthInfoDao.insert(data)
+    suspend fun insertOrUpdate(data: HealthInfo) {
+        healthInfoDao.insertOrUpdate(data)
     }
 
 }
