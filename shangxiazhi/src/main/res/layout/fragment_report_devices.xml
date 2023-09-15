@@ -57,7 +57,7 @@
             android:id="@+id/tvTargetHeartRateTag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="50dp"
+            android:layout_marginStart="30dp"
             android:layout_marginTop="30dp"
             android:text="靶心率(次/分钟)"
             android:textColor="#686868"
@@ -81,12 +81,11 @@
             android:id="@+id/tvMetTag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="50dp"
             android:layout_marginTop="30dp"
             android:text="代谢当量(MET)"
             android:textColor="#686868"
             android:textSize="14sp"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="@id/tvTargetHeartRateTag"
             app:layout_constraintTop_toBottomOf="@id/tvTargetHeartRateTag" />
 
         <TextView
@@ -105,12 +104,11 @@
             android:id="@+id/tvBloodPressureTag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="50dp"
             android:layout_marginTop="30dp"
             android:text="血压(mmHg)"
             android:textColor="#686868"
             android:textSize="14sp"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="@id/tvTargetHeartRateTag"
             app:layout_constraintTop_toBottomOf="@id/tvMetTag" />
 
         <TextView
@@ -175,12 +173,11 @@
             android:id="@+id/tvBloodOxygenTag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="50dp"
             android:layout_marginTop="30dp"
             android:text="血氧(%)"
             android:textColor="#686868"
             android:textSize="14sp"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="@id/tvTargetHeartRateTag"
             app:layout_constraintTop_toBottomOf="@id/tvBloodPressureTag" />
 
         <TextView
@@ -199,12 +196,11 @@
             android:id="@+id/tvEcgTag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="50dp"
             android:layout_marginTop="30dp"
             android:text="心率(次/分钟)"
             android:textColor="#686868"
             android:textSize="14sp"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="@id/tvTargetHeartRateTag"
             app:layout_constraintTop_toBottomOf="@id/tvBloodOxygenTag" />
 
         <TextView
