@@ -6,7 +6,11 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/main_bg">
+        android:background="@drawable/main_bg"
+        android:paddingStart="48dp"
+        android:paddingTop="27dp"
+        android:paddingEnd="48dp"
+        android:paddingBottom="27dp">
 
         <ImageView
             android:id="@+id/ivAutonomyTraining"
@@ -59,8 +63,6 @@
             android:id="@+id/ivSetting"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:layout_marginEnd="30dp"
             android:src="@drawable/shape_main_setting_selector"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -69,8 +71,6 @@
             android:id="@+id/tvTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="30dp"
-            android:layout_marginTop="15dp"
             android:textColor="@color/white"
             android:textSize="17sp"
             app:layout_constraintStart_toStartOf="parent"

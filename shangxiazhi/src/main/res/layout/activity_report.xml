@@ -5,7 +5,11 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/main_bg2">
+        android:background="@drawable/main_bg2"
+        android:paddingStart="48dp"
+        android:paddingTop="27dp"
+        android:paddingEnd="48dp"
+        android:paddingBottom="27dp">
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guidelineLeft"
@@ -26,7 +30,6 @@
             android:layout_width="300dp"
             android:layout_height="40dp"
             android:layout_gravity="center"
-            android:layout_marginTop="20dp"
             android:background="@drawable/history_report_title_bg_normal"
             android:orientation="horizontal"
             android:padding="5dp"
@@ -66,7 +69,6 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginTop="15dp"
-            android:layout_marginBottom="15dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/guidelineRight"
             app:layout_constraintStart_toStartOf="@id/guidelineLeft"
