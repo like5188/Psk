@@ -5,7 +5,6 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/main_bg"
         android:paddingStart="48dp"
         android:paddingTop="27dp"
         android:paddingEnd="48dp"
