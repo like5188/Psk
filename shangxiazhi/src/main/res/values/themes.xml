@@ -11,10 +11,12 @@
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-        <item name="android:windowBackground">@color/black</item>
     </style>
 
     <style name="Theme.App.Splash" parent="Theme.App">
         <item name="android:windowBackground">@drawable/splash</item>
+    </style>
+
+    <style name="TextAppearance.App.Headline6" parent="TextAppearance.MaterialComponents.Headline4">
     </style>
 </resources>
