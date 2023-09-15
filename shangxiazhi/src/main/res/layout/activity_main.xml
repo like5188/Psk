@@ -3,6 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!--
+    TV 布局有一些独特的要求，因为 TV 标准不断发展演变，并且用户希望 TV 能够始终向观众呈现全屏画面。为此，TV 设备可能会裁剪应用布局的外边缘以确保填满整个显示屏。此行为通常称为“过扫描”。
+    必须始终对用户可见的屏幕元素应放置在过扫描安全区域内。应在布局的左右边缘添加 48dp 的外边距 (5%)，并在上下边缘添加 27dp 的外边距，这样可确保该布局中的屏幕元素位于过扫描安全区域内。
+    -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
