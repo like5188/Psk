@@ -210,12 +210,16 @@ class TrainViewModel(deviceManager: DeviceManager) : ViewModel(), KoinComponent 
             return
         }
         val medicalOrderId = System.currentTimeMillis()
+        val newHealthInfo = healthInfo.copy(
+            medicalOrderId = medicalOrderId
+        )
         _uiState.update {
             it.copy(
-                healthInfo = it.healthInfo?.copy(
-                    medicalOrderId = medicalOrderId
-                ),
+                healthInfo = newHealthInfo,
             )
+        }
+        viewModelScope.launch {
+            healthInfoRepository.insert(newHealthInfo)
         }
         _uiState.value.gameManagerService?.start(medicalOrderId, deviceMap, scene) { reports ->
             _uiState.update {
