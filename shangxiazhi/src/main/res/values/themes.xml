@@ -16,7 +16,4 @@
     <style name="Theme.App.Splash" parent="Theme.App">
         <item name="android:windowBackground">@drawable/splash</item>
     </style>
-
-    <style name="TextAppearance.App.Headline6" parent="TextAppearance.MaterialComponents.Headline4">
-    </style>
 </resources>
