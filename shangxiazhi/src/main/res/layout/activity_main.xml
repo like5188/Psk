@@ -16,7 +16,7 @@
         android:paddingEnd="48dp"
         android:paddingBottom="27dp">
 
-        <com.google.android.material.imageview.ShapeableImageView
+        <ImageView
             android:id="@+id/ivAutonomyTraining"
             android:layout_width="320dp"
             android:layout_height="320dp"
@@ -28,7 +28,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.imageview.ShapeableImageView
+        <ImageView
             android:id="@+id/ivTrainingRecords"
             android:layout_width="320dp"
             android:layout_height="320dp"
@@ -39,7 +39,7 @@
             app:layout_constraintStart_toEndOf="@id/ivAutonomyTraining"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.textview.MaterialTextView
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="50dp"
@@ -50,7 +50,7 @@
             app:layout_constraintBottom_toBottomOf="@id/ivAutonomyTraining"
             app:layout_constraintEnd_toEndOf="@id/ivAutonomyTraining" />
 
-        <com.google.android.material.textview.MaterialTextView
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="50dp"
@@ -61,7 +61,7 @@
             app:layout_constraintBottom_toBottomOf="@id/ivTrainingRecords"
             app:layout_constraintEnd_toEndOf="@id/ivTrainingRecords" />
 
-        <com.google.android.material.imageview.ShapeableImageView
+        <ImageView
             android:id="@+id/ivSetting"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -69,7 +69,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.textview.MaterialTextView
+        <TextView
             android:id="@+id/tvTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
