@@ -16,7 +16,7 @@
         android:paddingEnd="48dp"
         android:paddingBottom="27dp">
 
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/ivAutonomyTraining"
             android:layout_width="320dp"
             android:layout_height="320dp"
@@ -28,7 +28,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/ivTrainingRecords"
             android:layout_width="320dp"
             android:layout_height="320dp"
@@ -39,31 +39,29 @@
             app:layout_constraintStart_toEndOf="@id/ivAutonomyTraining"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="50dp"
             android:layout_marginBottom="60dp"
             android:text="自主训练"
-            android:textColor="@color/white"
             android:textSize="26sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@id/ivAutonomyTraining"
             app:layout_constraintEnd_toEndOf="@id/ivAutonomyTraining" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="50dp"
             android:layout_marginBottom="60dp"
             android:text="训练记录"
-            android:textColor="@color/white"
             android:textSize="26sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@id/ivTrainingRecords"
             app:layout_constraintEnd_toEndOf="@id/ivTrainingRecords" />
 
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/ivSetting"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -71,12 +69,11 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tvTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:textSize="17sp"
+            android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="2023-12-12 12:30:30" />
