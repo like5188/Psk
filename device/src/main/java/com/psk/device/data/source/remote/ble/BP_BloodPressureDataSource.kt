@@ -21,6 +21,7 @@ class BP_BloodPressureDataSource : BaseBloodPressureDataSource(DeviceType.BloodP
     override suspend fun fetch(medicalOrderId: Long): BloodPressure? {
         val data = bleManager.waitResult(device)
         return if (data != null && data.size >= 17) {
+            // 高8位左移8位+低8位。比如：高8位(0x01),低8位(0x78)。结果：0x01 shl 8 + 0x78 = 256 + 120 = 376
             val v0: Int = data[13].toInt() and 0xff shl 8
             val v1: Int = data[14].toInt() and 0xff
             val sbp: Int = v0 + v1

@@ -14,43 +14,14 @@ import java.util.Date
 class ExampleUnitTest {
     @Test
     fun addition_isCorrect() = runBlocking {
-        val curTime = System.currentTimeMillis()
-        val cal = Calendar.getInstance()
-        cal.time = Date(curTime)
-        println(
-            DateAndData(
-                year = cal.get(Calendar.YEAR),
-                month = cal.get(Calendar.MONTH) + 1,
-                day = cal.get(Calendar.DAY_OF_MONTH),
-                hour = cal.get(Calendar.HOUR),
-                minute = cal.get(Calendar.MINUTE),
-                second = cal.get(Calendar.SECOND),
-            )
-        )
-        val bloodOxygenList = listOf(
-            AAA(curTime + 5000, 100),
-            AAA(curTime + 3000, 100),
-            AAA(curTime + 114000, 101),
-        )
-        val bloodPressureList = listOf(
-            AAA(curTime + 7000, 100),
-            AAA(curTime + 1000, 100),
-            AAA(curTime + 112000, 101),
-            AAA(curTime + 113000, 101),
-        )
-        val heartRateList = listOf(
-            AAA(curTime + 8000, 100),
-            AAA(curTime + 111000, 101),
-        )
-        val shangXiaZhiList = listOf(
-            AAA(curTime + 2000, 100),
-            AAA(curTime + 4000, 100),
-            AAA(curTime + 6000, 100),
-            AAA(curTime + 115000, 101),
-            AAA(curTime + 110000, 101),
-        )
-        // {100=1, 101=110}
-        println(getDataTimeLines(bloodOxygenList, bloodPressureList, heartRateList, shangXiaZhiList))
+        val data = byteArrayOf(0x7F.toByte(), 0x7E.toByte())
+        val v0: Int = data[0].toInt() and 0xff shl 8
+        val v1: Int = data[1].toInt() and 0xff
+        val sbp: Int = v0 + v1
+        val a = 0xFF
+        println(a)
+        println(a.toUByte())
+        println("v0=$v0 v1=$v1 sbp=$sbp")
     }
 
     data class AAA(
