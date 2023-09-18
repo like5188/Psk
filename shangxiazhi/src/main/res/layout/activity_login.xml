@@ -15,14 +15,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.30" />
+            app:layout_constraintGuide_percent="0.33" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guidelineRight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.7" />
+            app:layout_constraintGuide_percent="0.67" />
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/bg"
@@ -37,7 +37,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <com.google.android.material.imageview.ShapeableImageView
+                <ImageView
                     android:id="@+id/ivTitle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -51,7 +51,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <com.google.android.material.textview.MaterialTextView
+                <TextView
                     android:id="@+id/tvSerialNumberTag"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -60,7 +60,7 @@
                     app:layout_constraintBaseline_toBaselineOf="@id/tvSerialNumber"
                     app:layout_constraintStart_toStartOf="parent" />
 
-                <com.google.android.material.textview.MaterialTextView
+                <TextView
                     android:id="@+id/tvSerialNumber"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -71,7 +71,7 @@
                     app:layout_constraintStart_toEndOf="@id/tvSerialNumberTag"
                     app:layout_constraintTop_toBottomOf="@id/ivTitle" />
 
-                <com.google.android.material.textview.MaterialTextView
+                <TextView
                     android:id="@+id/tvCodeTag"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -81,7 +81,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@id/etCode" />
 
-                <com.google.android.material.textfield.TextInputEditText
+                <EditText
                     android:id="@+id/etCode"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
