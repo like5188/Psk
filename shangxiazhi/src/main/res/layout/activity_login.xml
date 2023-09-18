@@ -24,91 +24,88 @@
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.65" />
 
-        <View
+        <com.google.android.material.card.MaterialCardView
             android:id="@+id/bg"
             android:layout_width="0dp"
-            android:layout_height="310dp"
-            android:background="@drawable/shape_corners_grey_login"
+            android:layout_height="300dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/guidelineRight"
             app:layout_constraintStart_toStartOf="@id/guidelineLeft"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/ivTitle"
-            android:layout_width="0dp"
-            android:layout_height="36dp"
-            android:layout_gravity="center"
-            android:layout_marginStart="30dp"
-            android:layout_marginTop="30dp"
-            android:layout_marginEnd="30dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/login_title"
-            app:layout_constraintEnd_toEndOf="@id/bg"
-            app:layout_constraintStart_toStartOf="@id/bg"
-            app:layout_constraintTop_toTopOf="@id/bg" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/tvSerialNumberTag"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:text="序列号："
-            app:layout_constraintBottom_toBottomOf="@id/tvSerialNumber"
-            app:layout_constraintStart_toStartOf="@id/bg"
-            app:layout_constraintTop_toTopOf="@id/tvSerialNumber" />
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/ivTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="50dp"
+                    android:layout_marginEnd="30dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/login_title"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/tvSerialNumber"
-            android:layout_width="0dp"
-            android:layout_height="45dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginEnd="15dp"
-            android:background="@drawable/shape_rectangle_border_selector"
-            android:gravity="center_vertical"
-            android:paddingStart="10dp"
-            app:layout_constraintEnd_toEndOf="@id/bg"
-            app:layout_constraintStart_toEndOf="@id/tvSerialNumberTag"
-            app:layout_constraintTop_toBottomOf="@id/ivTitle" />
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tvSerialNumberTag"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:text="序列号："
+                    app:layout_constraintBaseline_toBaselineOf="@id/tvSerialNumber"
+                    app:layout_constraintStart_toStartOf="parent" />
 
-        <TextView
-            android:id="@+id/tvCodeTag"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:text="激活码："
-            app:layout_constraintBottom_toBottomOf="@id/etCode"
-            app:layout_constraintStart_toStartOf="@id/bg"
-            app:layout_constraintTop_toTopOf="@id/etCode" />
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tvSerialNumber"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginEnd="15dp"
+                    android:gravity="center_vertical"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/tvSerialNumberTag"
+                    app:layout_constraintTop_toBottomOf="@id/ivTitle" />
 
-        <EditText
-            android:id="@+id/etCode"
-            android:layout_width="0dp"
-            android:layout_height="45dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginEnd="15dp"
-            android:background="@drawable/shape_rectangle_border_selector"
-            android:paddingStart="10dp"
-            app:layout_constraintEnd_toEndOf="@id/bg"
-            app:layout_constraintStart_toEndOf="@id/tvCodeTag"
-            app:layout_constraintTop_toBottomOf="@id/tvSerialNumber" />
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tvCodeTag"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:text="激活码："
+                    app:layout_constraintBottom_toBottomOf="@id/etCode"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/etCode" />
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnLogin"
-            android:layout_width="0dp"
-            android:layout_height="45dp"
-            android:layout_marginStart="15dp"
-            android:layout_marginTop="30dp"
-            android:layout_marginEnd="15dp"
-            android:background="@drawable/shape_rectangle_login_selector"
-            android:gravity="center"
-            android:text="激活"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="@id/bg"
-            app:layout_constraintStart_toStartOf="@id/bg"
-            app:layout_constraintTop_toBottomOf="@id/etCode" />
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etCode"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginEnd="15dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/tvCodeTag"
+                    app:layout_constraintTop_toBottomOf="@id/tvSerialNumber" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnLogin"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginEnd="15dp"
+                    android:text="激活"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/etCode" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        </com.google.android.material.card.MaterialCardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
