@@ -19,28 +19,23 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintWidth_percent="0.5">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/tvTitle"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="?actionBarSize"
                     android:gravity="center"
                     android:text="准备训练"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/deviceCardView"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tvTitle">
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -72,12 +67,9 @@
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/sceneCardView"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="1dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/deviceCardView">
+                    android:layout_marginTop="1dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -109,12 +101,9 @@
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/personInfoCardView"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="1dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/sceneCardView">
+                    android:layout_marginTop="1dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -146,12 +135,9 @@
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/targetHeartRateCardView"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="1dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/personInfoCardView">
+                    android:layout_marginTop="1dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -183,12 +169,9 @@
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/bloodPressureBeforeCardView"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="1dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/targetHeartRateCardView">
+                    android:layout_marginTop="1dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -220,12 +203,9 @@
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/bloodPressureAfterCardView"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="1dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/bloodPressureBeforeCardView">
+                    android:layout_marginTop="1dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -257,28 +237,21 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnTrain"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="50dp"
                     android:layout_marginTop="30dp"
                     android:layout_marginEnd="50dp"
-                    android:text="开始训练"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/bloodPressureAfterCardView" />
+                    android:text="开始训练" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnReport"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="50dp"
                     android:layout_marginEnd="50dp"
-                    android:text="查看本次训练报告"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/btnTrain"
-                    app:layout_goneMarginTop="30dp" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                    android:text="查看本次训练报告" />
+            </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
