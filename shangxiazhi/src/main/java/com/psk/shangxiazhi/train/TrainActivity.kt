@@ -32,22 +32,22 @@ class TrainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mViewModel.bindGameManagerService(this)
-        mBinding.llDevice.setOnClickListener {
+        mBinding.deviceCardView.setOnClickListener {
             mViewModel.selectDevices(this)
         }
-        mBinding.llScene.setOnClickListener {
+        mBinding.sceneCardView.setOnClickListener {
             mViewModel.selectTrainScene(this)
         }
-        mBinding.llPersonInfo.setOnClickListener {
+        mBinding.personInfoCardView.setOnClickListener {
             mViewModel.setPersonInfo(this)
         }
-        mBinding.llTargetHeartRate.setOnClickListener {
+        mBinding.targetHeartRateCardView.setOnClickListener {
             mViewModel.measureTargetHeart(this)
         }
-        mBinding.llBloodPressureBefore.setOnClickListener {
+        mBinding.bloodPressureBeforeCardView.setOnClickListener {
             mViewModel.measureBloodPressureBefore(this)
         }
-        mBinding.llBloodPressureAfter.setOnClickListener {
+        mBinding.bloodPressureAfterCardView.setOnClickListener {
             mViewModel.measureBloodPressureAfter(this)
         }
         mBinding.btnTrain.setOnClickListener {
@@ -69,22 +69,22 @@ class TrainActivity : AppCompatActivity() {
                 it.initBle(this@TrainActivity)
             }
             collectDistinctProperty(TrainUiState::deviceMap) {
-                mBinding.llScene.gone()
-                mBinding.llPersonInfo.gone()
-                mBinding.llBloodPressureBefore.gone()
-                mBinding.llBloodPressureAfter.gone()
-                mBinding.llTargetHeartRate.gone()
+                mBinding.sceneCardView.gone()
+                mBinding.personInfoCardView.gone()
+                mBinding.bloodPressureBeforeCardView.gone()
+                mBinding.bloodPressureAfterCardView.gone()
+                mBinding.targetHeartRateCardView.gone()
                 if (it.isNullOrEmpty()) {
                     return@collectDistinctProperty
                 }
-                mBinding.llScene.visible()
-                mBinding.llPersonInfo.visible()
+                mBinding.sceneCardView.visible()
+                mBinding.personInfoCardView.visible()
                 if (it.containsKey(DeviceType.BloodPressure)) {
-                    mBinding.llBloodPressureBefore.visible()
-                    mBinding.llBloodPressureAfter.visible()
+                    mBinding.bloodPressureBeforeCardView.visible()
+                    mBinding.bloodPressureAfterCardView.visible()
                 }
                 if (it.containsKey(DeviceType.HeartRate)) {
-                    mBinding.llTargetHeartRate.visible()
+                    mBinding.targetHeartRateCardView.visible()
                 }
                 val sb = StringBuilder()
                 it.forEach {
