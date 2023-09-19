@@ -10,27 +10,15 @@
         android:paddingEnd="48dp"
         android:paddingBottom="27dp">
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guidelineLeft"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.33" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guidelineRight"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.67" />
-
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/bg"
             android:layout_width="0dp"
-            android:layout_height="300dp"
+            android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@id/guidelineRight"
-            app:layout_constraintStart_toStartOf="@id/guidelineLeft"
+            app:layout_constraintDimensionRatio="w,1:1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent="0.5"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -64,7 +52,7 @@
                     android:id="@+id/tvSerialNumber"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="30dp"
+                    android:layout_marginTop="50dp"
                     android:layout_marginEnd="15dp"
                     android:gravity="center_vertical"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -96,7 +84,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="15dp"
-                    android:layout_marginTop="30dp"
+                    android:layout_marginTop="50dp"
                     android:layout_marginEnd="15dp"
                     android:text="激活"
                     app:layout_constraintEnd_toEndOf="parent"
