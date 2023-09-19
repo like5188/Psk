@@ -23,12 +23,12 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="packed" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="丛林"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
             android:textColor="@color/white"
-            android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="@id/iv0"
             app:layout_constraintEnd_toEndOf="@id/iv0"
             app:layout_constraintStart_toStartOf="@id/iv0" />
@@ -44,12 +44,12 @@
             app:layout_constraintStart_toEndOf="@id/iv0"
             app:layout_constraintTop_toTopOf="@id/iv0" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="沙漠"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
             android:textColor="@color/white"
-            android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="@id/iv1"
             app:layout_constraintEnd_toEndOf="@id/iv1"
             app:layout_constraintStart_toStartOf="@id/iv1" />
@@ -66,12 +66,12 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/iv0" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="拉萨"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
             android:textColor="@color/white"
-            android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="@id/iv2"
             app:layout_constraintEnd_toEndOf="@id/iv2"
             app:layout_constraintStart_toStartOf="@id/iv2" />
@@ -87,12 +87,12 @@
             app:layout_constraintStart_toEndOf="@id/iv2"
             app:layout_constraintTop_toTopOf="@id/iv2" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="海洋"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
             android:textColor="@color/white"
-            android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="@id/iv3"
             app:layout_constraintEnd_toEndOf="@id/iv3"
             app:layout_constraintStart_toStartOf="@id/iv3" />
