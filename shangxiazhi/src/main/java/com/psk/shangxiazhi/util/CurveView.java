@@ -17,6 +17,7 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.google.android.material.color.MaterialColors;
 import com.psk.shangxiazhi.R;
 
 import java.util.ArrayList;
@@ -208,7 +209,7 @@ public class CurveView extends RelativeLayout {
             mChart.notifyDataSetChanged();
         } else {
             set1 = new LineDataSet(yVals1, label);
-            set1.setColor(Color.parseColor("#FF4081"));
+            set1.setColor(MaterialColors.getColor(this, R.attr.colorSecondary));
             set1.setLineWidth(1f);
             //是否绘制阴影
             set1.setDrawFilled(true);
