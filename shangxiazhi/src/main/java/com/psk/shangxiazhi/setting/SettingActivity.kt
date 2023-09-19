@@ -26,7 +26,7 @@ class SettingActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mBinding.tvVersion.text = packageManager.getPackageInfo(packageName, 0).versionName
-        mBinding.llVersion.setOnClickListener {
+        mBinding.versionCardView.setOnClickListener {
             showToast("当前已经是最新版本！")
         }
     }

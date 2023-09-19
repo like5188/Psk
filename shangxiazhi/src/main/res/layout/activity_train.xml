@@ -63,10 +63,9 @@
 
                         <com.google.android.material.textview.MaterialTextView
                             android:id="@+id/tvDevice"
-                            android:layout_width="0dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="15dp"
-                            android:layout_weight="1"
                             android:gravity="end"
                             android:hint="去选择 >"
                             android:textAppearance="@style/TextAppearance.MaterialComponents.Body2" />
@@ -101,10 +100,9 @@
 
                         <com.google.android.material.textview.MaterialTextView
                             android:id="@+id/tvScene"
-                            android:layout_width="0dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="15dp"
-                            android:layout_weight="1"
                             android:gravity="end"
                             android:hint="去选择 >"
                             android:textAppearance="@style/TextAppearance.MaterialComponents.Body2" />
@@ -139,10 +137,9 @@
 
                         <com.google.android.material.textview.MaterialTextView
                             android:id="@+id/tvPersonInfo"
-                            android:layout_width="0dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="15dp"
-                            android:layout_weight="1"
                             android:gravity="end"
                             android:hint="去填写 >"
                             android:textAppearance="@style/TextAppearance.MaterialComponents.Body2" />
@@ -177,10 +174,9 @@
 
                         <com.google.android.material.textview.MaterialTextView
                             android:id="@+id/tvTargetHeartRate"
-                            android:layout_width="0dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="15dp"
-                            android:layout_weight="1"
                             android:gravity="end"
                             android:hint="去测量 >"
                             android:textAppearance="@style/TextAppearance.MaterialComponents.Body2" />
@@ -215,10 +211,9 @@
 
                         <com.google.android.material.textview.MaterialTextView
                             android:id="@+id/tvBloodPressureBefore"
-                            android:layout_width="0dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="15dp"
-                            android:layout_weight="1"
                             android:gravity="end"
                             android:hint="去测量 >"
                             android:textAppearance="@style/TextAppearance.MaterialComponents.Body2" />
@@ -253,10 +248,9 @@
 
                         <com.google.android.material.textview.MaterialTextView
                             android:id="@+id/tvBloodPressureAfter"
-                            android:layout_width="0dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="15dp"
-                            android:layout_weight="1"
                             android:gravity="end"
                             android:hint="去测量 >"
                             android:textAppearance="@style/TextAppearance.MaterialComponents.Body2" />
