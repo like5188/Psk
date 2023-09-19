@@ -28,7 +28,7 @@
                 android:layout_height="wrap_content"
                 android:text="@{bleScanInfo.name}"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
-                tools:text="01月01日" />
+                tools:text="xxx" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="match_parent"
@@ -37,7 +37,7 @@
                 android:gravity="end"
                 android:text="@{bleScanInfo.address}"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-                tools:text="12:12:12" />
+                tools:text="xx:xx:xx:xx:xx:xx" />
         </LinearLayout>
 
     </com.google.android.material.card.MaterialCardView>
