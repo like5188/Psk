@@ -48,6 +48,11 @@
 
                 </com.google.android.material.button.MaterialButtonToggleGroup>
 
+                <com.google.android.material.divider.MaterialDivider
+                    android:id="@+id/divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp" />
+
                 <FrameLayout
                     android:id="@+id/flContainer"
                     android:layout_width="match_parent"

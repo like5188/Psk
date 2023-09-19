@@ -1,286 +1,253 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_marginTop="-10dp"
-            android:background="@drawable/shape_report_title_bg"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/tvTargetHeartRateTag" />
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_marginTop="-10dp"
-            android:background="@drawable/shape_report_title_bg"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/tvMetTag" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="15dp"
+                android:paddingTop="10dp"
+                android:paddingEnd="15dp"
+                android:paddingBottom="10dp">
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_marginTop="-10dp"
-            android:background="@drawable/shape_report_title_bg"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/tvBloodPressureTag" />
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="靶心率(次/分钟)"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2" />
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_marginTop="-10dp"
-            android:background="@drawable/shape_report_title_bg"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/tvBloodOxygenTag" />
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tvTargetHeartRate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                    android:textStyle="bold"
+                    tools:text="111" />
+            </LinearLayout>
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_marginTop="-10dp"
-            android:background="@drawable/shape_report_title_bg"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/tvEcgTag" />
+        </com.google.android.material.card.MaterialCardView>
 
-        <TextView
-            android:id="@+id/tvTargetHeartRateTag"
-            android:layout_width="wrap_content"
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="30dp"
-            android:layout_marginTop="10dp"
-            android:text="靶心率(次/分钟)"
-            android:textColor="#686868"
-            android:textSize="14sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_marginTop="1dp">
 
-        <TextView
-            android:id="@+id/tvTargetHeartRate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:textColor="#292a2d"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            app:layout_constraintBaseline_toBaselineOf="@id/tvTargetHeartRateTag"
-            app:layout_constraintStart_toEndOf="@id/tvTargetHeartRateTag"
-            tools:text="111" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="15dp"
+                android:paddingTop="10dp"
+                android:paddingEnd="15dp"
+                android:paddingBottom="10dp">
 
-        <TextView
-            android:id="@+id/tvMetTag"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:text="代谢当量(MET)"
-            android:textColor="#686868"
-            android:textSize="14sp"
-            app:layout_constraintStart_toStartOf="@id/tvTargetHeartRateTag"
-            app:layout_constraintTop_toBottomOf="@id/tvTargetHeartRateTag" />
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="代谢当量(MET)"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2" />
 
-        <TextView
-            android:id="@+id/tvMet"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:textColor="#292a2d"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            app:layout_constraintBaseline_toBaselineOf="@id/tvMetTag"
-            app:layout_constraintStart_toEndOf="@id/tvMetTag"
-            tools:text="111" />
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tvMet"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                    android:textStyle="bold"
+                    tools:text="111" />
+            </LinearLayout>
 
-        <TextView
-            android:id="@+id/tvBloodPressureTag"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:text="血压(mmHg)"
-            android:textColor="#686868"
-            android:textSize="14sp"
-            app:layout_constraintStart_toStartOf="@id/tvTargetHeartRateTag"
-            app:layout_constraintTop_toBottomOf="@id/tvMetTag" />
+        </com.google.android.material.card.MaterialCardView>
 
-        <TextView
-            android:id="@+id/tvBloodPressure"
-            android:layout_width="wrap_content"
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:textColor="#292a2d"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            app:layout_constraintBaseline_toBaselineOf="@id/tvBloodPressureTag"
-            app:layout_constraintStart_toEndOf="@id/tvBloodPressureTag"
-            tools:text="111/66" />
+            android:layout_marginTop="1dp">
 
-        <TextView
-            android:id="@+id/tvBloodPressureBeforeTag"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="30dp"
-            android:text="运动前"
-            android:textColor="#686868"
-            android:textSize="14sp"
-            app:layout_constraintBaseline_toBaselineOf="@id/tvBloodPressureTag"
-            app:layout_constraintStart_toEndOf="@id/tvBloodPressure" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="15dp"
+                android:paddingTop="10dp"
+                android:paddingEnd="15dp"
+                android:paddingBottom="10dp">
 
-        <TextView
-            android:id="@+id/tvBloodPressureBefore"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:textColor="#292a2d"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            app:layout_constraintBaseline_toBaselineOf="@id/tvBloodPressureTag"
-            app:layout_constraintStart_toEndOf="@id/tvBloodPressureBeforeTag"
-            tools:text="111/66" />
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="血压(mmHg)"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2" />
 
-        <TextView
-            android:id="@+id/tvBloodPressureAfterTag"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="30dp"
-            android:text="运动后"
-            android:textColor="#686868"
-            android:textSize="14sp"
-            app:layout_constraintBaseline_toBaselineOf="@id/tvBloodPressureTag"
-            app:layout_constraintStart_toEndOf="@id/tvBloodPressureBefore" />
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tvBloodPressure"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                    android:textStyle="bold"
+                    tools:text="111/66" />
 
-        <TextView
-            android:id="@+id/tvBloodPressureAfter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:textColor="#292a2d"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            app:layout_constraintBaseline_toBaselineOf="@id/tvBloodPressureTag"
-            app:layout_constraintStart_toEndOf="@id/tvBloodPressureAfterTag"
-            tools:text="111/66" />
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:text="运动前"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2" />
 
-        <TextView
-            android:id="@+id/tvBloodOxygenTag"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:text="血氧(%)"
-            android:textColor="#686868"
-            android:textSize="14sp"
-            app:layout_constraintStart_toStartOf="@id/tvTargetHeartRateTag"
-            app:layout_constraintTop_toBottomOf="@id/tvBloodPressureTag" />
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tvBloodPressureBefore"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                    android:textStyle="bold"
+                    tools:text="111/66" />
 
-        <TextView
-            android:id="@+id/tvBloodOxygen"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:textColor="#292a2d"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            app:layout_constraintBaseline_toBaselineOf="@id/tvBloodOxygenTag"
-            app:layout_constraintStart_toEndOf="@id/tvBloodOxygenTag"
-            tools:text="111" />
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:text="运动后"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2" />
 
-        <TextView
-            android:id="@+id/tvEcgTag"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:text="心率(次/分钟)"
-            android:textColor="#686868"
-            android:textSize="14sp"
-            app:layout_constraintStart_toStartOf="@id/tvTargetHeartRateTag"
-            app:layout_constraintTop_toBottomOf="@id/tvBloodOxygenTag" />
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tvBloodPressureAfter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                    android:textStyle="bold"
+                    tools:text="111/66" />
+            </LinearLayout>
 
-        <TextView
-            android:id="@+id/tvHeartRateAvgTag"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="30dp"
-            android:text="平均心率"
-            android:textColor="#686868"
-            android:textSize="14sp"
-            app:layout_constraintBaseline_toBaselineOf="@id/tvEcgTag"
-            app:layout_constraintStart_toEndOf="@id/tvEcgTag" />
+        </com.google.android.material.card.MaterialCardView>
 
-        <TextView
-            android:id="@+id/tvHeartRateAvg"
-            android:layout_width="wrap_content"
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:textColor="#292a2d"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            app:layout_constraintBaseline_toBaselineOf="@id/tvEcgTag"
-            app:layout_constraintStart_toEndOf="@id/tvHeartRateAvgTag"
-            tools:text="111" />
+            android:layout_marginTop="1dp">
 
-        <TextView
-            android:id="@+id/tvHeartRateMaxTag"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="30dp"
-            android:text="最大心率"
-            android:textColor="#686868"
-            android:textSize="14sp"
-            app:layout_constraintBaseline_toBaselineOf="@id/tvEcgTag"
-            app:layout_constraintStart_toEndOf="@id/tvHeartRateAvg" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="15dp"
+                android:paddingTop="10dp"
+                android:paddingEnd="15dp"
+                android:paddingBottom="10dp">
 
-        <TextView
-            android:id="@+id/tvHeartRateMax"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:textColor="#292a2d"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            app:layout_constraintBaseline_toBaselineOf="@id/tvEcgTag"
-            app:layout_constraintStart_toEndOf="@id/tvHeartRateMaxTag"
-            tools:text="111" />
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="血氧(%)"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2" />
 
-        <TextView
-            android:id="@+id/tvHeartRateMinTag"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="30dp"
-            android:text="最小心率"
-            android:textColor="#686868"
-            android:textSize="14sp"
-            app:layout_constraintBaseline_toBaselineOf="@id/tvEcgTag"
-            app:layout_constraintStart_toEndOf="@id/tvHeartRateMax" />
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tvBloodOxygen"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                    android:textStyle="bold"
+                    tools:text="111" />
+            </LinearLayout>
 
-        <TextView
-            android:id="@+id/tvHeartRateMin"
-            android:layout_width="wrap_content"
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:textColor="#292a2d"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            app:layout_constraintBaseline_toBaselineOf="@id/tvEcgTag"
-            app:layout_constraintStart_toEndOf="@id/tvHeartRateMinTag"
-            tools:text="111" />
+            android:layout_marginTop="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="15dp"
+                android:paddingTop="10dp"
+                android:paddingEnd="15dp"
+                android:paddingBottom="10dp">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="心率(次/分钟)"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:text="平均心率"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tvHeartRateAvg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                    android:textStyle="bold"
+                    tools:text="111" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:text="最大心率"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tvHeartRateMax"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                    android:textStyle="bold"
+                    tools:text="111" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:text="最小心率"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tvHeartRateMin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                    android:textStyle="bold"
+                    tools:text="111" />
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
 
         <com.psk.shangxiazhi.util.CurveView
             android:id="@+id/curveViewHeartRate"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvEcgTag" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            android:layout_marginBottom="10dp" />
+    </LinearLayout>
 
 </layout>
