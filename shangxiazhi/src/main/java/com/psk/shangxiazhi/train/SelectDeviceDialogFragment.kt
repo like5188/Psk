@@ -43,7 +43,7 @@ class SelectDeviceDialogFragment private constructor() : BaseDialogFragment() {
                 inflater, R.layout.view_select_device, mBinding.llContainer, true
             )
             binding.tvDeviceTypeDes.text = deviceType.des
-            binding.ll.setOnClickListener {
+            binding.cardView.setOnClickListener {
                 ScanDeviceDialogFragment.newInstance(deviceType).apply {
                     onSelected = { bleSanInfo ->
                         selectDeviceMap[deviceType] = bleSanInfo

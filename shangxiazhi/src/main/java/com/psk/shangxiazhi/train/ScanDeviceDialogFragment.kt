@@ -71,9 +71,9 @@ class ScanDeviceDialogFragment private constructor() : BaseDialogFragment() {
     private fun startScan(deviceType: DeviceType) {
         lifecycleScope.launch {
             bleManager.scan().onStart {
-                mBinding.tvState.text = "(${deviceType.des}) 扫描中……"
+                mBinding.tvTitle.text = "(${deviceType.des}) 扫描中……"
             }.onCompletion {
-                mBinding.tvState.text = "(${deviceType.des}) 扫描完成"
+                mBinding.tvTitle.text = "(${deviceType.des}) 扫描完成"
             }.collect {
                 val name = it.device.name
                 val address = it.device.address

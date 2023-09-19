@@ -29,8 +29,8 @@ class PersonInfoDialogFragment private constructor() : BaseDialogFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.dialog_fragment_person_info, container, true)
         mBinding.btnConfirm.setOnClickListener {
-            val age = mBinding.etAge.text.trim().toString().toIntOrDefault(0)
-            val weight = mBinding.etWeight.text.trim().toString().toIntOrDefault(0)
+            val age = mBinding.etAge.text?.trim()?.toString().toIntOrDefault(0)
+            val weight = mBinding.etWeight.text?.trim()?.toString().toIntOrDefault(0)
             if (age <= 0 && weight <= 0) {
                 requireContext().showToast("请输入您的基本信息")
                 return@setOnClickListener
