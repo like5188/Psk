@@ -57,6 +57,9 @@ class ReportActivity : AppCompatActivity() {
         mBinding.toggleGroup.isSelectionRequired = true
         mBinding.toggleGroup.isSingleSelection = true
         mBinding.toggleGroup.addOnButtonCheckedListener { group, checkedId, isChecked ->
+            if (!isChecked) {
+                return@addOnButtonCheckedListener
+            }
             when (checkedId) {
                 R.id.btnTrain -> {
                     showFragment(shangXiaZhiFragment)
@@ -67,7 +70,8 @@ class ReportActivity : AppCompatActivity() {
                 }
             }
         }
-        addFragments(R.id.flContainer, 0, shangXiaZhiFragment, otherDevicesFragment)
+        addFragments(R.id.flContainer, -1, shangXiaZhiFragment, otherDevicesFragment)
+        mBinding.toggleGroup.check(R.id.btnTrain)
     }
 
 }
