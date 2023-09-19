@@ -54,19 +54,20 @@ class ReportActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         injectForIntentExtras()
-        mBinding.tvTrain.setOnClickListener {
-            mBinding.tvTrain.isSelected = true
-            mBinding.tvDevices.isSelected = false
-            showFragment(shangXiaZhiFragment)
-        }
-        mBinding.tvDevices.setOnClickListener {
-            mBinding.tvTrain.isSelected = false
-            mBinding.tvDevices.isSelected = true
-            showFragment(otherDevicesFragment)
+        mBinding.toggleGroup.isSelectionRequired = true
+        mBinding.toggleGroup.isSingleSelection = true
+        mBinding.toggleGroup.addOnButtonCheckedListener { group, checkedId, isChecked ->
+            when (checkedId) {
+                R.id.btnTrain -> {
+                    showFragment(shangXiaZhiFragment)
+                }
+
+                R.id.btnDevices -> {
+                    showFragment(otherDevicesFragment)
+                }
+            }
         }
         addFragments(R.id.flContainer, 0, shangXiaZhiFragment, otherDevicesFragment)
-        mBinding.tvTrain.isSelected = true
-        mBinding.tvDevices.isSelected = false
     }
 
 }

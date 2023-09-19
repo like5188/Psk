@@ -10,58 +10,32 @@
         android:paddingEnd="48dp"
         android:paddingBottom="27dp">
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guidelineLeft"
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/toggleGroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.2" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guidelineRight"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.8" />
-
-        <LinearLayout
-            android:id="@+id/llTab"
-            android:layout_width="300dp"
-            android:layout_height="40dp"
-            android:layout_gravity="center"
-            android:background="@drawable/history_report_title_bg_normal"
             android:orientation="horizontal"
-            android:padding="5dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/tvTrain"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:background="@drawable/history_report_title_bg"
-                android:gravity="center"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnTrain"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="训练记录"
-                android:textColor="@drawable/history_report_title_text_color"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textColor="@color/white" />
 
-            <TextView
-                android:id="@+id/tvDevices"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:background="@drawable/history_report_title_bg"
-                android:gravity="center"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDevices"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="健康体测"
-                android:textColor="@drawable/history_report_title_text_color"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-        </LinearLayout>
+                android:textColor="@color/white" />
+
+        </com.google.android.material.button.MaterialButtonToggleGroup>
 
         <FrameLayout
             android:id="@+id/flContainer"
@@ -69,9 +43,10 @@
             android:layout_height="0dp"
             android:layout_marginTop="15dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@id/guidelineRight"
-            app:layout_constraintStart_toStartOf="@id/guidelineLeft"
-            app:layout_constraintTop_toBottomOf="@id/llTab" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toggleGroup"
+            app:layout_constraintWidth_percent="0.6" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
