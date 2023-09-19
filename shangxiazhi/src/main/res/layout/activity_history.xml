@@ -52,34 +52,34 @@
                     android:layout_width="60dp"
                     android:layout_height="40dp"
                     android:layout_marginStart="30dp"
-                    android:background="@drawable/icon_background_color_selector"
+                    android:background="@drawable/ic_background_color_selector"
                     android:paddingStart="15dp"
                     android:paddingTop="5dp"
                     android:paddingEnd="15dp"
                     android:paddingBottom="5dp"
                     android:scaleType="fitXY"
-                    android:src="@drawable/icon_left_arrow"
+                    android:src="@drawable/ic_left_arrow"
                     app:layout_constraintBottom_toBottomOf="@id/tvTime"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@id/tvTime"
-                    app:tint="@drawable/icon_color_selector" />
+                    app:tint="@drawable/ic_color_selector" />
 
                 <ImageView
                     android:id="@+id/ivRight"
                     android:layout_width="60dp"
                     android:layout_height="40dp"
                     android:layout_marginEnd="30dp"
-                    android:background="@drawable/icon_background_color_selector"
+                    android:background="@drawable/ic_background_color_selector"
                     android:paddingStart="15dp"
                     android:paddingTop="5dp"
                     android:paddingEnd="15dp"
                     android:paddingBottom="5dp"
                     android:scaleType="fitXY"
-                    android:src="@drawable/icon_right_arrow"
+                    android:src="@drawable/ic_right_arrow"
                     app:layout_constraintBottom_toBottomOf="@id/tvTime"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/tvTime"
-                    app:tint="@drawable/icon_color_selector" />
+                    app:tint="@drawable/ic_color_selector" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv"
