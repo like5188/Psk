@@ -32,6 +32,11 @@
                     android:text="准备训练"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
 
+                <com.google.android.material.divider.MaterialDivider
+                    android:id="@+id/divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp" />
+
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/deviceCardView"
                     android:layout_width="match_parent"
