@@ -11,83 +11,86 @@
         android:paddingEnd="48dp"
         android:paddingBottom="27dp">
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guidelineLeft"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.25" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guidelineRight"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.75" />
-
-        <TextView
-            android:id="@+id/tvTitle"
-            android:layout_width="0dp"
-            android:layout_height="60dp"
-            android:gravity="center"
-            android:text="训练时间"
-            android:textColor="#99FFFFFF"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@id/guidelineRight"
-            app:layout_constraintStart_toEndOf="@id/guidelineLeft"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <View
-            android:id="@+id/viewBg"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:background="#292a2d"
-            app:layout_constraintBottom_toBottomOf="@id/ivLeft"
-            app:layout_constraintEnd_toStartOf="@id/guidelineRight"
-            app:layout_constraintStart_toEndOf="@id/guidelineLeft"
-            app:layout_constraintTop_toTopOf="@id/ivLeft" />
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/ivLeft"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:scaleType="fitXY"
-            android:src="@drawable/history_leftbtn_choose"
-            app:layout_constraintStart_toEndOf="@id/guidelineLeft"
-            app:layout_constraintTop_toBottomOf="@id/tvTitle" />
-
-        <TextView
-            android:id="@+id/tvTime"
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:gravity="center"
-            android:textColor="@color/white"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@id/ivLeft"
-            app:layout_constraintEnd_toStartOf="@id/ivRight"
-            app:layout_constraintStart_toEndOf="@id/ivLeft"
-            app:layout_constraintTop_toTopOf="@id/ivLeft"
-            tools:text="2022年02月" />
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/ivRight"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/history_rightbtn_choose"
-            app:layout_constraintEnd_toStartOf="@id/guidelineRight"
-            app:layout_constraintTop_toTopOf="@id/ivLeft" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/guidelineRight"
-            app:layout_constraintStart_toEndOf="@id/guidelineLeft"
-            app:layout_constraintTop_toBottomOf="@id/viewBg" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.5">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tvTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="?actionBarSize"
+                    android:gravity="center"
+                    android:text="训练时间"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tvTime"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:background="?attr/colorPrimary"
+                    android:gravity="center"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvTitle"
+                    tools:text="2022年02月" />
+
+                <ImageView
+                    android:id="@+id/ivLeft"
+                    android:layout_width="60dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="30dp"
+                    android:background="@drawable/icon_background_color_selector"
+                    android:paddingStart="15dp"
+                    android:paddingTop="5dp"
+                    android:paddingEnd="15dp"
+                    android:paddingBottom="5dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/icon_left_arrow"
+                    app:layout_constraintBottom_toBottomOf="@id/tvTime"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tvTime"
+                    app:tint="@drawable/icon_color_selector" />
+
+                <ImageView
+                    android:id="@+id/ivRight"
+                    android:layout_width="60dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="30dp"
+                    android:background="@drawable/icon_background_color_selector"
+                    android:paddingStart="15dp"
+                    android:paddingTop="5dp"
+                    android:paddingEnd="15dp"
+                    android:paddingBottom="5dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/icon_right_arrow"
+                    app:layout_constraintBottom_toBottomOf="@id/tvTime"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tvTime"
+                    app:tint="@drawable/icon_color_selector" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvTime" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.card.MaterialCardView>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
