@@ -119,7 +119,10 @@ class TrainActivity : AppCompatActivity() {
                 mBinding.tvBloodPressureAfter.text = it.bloodPressureAfter?.toString() ?: ""
             }
             collectDistinctProperty(TrainUiState::scene) {
-                mBinding.tvScene.text = it?.des ?: ""
+                it ?: return@collectDistinctProperty
+                mBinding.tvScene.text = it.des
+                // 这里因为跳转到 Activity 返回后，sceneCardView 会失去焦点。
+                mBinding.sceneCardView.requestFocus()
             }
         }
     }
