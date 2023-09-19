@@ -212,7 +212,7 @@ public class CurveView extends RelativeLayout {
             set1.setLineWidth(1f);
             //是否绘制阴影
             set1.setDrawFilled(true);
-            Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.fade_right);
+            Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.curve_view_bg);
             set1.setFillDrawable(drawable);
 
             LineData data = new LineData(set1);
