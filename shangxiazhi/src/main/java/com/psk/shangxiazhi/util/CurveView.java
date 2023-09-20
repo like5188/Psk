@@ -106,7 +106,7 @@ public class CurveView extends RelativeLayout {
         } else {
             description.setText("时间/s");//设置描述文字内容
         }
-        description.setTextColor(this.getResources().getColor(R.color.chart_text));//设置描述文字的颜色
+        description.setTextColor(MaterialColors.getColor(this, R.attr.colorSecondary));//设置描述文字的颜色
         description.setTextSize(10f);
         description.setXOffset(0f);
         description.setYOffset(10f);//描述文字的偏移
@@ -133,7 +133,7 @@ public class CurveView extends RelativeLayout {
         xAxis.setEnabled(true);//设置轴启用或禁用
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setTextSize(8);
-        xAxis.setTextColor(this.getResources().getColor(R.color.chart_text));
+        xAxis.setTextColor(MaterialColors.getColor(this, R.attr.colorSecondary));
         xAxis.setAxisMinimum(0);
         if (size <= 200) {
             xAxis.setAxisMaximum(size);
@@ -155,7 +155,7 @@ public class CurveView extends RelativeLayout {
         yAxis.setEnabled(true);
         yAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
         yAxis.setTextSize(8);
-        yAxis.setTextColor(this.getResources().getColor(R.color.chart_text));
+        yAxis.setTextColor(MaterialColors.getColor(this, R.attr.colorSecondary));
 
         int max = 0;
         for (Integer integer : list) {

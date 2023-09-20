@@ -39,6 +39,7 @@
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/deviceCardView"
+                    style="@style/AppCard.Item"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
@@ -72,6 +73,7 @@
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/sceneCardView"
+                    style="@style/AppCard.Item"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="1dp">
@@ -106,6 +108,7 @@
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/personInfoCardView"
+                    style="@style/AppCard.Item"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="1dp">
@@ -140,6 +143,7 @@
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/targetHeartRateCardView"
+                    style="@style/AppCard.Item"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="1dp">
@@ -174,6 +178,7 @@
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/bloodPressureBeforeCardView"
+                    style="@style/AppCard.Item"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="1dp">
@@ -208,6 +213,7 @@
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/bloodPressureAfterCardView"
+                    style="@style/AppCard.Item"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="1dp">

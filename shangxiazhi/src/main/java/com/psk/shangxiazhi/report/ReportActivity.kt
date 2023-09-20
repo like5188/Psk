@@ -54,8 +54,6 @@ class ReportActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         injectForIntentExtras()
-        mBinding.toggleGroup.isSelectionRequired = true
-        mBinding.toggleGroup.isSingleSelection = true
         mBinding.toggleGroup.addOnButtonCheckedListener { group, checkedId, isChecked ->
             if (!isChecked) {
                 return@addOnButtonCheckedListener
