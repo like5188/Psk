@@ -30,8 +30,6 @@
                     <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:drawableStart="@drawable/report_time"
-                        android:drawablePadding="10dp"
                         android:text="训练时长"
                         android:textAppearance="@style/AppSubtitle2" />
 
@@ -98,8 +96,6 @@
                     <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:drawableStart="@drawable/report_distance"
-                        android:drawablePadding="10dp"
                         android:text="总里程(米)"
                         android:textAppearance="@style/AppSubtitle2" />
 
@@ -166,8 +162,6 @@
                     <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:drawableStart="@drawable/report_calorie"
-                        android:drawablePadding="10dp"
                         android:text="消耗能量(千卡)"
                         android:textAppearance="@style/AppSubtitle2" />
 
@@ -234,8 +228,6 @@
                     <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:drawableStart="@drawable/report_spasmus"
-                        android:drawablePadding="10dp"
                         android:text="痉挛"
                         android:textAppearance="@style/AppSubtitle2" />
 
@@ -332,8 +324,6 @@
                     <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:drawableStart="@drawable/report_speed"
-                        android:drawablePadding="10dp"
                         android:text="阻力(N.m)"
                         android:textAppearance="@style/AppSubtitle2" />
 
@@ -407,8 +397,6 @@
                     <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:drawableStart="@drawable/report_speed"
-                        android:drawablePadding="10dp"
                         android:text="功率(w)"
                         android:textAppearance="@style/AppSubtitle2" />
 
@@ -488,8 +476,6 @@
                     <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:drawableStart="@drawable/report_speed"
-                        android:drawablePadding="10dp"
                         android:text="转速(rpm)"
                         android:textAppearance="@style/AppSubtitle2" />
 
