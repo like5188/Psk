@@ -20,7 +20,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="?actionBarSize"
                 android:gravity="center"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                android:textAppearance="@style/AppHeadline6"
                 tools:text="扫描中，请稍后……" />
 
             <com.google.android.material.divider.MaterialDivider

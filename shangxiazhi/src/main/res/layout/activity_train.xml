@@ -30,7 +30,7 @@
                     android:layout_height="?actionBarSize"
                     android:gravity="center"
                     android:text="准备训练"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
+                    android:textAppearance="@style/AppHeadline6" />
 
                 <com.google.android.material.divider.MaterialDivider
                     android:id="@+id/divider"
@@ -57,7 +57,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="设备"
-                            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2" />
+                            android:textAppearance="@style/AppSubtitle2" />
 
                         <com.google.android.material.textview.MaterialTextView
                             android:id="@+id/tvDevice"
@@ -66,7 +66,7 @@
                             android:layout_marginStart="15dp"
                             android:gravity="end"
                             android:hint="去选择 >"
-                            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2" />
+                            android:textAppearance="@style/AppBody2" />
 
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -92,7 +92,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="游戏场景"
-                            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2" />
+                            android:textAppearance="@style/AppSubtitle2" />
 
                         <com.google.android.material.textview.MaterialTextView
                             android:id="@+id/tvScene"
@@ -101,7 +101,7 @@
                             android:layout_marginStart="15dp"
                             android:gravity="end"
                             android:hint="去选择 >"
-                            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2" />
+                            android:textAppearance="@style/AppBody2" />
 
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -127,7 +127,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="基本信息"
-                            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2" />
+                            android:textAppearance="@style/AppSubtitle2" />
 
                         <com.google.android.material.textview.MaterialTextView
                             android:id="@+id/tvPersonInfo"
@@ -136,7 +136,7 @@
                             android:layout_marginStart="15dp"
                             android:gravity="end"
                             android:hint="去填写 >"
-                            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2" />
+                            android:textAppearance="@style/AppBody2" />
 
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -162,7 +162,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="靶心率"
-                            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2" />
+                            android:textAppearance="@style/AppSubtitle2" />
 
                         <com.google.android.material.textview.MaterialTextView
                             android:id="@+id/tvTargetHeartRate"
@@ -171,7 +171,7 @@
                             android:layout_marginStart="15dp"
                             android:gravity="end"
                             android:hint="去测量 >"
-                            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2" />
+                            android:textAppearance="@style/AppBody2" />
 
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -197,7 +197,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="运动前血压"
-                            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2" />
+                            android:textAppearance="@style/AppSubtitle2" />
 
                         <com.google.android.material.textview.MaterialTextView
                             android:id="@+id/tvBloodPressureBefore"
@@ -206,7 +206,7 @@
                             android:layout_marginStart="15dp"
                             android:gravity="end"
                             android:hint="去测量 >"
-                            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2" />
+                            android:textAppearance="@style/AppBody2" />
 
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -232,7 +232,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="运动后血压"
-                            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2" />
+                            android:textAppearance="@style/AppSubtitle2" />
 
                         <com.google.android.material.textview.MaterialTextView
                             android:id="@+id/tvBloodPressureAfter"
@@ -241,7 +241,7 @@
                             android:layout_marginStart="15dp"
                             android:gravity="end"
                             android:hint="去测量 >"
-                            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2" />
+                            android:textAppearance="@style/AppBody2" />
 
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>

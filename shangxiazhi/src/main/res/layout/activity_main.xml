@@ -45,7 +45,7 @@
             android:layout_marginEnd="50dp"
             android:layout_marginBottom="60dp"
             android:text="自主训练"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
+            android:textAppearance="@style/AppHeadline5"
             android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="@id/ivAutonomyTraining"
             app:layout_constraintEnd_toEndOf="@id/ivAutonomyTraining" />
@@ -56,7 +56,7 @@
             android:layout_marginEnd="50dp"
             android:layout_marginBottom="60dp"
             android:text="训练记录"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
+            android:textAppearance="@style/AppHeadline5"
             android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="@id/ivTrainingRecords"
             app:layout_constraintEnd_toEndOf="@id/ivTrainingRecords" />
@@ -73,7 +73,7 @@
             android:id="@+id/tvTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+            android:textAppearance="@style/AppSubtitle1"
             android:textColor="@color/white"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"

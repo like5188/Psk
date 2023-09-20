@@ -44,7 +44,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="15dp"
                     android:text="序列号："
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
+                    android:textAppearance="@style/AppSubtitle2"
                     app:layout_constraintBaseline_toBaselineOf="@id/tvSerialNumber"
                     app:layout_constraintStart_toStartOf="parent" />
 
@@ -55,8 +55,9 @@
                     android:layout_marginTop="30dp"
                     android:layout_marginEnd="15dp"
                     android:gravity="center_vertical"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                    android:textAppearance="@style/AppBody2"
                     app:layout_constraintEnd_toEndOf="parent"
+                    android:text="111111111111"
                     app:layout_constraintStart_toEndOf="@id/tvSerialNumberTag"
                     app:layout_constraintTop_toBottomOf="@id/ivTitle" />
 
@@ -66,7 +67,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="15dp"
                     android:text="激活码："
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
+                    android:textAppearance="@style/AppSubtitle2"
                     app:layout_constraintBottom_toBottomOf="@id/etCode"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@id/etCode" />
@@ -77,7 +78,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="15dp"
                     android:layout_marginEnd="15dp"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                    android:textAppearance="@style/AppBody2"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/tvCodeTag"
                     app:layout_constraintTop_toBottomOf="@id/tvSerialNumber" />

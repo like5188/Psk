@@ -30,7 +30,7 @@
                     android:layout_height="?actionBarSize"
                     android:gravity="center"
                     android:text="血压测量"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                    android:textAppearance="@style/AppHeadline6"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -49,7 +49,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="15dp"
                     android:text="收缩压"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
+                    android:textAppearance="@style/AppSubtitle2"
                     app:layout_constraintBottom_toBottomOf="@id/tvSbp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@id/tvSbp" />
@@ -61,7 +61,7 @@
                     android:layout_marginStart="50dp"
                     android:layout_marginTop="15dp"
                     android:layout_marginEnd="15dp"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
+                    android:textAppearance="@style/AppHeadline4"
                     app:layout_constraintEnd_toStartOf="@id/btnMeasure"
                     app:layout_constraintStart_toEndOf="@id/tvSbpTag"
                     app:layout_constraintTop_toBottomOf="@id/divider"
@@ -85,7 +85,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="15dp"
                     android:text="舒张压"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
+                    android:textAppearance="@style/AppSubtitle2"
                     app:layout_constraintBottom_toBottomOf="@id/tvDbp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@id/tvDbp" />
@@ -96,7 +96,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="15dp"
                     android:layout_marginEnd="15dp"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
+                    android:textAppearance="@style/AppHeadline4"
                     app:layout_constraintStart_toStartOf="@id/tvSbp"
                     app:layout_constraintTop_toBottomOf="@id/tvSbp"
                     tools:text="11" />

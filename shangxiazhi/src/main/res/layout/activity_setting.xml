@@ -30,7 +30,7 @@
                     android:layout_height="?actionBarSize"
                     android:gravity="center"
                     android:text="设置"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
+                    android:textAppearance="@style/AppHeadline6" />
 
                 <com.google.android.material.divider.MaterialDivider
                     android:id="@+id/divider"
@@ -64,7 +64,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
                             android:text="当前版本"
-                            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2" />
+                            android:textAppearance="@style/AppSubtitle2" />
 
                         <com.google.android.material.textview.MaterialTextView
                             android:id="@+id/tvVersion"
@@ -72,7 +72,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="15dp"
                             android:gravity="end"
-                            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2" />
+                            android:textAppearance="@style/AppBody2" />
 
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>

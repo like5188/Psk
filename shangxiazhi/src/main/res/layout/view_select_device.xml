@@ -23,7 +23,7 @@
                 android:id="@+id/tvDeviceTypeDes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
+                android:textAppearance="@style/AppSubtitle2"
                 tools:text="上下肢:" />
 
             <com.google.android.material.textview.MaterialTextView
@@ -33,7 +33,7 @@
                 android:layout_marginStart="10dp"
                 android:gravity="end"
                 android:hint="去选择 >"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Body2" />
+                android:textAppearance="@style/AppBody2" />
         </LinearLayout>
 
     </com.google.android.material.card.MaterialCardView>
