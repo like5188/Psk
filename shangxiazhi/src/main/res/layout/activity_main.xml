@@ -61,11 +61,13 @@
 
         <ImageView
             android:id="@+id/ivSetting"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/selector_main_setting"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:background="@drawable/selector_ic_background_color"
+            android:src="@drawable/ic_set_up"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@drawable/selector_ic_color" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tvTime"
