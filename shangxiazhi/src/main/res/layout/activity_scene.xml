@@ -30,7 +30,6 @@
             android:layout_height="wrap_content"
             android:text="丛林"
             android:textAppearance="@style/AppHeadline5"
-            android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="@id/iv0"
             app:layout_constraintEnd_toEndOf="@id/iv0"
             app:layout_constraintStart_toStartOf="@id/iv0" />
@@ -53,7 +52,6 @@
             android:layout_height="wrap_content"
             android:text="沙漠"
             android:textAppearance="@style/AppHeadline5"
-            android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="@id/iv1"
             app:layout_constraintEnd_toEndOf="@id/iv1"
             app:layout_constraintStart_toStartOf="@id/iv1" />
@@ -77,7 +75,6 @@
             android:layout_height="wrap_content"
             android:text="拉萨"
             android:textAppearance="@style/AppHeadline5"
-            android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="@id/iv2"
             app:layout_constraintEnd_toEndOf="@id/iv2"
             app:layout_constraintStart_toStartOf="@id/iv2" />
@@ -100,7 +97,6 @@
             android:layout_height="wrap_content"
             android:text="海洋"
             android:textAppearance="@style/AppHeadline5"
-            android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="@id/iv3"
             app:layout_constraintEnd_toEndOf="@id/iv3"
             app:layout_constraintStart_toStartOf="@id/iv3" />
