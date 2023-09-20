@@ -58,16 +58,15 @@ public class CurveView extends RelativeLayout {
 
         int[] attrs = new int[]{android.R.attr.colorBackground};
         TypedArray typedArray = null;
-        int colorBackground;
         try {
             typedArray = getContext().obtainStyledAttributes(attrs);
-            colorBackground = typedArray.getColor(0, Color.TRANSPARENT);
+            int colorBackground = typedArray.getColor(0, Color.TRANSPARENT);
+            mChart.setBackgroundColor(colorBackground);
         } finally {
             if (typedArray != null) {
                 typedArray.recycle();
             }
         }
-        mChart.setBackgroundColor(colorBackground);
 
         RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         addView(mChart, lp);
