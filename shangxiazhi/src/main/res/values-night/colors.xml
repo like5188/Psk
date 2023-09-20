@@ -12,6 +12,7 @@
     <color name="color_on_surface">#FFFFFF</color>
     <color name="color_background">#000000</color>
     <color name="color_on_background">#FFFFFF</color>
+
     <color name="color_bg_on_card">#66FFFFFF</color>
 
 </resources>
