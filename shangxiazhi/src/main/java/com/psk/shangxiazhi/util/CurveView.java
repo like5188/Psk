@@ -1,6 +1,7 @@
 package com.psk.shangxiazhi.util;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
@@ -54,7 +55,19 @@ public class CurveView extends RelativeLayout {
 
     private void initView() {
         mChart = new LineChart(getContext());
-        mChart.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.white));
+        int[] attrs = new int[]{android.R.attr.colorBackground};
+        TypedArray typedArray = null;
+        int color;
+        try {
+            typedArray = getContext().obtainStyledAttributes(attrs);
+            color = typedArray.getColor(0, Color.TRANSPARENT);
+        } finally {
+            if (typedArray != null) {
+                typedArray.recycle();
+            }
+        }
+
+        mChart.setBackgroundColor(color);
         RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         addView(mChart, lp);
     }
