@@ -1,6 +1,5 @@
 rootProject.name='Psk'
 include ':device'
-include ':LuckyEcgChart'
 include ':shangxiazhi'
 include ':common'
 include ':ble'
