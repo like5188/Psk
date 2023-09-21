@@ -17,7 +17,7 @@ class O2_BloodOxygenDataSource : BaseBloodOxygenDataSource(DeviceType.BloodOxyge
         isBeginOfPacket = {
             it[0] == 0x55.toByte()
         }
-    ) { it.last() == BleCRC.calCRC8(it) }
+    ) { it.lastOrNull() == BleCRC.calCRC8(it) }
 
     override suspend fun fetch(medicalOrderId: Long): BloodOxygen? {
         val data = bleManager.writeAndWaitResult(device, "AA17E800000100002A")

@@ -53,7 +53,8 @@ class MeasureBloodPressureDialogFragment private constructor() : BaseDialogFragm
             return
         }
         job = lifecycleScope.launch(Dispatchers.Main) {
-            bloodPressure = repository.fetch()
+            bloodPressure = repository.measure()
+            cancelJob()
             println("血压：$bloodPressure")
             mBinding.tvSbp.text = bloodPressure?.sbp?.toString() ?: ""
             mBinding.tvDbp.text = bloodPressure?.dbp?.toString() ?: ""
