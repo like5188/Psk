@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
 import android.view.WindowManager
+import android.widget.TextView
 import com.psk.common.R
 
 /**
@@ -11,7 +12,7 @@ import com.psk.common.R
  * @author like
  * Date: 2021-04-06
  */
-class ProgressDialog(context: Context) : Dialog(context) {
+class ProgressDialog(context: Context, private val text: String = "") : Dialog(context) {
 
     override fun onStart() {
         super.onStart()
@@ -24,6 +25,9 @@ class ProgressDialog(context: Context) : Dialog(context) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.common_dialog_progress)
+        findViewById<TextView>(R.id.tv)?.apply {
+            this.text = this@ProgressDialog.text
+        }
     }
 
 }

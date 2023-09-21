@@ -13,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import com.like.common.base.BaseDialogFragment
 import com.psk.ble.BleManager
 import com.psk.ble.DeviceType
+import com.psk.common.customview.ProgressDialog
 import com.psk.common.util.showToast
 import com.psk.device.DeviceManager
 import com.psk.device.data.model.BloodPressure
@@ -47,17 +48,22 @@ class MeasureBloodPressureDialogFragment private constructor() : BaseDialogFragm
     var onSelected: ((BloodPressure) -> Unit)? = null
     private var job: Job? = null
     private var bloodPressure: BloodPressure? = null
+    private val mProgressDialog by lazy {
+        ProgressDialog(requireContext(), "测量中，请稍后……")
+    }
 
     private fun startJob() {
         if (job != null) {
             return
         }
         job = lifecycleScope.launch(Dispatchers.Main) {
+            mProgressDialog.show()
             bloodPressure = repository.measure()
             cancelJob()
             println("血压：$bloodPressure")
             mBinding.tvSbp.text = bloodPressure?.sbp?.toString() ?: ""
             mBinding.tvDbp.text = bloodPressure?.dbp?.toString() ?: ""
+            mProgressDialog.dismiss()
         }
     }
 
