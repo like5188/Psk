@@ -11,7 +11,6 @@ import com.psk.shangxiazhi.data.model.ShangXiaZhiReport
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -37,8 +36,9 @@ class ShangXiaZhiBusinessManager(
         return ShangXiaZhiReport.report
     }
 
-    override suspend fun handleFlow(flow: Flow<ShangXiaZhi>) {
+    override suspend fun run() {
         Log.d(TAG, "startShangXiaZhiJob")
+        val flow = repository.getFlow(lifecycleScope, medicalOrderId)
         ShangXiaZhiReport.createForm(flow).collect {
             gameController.updateGameData(it)
         }

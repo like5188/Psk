@@ -2,8 +2,8 @@ package com.psk.device.data.source
 
 import com.psk.ble.DeviceType
 import com.psk.device.data.model.HeartRate
-import com.psk.device.data.source.local.IDbDataSource
 import com.psk.device.data.source.local.db.HeartRateDbDataSource
+import com.psk.device.data.source.local.db.IDbDataSource
 import com.psk.device.data.source.remote.BaseHeartRateDataSource
 import com.psk.device.data.source.remote.BaseRemoteDeviceDataSource
 import kotlinx.coroutines.CoroutineScope
@@ -31,18 +31,14 @@ class HeartRateRepository : KoinComponent, IRepository<HeartRate> {
         dataSource.enable(address)
     }
 
-    override suspend fun getAll(): List<HeartRate>? {
-        return dbDataSource.getAll()
-    }
-
     override suspend fun getListByMedicalOrderId(medicalOrderId: Long): List<HeartRate>? {
         return dbDataSource.getByMedicalOrderId(medicalOrderId)
     }
 
-    override fun getFlow(scope: CoroutineScope, medicalOrderId: Long, interval: Long): Flow<HeartRate> {
+    fun getFlow(scope: CoroutineScope, medicalOrderId: Long): Flow<HeartRate> {
         scope.launch(Dispatchers.IO) {
             dataSource.fetch(medicalOrderId).collect {
-                dbDataSource.save(it)
+                dbDataSource.insert(it)
             }
         }
         return dbDataSource.listenLatest(System.currentTimeMillis() / 1000).filterNotNull()

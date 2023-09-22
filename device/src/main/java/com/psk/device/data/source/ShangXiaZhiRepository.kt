@@ -3,7 +3,7 @@ package com.psk.device.data.source
 import com.psk.ble.DeviceType
 import com.psk.device.data.model.ShangXiaZhi
 import com.psk.device.data.model.ShangXiaZhiParams
-import com.psk.device.data.source.local.IDbDataSource
+import com.psk.device.data.source.local.db.IDbDataSource
 import com.psk.device.data.source.local.db.ShangXiaZhiDbDataSource
 import com.psk.device.data.source.remote.BaseRemoteDeviceDataSource
 import com.psk.device.data.source.remote.BaseShangXiaZhiDataSource
@@ -33,18 +33,14 @@ class ShangXiaZhiRepository : KoinComponent, IRepository<ShangXiaZhi> {
         dataSource.enable(address)
     }
 
-    override suspend fun getAll(): List<ShangXiaZhi>? {
-        return dbDataSource.getAll()
-    }
-
     override suspend fun getListByMedicalOrderId(medicalOrderId: Long): List<ShangXiaZhi>? {
         return dbDataSource.getByMedicalOrderId(medicalOrderId)
     }
 
-    override fun getFlow(scope: CoroutineScope, medicalOrderId: Long, interval: Long): Flow<ShangXiaZhi> {
+    fun getFlow(scope: CoroutineScope, medicalOrderId: Long): Flow<ShangXiaZhi> {
         scope.launch(Dispatchers.IO) {
             dataSource.fetch(medicalOrderId).collect {
-                dbDataSource.save(it)
+                dbDataSource.insert(it)
             }
         }
         return dbDataSource.listenLatest(System.currentTimeMillis() / 1000).filterNotNull()

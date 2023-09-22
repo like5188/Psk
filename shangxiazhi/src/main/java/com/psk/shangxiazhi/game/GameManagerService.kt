@@ -13,6 +13,7 @@ import com.psk.ble.Tip
 import com.psk.device.DeviceManager
 import com.psk.shangxiazhi.data.model.BleScanInfo
 import com.psk.shangxiazhi.data.model.IReport
+import com.psk.shangxiazhi.game.business.BloodPressureBusinessManager
 import com.psk.shangxiazhi.game.business.MultiBusinessManager
 import com.psk.shangxiazhi.game.business.ShangXiaZhiBusinessManager
 import com.twsz.twsystempre.GameController
@@ -75,15 +76,21 @@ class GameManagerService : Service() {
                 lifecycleScope, medicalOrderId, deviceManager, deviceType, bleScanInfo.name, bleScanInfo.address
             ).apply {
                 multiBusinessManager.add(deviceType, this)
-                if (this is ShangXiaZhiBusinessManager) {
-                    this.onStartGame = {
-                        multiBusinessManager.onStartGame()
+                when (this) {
+                    is ShangXiaZhiBusinessManager -> {
+                        this.onStartGame = {
+                            multiBusinessManager.onStartGame()
+                        }
+                        this.onPauseGame = {
+                            multiBusinessManager.onPauseGame()
+                        }
+                        this.onOverGame = {
+                            multiBusinessManager.onOverGame()
+                        }
                     }
-                    this.onPauseGame = {
-                        multiBusinessManager.onPauseGame()
-                    }
-                    this.onOverGame = {
-                        multiBusinessManager.onOverGame()
+
+                    is BloodPressureBusinessManager -> {
+                        this.bloodPressureMeasureType = bloodPressureMeasureType
                     }
                 }
             }

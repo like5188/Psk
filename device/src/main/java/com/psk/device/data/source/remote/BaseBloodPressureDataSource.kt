@@ -13,5 +13,5 @@ abstract class BaseBloodPressureDataSource(deviceType: DeviceType) : BaseRemoteD
     /**
      * 自动测量并返回结果
      */
-    abstract suspend fun measure(): BloodPressure?
+    abstract suspend fun measure(medicalOrderId: Long): BloodPressure?
 }

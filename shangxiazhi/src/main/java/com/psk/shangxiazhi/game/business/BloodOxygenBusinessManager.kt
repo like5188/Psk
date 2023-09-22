@@ -10,7 +10,6 @@ import com.psk.shangxiazhi.data.model.BloodOxygenReport
 import com.psk.shangxiazhi.data.model.IReport
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -23,27 +22,24 @@ class BloodOxygenBusinessManager(
     deviceName: String,
     deviceAddress: String,
 ) : BaseBusinessManager<BloodOxygen, BloodOxygenRepository>(
-    lifecycleScope,
-    medicalOrderId,
-    deviceManager,
-    deviceName,
-    deviceAddress,
-    DeviceType.BloodOxygen
+    lifecycleScope, medicalOrderId, deviceManager, deviceName, deviceAddress, DeviceType.BloodOxygen
 ) {
 
     override fun getReport(): IReport {
         return BloodOxygenReport.report
     }
 
-    override suspend fun handleFlow(flow: Flow<BloodOxygen>) = withContext(Dispatchers.IO) {
-        Log.d(TAG, "startBloodOxygenJob")
-        launch {
-            BloodOxygenReport.createForm(flow)
+    override suspend fun run() =
+        withContext(Dispatchers.IO) {
+            Log.d(TAG, "startBloodOxygenJob")
+            val flow = repository.getFlow(lifecycleScope, medicalOrderId, 1000)
+            launch {
+                BloodOxygenReport.createForm(flow)
+            }
+            flow.distinctUntilChanged().conflate().collect { value ->
+                gameController.updateBloodOxygenData(value.value)
+            }
         }
-        flow.distinctUntilChanged().conflate().collect { value ->
-            gameController.updateBloodOxygenData(value.value)
-        }
-    }
 
     override fun onConnected(device: Device) {
         Log.w(TAG, "血氧仪连接成功 $device")

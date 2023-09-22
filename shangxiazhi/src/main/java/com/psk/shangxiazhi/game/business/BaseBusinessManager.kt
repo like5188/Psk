@@ -10,7 +10,6 @@ import com.twsz.twsystempre.GameController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
@@ -21,8 +20,8 @@ import org.koin.core.component.inject
  */
 @OptIn(KoinApiExtension::class)
 abstract class BaseBusinessManager<Data, Repository : IRepository<Data>>(
-    val lifecycleScope: CoroutineScope,
-    private val medicalOrderId: Long,
+    protected val lifecycleScope: CoroutineScope,
+    protected val medicalOrderId: Long,
     deviceManager: DeviceManager,
     deviceName: String,
     deviceAddress: String,
@@ -40,7 +39,7 @@ abstract class BaseBusinessManager<Data, Repository : IRepository<Data>>(
             return
         }
         job = lifecycleScope.launch(Dispatchers.IO) {
-            handleFlow(repository.getFlow(this, medicalOrderId))
+            run()
         }
     }
 
@@ -85,7 +84,7 @@ abstract class BaseBusinessManager<Data, Repository : IRepository<Data>>(
     open fun onGameAppFinish() {}
 
     abstract fun getReport(): IReport
-    protected abstract suspend fun handleFlow(flow: Flow<Data>)
+    protected abstract suspend fun run()
     protected abstract fun onConnected(device: Device)
     protected abstract fun onDisconnected(device: Device)
 }

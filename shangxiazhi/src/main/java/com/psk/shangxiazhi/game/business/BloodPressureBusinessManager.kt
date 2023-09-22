@@ -10,7 +10,6 @@ import com.psk.shangxiazhi.data.model.BloodPressureReport
 import com.psk.shangxiazhi.data.model.IReport
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -23,27 +22,29 @@ class BloodPressureBusinessManager(
     deviceName: String,
     deviceAddress: String,
 ) : BaseBusinessManager<BloodPressure, BloodPressureRepository>(
-    lifecycleScope,
-    medicalOrderId,
-    deviceManager,
-    deviceName,
-    deviceAddress,
-    DeviceType.BloodPressure
+    lifecycleScope, medicalOrderId, deviceManager, deviceName, deviceAddress, DeviceType.BloodPressure
 ) {
+    var bloodPressureMeasureType: Int = 0
 
     override fun getReport(): IReport {
         return BloodPressureReport.report
     }
 
-    override suspend fun handleFlow(flow: Flow<BloodPressure>) = withContext(Dispatchers.IO) {
-        Log.d(TAG, "startBloodPressureJob")
-        launch {
-            BloodPressureReport.createForm(flow)
+    override suspend fun run() =
+        withContext(Dispatchers.IO) {
+            Log.d(TAG, "startBloodPressureJob")
+            val flow = when (bloodPressureMeasureType) {
+                0 -> repository.getFetchFlow(lifecycleScope, medicalOrderId, 1000)
+                1 -> repository.getMeasureFlow(lifecycleScope, medicalOrderId, 1000 * 60 * 5)
+                else -> null
+            } ?: return@withContext
+            launch {
+                BloodPressureReport.createForm(flow)
+            }
+            flow.distinctUntilChanged().conflate().collect { value ->
+                gameController.updateBloodPressureData(value.sbp, value.dbp)
+            }
         }
-        flow.distinctUntilChanged().conflate().collect { value ->
-            gameController.updateBloodPressureData(value.sbp, value.dbp)
-        }
-    }
 
     override fun onConnected(device: Device) {
         Log.w(TAG, "血压仪连接成功 $device")

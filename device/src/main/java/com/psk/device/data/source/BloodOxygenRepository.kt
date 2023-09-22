@@ -2,8 +2,8 @@ package com.psk.device.data.source
 
 import com.psk.ble.DeviceType
 import com.psk.device.data.model.BloodOxygen
-import com.psk.device.data.source.local.IDbDataSource
 import com.psk.device.data.source.local.db.BloodOxygenDbDataSource
+import com.psk.device.data.source.local.db.IDbDataSource
 import com.psk.device.data.source.remote.BaseBloodOxygenDataSource
 import com.psk.device.data.source.remote.BaseRemoteDeviceDataSource
 import kotlinx.coroutines.CoroutineScope
@@ -33,19 +33,15 @@ class BloodOxygenRepository : KoinComponent, IRepository<BloodOxygen> {
         dataSource.enable(address)
     }
 
-    override suspend fun getAll(): List<BloodOxygen>? {
-        return dbDataSource.getAll()
-    }
-
     override suspend fun getListByMedicalOrderId(medicalOrderId: Long): List<BloodOxygen>? {
         return dbDataSource.getByMedicalOrderId(medicalOrderId)
     }
 
-    override fun getFlow(scope: CoroutineScope, medicalOrderId: Long, interval: Long): Flow<BloodOxygen> {
+    fun getFlow(scope: CoroutineScope, medicalOrderId: Long, interval: Long): Flow<BloodOxygen> {
         scope.launch(Dispatchers.IO) {
             while (isActive) {
                 dataSource.fetch(medicalOrderId)?.apply {
-                    dbDataSource.save(this)
+                    dbDataSource.insert(this)
                 }
                 delay(interval)
             }

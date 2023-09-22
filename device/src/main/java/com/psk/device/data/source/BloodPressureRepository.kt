@@ -2,8 +2,8 @@ package com.psk.device.data.source
 
 import com.psk.ble.DeviceType
 import com.psk.device.data.model.BloodPressure
-import com.psk.device.data.source.local.IDbDataSource
 import com.psk.device.data.source.local.db.BloodPressureDbDataSource
+import com.psk.device.data.source.local.db.IDbDataSource
 import com.psk.device.data.source.remote.BaseBloodPressureDataSource
 import com.psk.device.data.source.remote.BaseRemoteDeviceDataSource
 import kotlinx.coroutines.CoroutineScope
@@ -33,19 +33,15 @@ class BloodPressureRepository : KoinComponent, IRepository<BloodPressure> {
         dataSource.enable(address)
     }
 
-    override suspend fun getAll(): List<BloodPressure>? {
-        return dbDataSource.getAll()
-    }
-
     override suspend fun getListByMedicalOrderId(medicalOrderId: Long): List<BloodPressure>? {
         return dbDataSource.getByMedicalOrderId(medicalOrderId)
     }
 
-    override fun getFlow(scope: CoroutineScope, medicalOrderId: Long, interval: Long): Flow<BloodPressure> {
+    fun getFetchFlow(scope: CoroutineScope, medicalOrderId: Long, interval: Long): Flow<BloodPressure> {
         scope.launch(Dispatchers.IO) {
             while (isActive) {
                 dataSource.fetch(medicalOrderId)?.apply {
-                    dbDataSource.save(this)
+                    dbDataSource.insert(this)
                 }
                 // 设备大概在3秒内可以多次获取同一次测量结果。
                 delay(interval)
@@ -54,7 +50,22 @@ class BloodPressureRepository : KoinComponent, IRepository<BloodPressure> {
         return dbDataSource.listenLatest(System.currentTimeMillis() / 1000).filterNotNull()
     }
 
+    fun getMeasureFlow(scope: CoroutineScope, medicalOrderId: Long, interval: Long): Flow<BloodPressure> {
+        scope.launch(Dispatchers.IO) {
+            while (isActive) {
+                println("开始测量")
+                dataSource.measure(medicalOrderId)?.apply {
+                    dbDataSource.insert(this)
+                }
+                println("测量完成")
+                // 设备大概在3秒内可以多次获取同一次测量结果。
+                delay(interval)
+            }
+        }
+        return dbDataSource.listenLatest(System.currentTimeMillis() / 1000).filterNotNull()
+    }
+
     suspend fun measure(): BloodPressure? {
-        return dataSource.measure()
+        return dataSource.measure(-1)
     }
 }

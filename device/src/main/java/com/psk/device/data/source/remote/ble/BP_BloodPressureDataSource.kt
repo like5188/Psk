@@ -50,9 +50,9 @@ class BP_BloodPressureDataSource : BaseBloodPressureDataSource(DeviceType.BloodP
         return parseBloodPressure(data, medicalOrderId)
     }
 
-    override suspend fun measure(): BloodPressure? {
+    override suspend fun measure(medicalOrderId: Long): BloodPressure? {
         val data = bleManager.writeAndWaitResult(device, "cc80020301020002")
-        return parseBloodPressure(data, -1)
+        return parseBloodPressure(data, medicalOrderId)
     }
 
     private fun parseBloodPressure(data: ByteArray?, medicalOrderId: Long): BloodPressure? {
