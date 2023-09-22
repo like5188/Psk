@@ -24,6 +24,7 @@ class ShangXiaZhiFragment : BaseLazyFragment() {
 
     private lateinit var mBinding: FragmentReportTrainBinding
     private val decimalFormat = DecimalFormat("######0.00")
+    private val decimalFormat1 = DecimalFormat("00")
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_report_train, container, false)
@@ -33,9 +34,7 @@ class ShangXiaZhiFragment : BaseLazyFragment() {
     private fun formatDuration(duration: Int): String {
         val min = duration / 60
         val sec = duration % 60
-        val minStr = if (min < 10) "0$min" else "$min"
-        val secStr = if (sec < 10) "0$sec" else "$sec"
-        return if (min >= 1) "${minStr}分${secStr}秒" else "${secStr}秒"
+        return if (min >= 1) "${decimalFormat1.format(min)}分${decimalFormat1.format(sec)}秒" else "${decimalFormat1.format(sec)}秒"
     }
 
     override fun onLazyLoadData() {
