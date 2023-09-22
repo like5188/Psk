@@ -23,7 +23,7 @@ class MainViewModel(
     private val sdf: SimpleDateFormat by inject(named("yyyy-MM-dd HH:mm:ss"))
     private val countDownTimer by lazy {
         object : SecondCountDownTimer(Int.MAX_VALUE.toLong(), 1) {
-            override fun onSecondsTick(secondsUntilFinished: Long) {
+            override fun onSecondTick(secondsUntilFinished: Long) {
                 _uiState.update {
                     it.copy(
                         time = sdf.format(Date())

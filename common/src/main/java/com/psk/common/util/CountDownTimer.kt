@@ -7,7 +7,7 @@ import androidx.annotation.MainThread
  * 秒倒计时，支持暂停、恢复。
  * @param totalInterval    倒计时总时长。秒
  */
-abstract class SecondsTicker(totalInterval: Long) {
+abstract class SecondTicker(totalInterval: Long) {
     private var countDownTimer: CountDownTimer? = null
 
     /**
@@ -34,16 +34,16 @@ abstract class SecondsTicker(totalInterval: Long) {
         status = 1
         // 注意：此处SecondCountDownTimer实例化必须在主线程。否则报错：Can't create handler inside thread Thread[DefaultDispatcher-worker-4,5,main] that has not called Looper.prepare()
         countDownTimer = object : SecondCountDownTimer(remainInterval, 1) {
-            override fun onSecondsTick(secondsUntilFinished: Long) {
+            override fun onSecondTick(secondsUntilFinished: Long) {
                 remainInterval = secondsUntilFinished
-                this@SecondsTicker.onTick(secondsUntilFinished)
+                this@SecondTicker.onTick(secondsUntilFinished)
             }
 
             override fun onFinish() {
                 status = 3
                 countDownTimer?.cancel()
                 countDownTimer = null
-                this@SecondsTicker.onFinish()
+                this@SecondTicker.onFinish()
             }
         }.start()
     }
@@ -65,8 +65,8 @@ abstract class SecondsTicker(totalInterval: Long) {
 abstract class SecondCountDownTimer(secondsInFuture: Long, countDownInterval: Long) :
     CountDownTimer(secondsInFuture * 1000, countDownInterval * 1000) {
     final override fun onTick(millisUntilFinished: Long) {
-        onSecondsTick(millisUntilFinished / 1000)
+        onSecondTick(millisUntilFinished / 1000)
     }
 
-    abstract fun onSecondsTick(secondsUntilFinished: Long)
+    abstract fun onSecondTick(secondsUntilFinished: Long)
 }
