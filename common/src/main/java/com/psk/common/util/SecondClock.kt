@@ -9,7 +9,7 @@ import java.text.DecimalFormat
 
 class DefaultDigitalClock(private val maxSeconds: Long = -1, private val clock: ClockOnMainThread) {
     private var mTicker: Ticker? = null
-    private val handler = Handler { msg ->
+    private val handler = Handler(Looper.getMainLooper()) { msg ->
         if (msg.what == TICK_EVENT) {
             val seconds = msg.obj as Long
             val HHMMss = formatElapsedTime(seconds)
