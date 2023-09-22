@@ -23,7 +23,7 @@ data class ShangXiaZhi(
     val medicalOrderId: Long = 0,
 ) {
     @Ignore
-    var curTime: String = ""//当前计时。用于游戏界面显示。其实上下肢没有返回这个数据，是自己计算的。
+    var curTime: String = ""//当前倒计时。用于游戏界面显示。其实上下肢没有返回这个数据，是自己计算的。
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is ShangXiaZhi) return false
