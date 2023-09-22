@@ -10,7 +10,6 @@ import com.like.common.base.BaseLazyFragment
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.data.model.ShangXiaZhiReport
 import com.psk.shangxiazhi.databinding.FragmentReportTrainBinding
-import org.koin.android.ext.android.inject
 import java.text.DecimalFormat
 
 class ShangXiaZhiFragment : BaseLazyFragment() {
@@ -24,7 +23,7 @@ class ShangXiaZhiFragment : BaseLazyFragment() {
     }
 
     private lateinit var mBinding: FragmentReportTrainBinding
-    private val decimalFormat by inject<DecimalFormat>()
+    private val decimalFormat = DecimalFormat("######0.00")
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_report_train, container, false)

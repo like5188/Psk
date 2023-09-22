@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.text.DecimalFormat
 import java.util.Calendar
 import java.util.Date
 
@@ -34,6 +35,7 @@ class HistoryViewModel(deviceManager: DeviceManager) : ViewModel() {
     private val unionRepository = deviceManager.unionRepository
     private val healthInfoRepository = deviceManager.healthInfoRepository
     private lateinit var datas: Map<String, List<DateAndData>>
+    private val decimalFormat = DecimalFormat("00")
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -54,7 +56,7 @@ class HistoryViewModel(deviceManager: DeviceManager) : ViewModel() {
                     data = it.key
                 )
             }.groupBy {
-                "${it.year}年${it.month.format2()}月"
+                "${it.year}年${decimalFormat.format(it.month)}月"
             }
             _uiState.update {
                 val key = datas.keys.lastOrNull()
