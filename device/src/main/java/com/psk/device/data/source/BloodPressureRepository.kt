@@ -53,11 +53,9 @@ class BloodPressureRepository : KoinComponent, IRepository<BloodPressure> {
     fun getMeasureFlow(scope: CoroutineScope, medicalOrderId: Long, interval: Long): Flow<BloodPressure> {
         scope.launch(Dispatchers.IO) {
             while (isActive) {
-                println("开始测量")
                 dataSource.measure(medicalOrderId)?.apply {
                     dbDataSource.insert(this)
                 }
-                println("测量完成")
                 // 设备大概在3秒内可以多次获取同一次测量结果。
                 delay(interval)
             }
