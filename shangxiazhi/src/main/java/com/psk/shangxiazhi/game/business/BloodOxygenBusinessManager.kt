@@ -29,17 +29,16 @@ class BloodOxygenBusinessManager(
         return BloodOxygenReport.report
     }
 
-    override suspend fun run() =
-        withContext(Dispatchers.IO) {
-            Log.d(TAG, "startBloodOxygenJob")
-            val flow = repository.getFlow(lifecycleScope, medicalOrderId, 1000)
-            launch {
-                BloodOxygenReport.createForm(flow)
-            }
-            flow.distinctUntilChanged().conflate().collect { value ->
-                gameController.updateBloodOxygenData(value.value)
-            }
+    override suspend fun run() = withContext(Dispatchers.IO) {
+        Log.d(TAG, "startBloodOxygenJob")
+        val flow = repository.getFlow(lifecycleScope, medicalOrderId, 1000)
+        launch {
+            BloodOxygenReport.createForm(flow)
         }
+        flow.distinctUntilChanged().conflate().collect { value ->
+            gameController.updateBloodOxygenData(value.value)
+        }
+    }
 
     override fun onConnected(device: Device) {
         Log.w(TAG, "血氧仪连接成功 $device")

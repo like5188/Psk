@@ -30,21 +30,20 @@ class BloodPressureBusinessManager(
         return BloodPressureReport.report
     }
 
-    override suspend fun run() =
-        withContext(Dispatchers.IO) {
-            Log.d(TAG, "startBloodPressureJob")
-            val flow = when (bloodPressureMeasureType) {
-                0 -> repository.getFetchFlow(lifecycleScope, medicalOrderId, 1000)
-                1 -> repository.getMeasureFlow(lifecycleScope, medicalOrderId, 1000 * 60 * 5)
-                else -> null
-            } ?: return@withContext
-            launch {
-                BloodPressureReport.createForm(flow)
-            }
-            flow.distinctUntilChanged().conflate().collect { value ->
-                gameController.updateBloodPressureData(value.sbp, value.dbp)
-            }
+    override suspend fun run() = withContext(Dispatchers.IO) {
+        Log.d(TAG, "startBloodPressureJob")
+        val flow = when (bloodPressureMeasureType) {
+            0 -> repository.getFetchFlow(lifecycleScope, medicalOrderId, 1000)
+            1 -> repository.getMeasureFlow(lifecycleScope, medicalOrderId, 1000 * 60 * 5)
+            else -> null
+        } ?: return@withContext
+        launch {
+            BloodPressureReport.createForm(flow)
         }
+        flow.distinctUntilChanged().conflate().collect { value ->
+            gameController.updateBloodPressureData(value.sbp, value.dbp)
+        }
+    }
 
     override fun onConnected(device: Device) {
         Log.w(TAG, "血压仪连接成功 $device")
