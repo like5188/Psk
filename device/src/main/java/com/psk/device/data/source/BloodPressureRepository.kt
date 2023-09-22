@@ -51,6 +51,7 @@ class BloodPressureRepository : KoinComponent, IRepository<BloodPressure> {
     }
 
     fun getMeasureFlow(scope: CoroutineScope, medicalOrderId: Long, interval: Long): Flow<BloodPressure> {
+        // todo 保持血压计不关机
         scope.launch(Dispatchers.IO) {
             while (isActive) {
                 println("开始测量血压")
