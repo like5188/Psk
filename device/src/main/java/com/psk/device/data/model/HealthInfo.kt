@@ -16,7 +16,6 @@ data class HealthInfo(
     val maxTargetHeartRate: Int = 0,// 最大靶心率
     val bloodPressureBefore: BloodPressure? = null,// 运动前血压
     val bloodPressureAfter: BloodPressure? = null,// 运动后血压
-    val bloodPressureMeasureType: Int = 0// 运动中血压测量方式。0：手动测量；1：自动测量（间隔5分钟测量）
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readLong(),
@@ -28,7 +27,6 @@ data class HealthInfo(
         parcel.readInt(),
         parcel.readParcelable(BloodPressure::class.java.classLoader),
         parcel.readParcelable(BloodPressure::class.java.classLoader),
-        parcel.readInt()
     ) {
     }
 
@@ -42,7 +40,6 @@ data class HealthInfo(
         parcel.writeInt(maxTargetHeartRate)
         parcel.writeParcelable(bloodPressureBefore, flags)
         parcel.writeParcelable(bloodPressureAfter, flags)
-        parcel.writeInt(bloodPressureMeasureType)
     }
 
     override fun describeContents(): Int {

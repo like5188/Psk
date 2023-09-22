@@ -28,6 +28,7 @@ class TrainActivity : AppCompatActivity() {
         DataBindingUtil.setContentView(this, R.layout.activity_train)
     }
     private val mViewModel: TrainViewModel by viewModel()
+    private var bloodPressureMeasureType: Int = 0// 运动中血压测量方式。0：手动测量；1：自动测量（间隔5分钟测量）
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,10 +52,16 @@ class TrainActivity : AppCompatActivity() {
             mViewModel.measureBloodPressureAfter(this)
         }
         mBinding.btnTrain.setOnClickListener {
-            mViewModel.train()
+            mViewModel.train(bloodPressureMeasureType)
         }
         mBinding.btnReport.setOnClickListener {
             mViewModel.report()
+        }
+        mBinding.bloodPressureMeasureTypeRadioGroup.setOnCheckedChangeListener { group, checkedId ->
+            when (checkedId) {
+                R.id.manualRb -> bloodPressureMeasureType = 0
+                R.id.autoRb -> bloodPressureMeasureType = 1
+            }
         }
         collectUiState()
     }

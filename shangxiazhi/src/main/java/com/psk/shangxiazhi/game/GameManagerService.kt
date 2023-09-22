@@ -58,6 +58,7 @@ class GameManagerService : Service() {
         medicalOrderId: Long,
         devices: Map<DeviceType, BleScanInfo>,
         scene: TrainScene,
+        bloodPressureMeasureType: Int,
         onReport: ((List<IReport>) -> Unit)? = null
     ) {
         if (!devices.containsKey(DeviceType.ShangXiaZhi)) {

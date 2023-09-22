@@ -270,21 +270,22 @@
                             android:textAppearance="@style/AppSubtitle2" />
 
                         <RadioGroup
-                            android:id="@+id/radioGroup"
+                            android:id="@+id/bloodPressureMeasureTypeRadioGroup"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_marginStart="15dp"
                             android:gravity="end"
                             android:orientation="horizontal">
 
                             <com.google.android.material.radiobutton.MaterialRadioButton
-                                android:id="@+id/option1"
+                                android:id="@+id/manualRb"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:checked="true"
                                 android:text="手动测量" />
 
                             <com.google.android.material.radiobutton.MaterialRadioButton
-                                android:id="@+id/option2"
+                                android:id="@+id/autoRb"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="自动测量" />

@@ -77,10 +77,7 @@ class TrainViewModel(deviceManager: DeviceManager) : ViewModel(), KoinComponent 
             onSelected = { deviceMap ->
                 _uiState.update {
                     it.copy(
-                        deviceMap = deviceMap,
-                        healthInfo = HealthInfo(),
-                        scene = null,
-                        reports = null
+                        deviceMap = deviceMap, healthInfo = HealthInfo(), scene = null, reports = null
                     )
                 }
             }
@@ -180,7 +177,7 @@ class TrainViewModel(deviceManager: DeviceManager) : ViewModel(), KoinComponent 
         }.show(activity)
     }
 
-    fun train() {
+    fun train(bloodPressureMeasureType: Int) {
         val deviceMap = _uiState.value.deviceMap
         if (deviceMap.isNullOrEmpty()) {
             _uiState.update {
@@ -221,7 +218,7 @@ class TrainViewModel(deviceManager: DeviceManager) : ViewModel(), KoinComponent 
         viewModelScope.launch {
             healthInfoRepository.insert(newHealthInfo)
         }
-        _uiState.value.gameManagerService?.start(medicalOrderId, deviceMap, scene) { reports ->
+        _uiState.value.gameManagerService?.start(medicalOrderId, deviceMap, scene, bloodPressureMeasureType) { reports ->
             _uiState.update {
                 it.copy(
                     reports = reports
