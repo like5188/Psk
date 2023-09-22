@@ -33,8 +33,8 @@ class BloodPressureBusinessManager(
     override suspend fun run() = withContext(Dispatchers.IO) {
         Log.d(TAG, "startBloodPressureJob")
         val flow = when (bloodPressureMeasureType) {
-            0 -> repository.getFetchFlow(lifecycleScope, medicalOrderId, 1000)
-            1 -> repository.getMeasureFlow(lifecycleScope, medicalOrderId, 1000 * 60 * 5)
+            0 -> repository.getFetchFlow(this, medicalOrderId, 1000)
+            1 -> repository.getMeasureFlow(this, medicalOrderId, 1000 * 60 * 5)
             else -> null
         } ?: return@withContext
         launch {

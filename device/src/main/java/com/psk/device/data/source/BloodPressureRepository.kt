@@ -51,16 +51,29 @@ class BloodPressureRepository : KoinComponent, IRepository<BloodPressure> {
     }
 
     fun getMeasureFlow(scope: CoroutineScope, medicalOrderId: Long, interval: Long): Flow<BloodPressure> {
-        // todo 保持血压计不关机
         scope.launch(Dispatchers.IO) {
+            delay(100)// 这里必须延迟一下，否则在机顶盒上，会出现连接成功开始测量失败。
             while (isActive) {
                 println("开始测量血压")
                 dataSource.measure(medicalOrderId)?.apply {
                     dbDataSource.insert(this)
                 }
                 println("血压测量完成")
-                // 设备大概在3秒内可以多次获取同一次测量结果。
-                delay(interval)
+                // 延迟，并在延迟阶段发送连接指令使血压计处于开机状态，因为测量完成后，大概1分钟血压计就会自动关机。
+                val sendOrderInterval = 19 * 1000L// 这里取19秒，这样1分钟内可以发送3次，大大减少发送失败导致血压计关机的情况。
+                if (interval < sendOrderInterval) {
+                    delay(interval)
+                } else {
+                    var remain = interval
+                    while (remain > 0) {
+                        val d = remain.coerceAtMost(sendOrderInterval)
+                        delay(d)
+                        remain -= sendOrderInterval
+                        if (d >= sendOrderInterval) {
+                            println("发送连接指令使血压计处于开机状态：${dataSource.keepConnect()}")
+                        }
+                    }
+                }
             }
         }
         return dbDataSource.listenLatest(System.currentTimeMillis() / 1000).filterNotNull()
@@ -69,4 +82,5 @@ class BloodPressureRepository : KoinComponent, IRepository<BloodPressure> {
     suspend fun measure(): BloodPressure? {
         return dataSource.measure(-1)
     }
+
 }

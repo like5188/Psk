@@ -39,7 +39,7 @@ class HeartRateBusinessManager(
 
     override suspend fun run() = withContext(Dispatchers.IO) {
         Log.d(TAG, "startHeartRateJob")
-        val flow = repository.getFlow(lifecycleScope, medicalOrderId)
+        val flow = repository.getFlow(this, medicalOrderId)
         launch {
             HeartRateReport.createForm(flow)
         }

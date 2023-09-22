@@ -70,4 +70,8 @@ class BP_BloodPressureDataSource : BaseBloodPressureDataSource(DeviceType.BloodP
         }
     }
 
+    override suspend fun keepConnect(): Boolean {
+        return bleManager.write(device, "cc80020301010001")
+    }
+
 }

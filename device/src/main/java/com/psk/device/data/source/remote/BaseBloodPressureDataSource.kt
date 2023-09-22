@@ -14,4 +14,9 @@ abstract class BaseBloodPressureDataSource(deviceType: DeviceType) : BaseRemoteD
      * 自动测量并返回结果
      */
     abstract suspend fun measure(medicalOrderId: Long): BloodPressure?
+
+    /**
+     * 向血压计发送保持连接指令，使得血压计能保持不关机状态。
+     */
+    abstract suspend fun keepConnect(): Boolean
 }

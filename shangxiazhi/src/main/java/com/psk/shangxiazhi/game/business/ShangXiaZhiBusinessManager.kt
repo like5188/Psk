@@ -12,6 +12,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
 
 class ShangXiaZhiBusinessManager(
@@ -36,9 +37,9 @@ class ShangXiaZhiBusinessManager(
         return ShangXiaZhiReport.report
     }
 
-    override suspend fun run() {
+    override suspend fun run() = withContext(Dispatchers.IO) {
         Log.d(TAG, "startShangXiaZhiJob")
-        val flow = repository.getFlow(lifecycleScope, medicalOrderId)
+        val flow = repository.getFlow(this, medicalOrderId)
         ShangXiaZhiReport.createForm(flow).collect {
             gameController.updateGameData(it)
         }
