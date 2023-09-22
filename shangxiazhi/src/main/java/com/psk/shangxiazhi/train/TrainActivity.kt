@@ -81,6 +81,7 @@ class TrainActivity : AppCompatActivity() {
                 mBinding.bloodPressureBeforeCardView.gone()
                 mBinding.bloodPressureAfterCardView.gone()
                 mBinding.targetHeartRateCardView.gone()
+                mBinding.bloodPressureMeasureTypeCardView.gone()
                 if (it.isNullOrEmpty()) {
                     return@collectDistinctProperty
                 }
@@ -89,6 +90,7 @@ class TrainActivity : AppCompatActivity() {
                 if (it.containsKey(DeviceType.BloodPressure)) {
                     mBinding.bloodPressureBeforeCardView.visible()
                     mBinding.bloodPressureAfterCardView.visible()
+                    mBinding.bloodPressureMeasureTypeCardView.visible()
                 }
                 if (it.containsKey(DeviceType.HeartRate)) {
                     mBinding.targetHeartRateCardView.visible()
