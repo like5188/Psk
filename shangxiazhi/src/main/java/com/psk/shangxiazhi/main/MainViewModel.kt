@@ -2,7 +2,7 @@ package com.psk.shangxiazhi.main
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
-import com.psk.common.util.SecondCountDownTimer
+import com.psk.common.util.SecondClock
 import com.psk.shangxiazhi.data.source.ShangXiaZhiBusinessRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,23 +21,18 @@ class MainViewModel(
     private val _uiState = MutableStateFlow(MainUiState())
     val uiState = _uiState.asStateFlow()
     private val sdf: SimpleDateFormat by inject(named("yyyy-MM-dd HH:mm:ss"))
-    private val countDownTimer by lazy {
-        object : SecondCountDownTimer(Int.MAX_VALUE.toLong(), 1) {
-            override fun onSecondTick(secondsUntilFinished: Long) {
-                _uiState.update {
-                    it.copy(
-                        time = sdf.format(Date())
-                    )
-                }
-            }
-
-            override fun onFinish() {
+    private val secondClock = object : SecondClock() {
+        override fun onTick(seconds: Long) {
+            _uiState.update {
+                it.copy(
+                    time = sdf.format(Date())
+                )
             }
         }
     }
 
     init {
-        countDownTimer.start()
+        secondClock.start()
     }
 
     fun isLogin(context: Context): Boolean {
@@ -46,7 +41,7 @@ class MainViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        countDownTimer.cancel()
+        secondClock.stop()
     }
 
 }
