@@ -34,20 +34,21 @@ class TrainViewModel(deviceManager: DeviceManager) : ViewModel(), KoinComponent 
     private val _uiState = MutableStateFlow(TrainUiState())
     val uiState = _uiState.asStateFlow()
     private val healthInfoRepository = deviceManager.healthInfoRepository
+    private var gameManagerService: GameManagerService? = null
 
     //创建一个ServiceConnection回调，通过IBinder进行交互
     private val localConnection = object : ServiceConnection {
         override fun onServiceDisconnected(name: ComponentName?) {
             Log.w(TAG, "onServiceDisconnected")
             //本句话借用：Android系统在同service的连接意外丢失时调用这个．比如当service崩溃了或被强杀了．当客户端解除绑定时，这个方法不会被调用．
+            gameManagerService = null
         }
 
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             Log.w(TAG, "onServiceConnected")
             val localBinder = service as? GameManagerService.LocalBinder
-            _uiState.update {
-                it.copy(gameManagerService = localBinder?.getService())
-            }
+            gameManagerService = localBinder?.getService()
+            gameManagerService?.init(viewModelScope)
         }
     }
 
@@ -218,14 +219,13 @@ class TrainViewModel(deviceManager: DeviceManager) : ViewModel(), KoinComponent 
         viewModelScope.launch {
             healthInfoRepository.insert(newHealthInfo)
         }
-        _uiState.value.gameManagerService?.start(medicalOrderId, deviceMap, scene, bloodPressureMeasureType) { reports ->
+        gameManagerService?.start(medicalOrderId, deviceMap, scene, bloodPressureMeasureType) { reports ->
             _uiState.update {
                 it.copy(
                     reports = reports
                 )
             }
         }
-        return
     }
 
     fun report() {

@@ -5,11 +5,7 @@ import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
-import androidx.activity.ComponentActivity
-import androidx.lifecycle.lifecycleScope
-import com.psk.ble.BleManager
 import com.psk.ble.DeviceType
-import com.psk.ble.Tip
 import com.psk.device.DeviceManager
 import com.psk.shangxiazhi.data.model.BleScanInfo
 import com.psk.shangxiazhi.data.model.IReport
@@ -31,7 +27,6 @@ class GameManagerService : Service() {
         private val TAG = GameManagerService::class.java.simpleName
     }
 
-    private val bleManager by inject<BleManager>()
     private val deviceManager by inject<DeviceManager>()
     private val gameController by inject<GameController>()
     private lateinit var lifecycleScope: CoroutineScope
@@ -39,19 +34,10 @@ class GameManagerService : Service() {
         MultiBusinessManager()
     }
 
-    /**
-     * 初始化蓝牙相关的工具类
-     * @param onTip     蓝牙相关的提示
-     */
-    fun initBle(
-        activity: ComponentActivity,
-        onTip: ((Tip) -> Unit)? = { Log.e(TAG, "onTip ${it.msg}") }
-    ) {
-        lifecycleScope = activity.lifecycleScope
-        bleManager.onTip = onTip
+    fun init(scope: CoroutineScope) {
+        lifecycleScope = scope
         lifecycleScope.launch {
             deviceManager.init()
-            bleManager.init(activity)
         }
     }
 

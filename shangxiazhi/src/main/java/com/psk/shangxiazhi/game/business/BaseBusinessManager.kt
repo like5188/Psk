@@ -66,9 +66,6 @@ abstract class BaseBusinessManager<Data, Repository : IRepository<Data>>(
         bleManager.connect(deviceType, lifecycleScope, 3000L, ::onConnected, ::onDisconnected)
     }
 
-    // 游戏app关闭回调
-    fun onGameAppFinish() {}
-
     abstract fun getReport(): IReport
     protected abstract suspend fun run()
     protected abstract fun onConnected(device: Device)

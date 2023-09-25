@@ -30,7 +30,7 @@ class BleManager(private val context: Context) {
         bleBroadcastReceiverManager.register()
     }
 
-    suspend fun init(activity: ComponentActivity) {
+    suspend fun requestEnvironment(activity: ComponentActivity) {
         PermissionUtils.requestScanEnvironment(activity)
         PermissionUtils.requestConnectEnvironment(activity)
     }

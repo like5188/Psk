@@ -84,9 +84,6 @@ class MultiBusinessManager : RemoteCallback.Stub(), KoinComponent {
 
     override fun onGameAppFinish() {
         Log.i(TAG, "onGameAppFinish")
-        managers.values.forEach {
-            it.onGameAppFinish()
-        }
         gameController.destroy()
         // 由于 bleManager.onDestroy() 方法不会触发 connect() 方法的 onDisconnected 回调，原因见 Ble 框架的 close 方法
         // 所以 gameController 中的连接状态相关的方法需要单独调用才能更新界面状态。

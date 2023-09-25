@@ -1,17 +1,22 @@
 package com.psk.shangxiazhi.train
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.lifecycleScope
 import com.like.common.util.gone
 import com.like.common.util.mvi.propertyCollector
 import com.like.common.util.startActivity
 import com.like.common.util.visible
+import com.psk.ble.BleManager
 import com.psk.ble.DeviceType
 import com.psk.common.CommonApplication
 import com.psk.common.util.showToast
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.databinding.ActivityTrainBinding
+import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
@@ -28,10 +33,15 @@ class TrainActivity : AppCompatActivity() {
         DataBindingUtil.setContentView(this, R.layout.activity_train)
     }
     private val mViewModel: TrainViewModel by viewModel()
+    private val bleManager by inject<BleManager>()
     private var bloodPressureMeasureType: Int = 0// 运动中血压测量方式。0：手动测量；1：自动测量（间隔5分钟测量）
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        lifecycleScope.launch {
+            bleManager.onTip = { Log.e("bleManager", "onTip ${it.msg}") }
+            bleManager.requestEnvironment(this@TrainActivity)
+        }
         mViewModel.bindGameManagerService(this)
         mBinding.deviceCardView.setOnClickListener {
             mViewModel.selectDevices(this)
@@ -70,10 +80,6 @@ class TrainActivity : AppCompatActivity() {
         mViewModel.uiState.propertyCollector(this) {
             collectNotHandledEventProperty(TrainUiState::toastEvent) {
                 showToast(it)
-            }
-            collectDistinctProperty(TrainUiState::gameManagerService) {
-                it ?: return@collectDistinctProperty
-                it.initBle(this@TrainActivity)
             }
             collectDistinctProperty(TrainUiState::deviceMap) {
                 mBinding.sceneCardView.gone()

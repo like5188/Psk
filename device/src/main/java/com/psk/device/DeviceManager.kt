@@ -38,7 +38,7 @@ class DeviceManager(
     }
 
     /**
-     * 根据设备类型创建仓库（因为[DeviceManager]是single，所以它也是单例）
+     * 根据设备类型创建仓库（因为[DeviceManager]是single，所以它也是单例
      */
     fun <T : IRepository<*>> createRepository(deviceType: DeviceType): T {
         return if (repositories.containsKey(deviceType)) {
