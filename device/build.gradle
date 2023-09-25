@@ -52,4 +52,5 @@ dependencies {
     // SCI-411C
     implementation(name: 'cbelt-release-v0.1', ext: 'aar')
     implementation project(':ble')
+    implementation project(':common')
 }

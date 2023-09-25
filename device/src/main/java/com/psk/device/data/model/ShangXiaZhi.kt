@@ -1,7 +1,6 @@
 package com.psk.device.data.model
 
 import androidx.room.Entity
-import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.twsz.remotecommands.TrunkCommandData
 
@@ -11,7 +10,7 @@ data class ShangXiaZhi(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val time: Long = System.currentTimeMillis() / 1000,
-    var model: Byte = 0,//模式： 0x01 表示  被动 0x02 表示  主动
+    val model: Byte = 0,//模式： 0x01 表示  被动 0x02 表示  主动
     val speedLevel: Int = 0,//速度档位：范围0~12           十六进制：0x00~0x3c
     val speed: Int = 0,//速度圈数：范围0~
     val offset: Int = 0,//偏移：范围0~30 左偏：0~14     十六进制：0x00~0x0e 中：15 	     十六进制：0x0f 右偏：16~30   十六进制：0x10~0x1e
@@ -21,9 +20,9 @@ data class ShangXiaZhi(
     val intelligence: Byte = 0,//智能： 0x40 表示 关闭 0x41 表示 打开
     val direction: Byte = 0,//正反转： 0x50 表示 反转 0x51 表示 正转
     val medicalOrderId: Long = 0,
+    val curTime: String = ""//当前倒计时。用于游戏界面显示。但是上下肢没有返回这个数据，所以只能自己计算。
 ) {
-    @Ignore
-    var curTime: String = ""//当前倒计时。用于游戏界面显示。其实上下肢没有返回这个数据，是自己计算的。
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is ShangXiaZhi) return false

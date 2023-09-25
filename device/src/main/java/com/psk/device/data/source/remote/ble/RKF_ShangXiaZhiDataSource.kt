@@ -3,6 +3,7 @@ package com.psk.device.data.source.remote.ble
 import com.like.ble.util.isBleDeviceConnected
 import com.psk.ble.DeviceType
 import com.psk.ble.Protocol
+import com.psk.common.util.SecondClock
 import com.psk.device.data.model.ShangXiaZhi
 import com.psk.device.data.model.ShangXiaZhiParams
 import com.psk.device.data.source.remote.BaseShangXiaZhiDataSource
@@ -12,6 +13,7 @@ import com.twsz.remotecommands.RemoteCommand
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
+import java.text.DecimalFormat
 
 /**
  * 瑞甲上下肢康复机数据源
@@ -25,6 +27,12 @@ class RKF_ShangXiaZhiDataSource : BaseShangXiaZhiDataSource(DeviceType.ShangXiaZ
     private val shangXiaZhiDataParser by lazy {
         ShangXiaZhiDataParser()
     }
+
+    // 计时器，由于上下肢没有返回时间数据，所以只能自己计算。
+    private val secondClock by lazy {
+        SecondClock()
+    }
+    private val decimalFormat = DecimalFormat("00")
 
     // 上下肢开始运行或者从暂停中恢复运行时回调
     var onStart: (() -> Unit)? = null
@@ -48,6 +56,9 @@ class RKF_ShangXiaZhiDataSource : BaseShangXiaZhiDataSource(DeviceType.ShangXiaZ
                 intelligence: Byte,
                 direction: Byte
             ) {
+                val seconds = secondClock.getSeconds()
+                val minute = seconds / 60
+                val second = seconds % 60
                 val shangXiaZhi = ShangXiaZhi(
                     model = model,
                     speedLevel = speedLevel,
@@ -58,17 +69,21 @@ class RKF_ShangXiaZhiDataSource : BaseShangXiaZhiDataSource(DeviceType.ShangXiaZ
                     resistance = resistance,
                     intelligence = intelligence,
                     direction = direction,
-                    medicalOrderId = medicalOrderId
+                    medicalOrderId = medicalOrderId,
+                    curTime = "${decimalFormat.format(minute)}:${decimalFormat.format(second)}"
                 )
+                secondClock.startOrResume()
                 onStart?.invoke()
                 trySend(shangXiaZhi)
             }
 
             override fun onPause() {
+                secondClock.stop()
                 onPause?.invoke()
             }
 
             override fun onOver() {
+                secondClock.stop()
                 onOver?.invoke()
             }
 
