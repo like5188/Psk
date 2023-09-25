@@ -93,26 +93,27 @@ class ShangXiaZhiBusinessManager(
         cancelJob()
     }
 
-    override fun onGameStart() {
+    fun onGameLoading() {}
+
+    fun onGameStart() {
         isStart.compareAndSet(false, true)
     }
 
-    override fun onGameResume() {
+    fun onGameResume() {
         lifecycleScope.launch(Dispatchers.IO) {
             repository.resume()
         }
     }
 
-    override fun onGamePause() {
+    fun onGamePause() {
         lifecycleScope.launch(Dispatchers.IO) {
             repository.pause()
         }
     }
 
-    override fun onGameOver() {
+    fun onGameOver() {
         lifecycleScope.launch(Dispatchers.IO) {
             repository.over()
-            cancelJob()
         }
     }
 

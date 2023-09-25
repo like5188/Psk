@@ -18,6 +18,8 @@ class MultiBusinessManager : RemoteCallback.Stub(), KoinComponent {
     private val gameController by inject<GameController>()
     private val managers = mutableMapOf<DeviceType, BaseBusinessManager<*, *>>()
     var onReport: ((List<IReport>) -> Unit)? = null
+    private val shangXiaZhiBusinessManager: ShangXiaZhiBusinessManager?
+        get() = managers.values.firstOrNull { it is ShangXiaZhiBusinessManager } as? ShangXiaZhiBusinessManager
 
     fun add(deviceType: DeviceType, manager: BaseBusinessManager<*, *>) {
         managers[deviceType] = manager
@@ -50,37 +52,27 @@ class MultiBusinessManager : RemoteCallback.Stub(), KoinComponent {
 
     override fun onGameLoading() {
         Log.i(TAG, "onGameLoading")
-        managers.values.forEach {
-            it.onGameLoading()
-        }
+        shangXiaZhiBusinessManager?.onGameLoading()
     }
 
     override fun onGameStart() {
         Log.i(TAG, "onGameStart")
-        managers.values.forEach {
-            it.onGameStart()
-        }
+        shangXiaZhiBusinessManager?.onGameStart()
     }
 
     override fun onGameResume() {
         Log.i(TAG, "onGameResume")
-        managers.values.forEach {
-            it.onGameResume()
-        }
+        shangXiaZhiBusinessManager?.onGameResume()
     }
 
     override fun onGamePause() {
         Log.i(TAG, "onGamePause")
-        managers.values.forEach {
-            it.onGamePause()
-        }
+        shangXiaZhiBusinessManager?.onGamePause()
     }
 
     override fun onGameOver() {
         Log.i(TAG, "onGameOver")
-        managers.values.forEach {
-            it.onGameOver()
-        }
+        shangXiaZhiBusinessManager?.onGameOver()
     }
 
     override fun onGameAppStart() {

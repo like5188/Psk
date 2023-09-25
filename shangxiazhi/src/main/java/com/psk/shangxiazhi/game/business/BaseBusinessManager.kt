@@ -61,27 +61,13 @@ abstract class BaseBusinessManager<Data, Repository : IRepository<Data>>(
         cancelJob()
     }
 
-    // 游戏控制上下肢
-    open fun onGameLoading() {}
-    open fun onGameStart() {}
-
-    open fun onGameResume() {
-        startJob()
-    }
-
-    open fun onGamePause() {
-        cancelJob()
-    }
-
-    open fun onGameOver() {
-        cancelJob()
-    }
-
-    open fun onGameAppStart() {
+    // 游戏app启动回调
+    fun onGameAppStart() {
         bleManager.connect(deviceType, lifecycleScope, 3000L, ::onConnected, ::onDisconnected)
     }
 
-    open fun onGameAppFinish() {}
+    // 游戏app关闭回调
+    fun onGameAppFinish() {}
 
     abstract fun getReport(): IReport
     protected abstract suspend fun run()
