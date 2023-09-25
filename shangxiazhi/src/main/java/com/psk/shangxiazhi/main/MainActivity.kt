@@ -95,7 +95,7 @@ class MainActivity : AppCompatActivity() {
             showToast("再按一次退出程序")
             firstTime = secondTime
         } else {
-            super.onBackPressed()
+            finish()
         }
     }
 
