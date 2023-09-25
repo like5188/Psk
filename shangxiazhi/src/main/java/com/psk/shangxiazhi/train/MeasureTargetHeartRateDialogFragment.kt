@@ -13,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import com.like.common.base.BaseDialogFragment
 import com.psk.ble.BleManager
 import com.psk.ble.DeviceType
+import com.psk.common.customview.ProgressDialog
 import com.psk.common.util.showToast
 import com.psk.device.DeviceManager
 import com.psk.device.data.source.HeartRateRepository
@@ -54,12 +55,16 @@ class MeasureTargetHeartRateDialogFragment private constructor() : BaseDialogFra
     var onSelected: ((minTargetHeartRate: Int, maxTargetHeartRate: Int) -> Unit)? = null
     private var job: Job? = null
     private val heartRates = mutableListOf<Int>()
+    private val mProgressDialog by lazy {
+        ProgressDialog(requireContext(), "测量中，请稍后……")
+    }
 
     private fun startJob() {
         if (job != null) {
             return
         }
         job = lifecycleScope.launch(Dispatchers.Main) {
+            mProgressDialog.show()
             heartRates.clear()
             repository.fetch().filterNotNull().map {
                 it.value
@@ -78,6 +83,7 @@ class MeasureTargetHeartRateDialogFragment private constructor() : BaseDialogFra
             cancelJob()
             val targetHeartRate = calc()
             mBinding.tvTargetHeartRate.text = "${targetHeartRate.first}~${targetHeartRate.second}"
+            mProgressDialog.dismiss()
         }
     }
 
