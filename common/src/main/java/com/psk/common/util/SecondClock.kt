@@ -7,7 +7,7 @@ import android.os.SystemClock
 /**
  * 整秒计时器
  */
-abstract class SecondClock {
+open class SecondClock {
     // 已经经理的毫秒数
     private var elapsedMillis: Long = -1L
     private var startTime: Long = -1L
@@ -34,8 +34,18 @@ abstract class SecondClock {
      */
     private var status: Int = 0
 
+    fun getSeconds() = elapsedMillis / 1000
+
+    fun startOrResume() {
+        if (status == 0) {
+            start()
+        } else if (status == 2) {
+            resume()
+        }
+    }
+
     fun start() {
-        if (status != 0 && status != 2) {
+        if (status != 0) {
             return
         }
         status = 1
@@ -60,5 +70,7 @@ abstract class SecondClock {
         handler.removeCallbacksAndMessages(null)
     }
 
-    abstract fun onTick(seconds: Long)
+    open fun onTick(seconds: Long) {
+
+    }
 }

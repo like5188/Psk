@@ -3,6 +3,7 @@ package com.psk.shangxiazhi.game.business
 import android.util.Log
 import com.psk.ble.Device
 import com.psk.ble.DeviceType
+import com.psk.common.util.SecondClock
 import com.psk.device.DeviceManager
 import com.psk.device.data.model.ShangXiaZhi
 import com.psk.device.data.source.ShangXiaZhiRepository
@@ -13,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.DecimalFormat
 import java.util.concurrent.atomic.AtomicBoolean
 
 class ShangXiaZhiBusinessManager(
@@ -28,9 +30,22 @@ class ShangXiaZhiBusinessManager(
     var onPauseGame: (() -> Unit)? = null
     var onOverGame: (() -> Unit)? = null
     private var isStart = AtomicBoolean(false)
+    private val secondClock by lazy {
+        SecondClock()
+    }
+    private val decimalFormat = DecimalFormat("00")
 
     init {
-        repository.setCallback(onStart = { onStartGame?.invoke() }, onPause = { onPauseGame?.invoke() }, onOver = { onOverGame?.invoke() })
+        repository.setCallback(onStart = {
+            secondClock.startOrResume()
+            onStartGame?.invoke()
+        }, onPause = {
+            secondClock.stop()
+            onPauseGame?.invoke()
+        }, onOver = {
+            secondClock.stop()
+            onOverGame?.invoke()
+        })
     }
 
     override fun getReport(): IReport {
@@ -41,6 +56,10 @@ class ShangXiaZhiBusinessManager(
         Log.d(TAG, "startShangXiaZhiJob")
         val flow = repository.getFlow(this, medicalOrderId)
         ShangXiaZhiReport.createForm(flow).collect {
+            val seconds = secondClock.getSeconds()
+            val minute = seconds / 60
+            val second = seconds % 60
+            it.time = "${decimalFormat.format(minute)}:${decimalFormat.format(second)}"
             gameController.updateGameData(it)
         }
     }
