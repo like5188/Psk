@@ -67,7 +67,7 @@ class ShangXiaZhiReport : IReport {
             // 这里不能用 distinctUntilChanged、conflate 等操作符，因为需要根据所有数据来计算里程等。必须得到每次数据。
             return flow.buffer(Int.MAX_VALUE).map { shangXiaZhi ->
                 val gameData = GameData().apply {
-                    time = shangXiaZhi.curTime
+                    time = shangXiaZhi.time
                     speed = shangXiaZhi.speed
                     speedLevel = shangXiaZhi.speedLevel
                     spasmLevel = shangXiaZhi.spasmLevel

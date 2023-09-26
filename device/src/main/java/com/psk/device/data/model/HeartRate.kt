@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 data class HeartRate(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
-    val time: Long = System.currentTimeMillis() / 1000,
+    val createTime: Long = System.currentTimeMillis() / 1000,
     /**
      * 心率
      */
@@ -20,7 +20,7 @@ data class HeartRate(
 ) {
 
     override fun toString(): String {
-        return "HeartRate(id=$id, time=$time, value=$value, coorYValuesSize=${coorYValues.size}, medicalOrderId=$medicalOrderId)"
+        return "HeartRate(id=$id, createTime=$createTime, value=$value, coorYValuesSize=${coorYValues.size}, medicalOrderId=$medicalOrderId)"
     }
 
     override fun equals(other: Any?): Boolean {

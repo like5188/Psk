@@ -70,7 +70,7 @@ class RKF_ShangXiaZhiDataSource : BaseShangXiaZhiDataSource(DeviceType.ShangXiaZ
                     intelligence = intelligence,
                     direction = direction,
                     medicalOrderId = medicalOrderId,
-                    curTime = "${decimalFormat.format(minute)}:${decimalFormat.format(second)}"
+                    time = "${decimalFormat.format(minute)}:${decimalFormat.format(second)}"
                 )
                 secondClock.startOrResume()
                 onStart?.invoke()

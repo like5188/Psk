@@ -9,7 +9,7 @@ import androidx.room.PrimaryKey
 data class BloodPressure(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
-    val time: Long = System.currentTimeMillis() / 1000,
+    val createTime: Long = System.currentTimeMillis() / 1000,
     /**
      * 收缩压
      */
@@ -49,7 +49,7 @@ data class BloodPressure(
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeLong(id)
-        parcel.writeLong(time)
+        parcel.writeLong(createTime)
         parcel.writeInt(sbp)
         parcel.writeInt(dbp)
         parcel.writeLong(medicalOrderId)

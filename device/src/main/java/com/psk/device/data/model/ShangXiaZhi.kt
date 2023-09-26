@@ -9,7 +9,7 @@ import com.twsz.remotecommands.TrunkCommandData
 data class ShangXiaZhi(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
-    val time: Long = System.currentTimeMillis() / 1000,
+    val createTime: Long = System.currentTimeMillis() / 1000,
     val model: Byte = 0,//模式： 0x01 表示  被动 0x02 表示  主动
     val speedLevel: Int = 0,//速度档位：范围0~12           十六进制：0x00~0x3c
     val speed: Int = 0,//速度圈数：范围0~
@@ -20,7 +20,7 @@ data class ShangXiaZhi(
     val intelligence: Byte = 0,//智能： 0x40 表示 关闭 0x41 表示 打开
     val direction: Byte = 0,//正反转： 0x50 表示 反转 0x51 表示 正转
     val medicalOrderId: Long = 0,
-    val curTime: String = ""//当前倒计时。用于游戏界面显示。但是上下肢没有返回这个数据，所以只能自己计算。
+    val time: String = ""//用于游戏界面显示。但是上下肢没有返回这个数据，所以只能自己计算。
 ) {
 
     override fun equals(other: Any?): Boolean {
@@ -36,7 +36,7 @@ data class ShangXiaZhi(
         if (resistance != other.resistance) return false
         if (intelligence != other.intelligence) return false
         if (direction != other.direction) return false
-        if (curTime != other.curTime) return false
+        if (time != other.time) return false
 
         return true
     }
@@ -51,7 +51,7 @@ data class ShangXiaZhi(
         result = 31 * result + resistance
         result = 31 * result + intelligence
         result = 31 * result + direction
-        result = 31 * result + curTime.hashCode()
+        result = 31 * result + time.hashCode()
         return result
     }
 }
