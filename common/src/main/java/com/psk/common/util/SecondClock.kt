@@ -14,18 +14,15 @@ open class SecondClock {
     private val handler by lazy {
         Handler(Looper.getMainLooper())
     }
-    private val mRunnable: Runnable by lazy {
-        Runnable {
-            elapsedMillis = System.currentTimeMillis() - startTime
-            onTick(elapsedMillis / 1000)
-            postRunnable()
-        }
-    }
 
     private fun postRunnable() {
         val now = SystemClock.uptimeMillis()
         val next = now + (1000 - now % 1000)// 整秒
-        handler.postAtTime(mRunnable, next)
+        handler.postAtTime({
+            elapsedMillis = System.currentTimeMillis() - startTime
+            onTick(elapsedMillis / 1000)
+            postRunnable()
+        }, next)
     }
 
     /**
