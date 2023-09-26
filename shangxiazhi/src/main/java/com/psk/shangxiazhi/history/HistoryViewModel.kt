@@ -132,14 +132,12 @@ class HistoryViewModel(deviceManager: DeviceManager) : ViewModel() {
             BloodPressureReport.createForm(it.asFlow())
             result.add(BloodPressureReport.report)
         }
-        val heartRateList = heartRateRepository.getListByMedicalOrderId(medicalOrderId)
-        if (!heartRateList.isNullOrEmpty()) {
-            HeartRateReport.createForm(heartRateList.asFlow())
+        heartRateRepository.getListByMedicalOrderId(medicalOrderId)?.let {
+            HeartRateReport.createForm(it.asFlow())
             result.add(HeartRateReport.report)
         }
-        val shangXiaZhiList = shangXiaZhiRepository.getListByMedicalOrderId(medicalOrderId)
-        if (!shangXiaZhiList.isNullOrEmpty()) {
-            ShangXiaZhiReport.createForm(shangXiaZhiList.asFlow()).collect()
+        shangXiaZhiRepository.getListByMedicalOrderId(medicalOrderId)?.let {
+            ShangXiaZhiReport.createForm(it.asFlow()).collect()
             result.add(ShangXiaZhiReport.report)
         }
         return result
