@@ -39,6 +39,13 @@ class ExampleUnitTest {
                         activeDuration += it.seconds - preModeStartSeconds
                     }
                 }
+                /*
+                    activeDuration=0 passiveDuration=0
+                    activeDuration=0 passiveDuration=4
+                    activeDuration=2 passiveDuration=4
+                    activeDuration=2 passiveDuration=6
+                    activeDuration=3 passiveDuration=6
+                 */
                 println("activeDuration=$activeDuration passiveDuration=$passiveDuration")
                 preMode = it.mode
                 preModeStartSeconds = it.seconds
