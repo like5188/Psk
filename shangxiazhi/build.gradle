@@ -68,7 +68,7 @@ dependencies {
 
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 
-    implementation(name: 'aidl-debug', ext: 'aar')
+    implementation(name: 'aidl-release', ext: 'aar')
     implementation(name: 'Pad1601Pwd-debug', ext: 'aar')
     
     implementation project(':common')
