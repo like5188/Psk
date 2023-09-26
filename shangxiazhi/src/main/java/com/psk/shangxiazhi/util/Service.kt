@@ -19,8 +19,8 @@ fun Service.setForeground(
     id: Int = this.hashCode(),
     channelName: String = this::class.java.simpleName,
     channelId: String = "${channelName}_id",
-    @DrawableRes smallIcon: Int = R.drawable.ic_launcher_foreground,
-    @DrawableRes largeIcon: Int = R.drawable.ic_launcher_foreground,
+    @DrawableRes smallIcon: Int = R.drawable.psk_ic_launcher_foreground,
+    @DrawableRes largeIcon: Int = R.drawable.psk_ic_launcher_foreground,
 ) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         createNotificationChannel(NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_LOW))
