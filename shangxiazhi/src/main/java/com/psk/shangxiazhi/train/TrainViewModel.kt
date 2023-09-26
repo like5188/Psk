@@ -260,11 +260,11 @@ class TrainViewModel(deviceManager: DeviceManager) : ViewModel(), KoinComponent 
             return
         }
         val cal = shangXiaZhiReport.activeCal + shangXiaZhiReport.passiveCal
-        val duration = shangXiaZhiReport.activeDuration + shangXiaZhiReport.passiveDuration
-        val met = if (duration == 0 || healthInfo.weight == 0) {
-            0
+        val duration = (shangXiaZhiReport.activeDuration + shangXiaZhiReport.passiveDuration) / 60f// 分钟
+        val met = if (duration == 0f || healthInfo.weight == 0) {
+            0f
         } else {
-            (cal / duration / healthInfo.weight / 0.0167f).toInt()
+            cal / duration / healthInfo.weight / 0.0167f
         }
         val newHealthInfo = healthInfo.copy(
             met = met

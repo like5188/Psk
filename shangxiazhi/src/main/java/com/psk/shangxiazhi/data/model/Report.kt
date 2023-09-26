@@ -60,14 +60,20 @@ class ShangXiaZhiReport : IReport {
     companion object {
         lateinit var report: ShangXiaZhiReport
         private val decimalFormat = DecimalFormat("######0.00")
+        private val decimalFormat1 = DecimalFormat("00")
         fun createForm(flow: Flow<ShangXiaZhi>): Flow<GameData> {
             report = ShangXiaZhiReport()
+            var preMode = -1// 前一次的模式
+            var preSeconds = 0// 前一次的计时
             var isFirstSpasm = false// 是否第一次痉挛
             var mFirstSpasm = 0// 第一次痉挛次数（因为上下肢关机之前的痉挛次数是累计的）
             // 这里不能用 distinctUntilChanged、conflate 等操作符，因为需要根据所有数据来计算里程等。必须得到每次数据。
             return flow.buffer(Int.MAX_VALUE).map { shangXiaZhi ->
                 val gameData = GameData().apply {
-                    time = shangXiaZhi.time
+                    val seconds = shangXiaZhi.time
+                    val minute = seconds / 60
+                    val second = seconds % 60
+                    time = "${decimalFormat1.format(minute)}:${decimalFormat1.format(second)}"
                     speed = shangXiaZhi.speed
                     speedLevel = shangXiaZhi.speedLevel
                     spasmLevel = shangXiaZhi.spasmLevel
@@ -101,6 +107,26 @@ class ShangXiaZhiReport : IReport {
                 }
                 gameData.mileage = decimalFormat.format(report.activeMil + report.passiveMil)
                 gameData.cal = decimalFormat.format(report.activeCal + report.passiveCal)
+                // 时间
+                when (gameData.model) {
+                    0 -> {// 当前是主动
+                        if (preMode == 1) {// 模式刚由被动变成主动
+                            report.passiveDuration += shangXiaZhi.time - preSeconds
+                        } else {
+                            report.activeDuration += shangXiaZhi.time - preSeconds
+                        }
+                    }
+
+                    1 -> {// 当前是被动
+                        if (preMode == 0) {// 模式刚由主动变成被动
+                            report.activeDuration += shangXiaZhi.time - preSeconds
+                        } else {
+                            report.passiveDuration += shangXiaZhi.time - preSeconds
+                        }
+                    }
+                }
+                preMode = gameData.model
+                preSeconds = shangXiaZhi.time
                 // 阻力
                 report.resistanceList.add(gameData.resistance)
                 report.resistanceTotal += gameData.resistance

@@ -13,44 +13,60 @@ import org.junit.Test
 class ExampleUnitTest {
     @Test
     fun addition_isCorrect() = runBlocking {
+        /*
+            activeDuration=3 passiveDuration=6
+         */
+//        val list = listOf(
+//            A(0, 1),
+//            A(1, 1),
+//            A(3, 1),
+//            A(4, 0),
+//            A(5, 0),
+//            A(5, 0),
+//            A(6, 1),
+//            A(8, 0),
+//            A(9, 1),
+//        )
+        /*
+            activeDuration=1 passiveDuration=8
+         */
         val list = listOf(
             A(0, 1),
             A(1, 1),
             A(3, 1),
-            A(4, 0),
-            A(5, 0),
-            A(5, 0),
+            A(4, 1),
+            A(5, 1),
+            A(5, 1),
             A(6, 1),
             A(8, 0),
-            A(9, 1),
+            A(9, 0),
         )
         var preMode = -1
-        var preModeStartSeconds = 0
+        var preSeconds = 0
         var activeDuration = 0// 主动时长
         var passiveDuration = 0// 被动时长
         list.asFlow().collectLatest {
-            if (preMode != it.mode) {
-                when (it.mode) {
-                    0 -> {// 如果当前是主动，那么以前就是被动
-                        passiveDuration += it.seconds - preModeStartSeconds
-                    }
-
-                    1 -> {// 如果当前是被动，那么以前就是主动
-                        activeDuration += it.seconds - preModeStartSeconds
+            when (it.mode) {
+                0 -> {// 当前是主动
+                    if (preMode == 1) {// 模式刚由被动变成主动
+                        passiveDuration += it.seconds - preSeconds
+                    } else {
+                        activeDuration += it.seconds - preSeconds
                     }
                 }
-                /*
-                    activeDuration=0 passiveDuration=0
-                    activeDuration=0 passiveDuration=4
-                    activeDuration=2 passiveDuration=4
-                    activeDuration=2 passiveDuration=6
-                    activeDuration=3 passiveDuration=6
-                 */
-                println("activeDuration=$activeDuration passiveDuration=$passiveDuration")
-                preMode = it.mode
-                preModeStartSeconds = it.seconds
+
+                1 -> {// 当前是被动
+                    if (preMode == 0) {// 模式刚由主动变成被动
+                        activeDuration += it.seconds - preSeconds
+                    } else {
+                        passiveDuration += it.seconds - preSeconds
+                    }
+                }
             }
+            preMode = it.mode
+            preSeconds = it.seconds
         }
+        println("activeDuration=$activeDuration passiveDuration=$passiveDuration")
     }
 
     data class A(val seconds: Int, val mode: Int)

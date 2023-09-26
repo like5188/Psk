@@ -20,7 +20,7 @@ data class ShangXiaZhi(
     val intelligence: Byte = 0,//智能： 0x40 表示 关闭 0x41 表示 打开
     val direction: Byte = 0,//正反转： 0x50 表示 反转 0x51 表示 正转
     val medicalOrderId: Long = 0,
-    val time: String = ""//用于游戏界面显示。但是上下肢没有返回这个数据，所以只能自己计算。
+    val time: Int = 0//用于游戏界面显示。但是上下肢没有返回这个数据，所以只能自己计算。
 ) {
 
     override fun equals(other: Any?): Boolean {

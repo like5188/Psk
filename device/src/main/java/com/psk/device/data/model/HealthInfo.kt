@@ -11,7 +11,7 @@ data class HealthInfo(
     val medicalOrderId: Long = 0,
     val age: Int = 0,// 年龄
     val weight: Int = 0,// 体重（kg）
-    val met: Int = 0,// met值
+    val met: Float = 0f,// met值
     val minTargetHeartRate: Int = 0,// 最小靶心率
     val maxTargetHeartRate: Int = 0,// 最大靶心率
     val bloodPressureBefore: BloodPressure? = null,// 运动前血压
@@ -22,7 +22,7 @@ data class HealthInfo(
         parcel.readLong(),
         parcel.readInt(),
         parcel.readInt(),
-        parcel.readInt(),
+        parcel.readFloat(),
         parcel.readInt(),
         parcel.readInt(),
         parcel.readParcelable(BloodPressure::class.java.classLoader),
@@ -35,7 +35,7 @@ data class HealthInfo(
         parcel.writeLong(medicalOrderId)
         parcel.writeInt(age)
         parcel.writeInt(weight)
-        parcel.writeInt(met)
+        parcel.writeFloat(met)
         parcel.writeInt(minTargetHeartRate)
         parcel.writeInt(maxTargetHeartRate)
         parcel.writeParcelable(bloodPressureBefore, flags)
