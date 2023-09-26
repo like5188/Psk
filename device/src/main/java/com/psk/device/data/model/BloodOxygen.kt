@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 data class BloodOxygen(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
-    val createTime: Long = System.currentTimeMillis() / 1000,
+    val createTime: Long = System.currentTimeMillis(),
     val value: Int,
     val medicalOrderId: Long
 ) {

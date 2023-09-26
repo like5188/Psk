@@ -47,7 +47,7 @@ class BloodPressureRepository : KoinComponent, IRepository<BloodPressure> {
                 delay(interval)
             }
         }
-        return dbDataSource.listenLatest(System.currentTimeMillis() / 1000).filterNotNull()
+        return dbDataSource.listenLatest(System.currentTimeMillis()).filterNotNull()
     }
 
     fun getMeasureFlow(scope: CoroutineScope, medicalOrderId: Long, interval: Long): Flow<BloodPressure> {
@@ -76,7 +76,7 @@ class BloodPressureRepository : KoinComponent, IRepository<BloodPressure> {
                 }
             }
         }
-        return dbDataSource.listenLatest(System.currentTimeMillis() / 1000).filterNotNull()
+        return dbDataSource.listenLatest(System.currentTimeMillis()).filterNotNull()
     }
 
     suspend fun measure(): BloodPressure? {

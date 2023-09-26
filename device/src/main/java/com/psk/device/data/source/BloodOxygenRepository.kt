@@ -46,7 +46,7 @@ class BloodOxygenRepository : KoinComponent, IRepository<BloodOxygen> {
                 delay(interval)
             }
         }
-        return dbDataSource.listenLatest(System.currentTimeMillis() / 1000).filterNotNull()
+        return dbDataSource.listenLatest(System.currentTimeMillis()).filterNotNull()
     }
 
 }

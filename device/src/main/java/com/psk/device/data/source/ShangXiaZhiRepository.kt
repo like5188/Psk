@@ -43,7 +43,7 @@ class ShangXiaZhiRepository : KoinComponent, IRepository<ShangXiaZhi> {
                 dbDataSource.insert(it)
             }
         }
-        return dbDataSource.listenLatest(System.currentTimeMillis() / 1000).filterNotNull()
+        return dbDataSource.listenLatest(System.currentTimeMillis()).filterNotNull()
     }
 
     fun setCallback(

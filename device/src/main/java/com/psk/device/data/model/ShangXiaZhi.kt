@@ -9,7 +9,7 @@ import com.twsz.remotecommands.TrunkCommandData
 data class ShangXiaZhi(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
-    val createTime: Long = System.currentTimeMillis() / 1000,
+    val createTime: Long = System.currentTimeMillis(),
     val model: Byte = 0,//模式： 0x01 表示  被动 0x02 表示  主动
     val speedLevel: Int = 0,//速度档位：范围0~12           十六进制：0x00~0x3c
     val speed: Int = 0,//速度圈数：范围0~

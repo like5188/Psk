@@ -45,7 +45,7 @@ class HistoryViewModel(deviceManager: DeviceManager) : ViewModel() {
             }
             val cal = Calendar.getInstance()
             datas = medicalOrderTimeMap.map {
-                cal.time = Date(it.value * 1000L)
+                cal.time = Date(it.value)
                 DateAndData(
                     year = cal.get(Calendar.YEAR),
                     month = cal.get(Calendar.MONTH) + 1,
