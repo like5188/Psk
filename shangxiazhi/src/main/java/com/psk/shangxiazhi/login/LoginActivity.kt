@@ -6,7 +6,6 @@ import androidx.databinding.DataBindingUtil
 import com.like.common.util.mvi.propertyCollector
 import com.like.common.util.startActivity
 import com.psk.common.CommonApplication
-import com.psk.common.customview.ProgressDialog
 import com.psk.common.util.showToast
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.databinding.ActivityLoginBinding
@@ -27,9 +26,6 @@ class LoginActivity : AppCompatActivity() {
         DataBindingUtil.setContentView(this, R.layout.activity_login)
     }
     private val mViewModel: LoginViewModel by viewModel()
-    private val mProgressDialog by lazy {
-        ProgressDialog(this)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,7 +33,7 @@ class LoginActivity : AppCompatActivity() {
         mBinding.btnLogin.setOnClickListener {
             val serialNumber = mBinding.tvSerialNumber.text.toString().trim()
             val code = mBinding.etCode.text.toString().trim()
-            mViewModel.login(serialNumber, code, progressDialog = mProgressDialog)
+            mViewModel.login(serialNumber, code)
         }
         collectUiState()
     }

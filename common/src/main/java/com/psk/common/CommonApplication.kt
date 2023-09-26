@@ -1,7 +1,6 @@
 package com.psk.common
 
 import android.app.Application
-import com.psk.common.util.ExceptionHandler
 import com.psk.common.util.commonModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.loadKoinModules
@@ -15,11 +14,6 @@ open class CommonApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         sInstance = this
-
-        // 全局异常处理
-        Thread.setDefaultUncaughtExceptionHandler { t, e ->
-            ExceptionHandler.handle(this, e)
-        }
 
         //初始化koin
         startKoin {
