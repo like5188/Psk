@@ -23,7 +23,7 @@ fun Service.setForeground(
     @DrawableRes largeIcon: Int = R.drawable.ic_launcher_foreground,
 ) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        createNotificationChannel(NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH))
+        createNotificationChannel(NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_LOW))
     }
     startForeground(
         id,
