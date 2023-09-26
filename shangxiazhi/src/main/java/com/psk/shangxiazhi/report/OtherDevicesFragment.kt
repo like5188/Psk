@@ -14,6 +14,7 @@ import com.psk.shangxiazhi.data.model.BloodPressureReport
 import com.psk.shangxiazhi.data.model.HeartRateReport
 import com.psk.shangxiazhi.data.model.IReport
 import com.psk.shangxiazhi.databinding.FragmentReportDevicesBinding
+import java.text.DecimalFormat
 
 class OtherDevicesFragment : BaseLazyFragment() {
     companion object {
@@ -30,6 +31,7 @@ class OtherDevicesFragment : BaseLazyFragment() {
     }
 
     private lateinit var mBinding: FragmentReportDevicesBinding
+    private val decimalFormat = DecimalFormat("######0.0")
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_report_devices, container, false)
@@ -39,7 +41,7 @@ class OtherDevicesFragment : BaseLazyFragment() {
     override fun onLazyLoadData() {
         arguments?.getParcelable<HealthInfo>(KEY_HEALTH_INFO)?.apply {
             mBinding.tvTargetHeartRate.text = "$minTargetHeartRate~$maxTargetHeartRate"
-            mBinding.tvMet.text = met.toString()
+            mBinding.tvMet.text = decimalFormat.format(met)
             mBinding.tvBloodPressureBefore.text = if (bloodPressureBefore == null) {
                 ""
             } else {
