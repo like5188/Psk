@@ -13,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import com.like.common.base.BaseDialogFragment
 import com.psk.ble.BleManager
 import com.psk.ble.DeviceType
+import com.psk.common.customview.ProgressDialog
 import com.psk.common.util.showToast
 import com.psk.device.DeviceManager
 import com.psk.device.data.source.HeartRateRepository
@@ -55,6 +56,9 @@ class MeasureTargetHeartRateDialogFragment private constructor() : BaseDialogFra
     var onSelected: ((minTargetHeartRate: Int, maxTargetHeartRate: Int) -> Unit)? = null
     private var job: Job? = null
     private val heartRates = mutableListOf<Int>()
+    private val mProgressDialog by lazy {
+        ProgressDialog(requireContext(), "测量需要1分钟，请稍后……")
+    }
 
     private fun startJob() {
         if (job != null) {
@@ -75,18 +79,16 @@ class MeasureTargetHeartRateDialogFragment private constructor() : BaseDialogFra
             }
         }
         lifecycleScope.launch(Dispatchers.IO) {
-            // 测量一分钟
-            repeat(60) {
-                withContext(Dispatchers.Main) {
-                    mBinding.btnMeasure.text = "${60 - it}秒"
-                }
-                delay(1000)
+            withContext(Dispatchers.Main) {
+                mProgressDialog.show()
             }
+            // 测量一分钟
+            delay(60000)
             cancelJob()
             val targetHeartRate = calc()
             withContext(Dispatchers.Main) {
                 mBinding.tvTargetHeartRate.text = "${targetHeartRate.first}~${targetHeartRate.second}"
-                mBinding.btnMeasure.text = "开始测量"
+                mProgressDialog.dismiss()
             }
         }
     }
