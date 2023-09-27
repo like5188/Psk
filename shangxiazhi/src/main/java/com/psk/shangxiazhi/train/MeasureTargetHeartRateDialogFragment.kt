@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 
@@ -57,6 +58,7 @@ class MeasureTargetHeartRateDialogFragment private constructor() : BaseDialogFra
 
     private fun startJob() {
         if (job != null) {
+            context?.showToast("正在测量，请稍后")
             return
         }
         job = lifecycleScope.launch(Dispatchers.Main) {
@@ -74,10 +76,18 @@ class MeasureTargetHeartRateDialogFragment private constructor() : BaseDialogFra
         }
         lifecycleScope.launch(Dispatchers.IO) {
             // 测量一分钟
-            delay(60000)
+            repeat(60) {
+                withContext(Dispatchers.Main) {
+                    mBinding.btnMeasure.text = "${60 - it}秒"
+                }
+                delay(1000)
+            }
             cancelJob()
             val targetHeartRate = calc()
-            mBinding.tvTargetHeartRate.text = "${targetHeartRate.first}~${targetHeartRate.second}"
+            withContext(Dispatchers.Main) {
+                mBinding.tvTargetHeartRate.text = "${targetHeartRate.first}~${targetHeartRate.second}"
+                mBinding.btnMeasure.text = "开始测量"
+            }
         }
     }
 

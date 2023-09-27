@@ -54,6 +54,7 @@ class MeasureBloodPressureDialogFragment private constructor() : BaseDialogFragm
 
     private fun startJob() {
         if (job != null) {
+            context?.showToast("正在测量，请稍后")
             return
         }
         job = lifecycleScope.launch(Dispatchers.Main) {
