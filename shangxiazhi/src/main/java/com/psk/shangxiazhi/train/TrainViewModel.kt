@@ -98,18 +98,24 @@ class TrainViewModel(deviceManager: DeviceManager) : ViewModel(), KoinComponent 
         }
     }
 
-    fun setPersonInfo(activity: FragmentActivity) {
-        PersonInfoDialogFragment.newInstance().apply {
-            onSelected = { age, weight ->
-                _uiState.update {
-                    it.copy(
-                        healthInfo = it.healthInfo?.copy(
-                            age = age, weight = weight
-                        ),
-                    )
-                }
-            }
-        }.show(activity)
+    fun setWeight(weight: Int) {
+        _uiState.update {
+            it.copy(
+                healthInfo = it.healthInfo?.copy(
+                    weight = weight
+                ),
+            )
+        }
+    }
+
+    fun setAge(age: Int) {
+        _uiState.update {
+            it.copy(
+                healthInfo = it.healthInfo?.copy(
+                    age = age
+                ),
+            )
+        }
     }
 
     fun measureTargetHeart(activity: FragmentActivity) {
@@ -117,7 +123,7 @@ class TrainViewModel(deviceManager: DeviceManager) : ViewModel(), KoinComponent 
         if (healthInfo == null || healthInfo.age == 0) {
             _uiState.update {
                 it.copy(
-                    toastEvent = Event(ToastEvent(text = "请填写基本信息中的年龄"))
+                    toastEvent = Event(ToastEvent(text = "请先填写年龄"))
                 )
             }
             return
@@ -202,7 +208,7 @@ class TrainViewModel(deviceManager: DeviceManager) : ViewModel(), KoinComponent 
         if (weight == null || weight == 0) {
             _uiState.update {
                 it.copy(
-                    toastEvent = Event(ToastEvent(text = "请填写基本信息中的体重"))
+                    toastEvent = Event(ToastEvent(text = "请先填写体重"))
                 )
             }
             return

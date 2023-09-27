@@ -3,6 +3,7 @@ package com.psk.shangxiazhi.train
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.doAfterTextChanged
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.like.common.util.gone
@@ -49,9 +50,6 @@ class TrainActivity : AppCompatActivity() {
         mBinding.sceneCardView.setOnClickListener {
             mViewModel.selectTrainScene(this)
         }
-        mBinding.personInfoCardView.setOnClickListener {
-            mViewModel.setPersonInfo(this)
-        }
         mBinding.targetHeartRateCardView.setOnClickListener {
             mViewModel.measureTargetHeart(this)
         }
@@ -73,6 +71,12 @@ class TrainActivity : AppCompatActivity() {
                 R.id.autoRb -> bloodPressureMeasureType = 1
             }
         }
+        mBinding.etWeight.doAfterTextChanged {
+            mViewModel.setWeight(it?.toString()?.toIntOrNull() ?: 0)
+        }
+        mBinding.etAge.doAfterTextChanged {
+            mViewModel.setAge(it?.toString()?.toIntOrNull() ?: 0)
+        }
         collectUiState()
     }
 
@@ -83,7 +87,8 @@ class TrainActivity : AppCompatActivity() {
             }
             collectDistinctProperty(TrainUiState::deviceMap) {
                 mBinding.sceneCardView.gone()
-                mBinding.personInfoCardView.gone()
+                mBinding.weightCardView.gone()
+                mBinding.ageCardView.gone()
                 mBinding.bloodPressureBeforeCardView.gone()
                 mBinding.bloodPressureAfterCardView.gone()
                 mBinding.targetHeartRateCardView.gone()
@@ -92,13 +97,14 @@ class TrainActivity : AppCompatActivity() {
                     return@collectDistinctProperty
                 }
                 mBinding.sceneCardView.visible()
-                mBinding.personInfoCardView.visible()
+                mBinding.weightCardView.visible()
                 if (it.containsKey(DeviceType.BloodPressure)) {
                     mBinding.bloodPressureBeforeCardView.visible()
                     mBinding.bloodPressureAfterCardView.visible()
                     mBinding.bloodPressureMeasureTypeCardView.visible()
                 }
                 if (it.containsKey(DeviceType.HeartRate)) {
+                    mBinding.ageCardView.visible()
                     mBinding.targetHeartRateCardView.visible()
                 }
                 val sb = StringBuilder()
@@ -114,17 +120,6 @@ class TrainActivity : AppCompatActivity() {
             }
             collectDistinctProperty(TrainUiState::healthInfo) {
                 it ?: return@collectDistinctProperty
-                val sb = StringBuilder()
-                if (it.age > 0) {
-                    sb.append("年龄:").append(it.age)
-                }
-                if (it.weight > 0) {
-                    if (sb.isNotEmpty()) {
-                        sb.append(", ")
-                    }
-                    sb.append("体重:").append(it.weight)
-                }
-                mBinding.tvPersonInfo.text = sb.toString()
                 mBinding.tvTargetHeartRate.text = if (it.minTargetHeartRate == 0 || it.maxTargetHeartRate == 0) {
                     ""
                 } else {

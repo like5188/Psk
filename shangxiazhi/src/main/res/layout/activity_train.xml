@@ -39,7 +39,7 @@
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/deviceCardView"
-                    style="@style/AppCard.Item"
+                    style="@style/AppCardView.Item"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
@@ -73,7 +73,7 @@
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/sceneCardView"
-                    style="@style/AppCard.Item"
+                    style="@style/AppCardView.Item"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="1dp">
@@ -107,8 +107,8 @@
                 </com.google.android.material.card.MaterialCardView>
 
                 <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/personInfoCardView"
-                    style="@style/AppCard.Item"
+                    android:id="@+id/weightCardView"
+                    style="@style/AppCardView.Item"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="1dp">
@@ -126,24 +126,61 @@
                         <com.google.android.material.textview.MaterialTextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="基本信息"
+                            android:text="体重(kg)"
                             android:textAppearance="@style/AppSubtitle2" />
 
-                        <com.google.android.material.textview.MaterialTextView
-                            android:id="@+id/tvPersonInfo"
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etWeight"
+                            style="@style/AppEditText"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="15dp"
                             android:gravity="end"
-                            android:hint="去填写 >"
-                            android:textAppearance="@style/AppBody2" />
+                            android:hint="请填写体重"
+                            android:inputType="number" />
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/ageCardView"
+                    style="@style/AppCardView.Item"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingStart="15dp"
+                        android:paddingTop="10dp"
+                        android:paddingEnd="15dp"
+                        android:paddingBottom="10dp">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="年龄"
+                            android:textAppearance="@style/AppSubtitle2" />
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etAge"
+                            style="@style/AppEditText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="15dp"
+                            android:gravity="end"
+                            android:hint="请填写年龄"
+                            android:inputType="number" />
 
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/targetHeartRateCardView"
-                    style="@style/AppCard.Item"
+                    style="@style/AppCardView.Item"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="1dp">
@@ -178,7 +215,7 @@
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/bloodPressureBeforeCardView"
-                    style="@style/AppCard.Item"
+                    style="@style/AppCardView.Item"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="1dp">
@@ -213,7 +250,7 @@
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/bloodPressureAfterCardView"
-                    style="@style/AppCard.Item"
+                    style="@style/AppCardView.Item"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="1dp">
@@ -248,7 +285,7 @@
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/bloodPressureMeasureTypeCardView"
-                    style="@style/AppCard.Item"
+                    style="@style/AppCardView.Item"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="1dp">

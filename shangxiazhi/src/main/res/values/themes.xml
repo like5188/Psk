@@ -18,15 +18,20 @@
         <item name="colorBgOnCard">@color/color_bg_on_card</item>
         <!-- Button widget style attribute -->
         <item name="materialButtonStyle">@style/AppButton</item>
-        <item name="materialButtonToggleGroupStyle">@style/AppToggleButton</item>
+        <item name="materialButtonToggleGroupStyle">@style/AppToggleGroup</item>
         <!-- Card widget style attribute -->
-        <item name="materialCardViewStyle">@style/AppCard</item>
+        <item name="materialCardViewStyle">@style/AppCardView</item>
 
         <item name="android:windowBackground">@drawable/main_bg</item>
     </style>
 
     <style name="Theme.App.Splash" parent="Theme.App">
         <item name="android:windowBackground">@drawable/splash</item>
+    </style>
+
+    <style name="AppEditText">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:textAppearance">@style/AppBody2</item>
     </style>
 
     <style name="AppButton" parent="Widget.MaterialComponents.Button">
@@ -36,18 +41,18 @@
         <item name="rippleColor">@color/button_ripple_color</item>
     </style>
 
-    <style name="AppToggleButton" parent="Widget.MaterialComponents.MaterialButtonToggleGroup">
+    <style name="AppToggleGroup" parent="Widget.MaterialComponents.MaterialButtonToggleGroup">
         <item name="singleSelection">true</item>
         <item name="selectionRequired">true</item>
     </style>
 
-    <style name="AppCard" parent="Widget.MaterialComponents.CardView">
+    <style name="AppCardView" parent="Widget.MaterialComponents.CardView">
         <item name="cardBackgroundColor">?attr/colorOnPrimary</item>
         <item name="shapeAppearance">?attr/shapeAppearanceMediumComponent</item>
         <item name="cardElevation">1dp</item>
     </style>
 
-    <style name="AppCard.Item">
+    <style name="AppCardView.Item">
         <item name="shapeAppearance">?attr/shapeAppearanceLargeComponent</item>
     </style>
 
