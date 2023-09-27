@@ -90,17 +90,17 @@ class MeasureBloodPressureDialogFragment private constructor() : BaseDialogFragm
                 startJob()
             } else {
                 bleManager.connect(DeviceType.BloodPressure, lifecycleScope, 3000L, {
-                    println("血压仪连接成功")
+                    context?.showToast("血压仪连接成功，开始测量")
                     startJob()
                 }) {
-                    println("血压仪连接失败")
+                    context?.showToast("血压仪连接失败")
                     cancelJob()
                 }
             }
         }
         mBinding.btnConfirm.setOnClickListener {
             if (bloodPressure == null) {
-                requireContext().showToast("请测量血压")
+                context?.showToast("请先进行测量")
                 return@setOnClickListener
             }
             onSelected?.invoke(bloodPressure!!)
