@@ -59,7 +59,7 @@ data class ShangXiaZhi(
 /**
  * 初始化上下肢时需要的参数，设置好后，如果是被动模式，上下肢会自动运行
  *
- * @param passiveModule     被动模式
+ * @param passiveModel      被动模式
  * @param time              时间 1-30 min// 被动模式
  * @param speedLevel        速度等级 1-12// 被动模式
  * @param spasmLevel        痉挛等级 1-12// 被动模式
@@ -68,7 +68,7 @@ data class ShangXiaZhi(
  * @param forward           正转
  */
 data class ShangXiaZhiParams(
-    val passiveModule: Boolean,
+    val passiveModel: Boolean,
     val time: Int,
     val speedLevel: Int,
     val spasmLevel: Int,
@@ -81,7 +81,7 @@ data class ShangXiaZhiParams(
      */
     fun toTrunkCommandData(): TrunkCommandData {
         // 主被动模式
-        val model = if (passiveModule) {
+        val model = if (passiveModel) {
             0x01.toByte()
         } else {
             0x02.toByte()
@@ -112,6 +112,6 @@ data class ShangXiaZhiParams(
     }
 
     override fun toString(): String {
-        return "${if (passiveModule) "被动模式" else "主动模式"}, ${time}分钟, ${if (intelligent) "智能模式" else ""}, ${if (forward) "正转" else "反转"},\n速度等级:$speedLevel, 痉挛等级:$spasmLevel, 阻力:$resistance"
+        return "${if (passiveModel) "被动模式" else "主动模式"}, ${time}分钟, ${if (intelligent) "智能模式" else ""}, ${if (forward) "正转" else "反转"},\n速度等级:$speedLevel, 痉挛等级:$spasmLevel, 阻力:$resistance"
     }
 }
