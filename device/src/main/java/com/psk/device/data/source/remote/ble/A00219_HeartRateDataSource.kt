@@ -8,8 +8,10 @@ import com.starcaretech.stardata.StarData
 import com.starcaretech.stardata.common.DataReceiverSample
 import com.starcaretech.stardata.data.AlertSwitch
 import com.starcaretech.stardata.data.DataPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.flowOn
 import java.math.BigDecimal
 
 /*
@@ -727,6 +729,6 @@ class A00219_HeartRateDataSource : BaseHeartRateDataSource(DeviceType.HeartRate)
         bleManager.setNotifyCallback(device)?.collect {
             StarData.putData(it)
         }
-    }
+    }.flowOn(Dispatchers.IO)
 
 }

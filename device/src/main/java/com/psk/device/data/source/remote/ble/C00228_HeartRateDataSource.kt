@@ -4,6 +4,7 @@ import com.psk.ble.DeviceType
 import com.psk.ble.Protocol
 import com.psk.device.data.model.HeartRate
 import com.psk.device.data.source.remote.BaseHeartRateDataSource
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.buffer
@@ -11,6 +12,7 @@ import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import tt.sk.CbeltParsableFactory
@@ -47,7 +49,7 @@ class C00228_HeartRateDataSource : BaseHeartRateDataSource(DeviceType.HeartRate)
         "00000002-0000-1000-8000-00805f9b34fb",
     )
 
-    override suspend fun fetch(medicalOrderId: Long): Flow<HeartRate> = channelFlow {
+    override suspend fun fetch(medicalOrderId: Long): Flow<HeartRate> = channelFlow<HeartRate> {
         // 把二进制数据构建成数据包
         val packBuilder = Pack.Builder()
 
@@ -77,6 +79,6 @@ class C00228_HeartRateDataSource : BaseHeartRateDataSource(DeviceType.HeartRate)
                 }
         }
 
-    }
+    }.flowOn(Dispatchers.IO)
 
 }

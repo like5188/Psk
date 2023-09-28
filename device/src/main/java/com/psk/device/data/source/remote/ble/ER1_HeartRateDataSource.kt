@@ -6,9 +6,11 @@ import com.psk.device.data.model.HeartRate
 import com.psk.device.data.source.remote.BaseHeartRateDataSource
 import com.psk.device.util.BleCRC
 import com.psk.device.util.BtResponse
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.experimental.inv
@@ -61,7 +63,7 @@ class ER1_HeartRateDataSource : BaseHeartRateDataSource(DeviceType.HeartRate) {
             pool += it
             pool = BtResponse.hasResponse(pool) ?: byteArrayOf()
         }
-    }
+    }.flowOn(Dispatchers.IO)
 
     private var seqNo = 0
     private fun getRtData(): ByteArray {
