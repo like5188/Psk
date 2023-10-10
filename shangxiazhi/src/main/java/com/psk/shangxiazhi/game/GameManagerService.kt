@@ -6,6 +6,7 @@ import android.os.Binder
 import android.os.IBinder
 import android.util.Log
 import com.like.common.util.startForeground
+import com.like.common.util.stopForeground
 import com.psk.ble.DeviceType
 import com.psk.device.DeviceManager
 import com.psk.shangxiazhi.R
@@ -104,7 +105,7 @@ class GameManagerService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         Log.d(TAG, "GameManagerService onDestroy")
-        stopForeground(true)
+        stopForeground()
     }
 
     override fun onBind(intent: Intent?): IBinder {
