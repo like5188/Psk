@@ -5,14 +5,15 @@ import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
+import com.like.common.util.startForeground
 import com.psk.ble.DeviceType
 import com.psk.device.DeviceManager
+import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.data.model.BleScanInfo
 import com.psk.shangxiazhi.data.model.IReport
 import com.psk.shangxiazhi.game.business.BloodPressureBusinessManager
 import com.psk.shangxiazhi.game.business.MultiBusinessManager
 import com.psk.shangxiazhi.game.business.ShangXiaZhiBusinessManager
-import com.psk.shangxiazhi.util.setForeground
 import com.twsz.twsystempre.GameController
 import com.twsz.twsystempre.TrainScene
 import kotlinx.coroutines.CoroutineScope
@@ -97,7 +98,7 @@ class GameManagerService : Service() {
     override fun onCreate() {
         super.onCreate()
         Log.d(TAG, "GameManagerService onCreate")
-        setForeground("游戏服务", "游戏服务正在运行")
+        startForeground("游戏服务", "游戏服务正在运行", R.drawable.ic_launcher_foreground, R.drawable.ic_launcher_foreground)
     }
 
     override fun onDestroy() {

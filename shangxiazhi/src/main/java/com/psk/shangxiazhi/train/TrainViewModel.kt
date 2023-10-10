@@ -12,9 +12,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.like.common.util.ToastEvent
 import com.like.common.util.mvi.Event
 import com.psk.ble.DeviceType
-import com.psk.common.util.ToastEvent
 import com.psk.device.DeviceManager
 import com.psk.device.data.model.HealthInfo
 import com.psk.shangxiazhi.data.model.ShangXiaZhiReport

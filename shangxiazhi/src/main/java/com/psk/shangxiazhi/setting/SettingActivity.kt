@@ -3,9 +3,9 @@ package com.psk.shangxiazhi.setting
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import com.like.common.util.showToast
 import com.like.common.util.startActivity
 import com.psk.common.CommonApplication
-import com.psk.common.util.showToast
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.databinding.ActivitySettingBinding
 

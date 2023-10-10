@@ -2,7 +2,7 @@ package com.psk.shangxiazhi.main
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
-import com.psk.common.util.SecondClock
+import com.like.common.util.SecondClock
 import com.psk.shangxiazhi.data.source.ShangXiaZhiBusinessRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

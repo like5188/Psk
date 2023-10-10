@@ -59,7 +59,7 @@ dependencies {
     api 'io.coil-kt:coil-gif:1.4.0'
     // viewModel 支持
     api 'androidx.fragment:fragment-ktx:1.5.7'
-    api 'com.github.like5188:Common:7.0.7'
+    api 'com.github.like5188:Common:7.0.8'
     api 'com.github.like5188.RecyclerView:core:4.1.8'
     api 'com.github.like5188.RecyclerView:ext:4.1.8'
     api 'com.github.like5188.RecyclerView:ui:4.1.8'

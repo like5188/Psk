@@ -8,12 +8,12 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.like.common.util.gone
 import com.like.common.util.mvi.propertyCollector
+import com.like.common.util.showToast
 import com.like.common.util.startActivity
 import com.like.common.util.visible
 import com.psk.ble.BleManager
 import com.psk.ble.DeviceType
 import com.psk.common.CommonApplication
-import com.psk.common.util.showToast
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.databinding.ActivityTrainBinding
 import kotlinx.coroutines.launch
@@ -93,7 +93,7 @@ class TrainActivity : AppCompatActivity() {
     private fun collectUiState() {
         mViewModel.uiState.propertyCollector(this) {
             collectNotHandledEventProperty(TrainUiState::toastEvent) {
-                showToast(it)
+                showToast(toastEvent = it)
             }
             collectDistinctProperty(TrainUiState::deviceMap) {
                 mBinding.sceneCardView.gone()

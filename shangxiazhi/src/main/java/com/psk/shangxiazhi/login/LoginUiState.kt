@@ -1,7 +1,7 @@
 package com.psk.shangxiazhi.login
 
+import com.like.common.util.ToastEvent
 import com.like.common.util.mvi.Event
-import com.psk.common.util.ToastEvent
 
 data class LoginUiState(
     val isLogin: Boolean? = null,

@@ -3,7 +3,7 @@ package com.psk.shangxiazhi.login
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import com.like.common.util.mvi.Event
-import com.psk.common.util.ToastEvent
+import com.like.common.util.ToastEvent
 import com.psk.shangxiazhi.data.source.ShangXiaZhiBusinessRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

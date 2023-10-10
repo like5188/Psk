@@ -1,9 +1,9 @@
 package com.psk.device.data.source.remote.ble
 
 import com.like.ble.util.isBleDeviceConnected
+import com.like.common.util.SecondClock
 import com.psk.ble.DeviceType
 import com.psk.ble.Protocol
-import com.psk.common.util.SecondClock
 import com.psk.device.data.model.ShangXiaZhi
 import com.psk.device.data.model.ShangXiaZhiParams
 import com.psk.device.data.source.remote.BaseShangXiaZhiDataSource

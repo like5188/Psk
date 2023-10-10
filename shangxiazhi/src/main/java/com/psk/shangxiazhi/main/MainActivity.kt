@@ -6,9 +6,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.like.common.util.mvi.propertyCollector
+import com.like.common.util.showToast
 import com.like.common.util.startActivity
 import com.psk.common.CommonApplication
-import com.psk.common.util.showToast
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.databinding.ActivityMainBinding
 import com.psk.shangxiazhi.history.HistoryActivity
@@ -83,7 +83,7 @@ class MainActivity : AppCompatActivity() {
                 mBinding.tvTime.text = it
             }
             collectNotHandledEventProperty(MainUiState::toastEvent) {
-                showToast(it)
+                showToast(toastEvent = it)
             }
         }
     }
