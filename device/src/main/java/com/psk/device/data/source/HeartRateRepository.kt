@@ -19,7 +19,7 @@ import org.koin.core.component.get
  * 心率数据仓库
  */
 @OptIn(KoinApiExtension::class)
-class HeartRateRepository : KoinComponent, IRepository<HeartRate> {
+class HeartRateRepository : KoinComponent, IBleDeviceRepository<HeartRate> {
     private val dbDataSource by lazy {
         HeartRateDbDataSource(get<DeviceDatabase>().heartRateDao())
     }

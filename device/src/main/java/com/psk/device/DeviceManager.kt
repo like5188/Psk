@@ -3,7 +3,7 @@ package com.psk.device
 import android.content.Context
 import com.psk.device.data.model.DeviceType
 import com.psk.device.data.source.HealthInfoRepository
-import com.psk.device.data.source.IRepository
+import com.psk.device.data.source.IBleDeviceRepository
 import com.psk.device.data.source.UnionRepository
 import com.psk.device.data.source.remote.ble.BleDataSourceFactory
 
@@ -19,7 +19,7 @@ class DeviceManager(
     val unionRepository: UnionRepository,
     val healthInfoRepository: HealthInfoRepository,
 ) {
-    private val repositories = mutableMapOf<DeviceType, IRepository<*>>()
+    private val bleDeviceRepositories = mutableMapOf<DeviceType, IBleDeviceRepository<*>>()
 
 
     suspend fun init() {
@@ -30,15 +30,15 @@ class DeviceManager(
     /**
      * 根据设备类型创建仓库（因为[DeviceManager]是single，所以它也是单例
      */
-    fun <T : IRepository<*>> createRepository(deviceType: DeviceType): T {
-        return if (repositories.containsKey(deviceType)) {
-            repositories[deviceType]
+    fun <T : IBleDeviceRepository<*>> createRepository(deviceType: DeviceType): T {
+        return if (bleDeviceRepositories.containsKey(deviceType)) {
+            bleDeviceRepositories[deviceType]
         } else {
             // 根据设备类型反射创建仓库
-            val className = "${IRepository::class.java.`package`?.name}.${deviceType.name}Repository"
+            val className = "${IBleDeviceRepository::class.java.`package`?.name}.${deviceType.name}Repository"
             val clazz = Class.forName(className)
-            (clazz.newInstance() as IRepository<*>).apply {
-                repositories[deviceType] = this
+            (clazz.newInstance() as IBleDeviceRepository<*>).apply {
+                bleDeviceRepositories[deviceType] = this
             }
         } as T
     }

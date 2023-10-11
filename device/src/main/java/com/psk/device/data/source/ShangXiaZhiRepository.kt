@@ -21,7 +21,7 @@ import org.koin.core.component.get
  * 上下肢数据仓库
  */
 @OptIn(KoinApiExtension::class)
-class ShangXiaZhiRepository : KoinComponent, IRepository<ShangXiaZhi> {
+class ShangXiaZhiRepository : KoinComponent, IBleDeviceRepository<ShangXiaZhi> {
     private val dbDataSource by lazy {
         ShangXiaZhiDbDataSource(get<DeviceDatabase>().shangXiaZhiDao())
     }

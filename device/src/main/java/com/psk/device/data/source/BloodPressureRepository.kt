@@ -21,7 +21,7 @@ import org.koin.core.component.get
  * 血压数据仓库
  */
 @OptIn(KoinApiExtension::class)
-class BloodPressureRepository : KoinComponent, IRepository<BloodPressure> {
+class BloodPressureRepository : KoinComponent, IBleDeviceRepository<BloodPressure> {
     private val dbDataSource by lazy {
         BloodPressureDbDataSource(get<DeviceDatabase>().bloodPressureDao())
     }
