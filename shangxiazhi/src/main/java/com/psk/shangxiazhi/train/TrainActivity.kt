@@ -1,23 +1,21 @@
 package com.psk.shangxiazhi.train
 
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
+import com.like.ble.util.PermissionUtils
 import com.like.common.util.gone
 import com.like.common.util.mvi.propertyCollector
 import com.like.common.util.showToast
 import com.like.common.util.startActivity
 import com.like.common.util.visible
-import com.psk.ble.BleManager
-import com.psk.ble.DeviceType
 import com.psk.common.CommonApplication
+import com.psk.device.data.model.DeviceType
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.databinding.ActivityTrainBinding
 import kotlinx.coroutines.launch
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
@@ -34,14 +32,13 @@ class TrainActivity : AppCompatActivity() {
         DataBindingUtil.setContentView(this, R.layout.activity_train)
     }
     private val mViewModel: TrainViewModel by viewModel()
-    private val bleManager by inject<BleManager>()
     private var bloodPressureMeasureType: Int = 0// 运动中血压测量方式。0：手动测量；1：自动测量（间隔5分钟测量）
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         lifecycleScope.launch {
-            bleManager.onTip = { Log.e("bleManager", "onTip ${it.msg}") }
-            bleManager.requestEnvironment(this@TrainActivity)
+            PermissionUtils.requestScanEnvironment(this@TrainActivity)
+            PermissionUtils.requestConnectEnvironment(this@TrainActivity)
         }
         mViewModel.bindGameManagerService(this)
         mBinding.deviceCardView.setOnClickListener {

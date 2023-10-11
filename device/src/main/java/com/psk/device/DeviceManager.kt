@@ -1,7 +1,7 @@
 package com.psk.device
 
 import android.content.Context
-import com.psk.ble.DeviceType
+import com.psk.device.data.model.DeviceType
 import com.psk.device.data.source.HealthInfoRepository
 import com.psk.device.data.source.IRepository
 import com.psk.device.data.source.RepositoryFactory

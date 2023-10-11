@@ -1,16 +1,15 @@
 package com.psk.device.data.source.remote.ble
 
-import com.psk.ble.DeviceType
-import com.psk.ble.Protocol
 import com.psk.device.data.model.BloodPressure
+import com.psk.device.data.model.Protocol
 import com.psk.device.data.source.remote.BaseBloodPressureDataSource
 import kotlin.experimental.xor
 
 /**
  * maibobo 血压计数据源
  */
-class BP_BloodPressureDataSource : BaseBloodPressureDataSource(DeviceType.BloodPressure) {
-    override val protocol: Protocol = Protocol("0000fff0-0000-1000-8000-00805f9b34fb",
+class BP_BloodPressureDataSource : BaseBloodPressureDataSource() {
+    override val protocol = Protocol("0000fff0-0000-1000-8000-00805f9b34fb",
         "0000fff1-0000-1000-8000-00805f9b34fb",
         "0000fff2-0000-1000-8000-00805f9b34fb",
         isBeginOfPacket = {
@@ -46,12 +45,12 @@ class BP_BloodPressureDataSource : BaseBloodPressureDataSource(DeviceType.BloodP
     }
 
     override suspend fun fetch(medicalOrderId: Long): BloodPressure? {
-        val data = bleManager.waitResult(device)
+        val data = writeAndWaitResult("")
         return parseBloodPressure(data, medicalOrderId)
     }
 
     override suspend fun measure(medicalOrderId: Long): BloodPressure? {
-        val data = bleManager.writeAndWaitResult(device, "cc80020301020002")
+        val data = writeAndWaitResult("cc80020301020002")
         return parseBloodPressure(data, medicalOrderId)
     }
 
@@ -71,7 +70,7 @@ class BP_BloodPressureDataSource : BaseBloodPressureDataSource(DeviceType.BloodP
     }
 
     override suspend fun keepConnect(): Boolean {
-        return bleManager.write(device, "cc80020301010001")
+        return write("cc80020301010001")
     }
 
 }

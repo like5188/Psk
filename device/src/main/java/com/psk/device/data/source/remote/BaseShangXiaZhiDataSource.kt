@@ -1,11 +1,10 @@
 package com.psk.device.data.source.remote
 
-import com.psk.ble.DeviceType
 import com.psk.device.data.model.ShangXiaZhi
 import com.psk.device.data.model.ShangXiaZhiParams
 import kotlinx.coroutines.flow.Flow
 
-abstract class BaseShangXiaZhiDataSource(deviceType: DeviceType) : BaseRemoteDeviceDataSource(deviceType) {
+abstract class BaseShangXiaZhiDataSource : BaseBleDeviceDataSource() {
 
     abstract suspend fun fetch(medicalOrderId: Long): Flow<ShangXiaZhi>
 

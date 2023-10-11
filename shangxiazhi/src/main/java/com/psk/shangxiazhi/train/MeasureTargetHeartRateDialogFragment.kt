@@ -12,10 +12,9 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.like.common.base.BaseDialogFragment
 import com.like.common.util.showToast
-import com.psk.ble.BleManager
-import com.psk.ble.DeviceType
 import com.psk.common.customview.ProgressDialog
 import com.psk.device.DeviceManager
+import com.psk.device.data.model.DeviceType
 import com.psk.device.data.source.HeartRateRepository
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.databinding.DialogFragmentMeasureTargetHeartRateBinding
@@ -31,7 +30,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.get
-import org.koin.android.ext.android.inject
 
 /**
  * 测量靶心率
@@ -50,7 +48,6 @@ class MeasureTargetHeartRateDialogFragment private constructor() : BaseDialogFra
         }
     }
 
-    private val bleManager by inject<BleManager>()
     private val repository = get<DeviceManager>().createRepository<HeartRateRepository>(DeviceType.HeartRate)
     private lateinit var mBinding: DialogFragmentMeasureTargetHeartRateBinding
     var onSelected: ((minTargetHeartRate: Int, maxTargetHeartRate: Int) -> Unit)? = null
@@ -118,17 +115,17 @@ class MeasureTargetHeartRateDialogFragment private constructor() : BaseDialogFra
 
     override fun onDestroy() {
         super.onDestroy()
-        bleManager.onDestroy()
+        repository.close()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.dialog_fragment_measure_target_heart_rate, container, true)
         repository.enable(arguments?.getString(KEY_DEVICE_NAME) ?: "", arguments?.getString(KEY_DEVICE_ADDRESS) ?: "")
         mBinding.btnMeasure.setOnClickListener {
-            if (bleManager.isConnected(DeviceType.HeartRate)) {
+            if (repository.isConnected()) {
                 startJob()
             } else {
-                bleManager.connect(DeviceType.HeartRate, lifecycleScope, 3000L, {
+                repository.connect(lifecycleScope, {
                     context?.showToast("心电仪连接成功，开始测量")
                     startJob()
                 }) {

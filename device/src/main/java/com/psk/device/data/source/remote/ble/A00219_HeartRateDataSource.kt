@@ -1,8 +1,7 @@
 package com.psk.device.data.source.remote.ble
 
-import com.psk.ble.DeviceType
-import com.psk.ble.Protocol
 import com.psk.device.data.model.HeartRate
+import com.psk.device.data.model.Protocol
 import com.psk.device.data.source.remote.BaseHeartRateDataSource
 import com.starcaretech.stardata.StarData
 import com.starcaretech.stardata.common.DataReceiverSample
@@ -686,7 +685,7 @@ send(CommandUtil.getDeviceStatus()); // 向设备发送获取系统状态命令
 /**
  * SCI311W 心电仪数据源
  */
-class A00219_HeartRateDataSource : BaseHeartRateDataSource(DeviceType.HeartRate) {
+class A00219_HeartRateDataSource : BaseHeartRateDataSource() {
     override val protocol = Protocol(
         "00000001-0000-1000-8000-00805f9b34fb",
         "00000003-0000-1000-8000-00805f9b34fb",
@@ -726,7 +725,7 @@ class A00219_HeartRateDataSource : BaseHeartRateDataSource(DeviceType.HeartRate)
                 }
             }
         })
-        bleManager.setNotifyCallback(device)?.collect {
+        setNotifyCallback().collect {
             StarData.putData(it)
         }
     }.flowOn(Dispatchers.IO)

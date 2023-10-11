@@ -7,8 +7,8 @@ import android.os.IBinder
 import android.util.Log
 import com.like.common.util.startForeground
 import com.like.common.util.stopForeground
-import com.psk.ble.DeviceType
 import com.psk.device.DeviceManager
+import com.psk.device.data.model.DeviceType
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.data.model.BleScanInfo
 import com.psk.shangxiazhi.data.model.IReport

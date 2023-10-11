@@ -1,9 +1,8 @@
 package com.psk.shangxiazhi.game.business
 
 import android.util.Log
-import com.psk.ble.Device
-import com.psk.ble.DeviceType
 import com.psk.device.DeviceManager
+import com.psk.device.data.model.DeviceType
 import com.psk.device.data.model.HeartRate
 import com.psk.device.data.source.HeartRateRepository
 import com.psk.shangxiazhi.data.model.HeartRateReport
@@ -64,14 +63,14 @@ class HeartRateBusinessManager(
         }
     }
 
-    override fun onConnected(device: Device) {
-        Log.w(TAG, "心电仪连接成功 $device")
+    override fun onConnected() {
+        Log.w(TAG, "心电仪连接成功")
         gameController.updateEcgConnectionState(true)
         startJob()
     }
 
-    override fun onDisconnected(device: Device) {
-        Log.e(TAG, "心电仪连接失败 $device")
+    override fun onDisconnected() {
+        Log.e(TAG, "心电仪连接失败")
         gameController.updateEcgConnectionState(false)
         cancelJob()
     }

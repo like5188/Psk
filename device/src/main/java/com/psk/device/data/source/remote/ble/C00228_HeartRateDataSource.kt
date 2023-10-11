@@ -1,8 +1,7 @@
 package com.psk.device.data.source.remote.ble
 
-import com.psk.ble.DeviceType
-import com.psk.ble.Protocol
 import com.psk.device.data.model.HeartRate
+import com.psk.device.data.model.Protocol
 import com.psk.device.data.source.remote.BaseHeartRateDataSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -42,7 +41,7 @@ if (parsable instanceof EcgPack) {	// 或者 pack.cmd == CCmd.ECG
 /**
  * SCI411C 心电仪数据源
  */
-class C00228_HeartRateDataSource : BaseHeartRateDataSource(DeviceType.HeartRate) {
+class C00228_HeartRateDataSource : BaseHeartRateDataSource() {
     override val protocol = Protocol(
         "00000001-0000-1000-8000-00805f9b34fb",
         "00000003-0000-1000-8000-00805f9b34fb",
@@ -53,32 +52,29 @@ class C00228_HeartRateDataSource : BaseHeartRateDataSource(DeviceType.HeartRate)
         // 把二进制数据构建成数据包
         val packBuilder = Pack.Builder()
 
-        bleManager.setNotifyCallback(device)?.apply {
-            this.filter {
-                packBuilder.append(it)// 添加收到的二进制数据
-                packBuilder.size() > 0// 表示组包成功，至少有一个完整数据包
-            }
-                .flatMapConcat {
-                    val packs = packBuilder.iterator()// 构建出的多个数据包
-                    packs.asFlow().onEach {
-                        packs.remove()
-                    }
-                }.filter {
-                    it.cmd == CCmd.ECG
-                }
-                .map {
-                    CbeltParsableFactory.create(it, device.address)// 将数据包解析成相应的实体类对象
-                }
-                .filterNotNull()
-                .buffer()// 因为通知数据很重要，所以不能丢弃，就缓存起来。
-                .collect {
-                    when (it) {
-                        is EcgPack -> {
-                        }
-                    }
-                }
+        setNotifyCallback().filter {
+            packBuilder.append(it)// 添加收到的二进制数据
+            packBuilder.size() > 0// 表示组包成功，至少有一个完整数据包
         }
-
+            .flatMapConcat {
+                val packs = packBuilder.iterator()// 构建出的多个数据包
+                packs.asFlow().onEach {
+                    packs.remove()
+                }
+            }.filter {
+                it.cmd == CCmd.ECG
+            }
+            .map {
+                CbeltParsableFactory.create(it, address)// 将数据包解析成相应的实体类对象
+            }
+            .filterNotNull()
+            .buffer()// 因为通知数据很重要，所以不能丢弃，就缓存起来。
+            .collect {
+                when (it) {
+                    is EcgPack -> {
+                    }
+                }
+            }
     }.flowOn(Dispatchers.IO)
 
 }

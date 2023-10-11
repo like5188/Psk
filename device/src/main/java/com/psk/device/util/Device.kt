@@ -1,6 +1,6 @@
 package com.psk.device.util
 
-import com.psk.ble.DeviceType
+import com.psk.device.data.model.DeviceType
 import com.psk.device.data.source.remote.ble.BleDataSourceFactory
 
 /**

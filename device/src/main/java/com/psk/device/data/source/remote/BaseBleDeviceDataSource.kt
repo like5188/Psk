@@ -1,35 +1,51 @@
-package com.psk.ble
+package com.psk.device.data.source.remote
 
 import android.annotation.SuppressLint
-import android.content.Context
+import com.like.ble.central.connect.executor.AbstractConnectExecutor
 import com.like.ble.central.connect.executor.ConnectExecutorFactory
 import com.like.ble.exception.BleException
 import com.like.ble.exception.BleExceptionBusy
 import com.like.ble.exception.BleExceptionCancelTimeout
+import com.like.ble.util.hexStringToByteArray
+import com.like.common.util.Logger
+import com.psk.device.data.model.Protocol
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import org.koin.core.component.KoinApiExtension
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 
-internal class ConnectManager(private val context: Context, private val device: Device) {
-    private val connectExecutor by lazy {
-        ConnectExecutorFactory.get(context, device.address)
+@OptIn(KoinApiExtension::class)
+abstract class BaseBleDeviceDataSource : KoinComponent {
+    protected lateinit var address: String
+    abstract val protocol: Protocol
+    private lateinit var connectExecutor: AbstractConnectExecutor
+
+    /**
+     * 启用该设备
+     */
+    fun enable(address: String) {
+        this.address = address
+        connectExecutor = ConnectExecutorFactory.get(get(), address)
     }
-    var onTip: ((Tip) -> Unit)? = null
 
     fun isConnected(): Boolean {
-        return connectExecutor.isBleDeviceConnected()
+        return try {
+            connectExecutor.isBleDeviceConnected()
+        } catch (e: Exception) {
+            false
+        }
     }
 
     @SuppressLint("MissingPermission")
     fun connect(
         scope: CoroutineScope,
-        autoConnectInterval: Long,
-        onConnected: (Device) -> Unit,
-        onDisconnected: (Device) -> Unit
+        onConnected: () -> Unit,
+        onDisconnected: () -> Unit
     ) {
-        connectExecutor.connect(scope, autoConnectInterval, onConnected = { device, gattServiceList ->
-            onConnected(this.device)
-            onTip?.invoke(Normal("connect 成功：${device.name} ${device.address}"))
+        connectExecutor.connect(scope, 3000L, onConnected = { device, gattServiceList ->
+            onConnected()
         }) {
             when (it) {
                 is BleExceptionCancelTimeout -> {
@@ -37,36 +53,40 @@ internal class ConnectManager(private val context: Context, private val device: 
                 }
 
                 is BleExceptionBusy -> {
-                    onTip?.invoke(Error("connect 失败：${it.message}"))
+                    Logger.w("connect 失败：${it.message}")
                 }
 
                 else -> {
-                    onTip?.invoke(Error("connect 失败：${it.message}"))
-                    onDisconnected(device)
+                    Logger.e("connect 失败：${it.message}")
+                    onDisconnected()
                 }
             }
         }
     }
 
     fun setNotifyCallback(): Flow<ByteArray> =
-        connectExecutor.setCharacteristicNotificationAndNotifyCallback(device.protocol.notifyUUID, device.protocol.serviceUUID).catch {
+        connectExecutor.setCharacteristicNotificationAndNotifyCallback(protocol.notifyUUID, protocol.serviceUUID).catch {
             when (it) {
                 is BleExceptionCancelTimeout -> {
                     // 提前取消超时(BleExceptionCancelTimeout)不做处理。因为这是调用 disconnect() 造成的，使用者可以直接在 disconnect() 方法结束后处理 UI 的显示，不需要此回调。
                 }
 
                 is BleExceptionBusy -> {
-                    onTip?.invoke(Error("setNotifyCallback 失败：${it.message}"))
+                    Logger.w("setNotifyCallback 失败：${it.message}")
                 }
 
                 else -> {
-                    onTip?.invoke(Error("setNotifyCallback 失败：${it.message}"))
+                    Logger.e("setNotifyCallback 失败：${it.message}")
                 }
             }
         }
 
+    suspend fun write(cmd: String): Boolean {
+        return write(cmd.hexStringToByteArray())
+    }
+
     suspend fun write(cmd: ByteArray): Boolean = try {
-        connectExecutor.writeCharacteristic(cmd, device.protocol.writeUUID, device.protocol.serviceUUID)
+        connectExecutor.writeCharacteristic(cmd, protocol.writeUUID, protocol.serviceUUID)
         true
     } catch (e: BleException) {
         when (e) {
@@ -75,14 +95,18 @@ internal class ConnectManager(private val context: Context, private val device: 
             }
 
             is BleExceptionBusy -> {
-                onTip?.invoke(Error("write 失败：${e.message}"))
+                Logger.w("write 失败：${e.message}")
             }
 
             else -> {
-                onTip?.invoke(Error("write 失败：${e.message}"))
+                Logger.e("write 失败：${e.message}")
             }
         }
         false
+    }
+
+    suspend fun writeAndWaitResult(cmd: String?): ByteArray? {
+        return writeAndWaitResult(cmd.hexStringToByteArray())
     }
 
     /**
@@ -91,13 +115,13 @@ internal class ConnectManager(private val context: Context, private val device: 
      * @param cmd   命令。如果为 null 或者空，则不会写入命令，只是等待通知
      */
     suspend fun writeAndWaitResult(cmd: ByteArray?): ByteArray? = try {
-        val isBeginOfPacket = device.protocol.isBeginOfPacket ?: throw IllegalArgumentException("isStart in protocol is null")
-        val isFullPacket = device.protocol.isFullPacket ?: throw IllegalArgumentException("isWhole in protocol is null")
+        val isBeginOfPacket = protocol.isBeginOfPacket ?: throw IllegalArgumentException("isStart in protocol is null")
+        val isFullPacket = protocol.isFullPacket ?: throw IllegalArgumentException("isWhole in protocol is null")
         connectExecutor.writeCharacteristicAndWaitNotify(
             cmd,
-            device.protocol.writeUUID,
-            device.protocol.notifyUUID,
-            device.protocol.serviceUUID,
+            protocol.writeUUID,
+            protocol.notifyUUID,
+            protocol.serviceUUID,
             timeout = 60000L,
             isBeginOfPacket = isBeginOfPacket,
             isFullPacket = isFullPacket
@@ -109,18 +133,20 @@ internal class ConnectManager(private val context: Context, private val device: 
             }
 
             is BleExceptionBusy -> {
-                onTip?.invoke(Error("writeAndWaitResult 失败：${e.message}"))
+                Logger.w("writeAndWaitResult 失败：${e.message}")
             }
 
             else -> {
-                onTip?.invoke(Error("writeAndWaitResult 失败：${e.message}"))
+                Logger.e("writeAndWaitResult 失败：${e.message}")
             }
         }
         null
     }
 
     fun close() {
-        connectExecutor.close()
+        try {
+            connectExecutor.close()
+        } catch (e: Exception) {
+        }
     }
-
 }

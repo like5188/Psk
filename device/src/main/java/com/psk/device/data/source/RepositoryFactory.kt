@@ -1,6 +1,6 @@
 package com.psk.device.data.source
 
-import com.psk.ble.DeviceType
+import com.psk.device.data.model.DeviceType
 
 /**
  * 仓库工厂

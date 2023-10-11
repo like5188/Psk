@@ -1,11 +1,11 @@
 package com.psk.device.data.source
 
-import com.psk.ble.DeviceType
+import com.psk.device.data.model.DeviceType
 import com.psk.device.data.model.HeartRate
 import com.psk.device.data.source.local.db.HeartRateDbDataSource
 import com.psk.device.data.source.local.db.IDbDataSource
 import com.psk.device.data.source.remote.BaseHeartRateDataSource
-import com.psk.device.data.source.remote.BaseRemoteDeviceDataSource
+import com.psk.device.data.source.remote.BaseBleDeviceDataSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -27,12 +27,24 @@ class HeartRateRepository : KoinComponent, IRepository<HeartRate> {
     private lateinit var dataSource: BaseHeartRateDataSource
 
     override fun enable(name: String, address: String) {
-        dataSource = get<BaseRemoteDeviceDataSource> { parametersOf(name, DeviceType.HeartRate) } as BaseHeartRateDataSource
+        dataSource = get<BaseBleDeviceDataSource> { parametersOf(name, DeviceType.HeartRate) } as BaseHeartRateDataSource
         dataSource.enable(address)
     }
 
     override suspend fun getListByMedicalOrderId(medicalOrderId: Long): List<HeartRate>? {
         return dbDataSource.getByMedicalOrderId(medicalOrderId)
+    }
+
+    override fun connect(scope: CoroutineScope, onConnected: () -> Unit, onDisconnected: () -> Unit) {
+        dataSource.connect(scope, onConnected, onDisconnected)
+    }
+
+    override fun isConnected(): Boolean {
+        return dataSource.isConnected()
+    }
+
+    override fun close() {
+        dataSource.close()
     }
 
     fun getFlow(scope: CoroutineScope, medicalOrderId: Long): Flow<HeartRate> {

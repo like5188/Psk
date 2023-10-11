@@ -1,8 +1,7 @@
 package com.psk.device.data.source.remote.ble
 
-import com.psk.ble.DeviceType
-import com.psk.ble.Protocol
 import com.psk.device.data.model.HeartRate
+import com.psk.device.data.model.Protocol
 import com.psk.device.data.source.remote.BaseHeartRateDataSource
 import com.psk.device.util.BleCRC
 import com.psk.device.util.BtResponse
@@ -18,7 +17,7 @@ import kotlin.experimental.inv
 /**
  * 乐普单导联动态心电记录仪数据源
  */
-class ER1_HeartRateDataSource : BaseHeartRateDataSource(DeviceType.HeartRate) {
+class ER1_HeartRateDataSource : BaseHeartRateDataSource() {
     override val protocol = Protocol(
         "14839ac4-7d7e-415c-9a42-167340cf2339",
         "0734594A-A8E7-4B1A-A6B1-CD5243059A57",
@@ -50,7 +49,7 @@ class ER1_HeartRateDataSource : BaseHeartRateDataSource(DeviceType.HeartRate) {
             while (isActive) {
                 // 每1秒发送一次命令来获取心电相关的数据
                 val start = System.currentTimeMillis()
-                bleManager.write(device, getRtData())
+                write(getRtData())
                 val cost = System.currentTimeMillis() - start
                 val remain = 1000 - cost
                 if (remain > 0) {
@@ -59,7 +58,7 @@ class ER1_HeartRateDataSource : BaseHeartRateDataSource(DeviceType.HeartRate) {
             }
         }
         var pool: ByteArray = byteArrayOf()
-        bleManager.setNotifyCallback(device)?.collect {
+        setNotifyCallback().collect {
             pool += it
             pool = BtResponse.hasResponse(pool) ?: byteArrayOf()
         }

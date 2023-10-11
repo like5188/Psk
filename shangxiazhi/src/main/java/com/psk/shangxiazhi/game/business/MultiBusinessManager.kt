@@ -1,9 +1,8 @@
 package com.psk.shangxiazhi.game.business
 
 import android.util.Log
-import com.psk.ble.BleManager
-import com.psk.ble.DeviceType
 import com.psk.device.DeviceManager
+import com.psk.device.data.model.DeviceType
 import com.psk.shangxiazhi.data.model.IReport
 import com.twsz.twsystempre.GameController
 import com.twsz.twsystempre.RemoteCallback
@@ -14,38 +13,37 @@ import org.koin.core.component.inject
 
 @OptIn(KoinApiExtension::class)
 class MultiBusinessManager : RemoteCallback.Stub(), KoinComponent {
-    private val bleManager by inject<BleManager>()
     private val gameController by inject<GameController>()
-    private val managers = mutableMapOf<DeviceType, BaseBusinessManager<*, *>>()
+    private val businessManager = mutableMapOf<DeviceType, BaseBusinessManager<*, *>>()
     var onReport: ((List<IReport>) -> Unit)? = null
     private val shangXiaZhiBusinessManager: ShangXiaZhiBusinessManager?
-        get() = managers.values.firstOrNull { it is ShangXiaZhiBusinessManager } as? ShangXiaZhiBusinessManager
+        get() = businessManager.values.firstOrNull { it is ShangXiaZhiBusinessManager } as? ShangXiaZhiBusinessManager
 
     fun add(deviceType: DeviceType, manager: BaseBusinessManager<*, *>) {
-        managers[deviceType] = manager
+        businessManager[deviceType] = manager
     }
 
     fun clear() {
-        managers.clear()
+        businessManager.clear()
     }
 
     fun onStartGame() {
         Log.d(TAG, "onStartGame")
-        managers.values.forEach {
+        businessManager.values.forEach {
             it.onStartGame()
         }
     }
 
     fun onPauseGame() {
         Log.d(TAG, "onPauseGame")
-        managers.values.forEach {
+        businessManager.values.forEach {
             it.onPauseGame()
         }
     }
 
     fun onOverGame() {
         Log.d(TAG, "onOverGame")
-        managers.values.forEach {
+        businessManager.values.forEach {
             it.onOverGame()
         }
     }
@@ -77,7 +75,7 @@ class MultiBusinessManager : RemoteCallback.Stub(), KoinComponent {
 
     override fun onGameAppStart() {
         Log.i(TAG, "onGameAppStart")
-        managers.values.forEach {
+        businessManager.values.forEach {
             it.onGameAppStart()
         }
     }
@@ -85,14 +83,14 @@ class MultiBusinessManager : RemoteCallback.Stub(), KoinComponent {
     override fun onGameAppFinish() {
         Log.i(TAG, "onGameAppFinish")
         gameController.destroy()
-        // 由于 bleManager.onDestroy() 方法不会触发 connect() 方法的 onDisconnected 回调，原因见 Ble 框架的 close 方法
+        // 由于 connectExecutor.close() 方法不会触发 connect() 方法的 onDisconnected 回调，原因见 Ble 框架的 close 方法
         // 所以 gameController 中的连接状态相关的方法需要单独调用才能更新界面状态。
-        // bleManager.onDestroy() 必须放到最后面，否则会由于蓝牙的关闭而无法执行某些需要蓝牙的方法。
-        bleManager.onDestroy()
-        onReport?.invoke(
-            managers.values.map { it.getReport() }
-        )
-        managers.clear()
+        // connectExecutor.close() 必须放到最后面，否则会由于蓝牙的关闭而无法执行某些需要蓝牙的方法。
+        businessManager.values.forEach {
+            it.onGameAppFinish()
+        }
+        onReport?.invoke(businessManager.values.map { it.getReport() })
+        businessManager.clear()
     }
 
     companion object {

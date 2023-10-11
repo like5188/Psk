@@ -1,11 +1,11 @@
 package com.psk.device.data.source
 
-import com.psk.ble.DeviceType
+import com.psk.device.data.model.DeviceType
 import com.psk.device.data.model.BloodPressure
 import com.psk.device.data.source.local.db.BloodPressureDbDataSource
 import com.psk.device.data.source.local.db.IDbDataSource
 import com.psk.device.data.source.remote.BaseBloodPressureDataSource
-import com.psk.device.data.source.remote.BaseRemoteDeviceDataSource
+import com.psk.device.data.source.remote.BaseBleDeviceDataSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -29,12 +29,24 @@ class BloodPressureRepository : KoinComponent, IRepository<BloodPressure> {
     private lateinit var dataSource: BaseBloodPressureDataSource
 
     override fun enable(name: String, address: String) {
-        dataSource = get<BaseRemoteDeviceDataSource> { parametersOf(name, DeviceType.BloodPressure) } as BaseBloodPressureDataSource
+        dataSource = get<BaseBleDeviceDataSource> { parametersOf(name, DeviceType.BloodPressure) } as BaseBloodPressureDataSource
         dataSource.enable(address)
     }
 
     override suspend fun getListByMedicalOrderId(medicalOrderId: Long): List<BloodPressure>? {
         return dbDataSource.getByMedicalOrderId(medicalOrderId)
+    }
+
+    override fun connect(scope: CoroutineScope, onConnected: () -> Unit, onDisconnected: () -> Unit) {
+        dataSource.connect(scope, onConnected, onDisconnected)
+    }
+
+    override fun isConnected(): Boolean {
+        return dataSource.isConnected()
+    }
+
+    override fun close() {
+        dataSource.close()
     }
 
     fun getFetchFlow(scope: CoroutineScope, medicalOrderId: Long, interval: Long): Flow<BloodPressure> {

@@ -1,15 +1,14 @@
 package com.psk.device.data.source.remote.ble
 
-import com.psk.ble.DeviceType
-import com.psk.ble.Protocol
 import com.psk.device.data.model.BloodOxygen
+import com.psk.device.data.model.Protocol
 import com.psk.device.data.source.remote.BaseBloodOxygenDataSource
 import com.psk.device.util.BleCRC
 
 /**
  * 脉搏血氧仪数据源
  */
-class O2_BloodOxygenDataSource : BaseBloodOxygenDataSource(DeviceType.BloodOxygen) {
+class O2_BloodOxygenDataSource : BaseBloodOxygenDataSource() {
     override val protocol = Protocol(
         "14839ac4-7d7e-415c-9a42-167340cf2339",
         "0734594a-a8e7-4b1a-a6b1-cd5243059a57",
@@ -20,7 +19,7 @@ class O2_BloodOxygenDataSource : BaseBloodOxygenDataSource(DeviceType.BloodOxyge
     ) { it.lastOrNull() == BleCRC.calCRC8(it) }
 
     override suspend fun fetch(medicalOrderId: Long): BloodOxygen? {
-        val data = bleManager.writeAndWaitResult(device, "AA17E800000100002A")
+        val data = writeAndWaitResult("AA17E800000100002A")
         return if (data != null && data.size >= 8) {
             val bloodOxygen = if (data[7].toInt() < 0) {
                 0

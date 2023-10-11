@@ -2,8 +2,8 @@ package com.psk.shangxiazhi.history
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.psk.ble.DeviceType
 import com.psk.device.DeviceManager
+import com.psk.device.data.model.DeviceType
 import com.psk.device.data.model.HealthInfo
 import com.psk.device.data.source.BloodOxygenRepository
 import com.psk.device.data.source.BloodPressureRepository

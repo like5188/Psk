@@ -1,9 +1,7 @@
 package com.psk.device.data.source.remote.ble
 
-import com.like.ble.util.isBleDeviceConnected
 import com.like.common.util.SecondClock
-import com.psk.ble.DeviceType
-import com.psk.ble.Protocol
+import com.psk.device.data.model.Protocol
 import com.psk.device.data.model.ShangXiaZhi
 import com.psk.device.data.model.ShangXiaZhiParams
 import com.psk.device.data.source.remote.BaseShangXiaZhiDataSource
@@ -19,7 +17,7 @@ import kotlinx.coroutines.flow.flowOn
 /**
  * 瑞甲上下肢康复机数据源
  */
-class RKF_ShangXiaZhiDataSource : BaseShangXiaZhiDataSource(DeviceType.ShangXiaZhi) {
+class RKF_ShangXiaZhiDataSource : BaseShangXiaZhiDataSource() {
     override val protocol = Protocol(
         "0000ffe1-0000-1000-8000-00805f9b34fb",
         "0000ffe2-0000-1000-8000-00805f9b34fb",
@@ -85,25 +83,25 @@ class RKF_ShangXiaZhiDataSource : BaseShangXiaZhiDataSource(DeviceType.ShangXiaZ
             }
 
         }
-        bleManager.setNotifyCallback(device)?.collect {
+        setNotifyCallback().collect {
             shangXiaZhiDataParser.putData(it)
         }
     }.flowOn(Dispatchers.IO)
 
     override suspend fun resume() {
-        bleManager.write(device, RemoteCommand.generateStartParam())
+        write(RemoteCommand.generateStartParam())
     }
 
     override suspend fun pause() {
-        bleManager.write(device, RemoteCommand.generatePauseParam())
+        write(RemoteCommand.generatePauseParam())
     }
 
     override suspend fun over() {
-        bleManager.write(device, RemoteCommand.generateStopParam())
+        write(RemoteCommand.generateStopParam())
     }
 
     override suspend fun setParams(params: ShangXiaZhiParams) {
-        if (!context.isBleDeviceConnected(device.address)) {
+        if (!isConnected()) {
             // 如果是未连接，则不管，因为连接成功后，会调用 setParams() 方法。
             return
         }
@@ -111,7 +109,7 @@ class RKF_ShangXiaZhiDataSource : BaseShangXiaZhiDataSource(DeviceType.ShangXiaZ
         val cmd: ByteArray = RemoteCommand.generateParam(params.toTrunkCommandData())
         var result = false
         while (!result) {
-            result = bleManager.write(device, cmd)
+            result = write(cmd)
             if (!result) {
                 delay(100)
             }

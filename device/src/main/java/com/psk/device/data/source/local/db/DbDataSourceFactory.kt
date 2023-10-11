@@ -1,6 +1,6 @@
 package com.psk.device.data.source.local.db
 
-import com.psk.ble.DeviceType
+import com.psk.device.data.model.DeviceType
 
 /**
  * 数据库数据源工厂

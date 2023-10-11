@@ -1,11 +1,11 @@
 package com.psk.device.data.source
 
-import com.psk.ble.DeviceType
+import com.psk.device.data.model.DeviceType
 import com.psk.device.data.model.ShangXiaZhi
 import com.psk.device.data.model.ShangXiaZhiParams
 import com.psk.device.data.source.local.db.IDbDataSource
 import com.psk.device.data.source.local.db.ShangXiaZhiDbDataSource
-import com.psk.device.data.source.remote.BaseRemoteDeviceDataSource
+import com.psk.device.data.source.remote.BaseBleDeviceDataSource
 import com.psk.device.data.source.remote.BaseShangXiaZhiDataSource
 import com.psk.device.data.source.remote.ble.RKF_ShangXiaZhiDataSource
 import kotlinx.coroutines.CoroutineScope
@@ -29,12 +29,24 @@ class ShangXiaZhiRepository : KoinComponent, IRepository<ShangXiaZhi> {
     private lateinit var dataSource: BaseShangXiaZhiDataSource
 
     override fun enable(name: String, address: String) {
-        dataSource = get<BaseRemoteDeviceDataSource> { parametersOf(name, DeviceType.ShangXiaZhi) } as BaseShangXiaZhiDataSource
+        dataSource = get<BaseBleDeviceDataSource> { parametersOf(name, DeviceType.ShangXiaZhi) } as BaseShangXiaZhiDataSource
         dataSource.enable(address)
     }
 
     override suspend fun getListByMedicalOrderId(medicalOrderId: Long): List<ShangXiaZhi>? {
         return dbDataSource.getByMedicalOrderId(medicalOrderId)
+    }
+
+    override fun connect(scope: CoroutineScope, onConnected: () -> Unit, onDisconnected: () -> Unit) {
+        dataSource.connect(scope, onConnected, onDisconnected)
+    }
+
+    override fun isConnected(): Boolean {
+        return dataSource.isConnected()
+    }
+
+    override fun close() {
+        dataSource.close()
     }
 
     fun getFlow(scope: CoroutineScope, medicalOrderId: Long): Flow<ShangXiaZhi> {

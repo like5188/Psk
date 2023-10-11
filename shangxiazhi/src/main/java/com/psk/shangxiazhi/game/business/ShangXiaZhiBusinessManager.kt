@@ -1,9 +1,8 @@
 package com.psk.shangxiazhi.game.business
 
 import android.util.Log
-import com.psk.ble.Device
-import com.psk.ble.DeviceType
 import com.psk.device.DeviceManager
+import com.psk.device.data.model.DeviceType
 import com.psk.device.data.model.ShangXiaZhi
 import com.psk.device.data.source.ShangXiaZhiRepository
 import com.psk.shangxiazhi.data.model.IReport
@@ -49,8 +48,8 @@ class ShangXiaZhiBusinessManager(
         }
     }
 
-    override fun onConnected(device: Device) {
-        Log.w(TAG, "上下肢连接成功 $device")
+    override fun onConnected() {
+        Log.w(TAG, "上下肢连接成功")
         gameController.updateGameConnectionState(true)
         lifecycleScope.launch(Dispatchers.IO) {
             waitStart()// 等待游戏开始运行
@@ -58,8 +57,8 @@ class ShangXiaZhiBusinessManager(
         }
     }
 
-    override fun onDisconnected(device: Device) {
-        Log.e(TAG, "上下肢连接失败 $device")
+    override fun onDisconnected() {
+        Log.e(TAG, "上下肢连接失败")
         gameController.updateGameConnectionState(false)
         cancelJob()
     }
