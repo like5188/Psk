@@ -1,13 +1,13 @@
 package com.psk.device.data.source
 
+import com.psk.device.data.db.database.DeviceDatabase
 import com.psk.device.data.model.DeviceType
 import com.psk.device.data.model.ShangXiaZhi
 import com.psk.device.data.model.ShangXiaZhiParams
-import com.psk.device.data.source.local.db.IDbDataSource
 import com.psk.device.data.source.local.db.ShangXiaZhiDbDataSource
-import com.psk.device.data.source.remote.ble.base.BaseBleDeviceDataSource
-import com.psk.device.data.source.remote.ble.base.BaseShangXiaZhiDataSource
+import com.psk.device.data.source.remote.ble.BleDataSourceFactory
 import com.psk.device.data.source.remote.ble.RKF_ShangXiaZhiDataSource
+import com.psk.device.data.source.remote.ble.base.BaseShangXiaZhiDataSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -16,20 +16,19 @@ import kotlinx.coroutines.launch
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
-import org.koin.core.parameter.parametersOf
 
 /**
  * 上下肢数据仓库
  */
 @OptIn(KoinApiExtension::class)
 class ShangXiaZhiRepository : KoinComponent, IRepository<ShangXiaZhi> {
-    private val dbDataSource: ShangXiaZhiDbDataSource by lazy {
-        get<IDbDataSource<*>> { parametersOf(DeviceType.ShangXiaZhi) } as ShangXiaZhiDbDataSource
+    private val dbDataSource by lazy {
+        ShangXiaZhiDbDataSource(get<DeviceDatabase>().shangXiaZhiDao())
     }
     private lateinit var dataSource: BaseShangXiaZhiDataSource
 
     override fun enable(name: String, address: String) {
-        dataSource = get<BaseBleDeviceDataSource> { parametersOf(name, DeviceType.ShangXiaZhi) } as BaseShangXiaZhiDataSource
+        dataSource = BleDataSourceFactory.create(name, DeviceType.ShangXiaZhi) as BaseShangXiaZhiDataSource
         dataSource.enable(address)
     }
 
