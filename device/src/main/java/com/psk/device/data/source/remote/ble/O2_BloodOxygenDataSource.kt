@@ -2,7 +2,7 @@ package com.psk.device.data.source.remote.ble
 
 import com.psk.device.data.model.BloodOxygen
 import com.psk.device.data.model.Protocol
-import com.psk.device.data.source.remote.BaseBloodOxygenDataSource
+import com.psk.device.data.source.remote.ble.base.BaseBloodOxygenDataSource
 import com.psk.device.util.BleCRC
 
 /**

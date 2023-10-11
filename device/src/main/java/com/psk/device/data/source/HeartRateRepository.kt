@@ -4,8 +4,8 @@ import com.psk.device.data.model.DeviceType
 import com.psk.device.data.model.HeartRate
 import com.psk.device.data.source.local.db.HeartRateDbDataSource
 import com.psk.device.data.source.local.db.IDbDataSource
-import com.psk.device.data.source.remote.BaseHeartRateDataSource
-import com.psk.device.data.source.remote.BaseBleDeviceDataSource
+import com.psk.device.data.source.remote.ble.base.BaseHeartRateDataSource
+import com.psk.device.data.source.remote.ble.base.BaseBleDeviceDataSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

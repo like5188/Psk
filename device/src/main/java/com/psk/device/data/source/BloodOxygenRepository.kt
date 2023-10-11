@@ -4,8 +4,8 @@ import com.psk.device.data.model.DeviceType
 import com.psk.device.data.model.BloodOxygen
 import com.psk.device.data.source.local.db.BloodOxygenDbDataSource
 import com.psk.device.data.source.local.db.IDbDataSource
-import com.psk.device.data.source.remote.BaseBloodOxygenDataSource
-import com.psk.device.data.source.remote.BaseBleDeviceDataSource
+import com.psk.device.data.source.remote.ble.base.BaseBloodOxygenDataSource
+import com.psk.device.data.source.remote.ble.base.BaseBleDeviceDataSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay

@@ -2,7 +2,7 @@ package com.psk.device.data.source.remote.ble
 
 import com.psk.device.data.model.BloodPressure
 import com.psk.device.data.model.Protocol
-import com.psk.device.data.source.remote.BaseBloodPressureDataSource
+import com.psk.device.data.source.remote.ble.base.BaseBloodPressureDataSource
 import kotlin.experimental.xor
 
 /**

@@ -5,8 +5,8 @@ import com.psk.device.data.model.ShangXiaZhi
 import com.psk.device.data.model.ShangXiaZhiParams
 import com.psk.device.data.source.local.db.IDbDataSource
 import com.psk.device.data.source.local.db.ShangXiaZhiDbDataSource
-import com.psk.device.data.source.remote.BaseBleDeviceDataSource
-import com.psk.device.data.source.remote.BaseShangXiaZhiDataSource
+import com.psk.device.data.source.remote.ble.base.BaseBleDeviceDataSource
+import com.psk.device.data.source.remote.ble.base.BaseShangXiaZhiDataSource
 import com.psk.device.data.source.remote.ble.RKF_ShangXiaZhiDataSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
