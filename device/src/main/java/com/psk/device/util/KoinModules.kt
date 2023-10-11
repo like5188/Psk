@@ -33,7 +33,7 @@ val deviceModule = module {
         val paramsClass = Class.forName("$packageName.${deviceType.name}Dao")
         DbDataSourceFactory.create(deviceType, method.invoke(get<DeviceDatabase>()), paramsClass)
     }
-    //BaseRemoteDeviceDataSource
+    //BaseBleDeviceDataSource
     factory { (name: String, deviceType: DeviceType) ->
         BleDataSourceFactory.create(name, deviceType)
     }
