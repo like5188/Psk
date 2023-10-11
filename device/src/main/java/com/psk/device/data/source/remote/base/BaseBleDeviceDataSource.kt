@@ -1,4 +1,4 @@
-package com.psk.device.data.source.remote.ble.base
+package com.psk.device.data.source.remote.base
 
 import android.annotation.SuppressLint
 import com.like.ble.central.connect.executor.AbstractConnectExecutor

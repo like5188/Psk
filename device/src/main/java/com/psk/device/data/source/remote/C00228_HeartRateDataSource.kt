@@ -1,8 +1,8 @@
-package com.psk.device.data.source.remote.ble
+package com.psk.device.data.source.remote
 
 import com.psk.device.data.model.HeartRate
 import com.psk.device.data.model.Protocol
-import com.psk.device.data.source.remote.ble.base.BaseHeartRateDataSource
+import com.psk.device.data.source.remote.base.BaseHeartRateDataSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow

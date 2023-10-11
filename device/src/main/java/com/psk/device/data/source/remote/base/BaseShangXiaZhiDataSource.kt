@@ -1,4 +1,4 @@
-package com.psk.device.data.source.remote.ble.base
+package com.psk.device.data.source.remote.base
 
 import com.psk.device.data.model.ShangXiaZhi
 import com.psk.device.data.model.ShangXiaZhiParams

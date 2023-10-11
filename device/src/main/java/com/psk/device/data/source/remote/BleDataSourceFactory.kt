@@ -1,9 +1,9 @@
-package com.psk.device.data.source.remote.ble
+package com.psk.device.data.source.remote
 
 import android.content.Context
 import com.like.common.util.getSubclasses
 import com.psk.device.data.model.DeviceType
-import com.psk.device.data.source.remote.ble.base.BaseBleDeviceDataSource
+import com.psk.device.data.source.remote.base.BaseBleDeviceDataSource
 
 /**
  * 蓝牙设备数据源工厂
@@ -12,7 +12,7 @@ internal object BleDataSourceFactory {
     private lateinit var classes: List<Class<BaseBleDeviceDataSource>>
 
     suspend fun init(context: Context) {
-        if (::classes.isInitialized) {
+        if (BleDataSourceFactory::classes.isInitialized) {
             return
         }
         classes = BaseBleDeviceDataSource::class.java.getSubclasses(

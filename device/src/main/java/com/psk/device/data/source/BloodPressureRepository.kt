@@ -4,8 +4,8 @@ import com.psk.device.data.db.database.DeviceDatabase
 import com.psk.device.data.model.BloodPressure
 import com.psk.device.data.model.DeviceType
 import com.psk.device.data.source.local.db.BloodPressureDbDataSource
-import com.psk.device.data.source.remote.ble.BleDataSourceFactory
-import com.psk.device.data.source.remote.ble.base.BaseBloodPressureDataSource
+import com.psk.device.data.source.remote.BleDataSourceFactory
+import com.psk.device.data.source.remote.base.BaseBloodPressureDataSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay

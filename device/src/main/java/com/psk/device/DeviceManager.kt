@@ -5,7 +5,7 @@ import com.psk.device.data.model.DeviceType
 import com.psk.device.data.source.HealthInfoRepository
 import com.psk.device.data.source.IBleDeviceRepository
 import com.psk.device.data.source.UnionRepository
-import com.psk.device.data.source.remote.ble.BleDataSourceFactory
+import com.psk.device.data.source.remote.BleDataSourceFactory
 
 /**
  * 设备管理。使用本 [device] 模块时，只需使用此工具类。

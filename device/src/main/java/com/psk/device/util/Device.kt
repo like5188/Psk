@@ -1,7 +1,7 @@
 package com.psk.device.util
 
 import com.psk.device.data.model.DeviceType
-import com.psk.device.data.source.remote.ble.BleDataSourceFactory
+import com.psk.device.data.source.remote.BleDataSourceFactory
 
 /**
  * 判断当前设备类型是否包含指定设备名称[name]的设备
