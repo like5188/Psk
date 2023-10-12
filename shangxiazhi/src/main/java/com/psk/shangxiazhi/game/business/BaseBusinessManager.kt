@@ -1,5 +1,6 @@
 package com.psk.shangxiazhi.game.business
 
+import com.psk.common.CommonApplication
 import com.psk.device.RepositoryManager
 import com.psk.device.data.model.DeviceType
 import com.psk.device.data.source.BaseBleDeviceRepository
@@ -20,15 +21,14 @@ import org.koin.core.component.inject
 abstract class BaseBusinessManager<Repository : BaseBleDeviceRepository<*>>(
     protected val lifecycleScope: CoroutineScope,
     protected val medicalOrderId: Long,
-    repositoryManager: RepositoryManager,
     deviceName: String,
     deviceAddress: String,
     deviceType: DeviceType,
 ) : KoinComponent {
     private var job: Job? = null
     protected val gameController by inject<GameController>()
-    protected val bleDeviceRepository = repositoryManager.createBleDeviceRepository<Repository>(deviceType).apply {
-        enable(deviceName, deviceAddress)
+    protected val bleDeviceRepository = RepositoryManager.createBleDeviceRepository<Repository>(deviceType).apply {
+        enable(CommonApplication.Companion.sInstance, deviceName, deviceAddress)
     }
 
     fun startJob() {

@@ -22,7 +22,6 @@ import com.psk.shangxiazhi.databinding.DialogFragmentMeasureBloodPressureBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import org.koin.android.ext.android.get
 
 /**
  * 测量血压
@@ -40,7 +39,7 @@ class MeasureBloodPressureDialogFragment private constructor() : BaseDialogFragm
         }
     }
 
-    private val repository = get<RepositoryManager>().createBleDeviceRepository<BloodPressureRepository>(DeviceType.BloodPressure)
+    private val repository = RepositoryManager.createBleDeviceRepository<BloodPressureRepository>(DeviceType.BloodPressure)
     private lateinit var mBinding: DialogFragmentMeasureBloodPressureBinding
     var onSelected: ((BloodPressure) -> Unit)? = null
     private var job: Job? = null
@@ -82,7 +81,7 @@ class MeasureBloodPressureDialogFragment private constructor() : BaseDialogFragm
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.dialog_fragment_measure_blood_pressure, container, true)
-        repository.enable(arguments?.getString(KEY_DEVICE_NAME) ?: "", arguments?.getString(KEY_DEVICE_ADDRESS) ?: "")
+        repository.enable(requireContext(), arguments?.getString(KEY_DEVICE_NAME) ?: "", arguments?.getString(KEY_DEVICE_ADDRESS) ?: "")
         mBinding.btnMeasure.setOnClickListener {
             if (repository.isConnected()) {
                 startJob()

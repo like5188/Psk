@@ -1,6 +1,7 @@
 package com.psk.device.data.source.remote.base
 
 import android.annotation.SuppressLint
+import android.content.Context
 import com.like.ble.central.connect.executor.AbstractConnectExecutor
 import com.like.ble.central.connect.executor.ConnectExecutorFactory
 import com.like.ble.exception.BleException
@@ -12,12 +13,8 @@ import com.psk.device.data.model.Protocol
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
-import org.koin.core.component.KoinApiExtension
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
 
-@OptIn(KoinApiExtension::class)
-abstract class BaseBleDeviceDataSource : KoinComponent {
+abstract class BaseBleDeviceDataSource {
     protected lateinit var address: String
     abstract val protocol: Protocol
     private lateinit var connectExecutor: AbstractConnectExecutor
@@ -25,9 +22,9 @@ abstract class BaseBleDeviceDataSource : KoinComponent {
     /**
      * 启用该设备
      */
-    fun enable(address: String) {
+    fun enable(context: Context, address: String) {
         this.address = address
-        connectExecutor = ConnectExecutorFactory.get(get(), address)
+        connectExecutor = ConnectExecutorFactory.get(context, address)
     }
 
     fun isConnected(): Boolean {

@@ -25,15 +25,15 @@ import java.text.DecimalFormat
 import java.util.Calendar
 import java.util.Date
 
-class HistoryViewModel(repositoryManager: RepositoryManager) : ViewModel() {
+class HistoryViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(HistoryUiState())
     val uiState = _uiState.asStateFlow()
-    private val bloodOxygenRepository = repositoryManager.createBleDeviceRepository<BloodOxygenRepository>(DeviceType.BloodOxygen)
-    private val bloodPressureRepository = repositoryManager.createBleDeviceRepository<BloodPressureRepository>(DeviceType.BloodPressure)
-    private val heartRateRepository = repositoryManager.createBleDeviceRepository<HeartRateRepository>(DeviceType.HeartRate)
-    private val shangXiaZhiRepository = repositoryManager.createBleDeviceRepository<ShangXiaZhiRepository>(DeviceType.ShangXiaZhi)
-    private val unionRepository = repositoryManager.unionRepository
-    private val healthInfoRepository = repositoryManager.healthInfoRepository
+    private val bloodOxygenRepository = RepositoryManager.createBleDeviceRepository<BloodOxygenRepository>(DeviceType.BloodOxygen)
+    private val bloodPressureRepository = RepositoryManager.createBleDeviceRepository<BloodPressureRepository>(DeviceType.BloodPressure)
+    private val heartRateRepository = RepositoryManager.createBleDeviceRepository<HeartRateRepository>(DeviceType.HeartRate)
+    private val shangXiaZhiRepository = RepositoryManager.createBleDeviceRepository<ShangXiaZhiRepository>(DeviceType.ShangXiaZhi)
+    private val unionRepository = RepositoryManager.unionRepository
+    private val healthInfoRepository = RepositoryManager.healthInfoRepository
     private lateinit var datas: Map<String, List<DateAndData>>
     private val decimalFormat = DecimalFormat("00")
 

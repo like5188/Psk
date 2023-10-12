@@ -1,28 +1,30 @@
 package com.psk.device.data.db
 
-import android.app.Application
+import android.annotation.SuppressLint
+import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.psk.device.data.db.database.DeviceDatabase
 
+@SuppressLint("StaticFieldLeak")
 object DeviceDatabaseManager {
     private const val DB_NAME = "device.db"
     private val MIGRATIONS = arrayOf(Migration1)
-    private lateinit var application: Application
+    private lateinit var context: Context
     val db: DeviceDatabase by lazy {
-        Room.databaseBuilder(application.applicationContext, DeviceDatabase::class.java, DB_NAME)
+        Room.databaseBuilder(context, DeviceDatabase::class.java, DB_NAME)
             .addCallback(CreatedCallBack)
             .addMigrations(*MIGRATIONS)
             .build()
     }
 
-    fun init(application: Application) {
-        if (::application.isInitialized) {
+    fun init(context: Context) {
+        if (::context.isInitialized) {
             return
         }
-        DeviceDatabaseManager.application = application
+        DeviceDatabaseManager.context = context.applicationContext
     }
 
     private object CreatedCallBack : RoomDatabase.Callback() {

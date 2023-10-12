@@ -1,6 +1,6 @@
 package com.psk.device.data.source
 
-import com.psk.device.data.db.database.DeviceDatabase
+import com.psk.device.data.db.DeviceDatabaseManager
 import com.psk.device.data.model.DeviceType
 import com.psk.device.data.model.ShangXiaZhi
 import com.psk.device.data.model.ShangXiaZhiParams
@@ -12,17 +12,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
-import org.koin.core.component.KoinApiExtension
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
 
 /**
  * 上下肢数据仓库
  */
-@OptIn(KoinApiExtension::class)
-class ShangXiaZhiRepository : KoinComponent, BaseBleDeviceRepository<BaseShangXiaZhiDataSource>(DeviceType.ShangXiaZhi) {
+class ShangXiaZhiRepository : BaseBleDeviceRepository<BaseShangXiaZhiDataSource>(DeviceType.ShangXiaZhi) {
     private val dbDataSource by lazy {
-        ShangXiaZhiDbDataSource(get<DeviceDatabase>().shangXiaZhiDao())
+        ShangXiaZhiDbDataSource(DeviceDatabaseManager.db.shangXiaZhiDao())
     }
 
     suspend fun getListByMedicalOrderId(medicalOrderId: Long): List<ShangXiaZhi>? {

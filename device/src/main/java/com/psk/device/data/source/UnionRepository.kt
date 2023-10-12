@@ -1,18 +1,14 @@
 package com.psk.device.data.source
 
-import com.psk.device.data.db.database.DeviceDatabase
+import com.psk.device.data.db.DeviceDatabaseManager
 import com.psk.device.data.source.local.db.UnionDbDataSource
-import org.koin.core.component.KoinApiExtension
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
 
 /**
  * 联合查询数据仓库
  */
-@OptIn(KoinApiExtension::class)
-class UnionRepository : KoinComponent {
+class UnionRepository {
     private val dbDataSource by lazy {
-        UnionDbDataSource(get<DeviceDatabase>().unionDao())
+        UnionDbDataSource(DeviceDatabaseManager.db.unionDao())
     }
 
     suspend fun getAllMedicalOrderWithTime(): Map<Long, Long>? {

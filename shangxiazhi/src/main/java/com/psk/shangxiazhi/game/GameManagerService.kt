@@ -30,7 +30,6 @@ class GameManagerService : Service() {
         private val TAG = GameManagerService::class.java.simpleName
     }
 
-    private val repositoryManager by inject<RepositoryManager>()
     private val gameController by inject<GameController>()
     private lateinit var lifecycleScope: CoroutineScope
     private val multiBusinessManager: MultiBusinessManager by lazy {
@@ -40,7 +39,7 @@ class GameManagerService : Service() {
     fun init(scope: CoroutineScope) {
         lifecycleScope = scope
         lifecycleScope.launch {
-            repositoryManager.init()
+            RepositoryManager.init(this@GameManagerService)
         }
     }
 
@@ -62,7 +61,7 @@ class GameManagerService : Service() {
             val deviceType = it.key
             val bleScanInfo = it.value
             MultiBusinessManager.createBusinessManager(
-                lifecycleScope, medicalOrderId, repositoryManager, deviceType, bleScanInfo.name, bleScanInfo.address
+                lifecycleScope, medicalOrderId, deviceType, bleScanInfo.name, bleScanInfo.address
             ).apply {
                 multiBusinessManager.add(deviceType, this)
                 when (this) {

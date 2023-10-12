@@ -1,7 +1,6 @@
 package com.psk.shangxiazhi.game.business
 
 import android.util.Log
-import com.psk.device.RepositoryManager
 import com.psk.device.data.model.DeviceType
 import com.psk.device.data.source.BloodOxygenRepository
 import com.psk.shangxiazhi.data.model.BloodOxygenReport
@@ -16,11 +15,10 @@ import kotlinx.coroutines.withContext
 class BloodOxygenBusinessManager(
     lifecycleScope: CoroutineScope,
     medicalOrderId: Long,
-    repositoryManager: RepositoryManager,
     deviceName: String,
     deviceAddress: String,
 ) : BaseBusinessManager<BloodOxygenRepository>(
-    lifecycleScope, medicalOrderId, repositoryManager, deviceName, deviceAddress, DeviceType.BloodOxygen
+    lifecycleScope, medicalOrderId, deviceName, deviceAddress, DeviceType.BloodOxygen
 ) {
 
     override fun getReport(): IReport {

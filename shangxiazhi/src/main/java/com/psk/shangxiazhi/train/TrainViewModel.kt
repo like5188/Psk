@@ -1,5 +1,6 @@
 package com.psk.shangxiazhi.train
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ComponentName
 import android.content.Context
@@ -30,10 +31,12 @@ import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 
 @OptIn(KoinApiExtension::class)
-class TrainViewModel(repositoryManager: RepositoryManager) : ViewModel(), KoinComponent {
+class TrainViewModel : ViewModel(), KoinComponent {
     private val _uiState = MutableStateFlow(TrainUiState())
     val uiState = _uiState.asStateFlow()
-    private val healthInfoRepository = repositoryManager.healthInfoRepository
+    private val healthInfoRepository = RepositoryManager.healthInfoRepository
+
+    @SuppressLint("StaticFieldLeak")
     private var gameManagerService: GameManagerService? = null
 
     //创建一个ServiceConnection回调，通过IBinder进行交互

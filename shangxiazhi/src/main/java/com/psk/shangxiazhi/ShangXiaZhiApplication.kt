@@ -4,7 +4,6 @@ import com.like.common.util.ApplicationHolder
 import com.like.common.util.SPUtils
 import com.like.common.util.SerializableUtils
 import com.psk.common.CommonApplication
-import com.psk.device.util.deviceModule
 import com.psk.shangxiazhi.util.shangXiaZhiModule
 import org.koin.core.context.loadKoinModules
 
@@ -13,7 +12,6 @@ class ShangXiaZhiApplication : CommonApplication() {
         super.onCreate()
         ApplicationHolder.onCreate(this)
         loadKoinModules(shangXiaZhiModule)
-        loadKoinModules(deviceModule)
 
         SPUtils.getInstance().init(this)
         SerializableUtils.getInstance().init(this)

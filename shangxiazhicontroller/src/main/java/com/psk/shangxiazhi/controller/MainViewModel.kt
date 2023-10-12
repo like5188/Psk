@@ -4,6 +4,7 @@ import androidx.activity.ComponentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.like.ble.util.PermissionUtils
+import com.psk.common.CommonApplication
 import com.psk.device.RepositoryManager
 import com.psk.device.data.model.DeviceType
 import com.psk.device.data.model.ShangXiaZhi
@@ -14,22 +15,21 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class MainViewModel : ViewModel() {
-    private lateinit var repositoryManager: RepositoryManager
-    private lateinit var bleDeviceRepository: ShangXiaZhiRepository
+    private val bleDeviceRepository: ShangXiaZhiRepository by lazy {
+        RepositoryManager.createBleDeviceRepository(DeviceType.ShangXiaZhi)
+    }
     private var shangXiaZhiParams = ShangXiaZhiParams(true, 5, 4, 6, 0, true, true)
 
     fun init(activity: ComponentActivity) {
         viewModelScope.launch {
             PermissionUtils.requestScanEnvironment(activity)
             PermissionUtils.requestConnectEnvironment(activity)
-            repositoryManager = RepositoryManager(activity.applicationContext)
-            repositoryManager.init()
-            bleDeviceRepository = repositoryManager.createBleDeviceRepository(DeviceType.ShangXiaZhi)
+            RepositoryManager.init(activity.applicationContext)
         }
     }
 
     fun connect(name: String, address: String, onConnected: () -> Unit, onDisconnected: () -> Unit) {
-        bleDeviceRepository.enable(name, address)
+        bleDeviceRepository.enable(CommonApplication.sInstance, name, address)
         bleDeviceRepository.connect(viewModelScope, onConnected, onDisconnected)
     }
 

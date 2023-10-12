@@ -1,7 +1,6 @@
 package com.psk.shangxiazhi.game.business
 
 import android.util.Log
-import com.psk.device.RepositoryManager
 import com.psk.device.data.model.DeviceType
 import com.psk.device.data.source.ShangXiaZhiRepository
 import com.psk.shangxiazhi.data.model.IReport
@@ -16,11 +15,10 @@ import java.util.concurrent.atomic.AtomicBoolean
 class ShangXiaZhiBusinessManager(
     lifecycleScope: CoroutineScope,
     medicalOrderId: Long,
-    repositoryManager: RepositoryManager,
     deviceName: String,
     deviceAddress: String,
 ) : BaseBusinessManager<ShangXiaZhiRepository>(
-    lifecycleScope, medicalOrderId, repositoryManager, deviceName, deviceAddress, DeviceType.ShangXiaZhi
+    lifecycleScope, medicalOrderId, deviceName, deviceAddress, DeviceType.ShangXiaZhi
 ) {
     var onStartGame: (() -> Unit)? = null
     var onPauseGame: (() -> Unit)? = null

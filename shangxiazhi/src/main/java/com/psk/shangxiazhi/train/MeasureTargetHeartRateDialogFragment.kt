@@ -29,7 +29,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.koin.android.ext.android.get
 
 /**
  * 测量靶心率
@@ -48,7 +47,7 @@ class MeasureTargetHeartRateDialogFragment private constructor() : BaseDialogFra
         }
     }
 
-    private val repository = get<RepositoryManager>().createBleDeviceRepository<HeartRateRepository>(DeviceType.HeartRate)
+    private val repository = RepositoryManager.createBleDeviceRepository<HeartRateRepository>(DeviceType.HeartRate)
     private lateinit var mBinding: DialogFragmentMeasureTargetHeartRateBinding
     var onSelected: ((minTargetHeartRate: Int, maxTargetHeartRate: Int) -> Unit)? = null
     private var job: Job? = null
@@ -120,7 +119,7 @@ class MeasureTargetHeartRateDialogFragment private constructor() : BaseDialogFra
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.dialog_fragment_measure_target_heart_rate, container, true)
-        repository.enable(arguments?.getString(KEY_DEVICE_NAME) ?: "", arguments?.getString(KEY_DEVICE_ADDRESS) ?: "")
+        repository.enable(requireContext(), arguments?.getString(KEY_DEVICE_NAME) ?: "", arguments?.getString(KEY_DEVICE_ADDRESS) ?: "")
         mBinding.btnMeasure.setOnClickListener {
             if (repository.isConnected()) {
                 startJob()
