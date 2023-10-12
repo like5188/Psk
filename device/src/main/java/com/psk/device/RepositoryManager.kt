@@ -31,7 +31,7 @@ object RepositoryManager {
     }
 
     /**
-     * 根据蓝牙设备类型创建仓库（因为[RepositoryManager]是single，所以它也是单例
+     * 根据蓝牙设备类型创建仓库
      */
     fun <T : BaseBleDeviceRepository<*>> createBleDeviceRepository(deviceType: DeviceType): T {
         return if (bleDeviceRepositories.containsKey(deviceType)) {
