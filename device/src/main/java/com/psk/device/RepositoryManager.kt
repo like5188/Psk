@@ -15,7 +15,7 @@ import kotlin.collections.set
  * 3、可以直接使用[unionRepository]、[healthInfoRepository]仓库。
  * 4、也可以使用[createBleDeviceRepository]创建的设备仓库。
  */
-class DeviceManager(private val context: Context) {
+class RepositoryManager(private val context: Context) {
     private val bleDeviceRepositories = mutableMapOf<DeviceType, BaseBleDeviceRepository<*>>()
     val unionRepository by lazy { UnionRepository() }
     val healthInfoRepository by lazy { HealthInfoRepository() }
@@ -26,7 +26,7 @@ class DeviceManager(private val context: Context) {
     }
 
     /**
-     * 根据蓝牙设备类型创建仓库（因为[DeviceManager]是single，所以它也是单例
+     * 根据蓝牙设备类型创建仓库（因为[RepositoryManager]是single，所以它也是单例
      */
     fun <T : BaseBleDeviceRepository<*>> createBleDeviceRepository(deviceType: DeviceType): T {
         return if (bleDeviceRepositories.containsKey(deviceType)) {

@@ -7,7 +7,7 @@ import android.os.IBinder
 import android.util.Log
 import com.like.common.util.startForeground
 import com.like.common.util.stopForeground
-import com.psk.device.DeviceManager
+import com.psk.device.RepositoryManager
 import com.psk.device.data.model.DeviceType
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.data.model.BleScanInfo
@@ -30,7 +30,7 @@ class GameManagerService : Service() {
         private val TAG = GameManagerService::class.java.simpleName
     }
 
-    private val deviceManager by inject<DeviceManager>()
+    private val repositoryManager by inject<RepositoryManager>()
     private val gameController by inject<GameController>()
     private lateinit var lifecycleScope: CoroutineScope
     private val multiBusinessManager: MultiBusinessManager by lazy {
@@ -40,7 +40,7 @@ class GameManagerService : Service() {
     fun init(scope: CoroutineScope) {
         lifecycleScope = scope
         lifecycleScope.launch {
-            deviceManager.init()
+            repositoryManager.init()
         }
     }
 
@@ -62,7 +62,7 @@ class GameManagerService : Service() {
             val deviceType = it.key
             val bleScanInfo = it.value
             MultiBusinessManager.createBusinessManager(
-                lifecycleScope, medicalOrderId, deviceManager, deviceType, bleScanInfo.name, bleScanInfo.address
+                lifecycleScope, medicalOrderId, repositoryManager, deviceType, bleScanInfo.name, bleScanInfo.address
             ).apply {
                 multiBusinessManager.add(deviceType, this)
                 when (this) {

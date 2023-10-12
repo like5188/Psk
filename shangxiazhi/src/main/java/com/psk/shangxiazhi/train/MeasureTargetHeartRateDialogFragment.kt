@@ -13,7 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import com.like.common.base.BaseDialogFragment
 import com.like.common.util.showToast
 import com.psk.common.customview.ProgressDialog
-import com.psk.device.DeviceManager
+import com.psk.device.RepositoryManager
 import com.psk.device.data.model.DeviceType
 import com.psk.device.data.source.HeartRateRepository
 import com.psk.shangxiazhi.R
@@ -48,7 +48,7 @@ class MeasureTargetHeartRateDialogFragment private constructor() : BaseDialogFra
         }
     }
 
-    private val repository = get<DeviceManager>().createBleDeviceRepository<HeartRateRepository>(DeviceType.HeartRate)
+    private val repository = get<RepositoryManager>().createBleDeviceRepository<HeartRateRepository>(DeviceType.HeartRate)
     private lateinit var mBinding: DialogFragmentMeasureTargetHeartRateBinding
     var onSelected: ((minTargetHeartRate: Int, maxTargetHeartRate: Int) -> Unit)? = null
     private var job: Job? = null

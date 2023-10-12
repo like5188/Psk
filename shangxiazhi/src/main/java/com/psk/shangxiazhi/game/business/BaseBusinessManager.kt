@@ -1,7 +1,8 @@
 package com.psk.shangxiazhi.game.business
 
-import com.psk.device.DeviceManager
+import com.psk.device.RepositoryManager
 import com.psk.device.data.model.DeviceType
+import com.psk.device.data.source.BaseBleDeviceRepository
 import com.psk.device.data.source.IBleDeviceRepository
 import com.psk.shangxiazhi.data.model.IReport
 import com.twsz.twsystempre.GameController
@@ -17,17 +18,17 @@ import org.koin.core.component.inject
  * 设备相关的业务管理基类
  */
 @OptIn(KoinApiExtension::class)
-abstract class BaseBusinessManager<Data, Repository : IBleDeviceRepository<Data>>(
+abstract class BaseBusinessManager<Data, Repository : BaseBleDeviceRepository<Data>>(
     protected val lifecycleScope: CoroutineScope,
     protected val medicalOrderId: Long,
-    deviceManager: DeviceManager,
+    repositoryManager: RepositoryManager,
     deviceName: String,
     deviceAddress: String,
     deviceType: DeviceType,
 ) : KoinComponent {
     private var job: Job? = null
     protected val gameController by inject<GameController>()
-    protected val repository: Repository = deviceManager.createBleDeviceRepository<Repository>(deviceType).apply {
+    protected val repository: Repository = repositoryManager.createBleDeviceRepository<Repository>(deviceType).apply {
         enable(deviceName, deviceAddress)
     }
 

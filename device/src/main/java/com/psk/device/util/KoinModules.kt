@@ -1,6 +1,6 @@
 package com.psk.device.util
 
-import com.psk.device.DeviceManager
+import com.psk.device.RepositoryManager
 import com.psk.device.data.db.DeviceDatabaseManager
 import org.koin.dsl.module
 
@@ -20,7 +20,7 @@ val deviceModule = module {
     }
     // DeviceManager
     single {
-        DeviceManager(get())
+        RepositoryManager(get())
     }
 
 }

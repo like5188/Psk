@@ -2,7 +2,7 @@ package com.psk.shangxiazhi.history
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.psk.device.DeviceManager
+import com.psk.device.RepositoryManager
 import com.psk.device.data.model.DeviceType
 import com.psk.device.data.model.HealthInfo
 import com.psk.device.data.source.BloodOxygenRepository
@@ -25,15 +25,15 @@ import java.text.DecimalFormat
 import java.util.Calendar
 import java.util.Date
 
-class HistoryViewModel(deviceManager: DeviceManager) : ViewModel() {
+class HistoryViewModel(repositoryManager: RepositoryManager) : ViewModel() {
     private val _uiState = MutableStateFlow(HistoryUiState())
     val uiState = _uiState.asStateFlow()
-    private val bloodOxygenRepository = deviceManager.createBleDeviceRepository<BloodOxygenRepository>(DeviceType.BloodOxygen)
-    private val bloodPressureRepository = deviceManager.createBleDeviceRepository<BloodPressureRepository>(DeviceType.BloodPressure)
-    private val heartRateRepository = deviceManager.createBleDeviceRepository<HeartRateRepository>(DeviceType.HeartRate)
-    private val shangXiaZhiRepository = deviceManager.createBleDeviceRepository<ShangXiaZhiRepository>(DeviceType.ShangXiaZhi)
-    private val unionRepository = deviceManager.unionRepository
-    private val healthInfoRepository = deviceManager.healthInfoRepository
+    private val bloodOxygenRepository = repositoryManager.createBleDeviceRepository<BloodOxygenRepository>(DeviceType.BloodOxygen)
+    private val bloodPressureRepository = repositoryManager.createBleDeviceRepository<BloodPressureRepository>(DeviceType.BloodPressure)
+    private val heartRateRepository = repositoryManager.createBleDeviceRepository<HeartRateRepository>(DeviceType.HeartRate)
+    private val shangXiaZhiRepository = repositoryManager.createBleDeviceRepository<ShangXiaZhiRepository>(DeviceType.ShangXiaZhi)
+    private val unionRepository = repositoryManager.unionRepository
+    private val healthInfoRepository = repositoryManager.healthInfoRepository
     private lateinit var datas: Map<String, List<DateAndData>>
     private val decimalFormat = DecimalFormat("00")
 

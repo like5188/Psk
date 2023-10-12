@@ -1,7 +1,7 @@
 package com.psk.shangxiazhi.game.business
 
 import android.util.Log
-import com.psk.device.DeviceManager
+import com.psk.device.RepositoryManager
 import com.psk.device.data.model.DeviceType
 import com.psk.shangxiazhi.data.model.IReport
 import com.twsz.twsystempre.GameController
@@ -99,7 +99,7 @@ class MultiBusinessManager : RemoteCallback.Stub(), KoinComponent {
         fun createBusinessManager(
             lifecycleScope: CoroutineScope,
             medicalOrderId: Long,
-            deviceManager: DeviceManager,
+            repositoryManager: RepositoryManager,
             deviceType: DeviceType,
             deviceName: String,
             deviceAddress: String
@@ -109,7 +109,7 @@ class MultiBusinessManager : RemoteCallback.Stub(), KoinComponent {
             val constructor = clazz.getConstructor(
                 CoroutineScope::class.java,
                 Long::class.java,
-                DeviceManager::class.java,
+                RepositoryManager::class.java,
                 String::class.java,
                 String::class.java
             )
@@ -117,7 +117,7 @@ class MultiBusinessManager : RemoteCallback.Stub(), KoinComponent {
             return constructor.newInstance(
                 lifecycleScope,
                 medicalOrderId,
-                deviceManager,
+                repositoryManager,
                 deviceName,
                 deviceAddress
             ) as BaseBusinessManager<*, *>

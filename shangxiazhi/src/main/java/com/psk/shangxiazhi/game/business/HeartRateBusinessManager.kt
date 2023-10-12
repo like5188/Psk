@@ -1,7 +1,7 @@
 package com.psk.shangxiazhi.game.business
 
 import android.util.Log
-import com.psk.device.DeviceManager
+import com.psk.device.RepositoryManager
 import com.psk.device.data.model.DeviceType
 import com.psk.device.data.model.HeartRate
 import com.psk.device.data.source.HeartRateRepository
@@ -20,13 +20,13 @@ import kotlinx.coroutines.withContext
 class HeartRateBusinessManager(
     lifecycleScope: CoroutineScope,
     medicalOrderId: Long,
-    deviceManager: DeviceManager,
+    repositoryManager: RepositoryManager,
     deviceName: String,
     deviceAddress: String,
 ) : BaseBusinessManager<HeartRate, HeartRateRepository>(
     lifecycleScope,
     medicalOrderId,
-    deviceManager,
+    repositoryManager,
     deviceName,
     deviceAddress,
     DeviceType.HeartRate

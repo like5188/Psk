@@ -14,7 +14,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.like.common.util.ToastEvent
 import com.like.common.util.mvi.Event
-import com.psk.device.DeviceManager
+import com.psk.device.RepositoryManager
 import com.psk.device.data.model.DeviceType
 import com.psk.device.data.model.HealthInfo
 import com.psk.shangxiazhi.data.model.ShangXiaZhiReport
@@ -30,10 +30,10 @@ import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 
 @OptIn(KoinApiExtension::class)
-class TrainViewModel(deviceManager: DeviceManager) : ViewModel(), KoinComponent {
+class TrainViewModel(repositoryManager: RepositoryManager) : ViewModel(), KoinComponent {
     private val _uiState = MutableStateFlow(TrainUiState())
     val uiState = _uiState.asStateFlow()
-    private val healthInfoRepository = deviceManager.healthInfoRepository
+    private val healthInfoRepository = repositoryManager.healthInfoRepository
     private var gameManagerService: GameManagerService? = null
 
     //创建一个ServiceConnection回调，通过IBinder进行交互
