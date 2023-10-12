@@ -48,7 +48,7 @@ class MeasureTargetHeartRateDialogFragment private constructor() : BaseDialogFra
         }
     }
 
-    private val repository = get<DeviceManager>().createRepository<HeartRateRepository>(DeviceType.HeartRate)
+    private val repository = get<DeviceManager>().createBleDeviceRepository<HeartRateRepository>(DeviceType.HeartRate)
     private lateinit var mBinding: DialogFragmentMeasureTargetHeartRateBinding
     var onSelected: ((minTargetHeartRate: Int, maxTargetHeartRate: Int) -> Unit)? = null
     private var job: Job? = null

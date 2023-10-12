@@ -16,8 +16,7 @@ internal object BleDataSourceFactory {
             return
         }
         classes = BaseBleDeviceDataSource::class.java.getSubclasses(
-            context,
-            BleDataSourceFactory::class.java.`package`?.name
+            context, BleDataSourceFactory::class.java.`package`?.name
         )
     }
 
@@ -36,10 +35,10 @@ internal object BleDataSourceFactory {
     /**
      * 根据设备名称和设备类型反射创建数据源
      */
-    fun create(name: String, deviceType: DeviceType): BaseBleDeviceDataSource {
+    fun <T : BaseBleDeviceDataSource> create(name: String, deviceType: DeviceType): T {
         foreach { prefix, deviceTypeName, clazz ->
             if (deviceTypeName == deviceType.name && name.startsWith(prefix)) {
-                return clazz.newInstance()
+                return clazz.newInstance() as T
             }
         }
         throw IllegalArgumentException("未找到 $deviceType $name 对应的数据源")

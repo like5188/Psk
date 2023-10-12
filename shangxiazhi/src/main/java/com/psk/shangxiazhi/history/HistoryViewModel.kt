@@ -28,10 +28,10 @@ import java.util.Date
 class HistoryViewModel(deviceManager: DeviceManager) : ViewModel() {
     private val _uiState = MutableStateFlow(HistoryUiState())
     val uiState = _uiState.asStateFlow()
-    private val bloodOxygenRepository = deviceManager.createRepository<BloodOxygenRepository>(DeviceType.BloodOxygen)
-    private val bloodPressureRepository = deviceManager.createRepository<BloodPressureRepository>(DeviceType.BloodPressure)
-    private val heartRateRepository = deviceManager.createRepository<HeartRateRepository>(DeviceType.HeartRate)
-    private val shangXiaZhiRepository = deviceManager.createRepository<ShangXiaZhiRepository>(DeviceType.ShangXiaZhi)
+    private val bloodOxygenRepository = deviceManager.createBleDeviceRepository<BloodOxygenRepository>(DeviceType.BloodOxygen)
+    private val bloodPressureRepository = deviceManager.createBleDeviceRepository<BloodPressureRepository>(DeviceType.BloodPressure)
+    private val heartRateRepository = deviceManager.createBleDeviceRepository<HeartRateRepository>(DeviceType.HeartRate)
+    private val shangXiaZhiRepository = deviceManager.createBleDeviceRepository<ShangXiaZhiRepository>(DeviceType.ShangXiaZhi)
     private val unionRepository = deviceManager.unionRepository
     private val healthInfoRepository = deviceManager.healthInfoRepository
     private lateinit var datas: Map<String, List<DateAndData>>

@@ -27,7 +27,7 @@ abstract class BaseBusinessManager<Data, Repository : IBleDeviceRepository<Data>
 ) : KoinComponent {
     private var job: Job? = null
     protected val gameController by inject<GameController>()
-    protected val repository: Repository = deviceManager.createRepository<Repository>(deviceType).apply {
+    protected val repository: Repository = deviceManager.createBleDeviceRepository<Repository>(deviceType).apply {
         enable(deviceName, deviceAddress)
     }
 

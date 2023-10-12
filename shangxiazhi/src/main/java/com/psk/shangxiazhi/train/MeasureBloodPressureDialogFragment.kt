@@ -40,7 +40,7 @@ class MeasureBloodPressureDialogFragment private constructor() : BaseDialogFragm
         }
     }
 
-    private val repository = get<DeviceManager>().createRepository<BloodPressureRepository>(DeviceType.BloodPressure)
+    private val repository = get<DeviceManager>().createBleDeviceRepository<BloodPressureRepository>(DeviceType.BloodPressure)
     private lateinit var mBinding: DialogFragmentMeasureBloodPressureBinding
     var onSelected: ((BloodPressure) -> Unit)? = null
     private var job: Job? = null
