@@ -24,7 +24,7 @@ class ER1_HeartRateDataSource : BaseHeartRateDataSource() {
         "8B00ACE7-EB0B-49B0-BBE9-9AEE0A26E1A3",
     )
 
-    override suspend fun fetch(medicalOrderId: Long): Flow<HeartRate> = channelFlow {
+    override fun fetch(medicalOrderId: Long): Flow<HeartRate> = channelFlow {
         BtResponse.setReceiveListener(object : BtResponse.ReceiveListener {
             override fun onReceived(bleResponse: BtResponse.BleResponse?) {
                 if (bleResponse?.cmd == 0x03) {

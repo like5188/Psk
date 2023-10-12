@@ -36,7 +36,7 @@ class HeartRateRepository : KoinComponent, BaseBleDeviceRepository<BaseHeartRate
         return dbDataSource.listenLatest(System.currentTimeMillis()).filterNotNull()
     }
 
-    suspend fun fetch(): Flow<HeartRate> {
+    fun fetch(): Flow<HeartRate> {
         return bleDeviceDataSource.fetch(-1)
     }
 

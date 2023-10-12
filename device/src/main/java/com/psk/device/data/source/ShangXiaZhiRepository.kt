@@ -38,6 +38,10 @@ class ShangXiaZhiRepository : KoinComponent, BaseBleDeviceRepository<BaseShangXi
         return dbDataSource.listenLatest(System.currentTimeMillis()).filterNotNull()
     }
 
+    fun fetch(): Flow<ShangXiaZhi> {
+        return bleDeviceDataSource.fetch(-1)
+    }
+
     fun setCallback(
         onStart: (() -> Unit)? = null,
         onPause: (() -> Unit)? = null,

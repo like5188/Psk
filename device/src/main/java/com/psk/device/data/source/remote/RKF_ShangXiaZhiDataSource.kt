@@ -41,7 +41,7 @@ class RKF_ShangXiaZhiDataSource : BaseShangXiaZhiDataSource() {
     // 上下肢结束时回调
     var onOver: (() -> Unit)? = null
 
-    override suspend fun fetch(medicalOrderId: Long): Flow<ShangXiaZhi> = channelFlow {
+    override fun fetch(medicalOrderId: Long): Flow<ShangXiaZhi> = channelFlow {
         shangXiaZhiDataParser.receiver = object : ShangXiaZhiReceiver {
             override fun onReceive(
                 model: Byte,

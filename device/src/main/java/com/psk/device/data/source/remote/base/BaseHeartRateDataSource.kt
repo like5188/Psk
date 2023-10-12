@@ -5,6 +5,6 @@ import kotlinx.coroutines.flow.Flow
 
 abstract class BaseHeartRateDataSource : BaseBleDeviceDataSource() {
 
-    abstract suspend fun fetch(medicalOrderId: Long): Flow<HeartRate>
+    abstract fun fetch(medicalOrderId: Long): Flow<HeartRate>
 
 }

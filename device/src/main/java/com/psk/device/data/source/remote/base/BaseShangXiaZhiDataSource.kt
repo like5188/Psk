@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 abstract class BaseShangXiaZhiDataSource : BaseBleDeviceDataSource() {
 
-    abstract suspend fun fetch(medicalOrderId: Long): Flow<ShangXiaZhi>
+    abstract fun fetch(medicalOrderId: Long): Flow<ShangXiaZhi>
 
     /**
      * 使上下肢恢复运行
