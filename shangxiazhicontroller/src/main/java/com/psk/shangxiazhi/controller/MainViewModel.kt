@@ -1,10 +1,10 @@
 package com.psk.shangxiazhi.controller
 
+import android.content.Context
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.like.ble.util.PermissionUtils
-import com.psk.common.CommonApplication
 import com.psk.device.RepositoryManager
 import com.psk.device.data.model.DeviceType
 import com.psk.device.data.model.ShangXiaZhi
@@ -28,8 +28,8 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    fun connect(name: String, address: String, onConnected: () -> Unit, onDisconnected: () -> Unit) {
-        bleDeviceRepository.enable(CommonApplication.sInstance, name, address)
+    fun connect(context: Context, name: String, address: String, onConnected: () -> Unit, onDisconnected: () -> Unit) {
+        bleDeviceRepository.enable(context, name, address)
         bleDeviceRepository.connect(viewModelScope, onConnected, onDisconnected)
     }
 

@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
                     mBinding.tvDevice.text = it.name
                     mBinding.tvAddress.text = it.address
                     mBinding.tvConnectState.text = "连接中……"
-                    mViewModel.connect(it.name, it.address, {
+                    mViewModel.connect(this@MainActivity, it.name, it.address, {
                         mBinding.tvConnectState.text = "已连接"
                         fetch()
                     }) {
