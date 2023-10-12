@@ -12,17 +12,14 @@ object DeviceDatabaseManager {
     private val MIGRATIONS = arrayOf(Migration1)
     private lateinit var application: Application
     val db: DeviceDatabase by lazy {
-        Room.databaseBuilder(
-            application.applicationContext, DeviceDatabase::class.java,
-            DB_NAME
-        )
+        Room.databaseBuilder(application.applicationContext, DeviceDatabase::class.java, DB_NAME)
             .addCallback(CreatedCallBack)
             .addMigrations(*MIGRATIONS)
             .build()
     }
 
     fun init(application: Application) {
-        if (DeviceDatabaseManager::application.isInitialized) {
+        if (::application.isInitialized) {
             return
         }
         DeviceDatabaseManager.application = application
