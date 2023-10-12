@@ -15,6 +15,7 @@ abstract class BaseBleDeviceRepository<BleDeviceDataSource : BaseBleDeviceDataSo
      * 如果只是需要调用[getListByMedicalOrderId]方法需要获取数据库中缓存的数据，则不需要调用此方法。
      */
     fun enable(name: String, address: String) {
+        // 根据name反射创建对应数据源，因为每种设备类型可能对应多个厂商的不同设备，所以这里使用反射来简化，便于扩展
         bleDeviceDataSource = BleDataSourceFactory.create(name, deviceType)
         bleDeviceDataSource.enable(address)
     }
