@@ -6,16 +6,16 @@ import kotlinx.coroutines.flow.Flow
 
 class HeartRateDbDataSource(
     private val heartRateDao: HeartRateDao
-) : IDbDataSource<HeartRate> {
-    override fun listenLatest(startTime: Long): Flow<HeartRate?> {
+) {
+    fun listenLatest(startTime: Long): Flow<HeartRate?> {
         return heartRateDao.listenLatest(startTime)
     }
 
-    override suspend fun getByMedicalOrderId(medicalOrderId: Long): List<HeartRate>? {
+    suspend fun getByMedicalOrderId(medicalOrderId: Long): List<HeartRate>? {
         return heartRateDao.getByMedicalOrderId(medicalOrderId)
     }
 
-    override suspend fun insert(data: HeartRate) {
+    suspend fun insert(data: HeartRate) {
         heartRateDao.insert(data)
     }
 

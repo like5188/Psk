@@ -1,31 +1,13 @@
 package com.psk.device.data.source
 
-import com.psk.device.data.db.dao.BaseDao
-import com.psk.device.data.db.database.DeviceDatabase
 import com.psk.device.data.model.DeviceType
-import com.psk.device.data.source.local.db.DbDataSourceFactory
-import com.psk.device.data.source.local.db.IDbDataSource
 import com.psk.device.data.source.remote.BleDataSourceFactory
 import com.psk.device.data.source.remote.base.BaseBleDeviceDataSource
 import kotlinx.coroutines.CoroutineScope
-import org.koin.core.component.KoinApiExtension
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
 
-@OptIn(KoinApiExtension::class)
-abstract class BaseBleDeviceRepository<T, BleDeviceDataSource : BaseBleDeviceDataSource>(
+abstract class BaseBleDeviceRepository<BleDeviceDataSource : BaseBleDeviceDataSource>(
     private val deviceType: DeviceType
-) : KoinComponent {
-    protected val dbDataSource: IDbDataSource<T> by lazy {
-        // 从DeviceDatabase中获取deviceType对应的方法
-        val method = DeviceDatabase::class.java.declaredMethods.firstOrNull {
-            it.name.lowercase().startsWith(deviceType.name.lowercase())
-        }
-        method?.isAccessible = true
-        val packageName = BaseDao::class.java.`package`?.name
-        val paramsClass = Class.forName("$packageName.${deviceType.name}Dao")
-        DbDataSourceFactory.create(deviceType, method?.invoke(get<DeviceDatabase>()), paramsClass)
-    }
+) {
     protected lateinit var bleDeviceDataSource: BleDeviceDataSource
 
     /**
@@ -35,10 +17,6 @@ abstract class BaseBleDeviceRepository<T, BleDeviceDataSource : BaseBleDeviceDat
     fun enable(name: String, address: String) {
         bleDeviceDataSource = BleDataSourceFactory.create(name, deviceType)
         bleDeviceDataSource.enable(address)
-    }
-
-    suspend fun getListByMedicalOrderId(medicalOrderId: Long): List<T>? {
-        return dbDataSource.getByMedicalOrderId(medicalOrderId)
     }
 
     fun connect(scope: CoroutineScope, onConnected: () -> Unit, onDisconnected: () -> Unit) {

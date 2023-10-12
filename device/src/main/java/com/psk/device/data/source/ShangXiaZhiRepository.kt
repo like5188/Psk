@@ -1,8 +1,10 @@
 package com.psk.device.data.source
 
+import com.psk.device.data.db.database.DeviceDatabase
 import com.psk.device.data.model.DeviceType
 import com.psk.device.data.model.ShangXiaZhi
 import com.psk.device.data.model.ShangXiaZhiParams
+import com.psk.device.data.source.local.db.ShangXiaZhiDbDataSource
 import com.psk.device.data.source.remote.RKF_ShangXiaZhiDataSource
 import com.psk.device.data.source.remote.base.BaseShangXiaZhiDataSource
 import kotlinx.coroutines.CoroutineScope
@@ -12,12 +14,20 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 
 /**
  * 上下肢数据仓库
  */
 @OptIn(KoinApiExtension::class)
-class ShangXiaZhiRepository : KoinComponent, BaseBleDeviceRepository<ShangXiaZhi, BaseShangXiaZhiDataSource>(DeviceType.ShangXiaZhi) {
+class ShangXiaZhiRepository : KoinComponent, BaseBleDeviceRepository<BaseShangXiaZhiDataSource>(DeviceType.ShangXiaZhi) {
+    private val dbDataSource by lazy {
+        ShangXiaZhiDbDataSource(get<DeviceDatabase>().shangXiaZhiDao())
+    }
+
+    suspend fun getListByMedicalOrderId(medicalOrderId: Long): List<ShangXiaZhi>? {
+        return dbDataSource.getByMedicalOrderId(medicalOrderId)
+    }
 
     fun getFlow(scope: CoroutineScope, medicalOrderId: Long): Flow<ShangXiaZhi> {
         scope.launch(Dispatchers.IO) {
