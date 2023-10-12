@@ -14,7 +14,7 @@
             android:layout_height="?attr/actionBarSize"
             android:layout_marginStart="15dp"
             android:gravity="center"
-            android:text="康复机遥控器"
+            android:text="康复机监控软件"
             android:textColor="@android:color/white"
             android:textSize="18sp"
             android:textStyle="bold"
