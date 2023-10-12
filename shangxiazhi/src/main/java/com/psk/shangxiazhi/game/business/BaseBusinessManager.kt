@@ -27,7 +27,7 @@ abstract class BaseBusinessManager<Repository : BaseBleDeviceRepository<*>>(
 ) : KoinComponent {
     private var job: Job? = null
     protected val gameController by inject<GameController>()
-    protected val repository = repositoryManager.createBleDeviceRepository<Repository>(deviceType).apply {
+    protected val bleDeviceRepository = repositoryManager.createBleDeviceRepository<Repository>(deviceType).apply {
         enable(deviceName, deviceAddress)
     }
 
@@ -60,11 +60,11 @@ abstract class BaseBusinessManager<Repository : BaseBleDeviceRepository<*>>(
 
     // 游戏app启动回调
     fun onGameAppStart() {
-        repository.connect(lifecycleScope, ::onConnected, ::onDisconnected)
+        bleDeviceRepository.connect(lifecycleScope, ::onConnected, ::onDisconnected)
     }
 
     fun onGameAppFinish() {
-        repository.close()
+        bleDeviceRepository.close()
     }
 
     abstract fun getReport(): IReport

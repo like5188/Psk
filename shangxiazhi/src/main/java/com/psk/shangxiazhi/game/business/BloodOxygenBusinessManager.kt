@@ -29,7 +29,7 @@ class BloodOxygenBusinessManager(
 
     override suspend fun run() = withContext(Dispatchers.IO) {
         Log.d(TAG, "startBloodOxygenJob")
-        val flow = repository.getFlow(this, medicalOrderId, 1000)
+        val flow = bleDeviceRepository.getFlow(this, medicalOrderId, 1000)
         launch {
             BloodOxygenReport.createForm(flow)
         }

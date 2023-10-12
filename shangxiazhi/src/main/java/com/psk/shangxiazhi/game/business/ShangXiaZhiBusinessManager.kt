@@ -28,7 +28,7 @@ class ShangXiaZhiBusinessManager(
     private var isStart = AtomicBoolean(false)
 
     init {
-        repository.setCallback(
+        bleDeviceRepository.setCallback(
             onStart = { onStartGame?.invoke() },
             onPause = { onPauseGame?.invoke() },
             onOver = { onOverGame?.invoke() }
@@ -41,7 +41,7 @@ class ShangXiaZhiBusinessManager(
 
     override suspend fun run() = withContext(Dispatchers.IO) {
         Log.d(TAG, "startShangXiaZhiJob")
-        val flow = repository.getFlow(this, medicalOrderId)
+        val flow = bleDeviceRepository.getFlow(this, medicalOrderId)
         ShangXiaZhiReport.createForm(flow).collect {
             gameController.updateGameData(it)
         }
@@ -84,19 +84,19 @@ class ShangXiaZhiBusinessManager(
 
     fun onGameResume() {
         lifecycleScope.launch(Dispatchers.IO) {
-            repository.resume()
+            bleDeviceRepository.resume()
         }
     }
 
     fun onGamePause() {
         lifecycleScope.launch(Dispatchers.IO) {
-            repository.pause()
+            bleDeviceRepository.pause()
         }
     }
 
     fun onGameOver() {
         lifecycleScope.launch(Dispatchers.IO) {
-            repository.over()
+            bleDeviceRepository.over()
         }
     }
 
