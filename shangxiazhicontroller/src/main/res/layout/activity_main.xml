@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/black">
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_marginStart="15dp"
+            android:gravity="center"
+            android:text="康复机遥控器"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvDevice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:textColor="@android:color/white"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toTopOf="@id/tvAddress"
+            app:layout_constraintEnd_toStartOf="@id/btnScan"
+            app:layout_constraintTop_toTopOf="@id/tvTitle"
+            tools:text="xxx" />
+
+        <TextView
+            android:id="@+id/tvAddress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:textColor="@android:color/white"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toTopOf="@id/tvConnectState"
+            app:layout_constraintEnd_toStartOf="@id/btnScan"
+            app:layout_constraintTop_toBottomOf="@id/tvDevice"
+            tools:text="xxx" />
+
+        <TextView
+            android:id="@+id/tvConnectState"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:textColor="@android:color/white"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="@id/tvTitle"
+            app:layout_constraintEnd_toStartOf="@id/btnScan"
+            app:layout_constraintTop_toBottomOf="@id/tvAddress"
+            tools:text="xxx" />
+
+        <Button
+            android:id="@+id/btnScan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="15dp"
+            android:text="选择设备"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="@id/tvTitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tvTitle" />
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="15dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvTitle">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="1dp">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="#000000"
+                        android:padding="15dp">
+
+                        <androidx.constraintlayout.widget.Guideline
+                            android:id="@+id/guideline"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            app:layout_constraintGuide_percent="0.5" />
+
+                        <TextView
+                            android:id="@+id/tvIntelligenceTag"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="智能:"
+                            android:textColor="@color/color_secondary"
+                            android:textSize="16sp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/tvIntelligence"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="50dp"
+                            android:textColor="@color/color_secondary_variant"
+                            android:textSize="16sp"
+                            app:layout_constraintBaseline_toBaselineOf="@id/tvIntelligenceTag"
+                            app:layout_constraintStart_toEndOf="@id/tvIntelligenceTag"
+                            tools:text="xxx" />
+
+                        <TextView
+                            android:id="@+id/tvModelTag"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="模式："
+                            android:textColor="@color/color_secondary"
+                            android:textSize="16sp"
+                            app:layout_constraintBaseline_toBaselineOf="@id/tvIntelligenceTag"
+                            app:layout_constraintStart_toStartOf="@id/guideline" />
+
+                        <TextView
+                            android:id="@+id/tvModel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="50dp"
+                            android:textColor="@color/color_secondary_variant"
+                            android:textSize="16sp"
+                            app:layout_constraintBaseline_toBaselineOf="@id/tvIntelligenceTag"
+                            app:layout_constraintStart_toEndOf="@id/tvModelTag"
+                            tools:text="xxx" />
+
+                        <TextView
+                            android:id="@+id/tvSpeedLevelTag"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="速度挡位："
+                            android:textColor="@color/color_secondary"
+                            android:textSize="16sp"
+                            app:layout_constraintStart_toStartOf="@id/tvIntelligenceTag"
+                            app:layout_constraintTop_toBottomOf="@id/tvIntelligenceTag" />
+
+                        <TextView
+                            android:id="@+id/tvSpeedLevel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="50dp"
+                            android:textColor="@color/color_secondary_variant"
+                            android:textSize="16sp"
+                            app:layout_constraintBaseline_toBaselineOf="@id/tvSpeedLevelTag"
+                            app:layout_constraintStart_toEndOf="@id/tvSpeedLevelTag"
+                            tools:text="xxx" />
+
+                        <TextView
+                            android:id="@+id/tvSpeedTag"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:text="速度(r/min)："
+                            android:textColor="@color/color_secondary"
+                            android:textSize="16sp"
+                            app:layout_constraintBaseline_toBaselineOf="@id/tvSpeedLevelTag"
+                            app:layout_constraintStart_toStartOf="@id/guideline" />
+
+                        <TextView
+                            android:id="@+id/tvSpeed"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="50dp"
+                            android:textColor="@color/color_secondary_variant"
+                            android:textSize="16sp"
+                            app:layout_constraintBaseline_toBaselineOf="@id/tvSpeedLevelTag"
+                            app:layout_constraintStart_toEndOf="@id/tvSpeedTag"
+                            tools:text="xxx" />
+
+                        <TextView
+                            android:id="@+id/tvResistanceTag"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="阻力："
+                            android:textColor="@color/color_secondary"
+                            android:textSize="16sp"
+                            app:layout_constraintStart_toStartOf="@id/tvIntelligenceTag"
+                            app:layout_constraintTop_toBottomOf="@id/tvSpeedLevelTag" />
+
+                        <TextView
+                            android:id="@+id/tvResistance"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="50dp"
+                            android:textColor="@color/color_secondary_variant"
+                            android:textSize="16sp"
+                            app:layout_constraintBaseline_toBaselineOf="@id/tvResistanceTag"
+                            app:layout_constraintStart_toEndOf="@id/tvResistanceTag"
+                            tools:text="xxx" />
+
+                        <TextView
+                            android:id="@+id/tvSpasmLevelTag"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:text="痉挛："
+                            android:textColor="@color/color_secondary"
+                            android:textSize="16sp"
+                            app:layout_constraintBaseline_toBaselineOf="@id/tvResistanceTag"
+                            app:layout_constraintStart_toStartOf="@id/guideline" />
+
+                        <TextView
+                            android:id="@+id/tvSpasmLevel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="50dp"
+                            android:textColor="@color/color_secondary_variant"
+                            android:textSize="16sp"
+                            app:layout_constraintBaseline_toBaselineOf="@id/tvResistanceTag"
+                            app:layout_constraintStart_toEndOf="@id/tvSpasmLevelTag"
+                            tools:text="xxx" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="1dp">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="#000000">
+
+                        <Button
+                            android:id="@+id/btnStart"
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_marginTop="30dp"
+                            android:text="启动"
+                            app:layout_constraintDimensionRatio="w,1:1"
+                            app:layout_constraintEnd_toStartOf="@id/btnPause"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <Button
+                            android:id="@+id/btnPause"
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:text="暂停"
+                            app:layout_constraintDimensionRatio="w,1:1"
+                            app:layout_constraintEnd_toStartOf="@id/btnIntelligence"
+                            app:layout_constraintStart_toEndOf="@id/btnStart"
+                            app:layout_constraintTop_toTopOf="@id/btnStart" />
+
+                        <Button
+                            android:id="@+id/btnIntelligence"
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:text="智能"
+                            app:layout_constraintDimensionRatio="w,1:1"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@id/btnPause"
+                            app:layout_constraintTop_toTopOf="@id/btnStart" />
+
+                        <Button
+                            android:id="@+id/btnForward"
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_marginTop="30dp"
+                            android:text="正反"
+                            app:layout_constraintDimensionRatio="w,1:1"
+                            app:layout_constraintStart_toStartOf="@id/btnStart"
+                            app:layout_constraintTop_toBottomOf="@id/btnStart" />
+
+                        <Button
+                            android:id="@+id/btnSpeedLevel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:text="速度"
+                            app:layout_constraintDimensionRatio="w,1:1"
+                            app:layout_constraintStart_toStartOf="@id/btnPause"
+                            app:layout_constraintTop_toTopOf="@id/btnForward" />
+
+                        <Button
+                            android:id="@+id/btnResistance"
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:text="阻力"
+                            app:layout_constraintDimensionRatio="w,1:1"
+                            app:layout_constraintStart_toStartOf="@id/btnIntelligence"
+                            app:layout_constraintTop_toTopOf="@id/btnForward" />
+
+                        <Button
+                            android:id="@+id/btnModel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_marginTop="30dp"
+                            android:text="模式"
+                            app:layout_constraintDimensionRatio="w,1:1"
+                            app:layout_constraintStart_toStartOf="@id/btnStart"
+                            app:layout_constraintTop_toBottomOf="@id/btnSpeedLevel" />
+
+                        <Button
+                            android:id="@+id/btnSpasmLevel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:text="痉挛"
+                            app:layout_constraintDimensionRatio="w,1:1"
+                            app:layout_constraintStart_toStartOf="@id/btnPause"
+                            app:layout_constraintTop_toTopOf="@id/btnModel" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.cardview.widget.CardView>
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>
