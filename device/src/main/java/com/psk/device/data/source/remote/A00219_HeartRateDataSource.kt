@@ -696,7 +696,7 @@ class A00219_HeartRateDataSource : BaseHeartRateDataSource() {
         StarData.init()
     }
 
-    override suspend fun fetch(medicalOrderId: Long): Flow<HeartRate> = channelFlow {
+    override fun fetch(medicalOrderId: Long): Flow<HeartRate> = channelFlow {
         StarData.setDataReceiver(object : DataReceiverSample() {
             override fun onDataPoints(list: List<DataPoint>) {
                 // DataPoint：心电数据点（采样率为125，1秒钟有125个点）。画波形使用这个就可以
