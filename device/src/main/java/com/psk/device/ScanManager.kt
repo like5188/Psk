@@ -12,7 +12,6 @@ import com.like.common.util.Logger
 import com.psk.device.ScanManager.init
 import com.psk.device.data.model.DeviceType
 import com.psk.device.data.source.remote.BleDataSourceFactory
-import com.psk.device.util.containsDevice
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.conflate
@@ -29,8 +28,25 @@ object ScanManager {
 
     suspend fun init(context: Context) {
         scanExecutor = ScanExecutorFactory.get(context)
-        // [BleDataSourceFactory]必须放在扫描之前初始化，否则扫描时，如果要用到[DeviceType.containsDevice]方法就没效果。
+        /**
+         * [BleDataSourceFactory.init]必须放在扫描之前，否则扫描时，如果要用到[DeviceType.containsDevice]方法就没效果。
+         */
         BleDataSourceFactory.init(context)
+    }
+
+    /**
+     * 判断当前设备类型是否包含指定设备名称[name]的设备
+     */
+    private fun DeviceType.containsDevice(name: String): Boolean {
+        if (name.isEmpty()) {
+            return false
+        }
+        BleDataSourceFactory.foreach { prefix, deviceTypeName, clazz ->
+            if (deviceTypeName == this.name && name.startsWith(prefix)) {
+                return true
+            }
+        }
+        return false
     }
 
     /**
