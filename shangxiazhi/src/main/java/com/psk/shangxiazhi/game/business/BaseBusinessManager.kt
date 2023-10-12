@@ -3,7 +3,6 @@ package com.psk.shangxiazhi.game.business
 import com.psk.device.RepositoryManager
 import com.psk.device.data.model.DeviceType
 import com.psk.device.data.source.BaseBleDeviceRepository
-import com.psk.device.data.source.IBleDeviceRepository
 import com.psk.shangxiazhi.data.model.IReport
 import com.twsz.twsystempre.GameController
 import kotlinx.coroutines.CoroutineScope
@@ -18,7 +17,7 @@ import org.koin.core.component.inject
  * 设备相关的业务管理基类
  */
 @OptIn(KoinApiExtension::class)
-abstract class BaseBusinessManager<Data, Repository : BaseBleDeviceRepository<Data>>(
+abstract class BaseBusinessManager<Repository : BaseBleDeviceRepository<*>>(
     protected val lifecycleScope: CoroutineScope,
     protected val medicalOrderId: Long,
     repositoryManager: RepositoryManager,
@@ -28,7 +27,7 @@ abstract class BaseBusinessManager<Data, Repository : BaseBleDeviceRepository<Da
 ) : KoinComponent {
     private var job: Job? = null
     protected val gameController by inject<GameController>()
-    protected val repository: Repository = repositoryManager.createBleDeviceRepository<Repository>(deviceType).apply {
+    protected val repository = repositoryManager.createBleDeviceRepository<Repository>(deviceType).apply {
         enable(deviceName, deviceAddress)
     }
 
