@@ -29,7 +29,7 @@ class MainViewModel : ViewModel() {
     }
 
     fun connect(context: Context, name: String, address: String, onConnected: () -> Unit, onDisconnected: () -> Unit) {
-        bleDeviceRepository.enable(context, name, address)
+        bleDeviceRepository.init(context, name, address)
         bleDeviceRepository.connect(viewModelScope, onConnected, onDisconnected)
     }
 

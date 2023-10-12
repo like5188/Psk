@@ -28,7 +28,7 @@ abstract class BaseBusinessManager<Repository : BaseBleDeviceRepository<*>>(
     private var job: Job? = null
     protected val gameController by inject<GameController>()
     protected val bleDeviceRepository = RepositoryManager.createBleDeviceRepository<Repository>(deviceType).apply {
-        enable(CommonApplication.Companion.sInstance, deviceName, deviceAddress)
+        init(CommonApplication.Companion.sInstance, deviceName, deviceAddress)
     }
 
     fun startJob() {

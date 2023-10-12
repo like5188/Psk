@@ -119,7 +119,7 @@ class MeasureTargetHeartRateDialogFragment private constructor() : BaseDialogFra
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.dialog_fragment_measure_target_heart_rate, container, true)
-        repository.enable(requireContext(), arguments?.getString(KEY_DEVICE_NAME) ?: "", arguments?.getString(KEY_DEVICE_ADDRESS) ?: "")
+        repository.init(requireContext(), arguments?.getString(KEY_DEVICE_NAME) ?: "", arguments?.getString(KEY_DEVICE_ADDRESS) ?: "")
         mBinding.btnMeasure.setOnClickListener {
             if (repository.isConnected()) {
                 startJob()

@@ -19,10 +19,7 @@ abstract class BaseBleDeviceDataSource {
     abstract val protocol: Protocol
     private lateinit var connectExecutor: AbstractConnectExecutor
 
-    /**
-     * 启用该设备
-     */
-    fun enable(context: Context, address: String) {
+    fun init(context: Context, address: String) {
         this.address = address
         connectExecutor = ConnectExecutorFactory.get(context, address)
     }

@@ -14,7 +14,7 @@ import com.psk.device.data.source.remote.BleDataSourceFactory
 import kotlin.collections.set
 
 /**
- * 设备管理。使用本 [device] 模块时，只需使用此工具类。
+ * 仓库管理工具类。
  * 1、调用[init]进行初始化
  * 2、可以直接使用[unionRepository]、[healthInfoRepository]仓库。
  * 3、也可以使用[createBleDeviceRepository]创建的设备仓库。
