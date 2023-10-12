@@ -63,6 +63,7 @@ class MainActivity : AppCompatActivity() {
         mBinding.btnSpasmLevel.setOnClickListener {
             mViewModel.setSpasmLevel()
         }
+        mBinding.tvVersion.text = "版本号：${packageManager.getPackageInfo(packageName, 0).versionName}"
     }
 
     private fun fetch() {
