@@ -80,7 +80,7 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="#cc000000"
+                    android:background="#aa000000"
                     android:padding="15dp">
 
                     <androidx.constraintlayout.widget.Guideline
@@ -229,95 +229,192 @@
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:padding="15dp">
+
+                    <RadioGroup
+                        android:id="@+id/rgModel"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <RadioButton
+                            android:id="@+id/rbModel0"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="模式：主动" />
+
+                        <RadioButton
+                            android:id="@+id/rbModel1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="30dp"
+                            android:text="模式：被动" />
+                    </RadioGroup>
+
+                    <RadioGroup
+                        android:id="@+id/rgIntelligence"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/rgModel">
+
+                        <RadioButton
+                            android:id="@+id/rbIntelligence0"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="智能：开启" />
+
+                        <RadioButton
+                            android:id="@+id/rbIntelligence1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="30dp"
+                            android:text="智能：关闭" />
+                    </RadioGroup>
+
+                    <RadioGroup
+                        android:id="@+id/rgDirection"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/rgIntelligence">
+
+                        <RadioButton
+                            android:id="@+id/rbDirection0"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="方向：正转" />
+
+                        <RadioButton
+                            android:id="@+id/rbDirection1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="30dp"
+                            android:text="方向：反转" />
+                    </RadioGroup>
+
+                    <TextView
+                        android:id="@+id/tvTimeTag"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:text="时间："
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/rgDirection" />
+
+                    <EditText
+                        android:id="@+id/etTime"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:hint="范围：1~30分钟"
+                        android:inputType="number"
+                        android:textColorHint="#33000000"
+                        android:textSize="14sp"
+                        app:layout_constraintBaseline_toBaselineOf="@id/tvTimeTag"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/tvTimeTag" />
+
+                    <TextView
+                        android:id="@+id/tvSpeedLevelTag0"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="30dp"
+                        android:text="速度挡位："
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvTimeTag" />
+
+                    <EditText
+                        android:id="@+id/etSpeedLevel"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:hint="范围：1~12"
+                        android:inputType="number"
+                        android:textColorHint="#33000000"
+                        android:textSize="14sp"
+                        app:layout_constraintBaseline_toBaselineOf="@id/tvSpeedLevelTag0"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/tvSpeedLevelTag0" />
+
+                    <TextView
+                        android:id="@+id/tvSpasmLevelTag0"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="30dp"
+                        android:text="痉挛等级："
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvSpeedLevelTag0" />
+
+                    <EditText
+                        android:id="@+id/etSpasmLevel"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:hint="范围：1~12"
+                        android:inputType="number"
+                        android:textColorHint="#33000000"
+                        android:textSize="14sp"
+                        app:layout_constraintBaseline_toBaselineOf="@id/tvSpasmLevelTag0"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/tvSpasmLevelTag0" />
+
+
+                    <TextView
+                        android:id="@+id/tvResistanceTag0"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="30dp"
+                        android:text="阻力等级："
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvSpasmLevelTag0" />
+
+                    <EditText
+                        android:id="@+id/etResistance"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:hint="范围：1~12"
+                        android:inputType="number"
+                        android:textColorHint="#33000000"
+                        android:textSize="14sp"
+                        app:layout_constraintBaseline_toBaselineOf="@id/tvResistanceTag0"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/tvResistanceTag0" />
 
                     <Button
                         android:id="@+id/btnStart"
-                        android:layout_width="wrap_content"
-                        android:layout_height="0dp"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="30dp"
                         android:text="启动"
-                        app:layout_constraintDimensionRatio="w,1:1"
                         app:layout_constraintEnd_toStartOf="@id/btnPause"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toBottomOf="@id/tvResistanceTag0" />
 
                     <Button
                         android:id="@+id/btnPause"
-                        android:layout_width="wrap_content"
-                        android:layout_height="0dp"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="15dp"
                         android:text="暂停"
-                        app:layout_constraintDimensionRatio="w,1:1"
-                        app:layout_constraintEnd_toStartOf="@id/btnIntelligence"
+                        app:layout_constraintEnd_toStartOf="@id/btnStop"
                         app:layout_constraintStart_toEndOf="@id/btnStart"
                         app:layout_constraintTop_toTopOf="@id/btnStart" />
 
                     <Button
-                        android:id="@+id/btnIntelligence"
-                        android:layout_width="wrap_content"
-                        android:layout_height="0dp"
-                        android:text="智能"
-                        app:layout_constraintDimensionRatio="w,1:1"
+                        android:id="@+id/btnStop"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="15dp"
+                        android:text="停止"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@id/btnPause"
                         app:layout_constraintTop_toTopOf="@id/btnStart" />
-
-                    <Button
-                        android:id="@+id/btnForward"
-                        android:layout_width="wrap_content"
-                        android:layout_height="0dp"
-                        android:layout_marginTop="30dp"
-                        android:text="正反"
-                        app:layout_constraintDimensionRatio="w,1:1"
-                        app:layout_constraintStart_toStartOf="@id/btnStart"
-                        app:layout_constraintTop_toBottomOf="@id/btnStart" />
-
-                    <Button
-                        android:id="@+id/btnSpeedLevel"
-                        android:layout_width="wrap_content"
-                        android:layout_height="0dp"
-                        android:text="速度"
-                        app:layout_constraintDimensionRatio="w,1:1"
-                        app:layout_constraintStart_toStartOf="@id/btnPause"
-                        app:layout_constraintTop_toTopOf="@id/btnForward" />
-
-                    <Button
-                        android:id="@+id/btnResistance"
-                        android:layout_width="wrap_content"
-                        android:layout_height="0dp"
-                        android:text="阻力"
-                        app:layout_constraintDimensionRatio="w,1:1"
-                        app:layout_constraintStart_toStartOf="@id/btnIntelligence"
-                        app:layout_constraintTop_toTopOf="@id/btnForward" />
-
-                    <Button
-                        android:id="@+id/btnModel"
-                        android:layout_width="wrap_content"
-                        android:layout_height="0dp"
-                        android:layout_marginTop="30dp"
-                        android:text="模式"
-                        app:layout_constraintDimensionRatio="w,1:1"
-                        app:layout_constraintStart_toStartOf="@id/btnStart"
-                        app:layout_constraintTop_toBottomOf="@id/btnSpeedLevel" />
-
-                    <Button
-                        android:id="@+id/btnSpasmLevel"
-                        android:layout_width="wrap_content"
-                        android:layout_height="0dp"
-                        android:text="痉挛"
-                        app:layout_constraintDimensionRatio="w,1:1"
-                        app:layout_constraintStart_toStartOf="@id/btnPause"
-                        app:layout_constraintTop_toTopOf="@id/btnModel" />
-
-                    <Button
-                        android:id="@+id/btnTime"
-                        android:layout_width="wrap_content"
-                        android:layout_height="0dp"
-                        android:text="时间"
-                        android:visibility="gone"
-                        app:layout_constraintDimensionRatio="w,1:1"
-                        app:layout_constraintStart_toStartOf="@id/btnIntelligence"
-                        app:layout_constraintTop_toTopOf="@id/btnModel" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 

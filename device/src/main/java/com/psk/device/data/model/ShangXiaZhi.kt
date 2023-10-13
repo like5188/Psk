@@ -64,8 +64,8 @@ data class ShangXiaZhi(
  * @param speedLevel        速度等级 1-12// 被动模式
  * @param spasmLevel        痉挛等级 1-12// 被动模式
  * @param resistance        阻力 1-12// 主动模式
- * @param intelligent       智能模式
- * @param forward           正转
+ * @param intelligent       智能模式// 被动模式
+ * @param forward           正转// 被动模式
  */
 data class ShangXiaZhiParams(
     val passiveModel: Boolean,

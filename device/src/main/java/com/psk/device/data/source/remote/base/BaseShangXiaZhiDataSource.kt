@@ -9,19 +9,19 @@ abstract class BaseShangXiaZhiDataSource : BaseBleDeviceDataSource() {
     abstract fun fetch(medicalOrderId: Long): Flow<ShangXiaZhi>
 
     /**
-     * 使上下肢恢复运行
+     * 开始运行
      */
-    abstract suspend fun resume()
+    abstract suspend fun start()
 
     /**
-     * 使上下肢暂停运行
+     * 暂停运行
      */
     abstract suspend fun pause()
 
     /**
-     * 使上下肢停止运行
+     * 停止运行
      */
-    abstract suspend fun over()
+    abstract suspend fun stop()
 
     abstract suspend fun setParams(params: ShangXiaZhiParams)
 

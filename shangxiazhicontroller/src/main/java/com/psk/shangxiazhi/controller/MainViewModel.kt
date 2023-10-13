@@ -10,9 +10,9 @@ import com.psk.device.RepositoryManager
 import com.psk.device.data.model.DeviceType
 import com.psk.device.data.model.ShangXiaZhiParams
 import com.psk.device.data.source.ShangXiaZhiRepository
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -20,7 +20,6 @@ class MainViewModel : ViewModel() {
     private val bleDeviceRepository: ShangXiaZhiRepository by lazy {
         RepositoryManager.createBleDeviceRepository(DeviceType.ShangXiaZhi)
     }
-    private var shangXiaZhiParams = ShangXiaZhiParams(true, 0, 4, 6, 0, true, true)
     private val _uiState = MutableStateFlow(MainUiState())
     val uiState = _uiState.asStateFlow()
 
@@ -62,16 +61,7 @@ class MainViewModel : ViewModel() {
 
     private fun fetch() {
         viewModelScope.launch {
-            bleDeviceRepository.fetch().onEach {
-                shangXiaZhiParams = shangXiaZhiParams.copy(
-                    passiveModel = it.model.toInt() == 0x01,
-                    speedLevel = it.speedLevel,
-                    spasmLevel = it.spasmLevel,
-                    resistance = it.resistance,
-                    intelligent = it.intelligence.toInt() == 0x41,
-                    forward = it.direction.toInt() == 0x51
-                )
-            }.collect { shangXiaZhi ->
+            bleDeviceRepository.fetch().collect { shangXiaZhi ->
                 _uiState.update {
                     it.copy(shangXiaZhi = shangXiaZhi)
                 }
@@ -79,9 +69,18 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    fun resume() {
+    private fun isRunning(): Boolean {
+        return (_uiState.value.shangXiaZhi?.speed ?: 0) > 0
+    }
+
+    fun start(params: ShangXiaZhiParams) {
+        if (isRunning()) {
+            return
+        }
         viewModelScope.launch {
-            bleDeviceRepository.resume()
+            bleDeviceRepository.setParams(params)
+            delay(100)
+            bleDeviceRepository.start()
         }
     }
 
@@ -91,69 +90,9 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    fun over() {
+    fun stop() {
         viewModelScope.launch {
-            bleDeviceRepository.over()
-        }
-    }
-
-    fun setIntelligence() {
-        setParams(shangXiaZhiParams.copy(intelligent = !shangXiaZhiParams.intelligent))
-    }
-
-    fun setForward() {
-        setParams(shangXiaZhiParams.copy(forward = !shangXiaZhiParams.forward))
-    }
-
-    fun setSpeedLevel() {
-        var speedLevel = shangXiaZhiParams.speedLevel
-        if (speedLevel == 12) {
-            speedLevel = 1
-        } else {
-            speedLevel++
-        }
-        setParams(shangXiaZhiParams.copy(speedLevel = speedLevel))
-    }
-
-    fun setResistance() {
-        var resistance = shangXiaZhiParams.resistance
-        if (resistance == 12) {
-            resistance = 1
-        } else {
-            resistance++
-        }
-        setParams(shangXiaZhiParams.copy(resistance = resistance))
-    }
-
-    fun setPassiveModel() {
-        setParams(shangXiaZhiParams.copy(passiveModel = !shangXiaZhiParams.passiveModel))
-    }
-
-    fun setSpasmLevel() {
-        var spasmLevel = shangXiaZhiParams.spasmLevel
-        if (spasmLevel == 12) {
-            spasmLevel = 1
-        } else {
-            spasmLevel++
-        }
-        setParams(shangXiaZhiParams.copy(spasmLevel = spasmLevel))
-    }
-
-    fun setTime() {
-        var time = shangXiaZhiParams.time
-        if (time == 30) {
-            time = 5
-        } else {
-            time += 5
-        }
-        shangXiaZhiParams = shangXiaZhiParams.copy(time = time)
-        setParams(shangXiaZhiParams)
-    }
-
-    private fun setParams(params: ShangXiaZhiParams) {
-        viewModelScope.launch {
-            println(params)
-            bleDeviceRepository.setParams(params)
+            bleDeviceRepository.stop()
         }
     }
 

@@ -62,7 +62,7 @@ class ShangXiaZhiDataParser {
             if (byte == 0x85.toByte()) {
                 receiver?.onPause()
             } else if (byte == 0x86.toByte()) {
-                receiver?.onOver()
+                receiver?.onStop()
             }
         }
     }
@@ -84,5 +84,5 @@ interface ShangXiaZhiReceiver {
 
     fun onPause()
 
-    fun onOver()
+    fun onStop()
 }

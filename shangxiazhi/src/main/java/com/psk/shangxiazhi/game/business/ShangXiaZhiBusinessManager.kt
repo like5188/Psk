@@ -82,7 +82,7 @@ class ShangXiaZhiBusinessManager(
 
     fun onGameResume() {
         lifecycleScope.launch(Dispatchers.IO) {
-            bleDeviceRepository.resume()
+            bleDeviceRepository.start()
         }
     }
 
@@ -94,7 +94,7 @@ class ShangXiaZhiBusinessManager(
 
     fun onGameOver() {
         lifecycleScope.launch(Dispatchers.IO) {
-            bleDeviceRepository.over()
+            bleDeviceRepository.stop()
         }
     }
 

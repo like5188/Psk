@@ -9,7 +9,6 @@ import com.psk.device.util.ShangXiaZhiDataParser
 import com.psk.device.util.ShangXiaZhiReceiver
 import com.twsz.remotecommands.RemoteCommand
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.flowOn
@@ -77,7 +76,7 @@ class RKF_ShangXiaZhiDataSource : BaseShangXiaZhiDataSource() {
                 onPause?.invoke()
             }
 
-            override fun onOver() {
+            override fun onStop() {
                 secondClock.stop()
                 onOver?.invoke()
             }
@@ -88,7 +87,7 @@ class RKF_ShangXiaZhiDataSource : BaseShangXiaZhiDataSource() {
         }
     }.flowOn(Dispatchers.IO)
 
-    override suspend fun resume() {
+    override suspend fun start() {
         write(RemoteCommand.generateStartParam())
     }
 
@@ -96,25 +95,12 @@ class RKF_ShangXiaZhiDataSource : BaseShangXiaZhiDataSource() {
         write(RemoteCommand.generatePauseParam())
     }
 
-    override suspend fun over() {
+    override suspend fun stop() {
         write(RemoteCommand.generateStopParam())
     }
 
     override suspend fun setParams(params: ShangXiaZhiParams) {
-        if (!isConnected()) {
-            // 如果是未连接，则不管，因为连接成功后，会调用 setParams() 方法。
-            return
-        }
-        // 如果已经连接，就必须写入成功，否则上下肢无法运动。
-        val cmd: ByteArray = RemoteCommand.generateParam(params.toTrunkCommandData())
-        var result = false
-        while (!result) {
-            result = write(cmd)
-            if (!result) {
-                delay(100)
-            }
-        }
-        println("RKF_ShangXiaZhiDataSource setParams success")
+        write(RemoteCommand.generateParam(params.toTrunkCommandData()))
     }
 
 }
