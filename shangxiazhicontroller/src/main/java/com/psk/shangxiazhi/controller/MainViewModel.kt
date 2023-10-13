@@ -73,9 +73,15 @@ class MainViewModel : ViewModel() {
     fun start(params: ShangXiaZhiParams) {
         if (!isRunning) {
             viewModelScope.launch {
-                if (bleDeviceRepository.setParams(params)) {
-                    delay(100)
-                    isRunning = bleDeviceRepository.start()
+                if (!params.passiveModel) {
+                    // 主动
+                    isRunning = bleDeviceRepository.setParams(params)
+                } else {
+                    // 被动
+                    if (bleDeviceRepository.setParams(params)) {
+                        delay(100)
+                        isRunning = bleDeviceRepository.start()
+                    }
                 }
             }
         }
