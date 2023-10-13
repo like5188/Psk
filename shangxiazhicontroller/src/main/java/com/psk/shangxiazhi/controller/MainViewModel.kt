@@ -23,7 +23,6 @@ class MainViewModel : ViewModel() {
     }
     private val _uiState = MutableStateFlow(MainUiState())
     val uiState = _uiState.asStateFlow()
-    private var shangXiaZhiParams: ShangXiaZhiParams? = null
     private val isRunning = AtomicBoolean(false)
 
     fun init(activity: ComponentActivity) {
@@ -75,26 +74,9 @@ class MainViewModel : ViewModel() {
     fun start(params: ShangXiaZhiParams) {
         if (isRunning.compareAndSet(false, true)) {
             viewModelScope.launch {
-                when (shangXiaZhiParams) {
-                    null -> {
-                        // 首次启动
-                        bleDeviceRepository.setParams(params)
-                        delay(100)
-                        bleDeviceRepository.start()
-                        shangXiaZhiParams = params
-                    }
-
-                    params -> {
-                        // 恢复运行
-                        bleDeviceRepository.start()
-                    }
-
-                    else -> {
-                        // 设置参数
-                        bleDeviceRepository.setParams(params)
-                        shangXiaZhiParams = params
-                    }
-                }
+                bleDeviceRepository.setParams(params)
+                delay(100)
+                bleDeviceRepository.start()
             }
         }
     }
