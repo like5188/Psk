@@ -87,20 +87,20 @@ class RKF_ShangXiaZhiDataSource : BaseShangXiaZhiDataSource() {
         }
     }.flowOn(Dispatchers.IO)
 
-    override suspend fun start() {
-        write(RemoteCommand.generateStartParam())
+    override suspend fun start(): Boolean {
+        return write(RemoteCommand.generateStartParam())
     }
 
-    override suspend fun pause() {
-        write(RemoteCommand.generatePauseParam())
+    override suspend fun pause(): Boolean {
+        return write(RemoteCommand.generatePauseParam())
     }
 
-    override suspend fun stop() {
-        write(RemoteCommand.generateStopParam())
+    override suspend fun stop(): Boolean {
+        return write(RemoteCommand.generateStopParam())
     }
 
-    override suspend fun setParams(params: ShangXiaZhiParams) {
-        write(RemoteCommand.generateParam(params.toTrunkCommandData()))
+    override suspend fun setParams(params: ShangXiaZhiParams): Boolean {
+        return write(RemoteCommand.generateParam(params.toTrunkCommandData()))
     }
 
 }

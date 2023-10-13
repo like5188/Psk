@@ -11,18 +11,18 @@ abstract class BaseShangXiaZhiDataSource : BaseBleDeviceDataSource() {
     /**
      * 开始运行
      */
-    abstract suspend fun start()
+    abstract suspend fun start(): Boolean
 
     /**
      * 暂停运行
      */
-    abstract suspend fun pause()
+    abstract suspend fun pause(): Boolean
 
     /**
      * 停止运行
      */
-    abstract suspend fun stop()
+    abstract suspend fun stop(): Boolean
 
-    abstract suspend fun setParams(params: ShangXiaZhiParams)
+    abstract suspend fun setParams(params: ShangXiaZhiParams): Boolean
 
 }

@@ -50,19 +50,19 @@ class ShangXiaZhiRepository : BaseBleDeviceRepository<BaseShangXiaZhiDataSource>
         }
     }
 
-    suspend fun start() {
-        bleDeviceDataSource.start()
+    suspend fun start(): Boolean {
+        return bleDeviceDataSource.start()
     }
 
-    suspend fun pause() {
-        bleDeviceDataSource.pause()
+    suspend fun pause(): Boolean {
+        return bleDeviceDataSource.pause()
     }
 
-    suspend fun stop() {
-        bleDeviceDataSource.stop()
+    suspend fun stop(): Boolean {
+        return bleDeviceDataSource.stop()
     }
 
-    suspend fun setParams(params: ShangXiaZhiParams) {
-        bleDeviceDataSource.setParams(params)
+    suspend fun setParams(params: ShangXiaZhiParams): Boolean {
+        return bleDeviceDataSource.setParams(params)
     }
 }
