@@ -28,7 +28,6 @@ class MainActivity : AppCompatActivity() {
             ScanDeviceDialogFragment.newInstance(DeviceType.ShangXiaZhi).apply {
                 onSelected = {
                     mBinding.tvDevice.text = it.name
-                    mBinding.tvAddress.text = it.address
                     mBinding.tvConnectState.text = "连接中……"
                     mViewModel.connect(this@MainActivity, it.name, it.address, {
                         mBinding.tvConnectState.text = "已连接"

@@ -16,7 +16,7 @@
             android:gravity="center"
             android:text="康复机监控软件"
             android:textColor="@android:color/white"
-            android:textSize="18sp"
+            android:textSize="24sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -25,36 +25,22 @@
             android:id="@+id/tvDevice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
-            android:textColor="@android:color/white"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toTopOf="@id/tvAddress"
-            app:layout_constraintEnd_toStartOf="@id/btnScan"
-            app:layout_constraintTop_toTopOf="@id/tvTitle"
-            tools:text="xxx" />
-
-        <TextView
-            android:id="@+id/tvAddress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
-            android:textColor="@android:color/white"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toTopOf="@id/tvConnectState"
-            app:layout_constraintEnd_toStartOf="@id/btnScan"
-            app:layout_constraintTop_toBottomOf="@id/tvDevice"
+            android:layout_marginStart="30dp"
+            android:textColor="#ccffffff"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvTitle"
             tools:text="xxx" />
 
         <TextView
             android:id="@+id/tvConnectState"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
-            android:textColor="@android:color/white"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toBottomOf="@id/tvTitle"
-            app:layout_constraintEnd_toStartOf="@id/btnScan"
-            app:layout_constraintTop_toBottomOf="@id/tvAddress"
+            android:layout_marginEnd="30dp"
+            android:textColor="#ccffffff"
+            android:textSize="14sp"
+            app:layout_constraintBaseline_toBaselineOf="@id/tvDevice"
+            app:layout_constraintEnd_toEndOf="parent"
             tools:text="xxx" />
 
         <Button
@@ -63,7 +49,6 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="15dp"
             android:text="选择设备"
-            android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="@id/tvTitle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/tvTitle" />
@@ -75,7 +60,7 @@
             app:layout_constraintBottom_toTopOf="@id/tvCompany"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvTitle">
+            app:layout_constraintTop_toBottomOf="@id/tvDevice">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -331,6 +316,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="0dp"
                             android:text="时间"
+                            android:visibility="gone"
                             app:layout_constraintDimensionRatio="w,1:1"
                             app:layout_constraintStart_toStartOf="@id/btnIntelligence"
                             app:layout_constraintTop_toTopOf="@id/btnModel" />
@@ -345,11 +331,10 @@
             android:id="@+id/tvCompany"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"
             android:gravity="center"
             android:text="重庆普施康科技发展股份有限公司"
-            android:textColor="@android:color/white"
-            android:textSize="16sp"
+            android:textColor="#88ffffff"
+            android:textSize="12sp"
             app:layout_constraintBottom_toTopOf="@id/tvVersion"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -360,8 +345,8 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="15dp"
             android:gravity="center"
-            android:textColor="@android:color/white"
-            android:textSize="16sp"
+            android:textColor="#88ffffff"
+            android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
