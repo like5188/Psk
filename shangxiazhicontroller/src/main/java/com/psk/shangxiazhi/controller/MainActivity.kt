@@ -4,13 +4,9 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.lifecycleScope
+import com.like.common.util.mvi.propertyCollector
 import com.like.common.util.showToast
-import com.psk.device.data.model.DeviceType
 import com.psk.shangxiazhi.controller.databinding.ActivityMainBinding
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 /**
  * 主界面
@@ -25,18 +21,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         mViewModel.init(this@MainActivity)
         mBinding.btnScan.setOnClickListener {
-            ScanDeviceDialogFragment.newInstance(DeviceType.ShangXiaZhi).apply {
-                onSelected = {
-                    mBinding.tvDevice.text = it.name
-                    mBinding.tvConnectState.text = "连接中……"
-                    mViewModel.connect(this@MainActivity, it.name, it.address, {
-                        mBinding.tvConnectState.text = "已连接"
-                        fetch()
-                    }) {
-                        mBinding.tvConnectState.text = "未连接"
-                    }
-                }
-            }.show(this)
+            mViewModel.scan(this)
         }
         mBinding.btnStart.setOnClickListener {
             mViewModel.resume()
@@ -66,27 +51,42 @@ class MainActivity : AppCompatActivity() {
             mViewModel.setTime()
         }
         mBinding.tvVersion.text = "版本号：${packageManager.getPackageInfo(packageName, 0).versionName}"
+        collectUiState()
     }
 
-    private fun fetch() {
-        lifecycleScope.launch {
-            mViewModel.fetch().collect {
-                withContext(Dispatchers.Main) {
-                    mBinding.tvIntelligence.text = when (it.intelligence.toInt()) {
-                        0x40 -> "关闭"
-                        0x41 -> "打开"
-                        else -> ""
-                    }
-                    mBinding.tvModel.text = when (it.model.toInt()) {
-                        0x01 -> "被动"
-                        0x02 -> "主动"
-                        else -> ""
-                    }
-                    mBinding.tvSpeedLevel.text = it.speedLevel.toString()
-                    mBinding.tvSpeed.text = it.speed.toString()
-                    mBinding.tvResistance.text = it.resistance.toString()
-                    mBinding.tvSpasmLevel.text = it.spasmLevel.toString()
+    private fun collectUiState() {
+        mViewModel.uiState.propertyCollector(this) {
+            collectDistinctProperty(MainUiState::name) {
+                mBinding.tvDevice.text = it
+            }
+            collectDistinctProperty(MainUiState::connectState) {
+                mBinding.tvConnectState.text = it
+            }
+            collectDistinctProperty(MainUiState::isRunning) {
+                mBinding.btnIntelligence.isEnabled = it
+                mBinding.btnForward.isEnabled = it
+                mBinding.btnSpeedLevel.isEnabled = it
+                mBinding.btnResistance.isEnabled = it
+                mBinding.btnModel.isEnabled = it
+                mBinding.btnSpasmLevel.isEnabled = it
+                mBinding.btnTime.isEnabled = it
+            }
+            collectDistinctProperty(MainUiState::shangXiaZhi) {
+                it ?: return@collectDistinctProperty
+                mBinding.tvIntelligence.text = when (it.intelligence.toInt()) {
+                    0x40 -> "关闭"
+                    0x41 -> "打开"
+                    else -> ""
                 }
+                mBinding.tvModel.text = when (it.model.toInt()) {
+                    0x01 -> "被动"
+                    0x02 -> "主动"
+                    else -> ""
+                }
+                mBinding.tvSpeedLevel.text = it.speedLevel.toString()
+                mBinding.tvSpeed.text = it.speed.toString()
+                mBinding.tvResistance.text = it.resistance.toString()
+                mBinding.tvSpasmLevel.text = it.spasmLevel.toString()
             }
         }
     }
