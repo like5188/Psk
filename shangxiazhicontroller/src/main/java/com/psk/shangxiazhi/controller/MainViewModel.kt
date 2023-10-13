@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.concurrent.atomic.AtomicBoolean
 
 class MainViewModel : ViewModel() {
     private val bleDeviceRepository: ShangXiaZhiRepository by lazy {
@@ -22,6 +23,8 @@ class MainViewModel : ViewModel() {
     }
     private val _uiState = MutableStateFlow(MainUiState())
     val uiState = _uiState.asStateFlow()
+    private var shangXiaZhiParams: ShangXiaZhiParams? = null
+    private val isRunning = AtomicBoolean(false)
 
     fun init(activity: ComponentActivity) {
         viewModelScope.launch {
@@ -69,30 +72,45 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    private fun isRunning(): Boolean {
-        return (_uiState.value.shangXiaZhi?.speed ?: 0) > 0
-    }
-
     fun start(params: ShangXiaZhiParams) {
-        if (isRunning()) {
-            return
-        }
-        viewModelScope.launch {
-            bleDeviceRepository.setParams(params)
-            delay(100)
-            bleDeviceRepository.start()
+        if (isRunning.compareAndSet(false, true)) {
+            viewModelScope.launch {
+                when (shangXiaZhiParams) {
+                    null -> {
+                        // 首次启动
+                        bleDeviceRepository.setParams(params)
+                        delay(100)
+                        bleDeviceRepository.start()
+                        shangXiaZhiParams = params
+                    }
+
+                    params -> {
+                        // 恢复运行
+                        bleDeviceRepository.start()
+                    }
+
+                    else -> {
+                        // 设置参数
+                        bleDeviceRepository.setParams(params)
+                        shangXiaZhiParams = params
+                    }
+                }
+            }
         }
     }
 
     fun pause() {
-        viewModelScope.launch {
-            bleDeviceRepository.pause()
+        if (isRunning.compareAndSet(true, false)) {
+            viewModelScope.launch {
+                bleDeviceRepository.pause()
+            }
         }
     }
 
     fun stop() {
         viewModelScope.launch {
             bleDeviceRepository.stop()
+            isRunning.set(false)
         }
     }
 
