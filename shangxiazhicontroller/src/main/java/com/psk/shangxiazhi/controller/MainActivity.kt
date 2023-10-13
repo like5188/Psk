@@ -59,6 +59,10 @@ class MainActivity : AppCompatActivity() {
             collectDistinctProperty(MainUiState::name) {
                 mBinding.tvDevice.text = it
             }
+            collectDistinctProperty(MainUiState::isConnected) {
+                mBinding.btnStart.isEnabled = it
+                mBinding.btnPause.isEnabled = it
+            }
             collectDistinctProperty(MainUiState::connectState) {
                 mBinding.tvConnectState.text = it
             }

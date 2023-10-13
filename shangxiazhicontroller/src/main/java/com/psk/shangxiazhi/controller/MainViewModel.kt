@@ -20,7 +20,7 @@ class MainViewModel : ViewModel() {
     private val bleDeviceRepository: ShangXiaZhiRepository by lazy {
         RepositoryManager.createBleDeviceRepository(DeviceType.ShangXiaZhi)
     }
-    private var shangXiaZhiParams = ShangXiaZhiParams(true, 5, 4, 6, 0, true, true)
+    private var shangXiaZhiParams = ShangXiaZhiParams(true, 0, 4, 6, 0, true, true)
     private val _uiState = MutableStateFlow(MainUiState())
     val uiState = _uiState.asStateFlow()
 
@@ -39,23 +39,23 @@ class MainViewModel : ViewModel() {
                     it.copy(name = it.name)
                 }
                 _uiState.update {
-                    it.copy(connectState = "连接中……")
+                    it.copy(connectState = "连接中……", isConnected = false)
                 }
                 connect(activity, it.name, it.address, {
                     _uiState.update {
-                        it.copy(connectState = "已连接")
+                        it.copy(connectState = "已连接", isConnected = true)
                     }
                     fetch()
                 }) {
                     _uiState.update {
-                        it.copy(connectState = "未连接")
+                        it.copy(connectState = "未连接", isConnected = false)
                     }
                 }
             }
         }.show(activity)
     }
 
-    fun connect(context: Context, name: String, address: String, onConnected: () -> Unit, onDisconnected: () -> Unit) {
+    private fun connect(context: Context, name: String, address: String, onConnected: () -> Unit, onDisconnected: () -> Unit) {
         bleDeviceRepository.init(context, name, address)
         bleDeviceRepository.connect(viewModelScope, onConnected, onDisconnected)
     }
