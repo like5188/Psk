@@ -36,7 +36,6 @@ class MainViewModel : ViewModel() {
     fun fetch(): Flow<ShangXiaZhi> = bleDeviceRepository.fetch().onEach {
         shangXiaZhiParams = shangXiaZhiParams.copy(
             passiveModel = it.model.toInt() == 0x01,
-            time = 0,
             speedLevel = it.speedLevel,
             spasmLevel = it.spasmLevel,
             resistance = it.resistance,
@@ -103,6 +102,17 @@ class MainViewModel : ViewModel() {
             spasmLevel++
         }
         setParams(shangXiaZhiParams.copy(spasmLevel = spasmLevel))
+    }
+
+    fun setTime() {
+        var time = shangXiaZhiParams.time
+        if (time == 30) {
+            time = 5
+        } else {
+            time += 5
+        }
+        shangXiaZhiParams = shangXiaZhiParams.copy(time = time)
+        setParams(shangXiaZhiParams)
     }
 
     private fun setParams(params: ShangXiaZhiParams) {

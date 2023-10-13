@@ -72,7 +72,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_margin="15dp"
-            app:layout_constraintBottom_toTopOf="@id/tvVersion"
+            app:layout_constraintBottom_toTopOf="@id/tvCompany"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvTitle">
@@ -325,6 +325,16 @@
                             app:layout_constraintDimensionRatio="w,1:1"
                             app:layout_constraintStart_toStartOf="@id/btnPause"
                             app:layout_constraintTop_toTopOf="@id/btnModel" />
+
+                        <Button
+                            android:id="@+id/btnTime"
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:text="时间"
+                            app:layout_constraintDimensionRatio="w,1:1"
+                            app:layout_constraintStart_toStartOf="@id/btnIntelligence"
+                            app:layout_constraintTop_toTopOf="@id/btnModel" />
+
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </androidx.cardview.widget.CardView>
 
@@ -332,10 +342,22 @@
         </androidx.cardview.widget.CardView>
 
         <TextView
+            android:id="@+id/tvCompany"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:gravity="center"
+            android:text="重庆普施康科技发展股份有限公司"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toTopOf="@id/tvVersion"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
             android:id="@+id/tvVersion"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
             android:layout_marginBottom="15dp"
             android:gravity="center"
             android:textColor="@android:color/white"
