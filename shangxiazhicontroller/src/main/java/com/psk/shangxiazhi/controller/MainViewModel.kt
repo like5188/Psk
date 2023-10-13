@@ -34,33 +34,33 @@ class MainViewModel : ViewModel() {
 
     fun scan(activity: FragmentActivity) {
         ScanDeviceDialogFragment.newInstance(DeviceType.ShangXiaZhi).apply {
-            onSelected = {
+            onSelected = { bleScanInfo ->
                 _uiState.update {
-                    it.copy(name = it.name)
+                    it.copy(name = bleScanInfo.name)
                 }
-                _uiState.update {
-                    it.copy(connectState = "连接中……", isConnected = false)
-                }
-                connect(activity, it.name, it.address, {
-                    _uiState.update {
-                        it.copy(connectState = "已连接", isConnected = true)
-                    }
-                    fetch()
-                }) {
-                    _uiState.update {
-                        it.copy(connectState = "未连接", isConnected = false)
-                    }
-                }
+                connect(activity, bleScanInfo.name, bleScanInfo.address)
             }
         }.show(activity)
     }
 
-    private fun connect(context: Context, name: String, address: String, onConnected: () -> Unit, onDisconnected: () -> Unit) {
+    private fun connect(context: Context, name: String, address: String) {
+        _uiState.update {
+            it.copy(connectState = "连接中……", isConnected = false)
+        }
         bleDeviceRepository.init(context, name, address)
-        bleDeviceRepository.connect(viewModelScope, onConnected, onDisconnected)
+        bleDeviceRepository.connect(viewModelScope, {
+            _uiState.update {
+                it.copy(connectState = "已连接", isConnected = true)
+            }
+            fetch()
+        }, {
+            _uiState.update {
+                it.copy(connectState = "未连接", isConnected = false)
+            }
+        })
     }
 
-    fun fetch() {
+    private fun fetch() {
         viewModelScope.launch {
             bleDeviceRepository.fetch().onEach {
                 shangXiaZhiParams = shangXiaZhiParams.copy(
