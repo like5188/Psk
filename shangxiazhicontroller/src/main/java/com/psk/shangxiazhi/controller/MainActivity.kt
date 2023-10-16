@@ -126,12 +126,16 @@ class MainActivity : AppCompatActivity() {
                 mBinding.tvDevice.text = it
             }
             collectDistinctProperty(MainUiState::isConnected) {
-                mBinding.btnStart.isEnabled = it
-                mBinding.btnPause.isEnabled = it
+                mBinding.btnStart.isEnabled = it && !mViewModel.uiState.value.isRunning
+                mBinding.btnPause.isEnabled = it && mViewModel.uiState.value.isRunning
                 mBinding.btnStop.isEnabled = it
             }
             collectDistinctProperty(MainUiState::connectState) {
                 mBinding.tvConnectState.text = it
+            }
+            collectDistinctProperty(MainUiState::isRunning) {
+                mBinding.btnStart.isEnabled = !it && mViewModel.uiState.value.isConnected
+                mBinding.btnPause.isEnabled = it && mViewModel.uiState.value.isConnected
             }
             collectDistinctProperty(MainUiState::shangXiaZhi) {
                 it ?: return@collectDistinctProperty

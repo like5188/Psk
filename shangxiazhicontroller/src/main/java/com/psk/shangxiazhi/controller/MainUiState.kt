@@ -7,4 +7,5 @@ data class MainUiState(
     val isConnected: Boolean = false,
     val connectState: String = "",
     val shangXiaZhi: ShangXiaZhi? = null,
+    val isRunning: Boolean = false
 )

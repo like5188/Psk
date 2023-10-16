@@ -52,9 +52,15 @@ class MainViewModel : ViewModel() {
         bleDeviceRepository.setCallback(onStart = {}, onPause = {
             // 只有被动模式能暂停
             isRunningInPassiveMode = false
+            _uiState.update {
+                it.copy(isRunning = false)
+            }
         }, onOver = {
             isRunningInPassiveMode = false
             isRunningInActiveMode = false
+            _uiState.update {
+                it.copy(isRunning = false)
+            }
         })
         bleDeviceRepository.connect(viewModelScope, {
             _uiState.update {
@@ -75,7 +81,7 @@ class MainViewModel : ViewModel() {
                 isRunningInPassiveMode = passiveModel && shangXiaZhi.speed > 0
                 isRunningInActiveMode = !passiveModel && shangXiaZhi.speed > 0
                 _uiState.update {
-                    it.copy(shangXiaZhi = shangXiaZhi)
+                    it.copy(shangXiaZhi = shangXiaZhi, isRunning = isRunningInPassiveMode || isRunningInActiveMode)
                 }
             }
         }
