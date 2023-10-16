@@ -22,7 +22,8 @@ class MainViewModel : ViewModel() {
     }
     private val _uiState = MutableStateFlow(MainUiState())
     val uiState = _uiState.asStateFlow()
-    private var isRunning = false
+    private var isRunningInPassiveMode = false// 被动模式时，上下肢是否运行
+    private var isRunningInActiveMode = false// 主动模式时，上下肢是否运行
 
     fun init(activity: ComponentActivity) {
         viewModelScope.launch {
@@ -48,6 +49,27 @@ class MainViewModel : ViewModel() {
             it.copy(connectState = "连接中……", isConnected = false)
         }
         bleDeviceRepository.init(context, name, address)
+        bleDeviceRepository.setCallback(
+            onStart = {
+                println("onStart")
+                val passiveModel = _uiState.value.shangXiaZhi?.model?.toInt() == 0x01
+                if (passiveModel) {
+                    isRunningInPassiveMode = true
+                }
+            },
+            onPause = {
+                println("onPause")
+                val passiveModel = _uiState.value.shangXiaZhi?.model?.toInt() == 0x01
+                if (passiveModel) {
+                    isRunningInPassiveMode = false
+                }
+            },
+            onOver = {
+                println("onOver")
+                isRunningInPassiveMode = false
+                isRunningInActiveMode = false
+            }
+        )
         bleDeviceRepository.connect(viewModelScope, {
             _uiState.update {
                 it.copy(connectState = "已连接", isConnected = true)
@@ -63,6 +85,8 @@ class MainViewModel : ViewModel() {
     private fun fetch() {
         viewModelScope.launch {
             bleDeviceRepository.fetch().collect { shangXiaZhi ->
+                val passiveModel = _uiState.value.shangXiaZhi?.model?.toInt() == 0x01
+                isRunningInActiveMode = !passiveModel && shangXiaZhi.speed > 0
                 _uiState.update {
                     it.copy(shangXiaZhi = shangXiaZhi)
                 }
@@ -71,16 +95,17 @@ class MainViewModel : ViewModel() {
     }
 
     fun start(params: ShangXiaZhiParams) {
-        if (!isRunning) {
+        println("被动=$isRunningInPassiveMode 主动=$isRunningInActiveMode")
+        if (!isRunningInPassiveMode && !isRunningInActiveMode) {
             viewModelScope.launch {
                 if (!params.passiveModel) {
                     // 主动
-                    isRunning = bleDeviceRepository.setParams(params)
+                    bleDeviceRepository.setParams(params)
                 } else {
                     // 被动
                     if (bleDeviceRepository.setParams(params)) {
                         delay(100)
-                        isRunning = bleDeviceRepository.start()
+                        bleDeviceRepository.start()
                     }
                 }
             }
@@ -88,16 +113,17 @@ class MainViewModel : ViewModel() {
     }
 
     fun pause() {
-        if (isRunning) {
+        println("被动=$isRunningInPassiveMode 主动=$isRunningInActiveMode")
+        if (isRunningInPassiveMode || isRunningInActiveMode) {
             viewModelScope.launch {
-                isRunning = !bleDeviceRepository.pause()
+                !bleDeviceRepository.pause()
             }
         }
     }
 
     fun stop() {
         viewModelScope.launch {
-            isRunning = !bleDeviceRepository.stop()
+            !bleDeviceRepository.stop()
         }
     }
 
