@@ -78,43 +78,46 @@ class MainActivity : AppCompatActivity() {
             return null
         }
         val passiveModel: Boolean = mBinding.rbModel1.isChecked
+        if (passiveModel) {// 被动
+            if (mBinding.rgIntelligence.checkedRadioButtonId == -1) {
+                showToast("请选择智能")
+                return null
+            }
+            val intelligent: Boolean = mBinding.rbIntelligence0.isChecked
 
-        if (mBinding.rgIntelligence.checkedRadioButtonId == -1) {
-            showToast("请选择智能")
-            return null
-        }
-        val intelligent: Boolean = mBinding.rbIntelligence0.isChecked
+            if (mBinding.rgDirection.checkedRadioButtonId == -1) {
+                showToast("请选择方向")
+                return null
+            }
+            val forward: Boolean = mBinding.rbDirection0.isChecked
 
-        if (mBinding.rgDirection.checkedRadioButtonId == -1) {
-            showToast("请选择方向")
-            return null
-        }
-        val forward: Boolean = mBinding.rbDirection0.isChecked
+            val time: Int = mBinding.etTime.text.trim().toString().toIntOrDefault(0)
+            if (time < 1 || time > 30) {
+                showToast("请输入有效时间，范围：1~30分钟")
+                return null
+            }
 
-        val time: Int = mBinding.etTime.text.trim().toString().toIntOrDefault(0)
-        if (time < 1 || time > 30) {
-            showToast("请输入有效时间，范围：1~30分钟")
-            return null
-        }
+            val speedLevel: Int = mBinding.etSpeedLevel.text.trim().toString().toIntOrDefault(0)
+            if (speedLevel < 1 || speedLevel > 12) {
+                showToast("请输入有效速度挡位，范围：1~12")
+                return null
+            }
 
-        val speedLevel: Int = mBinding.etSpeedLevel.text.trim().toString().toIntOrDefault(0)
-        if (speedLevel < 1 || speedLevel > 12) {
-            showToast("请输入有效速度挡位，范围：1~12")
-            return null
-        }
+            val spasmLevel: Int = mBinding.etSpasmLevel.text.trim().toString().toIntOrDefault(0)
+            if (spasmLevel < 1 || spasmLevel > 12) {
+                showToast("请输入有效痉挛等级，范围：1~12")
+                return null
+            }
 
-        val spasmLevel: Int = mBinding.etSpasmLevel.text.trim().toString().toIntOrDefault(0)
-        if (spasmLevel < 1 || spasmLevel > 12) {
-            showToast("请输入有效痉挛等级，范围：1~12")
-            return null
+            return ShangXiaZhiParams(passiveModel, time, speedLevel, spasmLevel, 0, intelligent, forward)
+        } else {// 主动
+            val resistance: Int = mBinding.etResistance.text.trim().toString().toIntOrDefault(0)
+            if (resistance < 1 || resistance > 12) {
+                showToast("请输入有效阻力等级，范围：1~12")
+                return null
+            }
+            return ShangXiaZhiParams(passiveModel, 0, 0, 0, resistance, true, true)
         }
-
-        val resistance: Int = mBinding.etResistance.text.trim().toString().toIntOrDefault(0)
-        if (resistance < 1 || resistance > 12) {
-            showToast("请输入有效阻力等级，范围：1~12")
-            return null
-        }
-        return ShangXiaZhiParams(passiveModel, time, speedLevel, spasmLevel, resistance, intelligent, forward)
     }
 
     private fun collectUiState() {
