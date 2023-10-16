@@ -49,27 +49,21 @@ class MainViewModel : ViewModel() {
             it.copy(connectState = "连接中……", isConnected = false)
         }
         bleDeviceRepository.init(context, name, address)
-        bleDeviceRepository.setCallback(
-            onStart = {
-                println("onStart")
-                val passiveModel = _uiState.value.shangXiaZhi?.model?.toInt() == 0x01
-                if (passiveModel) {
-                    isRunningInPassiveMode = true
-                }
-            },
-            onPause = {
-                println("onPause")
-                val passiveModel = _uiState.value.shangXiaZhi?.model?.toInt() == 0x01
-                if (passiveModel) {
-                    isRunningInPassiveMode = false
-                }
-            },
-            onOver = {
-                println("onOver")
-                isRunningInPassiveMode = false
-                isRunningInActiveMode = false
+        bleDeviceRepository.setCallback(onStart = {
+            val passiveModel = isPassiveModel()
+            if (passiveModel) {
+                isRunningInPassiveMode = true
             }
-        )
+        }, onPause = {
+            // 只有被动模式能暂停
+            val passiveModel = isPassiveModel()
+            if (passiveModel) {
+                isRunningInPassiveMode = false
+            }
+        }, onOver = {
+            isRunningInPassiveMode = false
+            isRunningInActiveMode = false
+        })
         bleDeviceRepository.connect(viewModelScope, {
             _uiState.update {
                 it.copy(connectState = "已连接", isConnected = true)
@@ -82,10 +76,15 @@ class MainViewModel : ViewModel() {
         })
     }
 
+    /**
+     * 是否被动模式
+     */
+    private fun isPassiveModel(): Boolean = _uiState.value.shangXiaZhi?.model?.toInt() == 0x01
+
     private fun fetch() {
         viewModelScope.launch {
             bleDeviceRepository.fetch().collect { shangXiaZhi ->
-                val passiveModel = _uiState.value.shangXiaZhi?.model?.toInt() == 0x01
+                val passiveModel = isPassiveModel()
                 isRunningInActiveMode = !passiveModel && shangXiaZhi.speed > 0
                 _uiState.update {
                     it.copy(shangXiaZhi = shangXiaZhi)
@@ -95,27 +94,31 @@ class MainViewModel : ViewModel() {
     }
 
     fun start(params: ShangXiaZhiParams) {
-        println("被动=$isRunningInPassiveMode 主动=$isRunningInActiveMode")
-        if (!isRunningInPassiveMode && !isRunningInActiveMode) {
-            viewModelScope.launch {
-                if (!params.passiveModel) {
-                    // 主动
-                    bleDeviceRepository.setParams(params)
-                } else {
-                    // 被动
-                    if (bleDeviceRepository.setParams(params)) {
-                        delay(100)
-                        bleDeviceRepository.start()
-                    }
+        if (isRunningInActiveMode || isRunningInPassiveMode) {
+            return
+        }
+        viewModelScope.launch {
+            if (!params.passiveModel) {
+                // 主动模式
+                println("主动模式：启动")
+                bleDeviceRepository.setParams(params)
+            } else {
+                // 被动模式
+                println("被动模式：启动")
+                if (bleDeviceRepository.setParams(params)) {
+                    delay(100)
+                    bleDeviceRepository.start()
                 }
             }
         }
     }
 
     fun pause() {
-        println("被动=$isRunningInPassiveMode 主动=$isRunningInActiveMode")
-        if (isRunningInPassiveMode || isRunningInActiveMode) {
+        // 只有被动模式能暂停
+        val passiveModel = isPassiveModel()
+        if (passiveModel && isRunningInPassiveMode) {
             viewModelScope.launch {
+                println("暂停")
                 !bleDeviceRepository.pause()
             }
         }
@@ -123,6 +126,7 @@ class MainViewModel : ViewModel() {
 
     fun stop() {
         viewModelScope.launch {
+            println("停止")
             !bleDeviceRepository.stop()
         }
     }

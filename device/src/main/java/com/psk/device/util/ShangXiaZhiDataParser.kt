@@ -35,7 +35,7 @@ class ShangXiaZhiDataParser {
      * 解析骑行数据
      */
     private fun parseData(data: ByteArray) {
-//        println("parseData ${data.contentToString()}")
+        println("parseData ${data.contentToString()}")
         val byteBuffer = ByteBuffer.wrap(data)
         if (byteBuffer.get() == 0xA3.toByte() && byteBuffer.get() == 0x21.toByte() && byteBuffer.get() == 0x20.toByte() && byteBuffer.get() == 0x80.toByte()) {
             val model: Byte = byteBuffer.get()
@@ -55,7 +55,7 @@ class ShangXiaZhiDataParser {
      * 解析暂停或者停止命令
      */
     private fun parsePauseOrStop(cmd: ByteArray) {
-//        println("parsePauseOrStop ${cmd.contentToString()}")
+        println("parsePauseOrStop ${cmd.contentToString()}")
         val byteBuffer = ByteBuffer.wrap(cmd)
         if (byteBuffer.get() == 0xA3.toByte() && byteBuffer.get() == 0x21.toByte() && byteBuffer.get() == 0x20.toByte()) {
             val byte = byteBuffer.get()
