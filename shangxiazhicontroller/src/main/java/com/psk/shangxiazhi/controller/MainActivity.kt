@@ -4,9 +4,11 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import com.like.common.util.gone
 import com.like.common.util.mvi.propertyCollector
 import com.like.common.util.showToast
 import com.like.common.util.toIntOrDefault
+import com.like.common.util.visible
 import com.psk.device.data.model.ShangXiaZhiParams
 import com.psk.shangxiazhi.controller.databinding.ActivityMainBinding
 
@@ -34,6 +36,37 @@ class MainActivity : AppCompatActivity() {
         }
         mBinding.btnStop.setOnClickListener {
             mViewModel.stop()
+        }
+        mBinding.rgModel.setOnCheckedChangeListener { group, checkedId ->
+            when (checkedId) {
+                R.id.rbModel0 -> {// 主动
+                    mBinding.rgIntelligence.gone()
+                    mBinding.rgDirection.gone()
+                    mBinding.tvTimeTag.gone()
+                    mBinding.etTime.gone()
+                    mBinding.tvSpeedLevelTag0.gone()
+                    mBinding.etSpeedLevel.gone()
+                    mBinding.tvSpasmLevelTag0.gone()
+                    mBinding.etSpasmLevel.gone()
+                    mBinding.tvResistanceTag0.visible()
+                    mBinding.etResistance.visible()
+                    mBinding.btnPause.gone()
+                }
+
+                R.id.rbModel1 -> {// 被动
+                    mBinding.rgIntelligence.visible()
+                    mBinding.rgDirection.visible()
+                    mBinding.tvTimeTag.visible()
+                    mBinding.etTime.visible()
+                    mBinding.tvSpeedLevelTag0.visible()
+                    mBinding.etSpeedLevel.visible()
+                    mBinding.tvSpasmLevelTag0.visible()
+                    mBinding.etSpasmLevel.visible()
+                    mBinding.tvResistanceTag0.gone()
+                    mBinding.etResistance.gone()
+                    mBinding.btnPause.visible()
+                }
+            }
         }
         mBinding.tvVersion.text = "版本号：${packageManager.getPackageInfo(packageName, 0).versionName}"
         collectUiState()
