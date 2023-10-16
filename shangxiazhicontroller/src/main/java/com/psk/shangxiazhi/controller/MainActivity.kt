@@ -40,7 +40,6 @@ class MainActivity : AppCompatActivity() {
         mBinding.rgModel.setOnCheckedChangeListener { group, checkedId ->
             when (checkedId) {
                 R.id.rbModel0 -> {// 主动
-                    mBinding.rgIntelligence.gone()
                     mBinding.rgDirection.gone()
                     mBinding.tvTimeTag.gone()
                     mBinding.etTime.gone()
@@ -54,7 +53,6 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 R.id.rbModel1 -> {// 被动
-                    mBinding.rgIntelligence.visible()
                     mBinding.rgDirection.visible()
                     mBinding.tvTimeTag.visible()
                     mBinding.etTime.visible()
@@ -78,13 +76,14 @@ class MainActivity : AppCompatActivity() {
             return null
         }
         val passiveModel: Boolean = mBinding.rbModel1.isChecked
-        if (passiveModel) {// 被动
-            if (mBinding.rgIntelligence.checkedRadioButtonId == -1) {
-                showToast("请选择智能")
-                return null
-            }
-            val intelligent: Boolean = mBinding.rbIntelligence0.isChecked
 
+        if (mBinding.rgIntelligence.checkedRadioButtonId == -1) {
+            showToast("请选择智能")
+            return null
+        }
+        val intelligent: Boolean = mBinding.rbIntelligence0.isChecked
+
+        if (passiveModel) {// 被动
             if (mBinding.rgDirection.checkedRadioButtonId == -1) {
                 showToast("请选择方向")
                 return null
@@ -116,7 +115,7 @@ class MainActivity : AppCompatActivity() {
                 showToast("请输入有效阻力等级，范围：1~12")
                 return null
             }
-            return ShangXiaZhiParams(passiveModel, 0, 0, 0, resistance, true, true)
+            return ShangXiaZhiParams(passiveModel, 0, 0, 0, resistance, intelligent, false)
         }
     }
 
