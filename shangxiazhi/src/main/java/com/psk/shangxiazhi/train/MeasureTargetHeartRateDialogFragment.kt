@@ -12,6 +12,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.like.common.base.BaseDialogFragment
 import com.like.common.util.showToast
+import com.psk.common.customview.CountDownTimerProgressDialog
 import com.psk.common.customview.ProgressDialog
 import com.psk.device.RepositoryManager
 import com.psk.device.data.model.DeviceType
@@ -20,7 +21,6 @@ import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.databinding.DialogFragmentMeasureTargetHeartRateBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
@@ -28,7 +28,6 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 /**
  * 测量靶心率
@@ -53,7 +52,7 @@ class MeasureTargetHeartRateDialogFragment private constructor() : BaseDialogFra
     private var job: Job? = null
     private val heartRates = mutableListOf<Int>()
     private val mProgressDialog by lazy {
-        ProgressDialog(requireContext(), "测量需要1分钟，请稍后……")
+        ProgressDialog(requireContext(), "正在连接心电仪，请稍后……")
     }
 
     private fun startJob() {
@@ -74,19 +73,13 @@ class MeasureTargetHeartRateDialogFragment private constructor() : BaseDialogFra
                 mBinding.tvHeartRate.text = it.toString()
             }
         }
-        lifecycleScope.launch(Dispatchers.IO) {
-            withContext(Dispatchers.Main) {
-                mProgressDialog.show()
-            }
-            // 测量一分钟
-            delay(60000)
+        CountDownTimerProgressDialog(requireContext(), "测量靶心率需要1分钟，请稍后！", onCanceled = {
+            cancelJob()
+        }) {
             cancelJob()
             val targetHeartRate = calc()
-            withContext(Dispatchers.Main) {
-                mBinding.tvTargetHeartRate.text = "${targetHeartRate.first}~${targetHeartRate.second}"
-                mProgressDialog.dismiss()
-            }
-        }
+            mBinding.tvTargetHeartRate.text = "${targetHeartRate.first}~${targetHeartRate.second}"
+        }.show()
     }
 
     private fun calc(): Pair<Int, Int> {
@@ -124,10 +117,13 @@ class MeasureTargetHeartRateDialogFragment private constructor() : BaseDialogFra
             if (repository.isConnected()) {
                 startJob()
             } else {
+                mProgressDialog.show()
                 repository.connect(lifecycleScope, {
+                    mProgressDialog.dismiss()
                     context?.showToast("心电仪连接成功，开始测量")
                     startJob()
                 }) {
+                    mProgressDialog.dismiss()
                     context?.showToast("心电仪连接失败")
                     cancelJob()
                 }

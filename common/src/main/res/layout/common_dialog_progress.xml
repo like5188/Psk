@@ -5,11 +5,10 @@
     android:gravity="center_horizontal"
     android:orientation="vertical">
 
-    <ProgressBar
+    <com.google.android.material.progressindicator.CircularProgressIndicator
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:indeterminateDrawable="@drawable/common_anim_progress"
-        android:indeterminateDuration="1000" />
+        android:indeterminate="true" />
 
     <TextView
         android:id="@+id/tv"

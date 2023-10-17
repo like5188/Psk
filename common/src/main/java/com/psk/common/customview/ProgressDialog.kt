@@ -9,8 +9,6 @@ import com.psk.common.R
 
 /**
  * 进度条对话框
- * @author like
- * Date: 2021-04-06
  */
 class ProgressDialog(context: Context, private val text: String = "") : Dialog(context) {
 
