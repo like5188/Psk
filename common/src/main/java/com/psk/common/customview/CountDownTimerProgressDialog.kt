@@ -6,16 +6,21 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.WindowManager
 import androidx.databinding.DataBindingUtil
+import com.like.common.util.SecondsTimer
 import com.psk.common.R
 import com.psk.common.databinding.CommonDialogCountDownTimerProgressBinding
 
 /**
  * 带倒计时的进度条对话框
+ *
+ * @param countDownTime     倒计时长。秒
+ * @param onCanceled        取消按钮被点击时回调
+ * @param onFinished        倒计时结束时回调
  */
 class CountDownTimerProgressDialog(
     context: Context,
     private val text: String = "",
-    private val countDownTime: Long = 10,
+    private val countDownTime: Long = 60,
     private val onCanceled: (() -> Unit)? = null,
     private val onFinished: (() -> Unit)? = null,
 ) : Dialog(context) {
@@ -24,13 +29,15 @@ class CountDownTimerProgressDialog(
     }
 
     // 计时器
-    private val secondClock = object : SecondClock() {
-        override fun onTick(seconds: Long) {
-            val secondsUntilFinished = countDownTime - seconds
-            mBinding.tvTicker.text = secondsUntilFinished.toString()
-            if (secondsUntilFinished == 0L) {
-                dismiss()
-                onFinished?.invoke()
+    private val secondsTimer by lazy {
+        SecondsTimer().apply {
+            onTick = {
+                val secondsUntilFinished = countDownTime - it
+                mBinding.tvTicker.text = secondsUntilFinished.toString()
+                if (secondsUntilFinished == 0L) {
+                    dismiss()
+                    onFinished?.invoke()
+                }
             }
         }
     }
@@ -42,7 +49,7 @@ class CountDownTimerProgressDialog(
         // 设置背景透明，并去掉 dialog 默认的 padding
         window?.setBackgroundDrawableResource(android.R.color.transparent)
         if (countDownTime > 0L) {
-            secondClock.start()
+            secondsTimer.start()
         }
     }
 
@@ -58,7 +65,7 @@ class CountDownTimerProgressDialog(
     }
 
     override fun dismiss() {
-        secondClock.reset()
+        secondsTimer.stop()
         mBinding.tvTicker.text = ""
         super.dismiss()
     }

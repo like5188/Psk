@@ -1,6 +1,6 @@
 package com.psk.device.data.source.remote
 
-import com.like.common.util.SecondClock
+import com.like.common.util.SecondsTimer
 import com.psk.device.data.model.Protocol
 import com.psk.device.data.model.ShangXiaZhi
 import com.psk.device.data.model.ShangXiaZhiParams
@@ -27,8 +27,8 @@ class RKF_ShangXiaZhiDataSource : BaseShangXiaZhiDataSource() {
     }
 
     // 计时器，由于上下肢没有返回时间数据，所以只能自己计算。
-    private val secondClock by lazy {
-        SecondClock()
+    private val secondsTimer by lazy {
+        SecondsTimer()
     }
 
     // 上下肢开始运行或者从暂停中恢复运行时回调
@@ -64,20 +64,20 @@ class RKF_ShangXiaZhiDataSource : BaseShangXiaZhiDataSource() {
                     intelligence = intelligence,
                     direction = direction,
                     medicalOrderId = medicalOrderId,
-                    time = secondClock.getSeconds().toInt()
+                    time = secondsTimer.getSeconds().toInt()
                 )
-                secondClock.startOrResume()
+                secondsTimer.startOrResume()
                 onStart?.invoke()
                 trySend(shangXiaZhi)
             }
 
             override fun onPause() {
-                secondClock.stop()
+                secondsTimer.pause()
                 onPause?.invoke()
             }
 
             override fun onStop() {
-                secondClock.stop()
+                secondsTimer.stop()
                 onOver?.invoke()
             }
 
