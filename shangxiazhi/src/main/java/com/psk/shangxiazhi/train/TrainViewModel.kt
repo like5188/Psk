@@ -13,7 +13,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.like.ble.util.PermissionUtils
 import com.like.common.util.ToastEvent
 import com.like.common.util.mvi.Event
 import com.psk.device.RepositoryManager
@@ -57,9 +56,7 @@ class TrainViewModel : ViewModel(), KoinComponent {
 
     fun init(activity: ComponentActivity) {
         viewModelScope.launch {
-            PermissionUtils.requestScanEnvironment(activity)
-            PermissionUtils.requestConnectEnvironment(activity)
-            RepositoryManager.init(activity.applicationContext)
+            RepositoryManager.init(activity)
         }
     }
 

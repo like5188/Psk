@@ -1,6 +1,7 @@
 package com.psk.device
 
-import android.content.Context
+import androidx.activity.ComponentActivity
+import com.like.ble.util.PermissionUtils
 import com.psk.device.RepositoryManager.createBleDeviceRepository
 import com.psk.device.RepositoryManager.healthInfoRepository
 import com.psk.device.RepositoryManager.init
@@ -24,10 +25,11 @@ object RepositoryManager {
     val unionRepository by lazy { UnionRepository() }
     val healthInfoRepository by lazy { HealthInfoRepository() }
 
-    suspend fun init(context: Context) {
-        DeviceDatabaseManager.init(context)
+    suspend fun init(activity: ComponentActivity) {
+        PermissionUtils.requestConnectEnvironment(activity)
+        DeviceDatabaseManager.init(activity.applicationContext)
         // [BleDataSourceFactory]必须放在扫描之前初始化，否则扫描时，如果要用到[DeviceType.containsDevice]方法就没效果。
-        BleDataSourceFactory.init(context)
+        BleDataSourceFactory.init(activity.applicationContext)
     }
 
     /**

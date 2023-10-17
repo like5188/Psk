@@ -50,7 +50,7 @@ class ScanDeviceDialogFragment private constructor() : BaseDialogFragment() {
             dismiss()
         }
         lifecycleScope.launch {
-            ScanManager.init(requireContext())
+            ScanManager.init(requireActivity())
         }
         return mBinding.root
     }

@@ -1,13 +1,14 @@
 package com.psk.device
 
 import android.annotation.SuppressLint
-import android.content.Context
+import androidx.activity.ComponentActivity
 import com.like.ble.central.scan.executor.AbstractScanExecutor
 import com.like.ble.central.scan.executor.ScanExecutorFactory
 import com.like.ble.central.scan.result.ScanResult
 import com.like.ble.exception.BleExceptionBusy
 import com.like.ble.exception.BleExceptionCancelTimeout
 import com.like.ble.exception.BleExceptionTimeout
+import com.like.ble.util.PermissionUtils
 import com.like.common.util.Logger
 import com.psk.device.ScanManager.init
 import com.psk.device.data.model.DeviceType
@@ -26,12 +27,13 @@ object ScanManager {
     @SuppressLint("StaticFieldLeak")
     private lateinit var scanExecutor: AbstractScanExecutor
 
-    suspend fun init(context: Context) {
-        scanExecutor = ScanExecutorFactory.get(context)
+    suspend fun init(activity: ComponentActivity) {
+        PermissionUtils.requestScanEnvironment(activity)
+        scanExecutor = ScanExecutorFactory.get(activity.applicationContext)
         /**
          * [BleDataSourceFactory.init]必须放在扫描之前，否则扫描时，如果要用到[DeviceType.containsDevice]方法就没效果。
          */
-        BleDataSourceFactory.init(context)
+        BleDataSourceFactory.init(activity.applicationContext)
     }
 
     /**

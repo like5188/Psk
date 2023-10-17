@@ -5,7 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.like.ble.util.PermissionUtils
 import com.psk.device.RepositoryManager
 import com.psk.device.data.model.DeviceType
 import com.psk.device.data.model.ShangXiaZhiParams
@@ -27,9 +26,7 @@ class MainViewModel : ViewModel() {
 
     fun init(activity: ComponentActivity) {
         viewModelScope.launch {
-            PermissionUtils.requestScanEnvironment(activity)
-            PermissionUtils.requestConnectEnvironment(activity)
-            RepositoryManager.init(activity.applicationContext)
+            RepositoryManager.init(activity)
         }
     }
 
