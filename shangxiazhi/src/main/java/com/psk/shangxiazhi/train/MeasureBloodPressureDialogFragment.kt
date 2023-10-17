@@ -12,6 +12,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.like.common.base.BaseDialogFragment
 import com.like.common.util.showToast
+import com.psk.common.customview.CountDownTimerProgressDialog
 import com.psk.common.customview.ProgressDialog
 import com.psk.device.RepositoryManager
 import com.psk.device.data.model.BloodPressure
@@ -45,7 +46,12 @@ class MeasureBloodPressureDialogFragment private constructor() : BaseDialogFragm
     private var job: Job? = null
     private var bloodPressure: BloodPressure? = null
     private val mProgressDialog by lazy {
-        ProgressDialog(requireContext(), "测量中，请稍后……")
+        ProgressDialog(requireContext(), "正在连接血压仪，请稍后……")
+    }
+    private val mCountDownTimerProgressDialog by lazy {
+        CountDownTimerProgressDialog(requireContext(), "正在测量血压，请稍后！", countDownTime = 0L, onCanceled = {
+            cancelJob()
+        })
     }
 
     private fun startJob() {
@@ -54,13 +60,13 @@ class MeasureBloodPressureDialogFragment private constructor() : BaseDialogFragm
             return
         }
         job = lifecycleScope.launch(Dispatchers.Main) {
-            mProgressDialog.show()
+            mCountDownTimerProgressDialog.show()
             bloodPressure = repository.measure()
             cancelJob()
             println("血压：$bloodPressure")
             mBinding.tvSbp.text = bloodPressure?.sbp?.toString() ?: ""
             mBinding.tvDbp.text = bloodPressure?.dbp?.toString() ?: ""
-            mProgressDialog.dismiss()
+            mCountDownTimerProgressDialog.dismiss()
         }
     }
 
@@ -86,11 +92,15 @@ class MeasureBloodPressureDialogFragment private constructor() : BaseDialogFragm
             if (repository.isConnected()) {
                 startJob()
             } else {
-                repository.connect(lifecycleScope, {
+                mProgressDialog.show()
+                repository.connect(lifecycleScope, 0L, {
+                    mProgressDialog.dismiss()
                     context?.showToast("血压仪连接成功，开始测量")
                     startJob()
                 }) {
-                    context?.showToast("血压仪连接失败")
+                    mCountDownTimerProgressDialog.dismiss()
+                    mProgressDialog.dismiss()
+                    context?.showToast("血压仪连接失败，无法进行测量")
                     cancelJob()
                 }
             }

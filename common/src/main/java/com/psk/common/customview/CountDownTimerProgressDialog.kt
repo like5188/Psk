@@ -31,7 +31,6 @@ class CountDownTimerProgressDialog(
                 val secondsUntilFinished = countDownTime - seconds
                 mBinding.tvTicker.text = secondsUntilFinished.toString()
                 if (secondsUntilFinished == 0L) {
-                    stop()
                     dismiss()
                     onFinished?.invoke()
                 }
@@ -53,11 +52,16 @@ class CountDownTimerProgressDialog(
         setContentView(mBinding.root)
         mBinding.tvContent.text = this@CountDownTimerProgressDialog.text
         mBinding.btnCancel.setOnClickListener {
-            secondClock.stop()
             dismiss()
             onCanceled?.invoke()
         }
-        secondClock.start()
+        if (countDownTime > 0L) {
+            secondClock.start()
+        }
     }
 
+    override fun dismiss() {
+        secondClock.stop()
+        super.dismiss()
+    }
 }

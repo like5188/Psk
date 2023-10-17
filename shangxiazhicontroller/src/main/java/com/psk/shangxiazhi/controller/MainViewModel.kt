@@ -62,12 +62,12 @@ class MainViewModel : ViewModel() {
                 it.copy(isRunning = false)
             }
         })
-        bleDeviceRepository.connect(viewModelScope, {
+        bleDeviceRepository.connect(viewModelScope, onConnected = {
             _uiState.update {
                 it.copy(connectState = "已连接", isConnected = true)
             }
             fetch()
-        }, {
+        }, onDisconnected = {
             _uiState.update {
                 it.copy(connectState = "未连接", isConnected = false)
             }

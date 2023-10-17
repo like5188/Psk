@@ -60,7 +60,7 @@ abstract class BaseBusinessManager<Repository : BaseBleDeviceRepository<*>>(
 
     // 游戏app启动回调
     fun onGameAppStart() {
-        bleDeviceRepository.connect(lifecycleScope, ::onConnected, ::onDisconnected)
+        bleDeviceRepository.connect(lifecycleScope, onConnected = ::onConnected, onDisconnected = ::onDisconnected)
     }
 
     fun onGameAppFinish() {

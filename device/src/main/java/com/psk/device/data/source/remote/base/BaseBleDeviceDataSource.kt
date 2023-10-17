@@ -35,10 +35,11 @@ abstract class BaseBleDeviceDataSource {
     @SuppressLint("MissingPermission")
     fun connect(
         scope: CoroutineScope,
+        autoConnectInterval: Long,
         onConnected: () -> Unit,
         onDisconnected: () -> Unit
     ) {
-        connectExecutor.connect(scope, 3000L, onConnected = { device, gattServiceList ->
+        connectExecutor.connect(scope, autoConnectInterval, onConnected = { device, gattServiceList ->
             onConnected()
         }) {
             when (it) {
