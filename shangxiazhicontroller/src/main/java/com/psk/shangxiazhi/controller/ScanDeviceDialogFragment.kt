@@ -58,29 +58,28 @@ class ScanDeviceDialogFragment private constructor() : BaseDialogFragment() {
     override fun onResume() {
         super.onResume()
         (arguments?.getSerializable(KEY_DEVICE_TYPE) as? DeviceType)?.apply {
-            lifecycleScope.launch {
-                ScanManager.init(requireActivity())
-                startScan(this@apply)
-            }
+            startScan(this@apply)
         }
     }
 
     @SuppressLint("MissingPermission")
-    private suspend fun startScan(deviceType: DeviceType) {
-        ScanManager.startScan(deviceType)
-            .onStart {
-                mBinding.tvTitle.text = "(${deviceType.des}) 扫描中……"
-            }.onCompletion {
-                mBinding.tvTitle.text = "(${deviceType.des}) 扫描完成"
-            }.collect {
-                val name = it.device.name
-                val address = it.device.address
-                if (mAdapter.currentList.firstOrNull { it?.address == address } == null) {// 防止重复添加
-                    val newItems = mAdapter.currentList.toMutableList()
-                    newItems.add(BleScanInfo(name, address))
-                    mAdapter.submitList(newItems)
+    private fun startScan(deviceType: DeviceType) {
+        lifecycleScope.launch {
+            ScanManager.startScan(deviceType)
+                .onStart {
+                    mBinding.tvTitle.text = "(${deviceType.des}) 扫描中……"
+                }.onCompletion {
+                    mBinding.tvTitle.text = "(${deviceType.des}) 扫描完成"
+                }.collect {
+                    val name = it.device.name
+                    val address = it.device.address
+                    if (mAdapter.currentList.firstOrNull { it?.address == address } == null) {// 防止重复添加
+                        val newItems = mAdapter.currentList.toMutableList()
+                        newItems.add(BleScanInfo(name, address))
+                        mAdapter.submitList(newItems)
+                    }
                 }
-            }
+        }
     }
 
     private fun stopScan() {

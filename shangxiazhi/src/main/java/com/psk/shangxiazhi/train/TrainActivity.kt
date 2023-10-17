@@ -33,7 +33,6 @@ class TrainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mViewModel.init(this)
         mViewModel.bindGameManagerService(this)
         mBinding.deviceCardView.setOnClickListener {
             mViewModel.selectDevices(this)

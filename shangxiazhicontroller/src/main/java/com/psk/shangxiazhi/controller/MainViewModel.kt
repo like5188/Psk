@@ -6,6 +6,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.psk.device.RepositoryManager
+import com.psk.device.ScanManager
 import com.psk.device.data.model.DeviceType
 import com.psk.device.data.model.ShangXiaZhiParams
 import com.psk.device.data.source.ShangXiaZhiRepository
@@ -26,6 +27,7 @@ class MainViewModel : ViewModel() {
 
     fun init(activity: ComponentActivity) {
         viewModelScope.launch {
+            ScanManager.init(activity)
             RepositoryManager.init(activity)
         }
     }

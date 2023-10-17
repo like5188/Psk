@@ -54,12 +54,6 @@ class TrainViewModel : ViewModel(), KoinComponent {
         }
     }
 
-    fun init(activity: ComponentActivity) {
-        viewModelScope.launch {
-            RepositoryManager.init(activity)
-        }
-    }
-
     fun bindGameManagerService(context: Context) {
         Log.w(TAG, "bindGameManagerService")
         val intent = Intent(context, GameManagerService::class.java)
