@@ -22,6 +22,7 @@ import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.databinding.DialogFragmentMeasureBloodPressureBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 /**
@@ -61,6 +62,7 @@ class MeasureBloodPressureDialogFragment private constructor() : BaseDialogFragm
         }
         job = lifecycleScope.launch(Dispatchers.Main) {
             mCountDownTimerProgressDialog.show()
+            delay(500)// 这里延迟一下，避免刚连接成功就测量返回null值。
             bloodPressure = repository.measure()
             cancelJob()
             println("血压：$bloodPressure")
