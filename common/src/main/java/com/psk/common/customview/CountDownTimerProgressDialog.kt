@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.WindowManager
 import androidx.databinding.DataBindingUtil
-import com.like.common.util.SecondClock
 import com.psk.common.R
 import com.psk.common.databinding.CommonDialogCountDownTimerProgressBinding
 
@@ -16,7 +15,7 @@ import com.psk.common.databinding.CommonDialogCountDownTimerProgressBinding
 class CountDownTimerProgressDialog(
     context: Context,
     private val text: String = "",
-    private val countDownTime: Long = 60,
+    private val countDownTime: Long = 10,
     private val onCanceled: (() -> Unit)? = null,
     private val onFinished: (() -> Unit)? = null,
 ) : Dialog(context) {
@@ -25,15 +24,13 @@ class CountDownTimerProgressDialog(
     }
 
     // 计时器
-    private val secondClock by lazy {
-        object : SecondClock() {
-            override fun onTick(seconds: Long) {
-                val secondsUntilFinished = countDownTime - seconds
-                mBinding.tvTicker.text = secondsUntilFinished.toString()
-                if (secondsUntilFinished == 0L) {
-                    dismiss()
-                    onFinished?.invoke()
-                }
+    private val secondClock = object : SecondClock() {
+        override fun onTick(seconds: Long) {
+            val secondsUntilFinished = countDownTime - seconds
+            mBinding.tvTicker.text = secondsUntilFinished.toString()
+            if (secondsUntilFinished == 0L) {
+                dismiss()
+                onFinished?.invoke()
             }
         }
     }
@@ -44,6 +41,9 @@ class CountDownTimerProgressDialog(
         window?.setFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM, WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM)
         // 设置背景透明，并去掉 dialog 默认的 padding
         window?.setBackgroundDrawableResource(android.R.color.transparent)
+        if (countDownTime > 0L) {
+            secondClock.start()
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,13 +55,11 @@ class CountDownTimerProgressDialog(
             dismiss()
             onCanceled?.invoke()
         }
-        if (countDownTime > 0L) {
-            secondClock.start()
-        }
     }
 
     override fun dismiss() {
-        secondClock.stop()
+        secondClock.reset()
+        mBinding.tvTicker.text = ""
         super.dismiss()
     }
 }

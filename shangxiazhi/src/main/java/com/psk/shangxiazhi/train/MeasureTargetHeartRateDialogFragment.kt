@@ -54,21 +54,22 @@ class MeasureTargetHeartRateDialogFragment private constructor() : BaseDialogFra
     private val mProgressDialog by lazy {
         ProgressDialog(requireContext(), "正在连接心电仪，请稍后……")
     }
-    private var mCountDownTimerProgressDialog: CountDownTimerProgressDialog? = null
-
-    private fun startJob() {
-        if (job != null) {
-            context?.showToast("正在测量，请稍后")
-            return
-        }
-        mCountDownTimerProgressDialog = CountDownTimerProgressDialog(requireContext(), "测量靶心率需要1分钟，请稍后！", onCanceled = {
+    private val mCountDownTimerProgressDialog by lazy {
+        CountDownTimerProgressDialog(requireContext(), "测量靶心率需要1分钟，请稍后！", onCanceled = {
             cancelJob()
         }) {
             cancelJob()
             val targetHeartRate = calc()
             mBinding.tvTargetHeartRate.text = "${targetHeartRate.first}~${targetHeartRate.second}"
         }
-        mCountDownTimerProgressDialog?.show()
+    }
+
+    private fun startJob() {
+        if (job != null) {
+            context?.showToast("正在测量，请稍后")
+            return
+        }
+        mCountDownTimerProgressDialog.show()
         job = lifecycleScope.launch(Dispatchers.Main) {
             heartRates.clear()
             repository.fetch().filterNotNull().map {
@@ -125,7 +126,7 @@ class MeasureTargetHeartRateDialogFragment private constructor() : BaseDialogFra
                     context?.showToast("心电仪连接成功，开始测量")
                     startJob()
                 }) {
-                    mCountDownTimerProgressDialog?.dismiss()
+                    mCountDownTimerProgressDialog.dismiss()
                     mProgressDialog.dismiss()
                     context?.showToast("心电仪连接失败，无法进行测量")
                     cancelJob()
