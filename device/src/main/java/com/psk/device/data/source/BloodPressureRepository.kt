@@ -71,4 +71,8 @@ class BloodPressureRepository : BaseBleDeviceRepository<BaseBloodPressureDataSou
         return bleDeviceDataSource.measure(-1)
     }
 
+    suspend fun stopMeasure() {
+        bleDeviceDataSource.stopMeasure()
+    }
+
 }

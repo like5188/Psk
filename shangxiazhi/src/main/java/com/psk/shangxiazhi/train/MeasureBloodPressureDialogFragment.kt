@@ -22,6 +22,7 @@ import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.databinding.DialogFragmentMeasureBloodPressureBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -51,7 +52,12 @@ class MeasureBloodPressureDialogFragment private constructor() : BaseDialogFragm
     }
     private val mCountDownTimerProgressDialog by lazy {
         CountDownTimerProgressDialog(requireContext(), "正在测量血压，请稍后！", countDownTime = 0L, onCanceled = {
-            cancelJob()
+            lifecycleScope.launch(Dispatchers.IO) {
+                job?.cancelAndJoin()// 这里必须等待上一条命令执行完毕，否则会导致stopMeasure失败
+                job = null
+                delay(100)
+                repository.stopMeasure()
+            }
         })
     }
 
@@ -62,7 +68,7 @@ class MeasureBloodPressureDialogFragment private constructor() : BaseDialogFragm
         }
         job = lifecycleScope.launch(Dispatchers.Main) {
             mCountDownTimerProgressDialog.show()
-            delay(500)// 这里延迟一下，避免刚连接成功就测量返回null值。
+            delay(100)// 这里延迟一下，避免刚连接成功就测量返回null值。
             bloodPressure = repository.measure()
             cancelJob()
             println("血压：$bloodPressure")

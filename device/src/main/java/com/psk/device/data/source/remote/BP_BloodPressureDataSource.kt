@@ -54,6 +54,10 @@ class BP_BloodPressureDataSource : BaseBloodPressureDataSource() {
         return parseBloodPressure(data, medicalOrderId)
     }
 
+    override suspend fun stopMeasure() {
+        write("cc80020301030003")
+    }
+
     private fun parseBloodPressure(data: ByteArray?, medicalOrderId: Long): BloodPressure? {
         return if (data?.size == 20) {
             // 高8位左移8位+低8位。比如：高8位(0x01),低8位(0x78)。结果：0x01 shl 8 + 0x78 = 256 + 120 = 376
