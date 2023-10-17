@@ -7,7 +7,6 @@ import android.os.IBinder
 import android.util.Log
 import com.like.common.util.startForeground
 import com.like.common.util.stopForeground
-import com.psk.device.RepositoryManager
 import com.psk.device.data.model.DeviceType
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.data.model.BleScanInfo
@@ -31,19 +30,12 @@ class GameManagerService : Service() {
     }
 
     private val gameController by inject<GameController>()
-    private lateinit var lifecycleScope: CoroutineScope
     private val multiBusinessManager: MultiBusinessManager by lazy {
         MultiBusinessManager()
     }
 
-    fun init(scope: CoroutineScope) {
-        lifecycleScope = scope
-        lifecycleScope.launch {
-            RepositoryManager.init(this@GameManagerService)
-        }
-    }
-
     fun start(
+        scope: CoroutineScope,
         medicalOrderId: Long,
         devices: Map<DeviceType, BleScanInfo>,
         scene: TrainScene,
@@ -61,7 +53,7 @@ class GameManagerService : Service() {
             val deviceType = it.key
             val bleScanInfo = it.value
             MultiBusinessManager.createBusinessManager(
-                lifecycleScope, medicalOrderId, deviceType, bleScanInfo.name, bleScanInfo.address
+                scope, medicalOrderId, deviceType, bleScanInfo.name, bleScanInfo.address
             ).apply {
                 multiBusinessManager.add(deviceType, this)
                 when (this) {
@@ -83,7 +75,7 @@ class GameManagerService : Service() {
                 }
             }
         }
-        lifecycleScope.launch(Dispatchers.IO) {
+        scope.launch(Dispatchers.IO) {
             // todo 如果增加蓝牙设备系列，需要在这里结合游戏app做处理。
             gameController.initGame(
                 devices.containsKey(DeviceType.HeartRate),

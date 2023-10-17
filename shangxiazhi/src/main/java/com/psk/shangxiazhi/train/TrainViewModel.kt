@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.like.ble.util.PermissionUtils
 import com.like.common.util.ToastEvent
 import com.like.common.util.mvi.Event
 import com.psk.device.RepositoryManager
@@ -51,7 +52,14 @@ class TrainViewModel : ViewModel(), KoinComponent {
             Log.w(TAG, "onServiceConnected")
             val localBinder = service as? GameManagerService.LocalBinder
             gameManagerService = localBinder?.getService()
-            gameManagerService?.init(viewModelScope)
+        }
+    }
+
+    fun init(activity: ComponentActivity) {
+        viewModelScope.launch {
+            PermissionUtils.requestScanEnvironment(activity)
+            PermissionUtils.requestConnectEnvironment(activity)
+            RepositoryManager.init(activity.applicationContext)
         }
     }
 
@@ -228,7 +236,7 @@ class TrainViewModel : ViewModel(), KoinComponent {
         viewModelScope.launch {
             healthInfoRepository.insert(newHealthInfo)
         }
-        gameManagerService?.start(medicalOrderId, deviceMap, scene, bloodPressureMeasureType) { reports ->
+        gameManagerService?.start(viewModelScope, medicalOrderId, deviceMap, scene, bloodPressureMeasureType) { reports ->
             _uiState.update {
                 it.copy(
                     reports = reports

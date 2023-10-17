@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mViewModel.init(this@MainActivity)
+        mViewModel.init(this)
         mBinding.btnScan.setOnClickListener {
             mViewModel.scan(this)
         }

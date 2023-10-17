@@ -4,8 +4,6 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.lifecycleScope
-import com.like.ble.util.PermissionUtils
 import com.like.common.util.gone
 import com.like.common.util.mvi.propertyCollector
 import com.like.common.util.showToast
@@ -15,7 +13,6 @@ import com.psk.common.CommonApplication
 import com.psk.device.data.model.DeviceType
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.databinding.ActivityTrainBinding
-import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
@@ -36,10 +33,7 @@ class TrainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        lifecycleScope.launch {
-            PermissionUtils.requestScanEnvironment(this@TrainActivity)
-            PermissionUtils.requestConnectEnvironment(this@TrainActivity)
-        }
+        mViewModel.init(this)
         mViewModel.bindGameManagerService(this)
         mBinding.deviceCardView.setOnClickListener {
             mViewModel.selectDevices(this)
