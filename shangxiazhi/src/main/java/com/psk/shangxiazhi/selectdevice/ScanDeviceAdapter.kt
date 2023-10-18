@@ -1,4 +1,4 @@
-package com.psk.shangxiazhi.train
+package com.psk.shangxiazhi.selectdevice
 
 import androidx.recyclerview.widget.DiffUtil
 import com.like.recyclerview.adapter.BaseListAdapter

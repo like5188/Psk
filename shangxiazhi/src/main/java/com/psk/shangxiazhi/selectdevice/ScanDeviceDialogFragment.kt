@@ -1,4 +1,4 @@
-package com.psk.shangxiazhi.train
+package com.psk.shangxiazhi.selectdevice
 
 import android.annotation.SuppressLint
 import android.content.DialogInterface

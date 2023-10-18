@@ -20,8 +20,11 @@ import com.psk.device.data.model.DeviceType
 import com.psk.device.data.model.HealthInfo
 import com.psk.shangxiazhi.data.model.ShangXiaZhiReport
 import com.psk.shangxiazhi.game.GameManagerService
+import com.psk.shangxiazhi.measure.MeasureBloodPressureDialogFragment
+import com.psk.shangxiazhi.measure.MeasureTargetHeartRateDialogFragment
 import com.psk.shangxiazhi.report.ReportActivity
 import com.psk.shangxiazhi.scene.SceneActivity
+import com.psk.shangxiazhi.selectdevice.SelectDeviceDialogFragment
 import com.twsz.twsystempre.TrainScene
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

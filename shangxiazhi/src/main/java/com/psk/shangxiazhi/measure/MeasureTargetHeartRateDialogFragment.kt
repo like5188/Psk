@@ -1,4 +1,4 @@
-package com.psk.shangxiazhi.train
+package com.psk.shangxiazhi.measure
 
 import android.content.DialogInterface
 import android.os.Bundle
