@@ -81,6 +81,7 @@ class TrainViewModel : ViewModel(), KoinComponent {
             )
         ).apply {
             onSelected = { deviceMap ->
+                // 选择设备后，清空当前已经存在的数据。重新开始一个新的流程。
                 _uiState.update {
                     it.copy(
                         deviceMap = deviceMap, healthInfo = HealthInfo(), scene = null, reports = null
