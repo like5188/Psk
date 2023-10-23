@@ -325,6 +325,7 @@
                                 android:id="@+id/autoRb"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:layout_marginTop="-15dp"
                                 android:text="自动测量(每隔 5 分钟自动测量一次)" />
 
                         </RadioGroup>
