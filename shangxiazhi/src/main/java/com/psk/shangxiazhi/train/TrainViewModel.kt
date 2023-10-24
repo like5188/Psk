@@ -84,7 +84,7 @@ class TrainViewModel : ViewModel(), KoinComponent {
                 // 选择设备后，清空当前已经存在的数据。重新开始一个新的流程。
                 _uiState.update {
                     it.copy(
-                        deviceMap = deviceMap, healthInfo = HealthInfo(), scene = null, reports = null
+                        isTrainCompleted = false, deviceMap = deviceMap, healthInfo = HealthInfo(), scene = null, reports = null
                     )
                 }
             }
@@ -165,9 +165,8 @@ class TrainViewModel : ViewModel(), KoinComponent {
         }.show(activity)
     }
 
-    fun measureBloodPressureAfter(activity: FragmentActivity) {
-        val reports = _uiState.value.reports
-        if (reports.isNullOrEmpty()) {
+    fun measureBloodPressureAfter(activity: FragmentActivity, onCompleted: () -> Unit) {
+        if (!_uiState.value.isTrainCompleted) {
             _uiState.update {
                 it.copy(
                     toastEvent = Event(ToastEvent(text = "请先进行训练"))
@@ -186,7 +185,9 @@ class TrainViewModel : ViewModel(), KoinComponent {
                         ),
                     )
                 }
+                onCompleted()
             }
+            onCanceled = onCompleted
         }.show(activity)
     }
 
@@ -234,15 +235,14 @@ class TrainViewModel : ViewModel(), KoinComponent {
         gameManagerService?.start(viewModelScope, medicalOrderId, deviceMap, scene, bloodPressureMeasureType) { reports ->
             _uiState.update {
                 it.copy(
-                    reports = reports
+                    isTrainCompleted = true, reports = reports
                 )
             }
         }
     }
 
     fun report() {
-        val deviceMap = _uiState.value.deviceMap
-        if (deviceMap.isNullOrEmpty()) {
+        if (!_uiState.value.isTrainCompleted) {
             _uiState.update {
                 it.copy(
                     toastEvent = Event(ToastEvent(text = "请先进行训练"))

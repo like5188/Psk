@@ -45,6 +45,7 @@ class MeasureBloodPressureDialogFragment private constructor() : BaseDialogFragm
     private val repository = RepositoryManager.createBleDeviceRepository<BloodPressureRepository>(DeviceType.BloodPressure)
     private lateinit var mBinding: DialogFragmentMeasureBloodPressureBinding
     var onSelected: ((BloodPressure) -> Unit)? = null
+    var onCanceled: (() -> Unit)? = null
     private var job: Job? = null
     private var bloodPressure: BloodPressure? = null
     private val mProgressDialog by lazy {
@@ -91,6 +92,9 @@ class MeasureBloodPressureDialogFragment private constructor() : BaseDialogFragm
     override fun onDestroy() {
         super.onDestroy()
         repository.close()
+        if (bloodPressure == null) {
+            onCanceled?.invoke()
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {

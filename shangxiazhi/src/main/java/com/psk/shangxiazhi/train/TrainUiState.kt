@@ -10,6 +10,7 @@ import com.twsz.twsystempre.TrainScene
 
 data class TrainUiState(
     val toastEvent: Event<ToastEvent>? = null,
+    val isTrainCompleted: Boolean = false,
     val deviceMap: Map<DeviceType, BleScanInfo>? = null,
     val healthInfo: HealthInfo? = null,
     val scene: TrainScene? = null,

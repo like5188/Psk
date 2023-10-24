@@ -1,6 +1,7 @@
 package com.psk.shangxiazhi.train
 
 import android.os.Bundle
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
 import androidx.databinding.DataBindingUtil
@@ -46,14 +47,8 @@ class TrainActivity : AppCompatActivity() {
         mBinding.bloodPressureBeforeCardView.setOnClickListener {
             mViewModel.measureBloodPressureBefore(this)
         }
-        mBinding.bloodPressureAfterCardView.setOnClickListener {
-            mViewModel.measureBloodPressureAfter(this)
-        }
         mBinding.btnTrain.setOnClickListener {
             mViewModel.train(bloodPressureMeasureType)
-        }
-        mBinding.btnReport.setOnClickListener {
-            mViewModel.report()
         }
         mBinding.bloodPressureMeasureTypeRadioGroup.setOnCheckedChangeListener { group, checkedId ->
             when (checkedId) {
@@ -90,7 +85,6 @@ class TrainActivity : AppCompatActivity() {
                 mBinding.weightCardView.gone()
                 mBinding.ageCardView.gone()
                 mBinding.bloodPressureBeforeCardView.gone()
-                mBinding.bloodPressureAfterCardView.gone()
                 mBinding.targetHeartRateCardView.gone()
                 mBinding.bloodPressureMeasureTypeCardView.gone()
                 if (it.isNullOrEmpty()) {
@@ -100,7 +94,6 @@ class TrainActivity : AppCompatActivity() {
                 mBinding.weightCardView.visible()
                 if (it.containsKey(DeviceType.BloodPressure)) {
                     mBinding.bloodPressureBeforeCardView.visible()
-                    mBinding.bloodPressureAfterCardView.visible()
                     mBinding.bloodPressureMeasureTypeCardView.visible()
                 }
                 if (it.containsKey(DeviceType.HeartRate)) {
@@ -118,6 +111,13 @@ class TrainActivity : AppCompatActivity() {
                 }
                 mBinding.tvDevice.text = sb.toString()
             }
+            collectDistinctProperty(TrainUiState::scene) {
+                mBinding.tvScene.text = it?.des ?: ""
+                if (it != null) {
+                    // 这里因为跳转到 Activity 返回后，sceneCardView 会失去焦点。
+                    mBinding.sceneCardView.requestFocus()
+                }
+            }
             collectDistinctProperty(TrainUiState::healthInfo) {
                 it ?: return@collectDistinctProperty
                 mBinding.tvTargetHeartRate.text = if (it.minTargetHeartRate == 0 || it.maxTargetHeartRate == 0) {
@@ -126,14 +126,28 @@ class TrainActivity : AppCompatActivity() {
                     "${it.minTargetHeartRate}~${it.maxTargetHeartRate}"
                 }
                 mBinding.tvBloodPressureBefore.text = it.bloodPressureBefore?.toString() ?: ""
-                mBinding.tvBloodPressureAfter.text = it.bloodPressureAfter?.toString() ?: ""
             }
-            collectDistinctProperty(TrainUiState::scene) {
-                mBinding.tvScene.text = it?.des ?: ""
-                if (it != null) {
-                    // 这里因为跳转到 Activity 返回后，sceneCardView 会失去焦点。
-                    mBinding.sceneCardView.requestFocus()
+            collectDistinctProperty(TrainUiState::isTrainCompleted) {
+                if (!it) {
+                    return@collectDistinctProperty
                 }
+                // 训练完成
+                // 如果没有血压仪
+                if (mViewModel.uiState.value.deviceMap?.containsKey(DeviceType.BloodPressure) != true) {
+                    mViewModel.report()
+                    finish()
+                    return@collectDistinctProperty
+                }
+                // 如果有血压仪
+                AlertDialog.Builder(this@TrainActivity).setMessage("是否进行运动后血压测试?").setNegativeButton("取消") { _, _ ->
+                    mViewModel.report()
+                    finish()
+                }.setPositiveButton("去测量") { _, _ ->
+                    mViewModel.measureBloodPressureAfter(this@TrainActivity) {
+                        mViewModel.report()
+                        finish()
+                    }
+                }.show()
             }
         }
     }
