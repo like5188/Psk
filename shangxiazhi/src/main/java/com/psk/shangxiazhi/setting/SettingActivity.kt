@@ -3,7 +3,6 @@ package com.psk.shangxiazhi.setting
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import com.like.common.util.showToast
 import com.like.common.util.startActivity
 import com.psk.common.CommonApplication
 import com.psk.shangxiazhi.R
@@ -26,9 +25,6 @@ class SettingActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mBinding.tvVersion.text = packageManager.getPackageInfo(packageName, 0).versionName
-        mBinding.versionCardView.setOnClickListener {
-            showToast("当前已经是最新版本！")
-        }
     }
 
 }
