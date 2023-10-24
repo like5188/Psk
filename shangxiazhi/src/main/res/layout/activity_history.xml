@@ -29,7 +29,7 @@
                     android:layout_width="0dp"
                     android:layout_height="?actionBarSize"
                     android:gravity="center"
-                    android:text="训练时间"
+                    android:text="选择训练时间"
                     android:textAppearance="@style/AppHeadline6"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
