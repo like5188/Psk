@@ -56,6 +56,12 @@
                         <com.google.android.material.textview.MaterialTextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:text="*"
+                            android:textColor="@color/color_secondary_variant" />
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:text="设备"
                             android:textAppearance="@style/AppSubtitle2" />
 
@@ -87,6 +93,12 @@
                         android:paddingTop="10dp"
                         android:paddingEnd="15dp"
                         android:paddingBottom="10dp">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="*"
+                            android:textColor="@color/color_secondary_variant" />
 
                         <com.google.android.material.textview.MaterialTextView
                             android:layout_width="wrap_content"
@@ -123,6 +135,12 @@
                         android:paddingTop="10dp"
                         android:paddingEnd="15dp"
                         android:paddingBottom="10dp">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="*"
+                            android:textColor="@color/color_secondary_variant" />
 
                         <com.google.android.material.textview.MaterialTextView
                             android:layout_width="wrap_content"
