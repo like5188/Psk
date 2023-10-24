@@ -21,8 +21,12 @@ class BloodOxygenBusinessManager(
     lifecycleScope, medicalOrderId, deviceName, deviceAddress, DeviceType.BloodOxygen
 ) {
 
-    override fun getReport(): IReport {
-        return BloodOxygenReport.report
+    override fun getReport(): IReport? {
+        return try {
+            BloodOxygenReport.report
+        } catch (e: UninitializedPropertyAccessException) {
+            null
+        }
     }
 
     override suspend fun run() = withContext(Dispatchers.IO) {

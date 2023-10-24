@@ -67,7 +67,7 @@ abstract class BaseBusinessManager<Repository : BaseBleDeviceRepository<*>>(
         bleDeviceRepository.close()
     }
 
-    abstract fun getReport(): IReport
+    abstract fun getReport(): IReport?
     protected abstract suspend fun run()
     protected abstract fun onConnected()
     protected abstract fun onDisconnected()

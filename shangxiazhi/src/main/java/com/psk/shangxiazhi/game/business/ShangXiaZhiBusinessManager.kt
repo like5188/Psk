@@ -33,8 +33,12 @@ class ShangXiaZhiBusinessManager(
         )
     }
 
-    override fun getReport(): IReport {
-        return ShangXiaZhiReport.report
+    override fun getReport(): IReport? {
+        return try {
+            ShangXiaZhiReport.report
+        } catch (e: UninitializedPropertyAccessException) {
+            null
+        }
     }
 
     override suspend fun run() = withContext(Dispatchers.IO) {

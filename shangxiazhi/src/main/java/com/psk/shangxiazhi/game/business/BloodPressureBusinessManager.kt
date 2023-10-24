@@ -22,8 +22,12 @@ class BloodPressureBusinessManager(
 ) {
     var bloodPressureMeasureType: Int = 0
 
-    override fun getReport(): IReport {
-        return BloodPressureReport.report
+    override fun getReport(): IReport? {
+        return try {
+            BloodPressureReport.report
+        } catch (e: UninitializedPropertyAccessException) {
+            null
+        }
     }
 
     override suspend fun run() = withContext(Dispatchers.IO) {

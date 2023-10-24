@@ -88,7 +88,7 @@ class MultiBusinessManager : RemoteCallback.Stub(), KoinComponent {
         businessManagers.values.forEach {
             it.onGameAppFinish()
         }
-        onReport?.invoke(businessManagers.values.map { it.getReport() })
+        onReport?.invoke(businessManagers.values.mapNotNull { it.getReport() })
         businessManagers.clear()
     }
 

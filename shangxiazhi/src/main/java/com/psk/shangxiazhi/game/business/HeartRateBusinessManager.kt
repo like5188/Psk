@@ -28,8 +28,12 @@ class HeartRateBusinessManager(
     DeviceType.HeartRate
 ) {
 
-    override fun getReport(): IReport {
-        return HeartRateReport.report
+    override fun getReport(): IReport? {
+        return try {
+            HeartRateReport.report
+        } catch (e: UninitializedPropertyAccessException) {
+            null
+        }
     }
 
     override suspend fun run() = withContext(Dispatchers.IO) {
