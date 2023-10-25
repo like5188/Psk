@@ -25,7 +25,7 @@
                 <com.google.android.material.textview.MaterialTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="靶心率(次/分钟)"
+                    android:text="靶心率(bpm)"
                     android:textAppearance="@style/AppSubtitle2" />
 
                 <com.google.android.material.textview.MaterialTextView
@@ -193,7 +193,7 @@
                 <com.google.android.material.textview.MaterialTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="心率(次/分钟)"
+                    android:text="心率(bpm)"
                     android:textAppearance="@style/AppSubtitle2" />
 
                 <com.google.android.material.textview.MaterialTextView

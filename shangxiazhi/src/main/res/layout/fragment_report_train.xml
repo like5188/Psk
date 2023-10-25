@@ -96,7 +96,7 @@
                     <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="总里程(米)"
+                        android:text="总里程(m)"
                         android:textAppearance="@style/AppSubtitle2" />
 
                     <com.google.android.material.textview.MaterialTextView
@@ -162,7 +162,7 @@
                     <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="消耗能量(千卡)"
+                        android:text="消耗能量(kcal)"
                         android:textAppearance="@style/AppSubtitle2" />
 
                     <com.google.android.material.textview.MaterialTextView
@@ -251,7 +251,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="50dp"
-                        android:text="强度(档)"
+                        android:text="强度"
                         android:textAppearance="@style/AppSubtitle2" />
 
                     <com.google.android.material.textview.MaterialTextView
