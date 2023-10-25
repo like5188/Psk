@@ -91,8 +91,8 @@ class MainActivity : AppCompatActivity() {
             val forward: Boolean = mBinding.rbDirection0.isChecked
 
             val time: Int = mBinding.etTime.text.trim().toString().toIntOrDefault(0)
-            if (time < 1 || time > 30) {
-                showToast("请输入有效时间，范围：1~30分钟")
+            if (time < 5 || time > 30) {
+                showToast("请输入有效时间，范围：5~30")
                 return null
             }
 

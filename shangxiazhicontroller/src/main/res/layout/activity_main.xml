@@ -306,7 +306,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="15dp"
-                        android:text="时间："
+                        android:text="时间（min）："
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/rgDirection" />
 
@@ -314,7 +314,7 @@
                         android:id="@+id/etTime"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:hint="范围：1~30分钟"
+                        android:hint="范围：5~30"
                         android:inputType="number"
                         android:textColorHint="#33000000"
                         android:textSize="14sp"
