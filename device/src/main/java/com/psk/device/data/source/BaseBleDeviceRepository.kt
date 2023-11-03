@@ -21,7 +21,7 @@ abstract class BaseBleDeviceRepository<BleDeviceDataSource : BaseBleDeviceDataSo
         bleDeviceDataSource.init(context, address)
     }
 
-    fun connect(scope: CoroutineScope, autoConnectInterval: Long = 3000L, onConnected: () -> Unit, onDisconnected: () -> Unit) {
+    fun connect(scope: CoroutineScope, autoConnectInterval: Long = 5000L, onConnected: () -> Unit, onDisconnected: () -> Unit) {
         bleDeviceDataSource.connect(scope, autoConnectInterval, onConnected, onDisconnected)
     }
 
