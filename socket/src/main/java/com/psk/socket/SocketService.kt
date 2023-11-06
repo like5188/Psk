@@ -5,29 +5,25 @@ import android.content.Context
 import android.content.Intent
 import android.os.IBinder
 import android.util.Log
-import com.google.gson.Gson
 
 /**
  * Socket连接的服务
  */
 class SocketService : Service() {
-    private val gson: Gson = Gson()
     override fun onCreate() {
         super.onCreate()
         Log.i("SocketService", "onCreate")
-        LiveEventBusUtils.getInstance().setSendDataToServerCallback(SocketClient::sendMsg)
         SocketClient.socketListener = object : SocketListener {
             override fun onConnected() {
-                LiveEventBusUtils.sendSocketConnectStateToH5(1)
+                Log.i("SocketService", "onConnected")
             }
 
             override fun onDisConnected() {
-                LiveEventBusUtils.sendSocketConnectStateToH5(0)
+                Log.i("SocketService", "onDisConnected")
             }
 
             override fun onReceived(msg: String?) {
-                // 转发H5
-                LiveEventBusUtils.sendServerDataToH5(gson.fromJson(msg, Msg::class.java))
+                Log.i("SocketService", "onReceived $msg")
             }
         }
     }

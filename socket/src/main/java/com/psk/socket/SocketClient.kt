@@ -91,7 +91,7 @@ object SocketClient {
 
     fun sendMsg(msg: String) {
         if (!isConnected) {
-            Log.e("SocketClient", "sendMsg socket未连接，发送消息给服务器失败：$msg")
+            Log.e("SocketClient", "sendMsg socket未连接，发送消息失败：$msg")
             return
         }
         try {
@@ -100,7 +100,7 @@ object SocketClient {
             writeBuffer?.writeInt(bytes.size)
             writeBuffer?.write(bytes)
             writeBuffer?.flush()
-            Log.i("SocketClient", "sendMsg 发送消息给服务器成功：$msg")
+            Log.i("SocketClient", "sendMsg 发送消息成功：$msg")
         } catch (e: IOException) {
             Log.e("SocketClient", e.message ?: "")
         }
