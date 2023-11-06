@@ -25,7 +25,7 @@ object SocketClient {
     private val connectRunnable = Runnable {
         Log.w("SocketClient", "尝试连接服务器...")
         try {
-            session = client!!.start()
+            session = client?.start()
         } catch (e: Exception) {
             Log.e("SocketClient", e.message ?: "")
             reConnect()
@@ -69,7 +69,7 @@ object SocketClient {
             }
             Log.i("SocketClient", "connect socket服务器地址：ip=$host,port=$port")
             client = AioQuickClient(host, port, StringProtocol(), SocketMessageProcessor(listener))
-            client!!.connectTimeout(c)
+            client?.connectTimeout(c)
             IO_EXECUTOR.execute(connectRunnable)
         }
     }
@@ -85,9 +85,7 @@ object SocketClient {
     fun disconnect() {
         Log.i("SocketService", "disconnect")
         if (connectFlag.compareAndSet(0, -1)) {
-            if (session != null) {
-                session!!.close()
-            }
+            session?.close()
         }
     }
 
@@ -98,10 +96,10 @@ object SocketClient {
         }
         try {
             val bytes = msg.toByteArray(StandardCharsets.UTF_8)
-            val writeBuffer = session!!.writeBuffer()
-            writeBuffer.writeInt(bytes.size)
-            writeBuffer.write(bytes)
-            writeBuffer.flush()
+            val writeBuffer = session?.writeBuffer()
+            writeBuffer?.writeInt(bytes.size)
+            writeBuffer?.write(bytes)
+            writeBuffer?.flush()
             Log.i("SocketClient", "sendMsg 发送消息给服务器成功：$msg")
         } catch (e: IOException) {
             Log.e("SocketClient", e.message ?: "")
@@ -109,6 +107,6 @@ object SocketClient {
     }
 
     private val isConnected: Boolean
-        get() = session != null && !session!!.isInvalid
+        get() = session?.isInvalid != true
 
 }
