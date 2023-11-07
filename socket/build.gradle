@@ -26,6 +26,6 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    api 'org.smartboot.socket:aio-core:1.6.6'
-    api 'org.smartboot.socket:aio-pro:1.6.6'
+    api 'org.smartboot.socket:aio-core:1.6.1'
+    api 'org.smartboot.socket:aio-pro:1.6.1'
 }

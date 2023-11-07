@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.IBinder
 import android.util.Log
+import kotlin.concurrent.thread
 
 /**
  * Socket server 服务
@@ -31,7 +32,10 @@ class SocketServerService : Service() {
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         Log.i("SocketService", "onStartCommand")
         // 连接socket服务器
-        SocketServer.start()
+        thread {
+            val port = intent.getIntExtra(KEY_SOCKET_PORT, -1)
+            SocketServer.start(port)
+        }
         return START_STICKY
     }
 
@@ -47,13 +51,15 @@ class SocketServerService : Service() {
     }
 
     companion object {
+        private const val KEY_SOCKET_PORT = "socket_port"
 
         /**
          * 启动 Socket 服务并启动 socketserver
          */
-        fun start(context: Context) {
+        fun start(context: Context, port: Int) {
             Log.i("SocketService", "start")
             val intent = Intent(context, SocketServerService::class.java)
+            intent.putExtra(KEY_SOCKET_PORT, port)
             Log.i("SocketService", "startService=" + context.startService(intent))
         }
 

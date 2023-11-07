@@ -31,7 +31,7 @@ class SocketMessageProcessor(private val socketListener: SocketListener) : Messa
         socketListener.onReceived(msg)
     }
 
-    override fun stateEvent(session: AioSession, stateMachineEnum: StateMachineEnum, throwable: Throwable) {
+    override fun stateEvent(session: AioSession, stateMachineEnum: StateMachineEnum, throwable: Throwable?) {
         // 处理一些异常状态
         when (stateMachineEnum) {
             StateMachineEnum.SESSION_CLOSED -> {
@@ -47,7 +47,7 @@ class SocketMessageProcessor(private val socketListener: SocketListener) : Messa
                 socketListener.onConnected()
             }
 
-            else -> Log.e("SocketMessageProcessor", throwable.message ?: "")
+            else -> Log.e("SocketMessageProcessor", throwable?.message ?: "")
         }
     }
 }
