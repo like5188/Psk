@@ -7,9 +7,9 @@ import org.smartboot.socket.transport.AioSession
 import java.io.IOException
 import java.nio.charset.StandardCharsets
 
-class SocketMessageProcessor(var socketListener: SocketListener) : MessageProcessor<String> {
+class SocketMessageProcessor(private val socketListener: SocketListener) : MessageProcessor<String> {
     override fun process(session: AioSession, msg: String) {
-        if (MsgType.HEART.name == msg) {
+        if (MsgType.PING.name == msg) {
             // 收到心跳消息，回复服务器（原样回复）
             if (session.isInvalid) {
                 return
@@ -35,15 +35,13 @@ class SocketMessageProcessor(var socketListener: SocketListener) : MessageProces
         // 处理一些异常状态
         when (stateMachineEnum) {
             StateMachineEnum.SESSION_CLOSED -> {
-
-                // 上门这些异常，都是需要重连的，具体的可以看StateMachineEnum里面的说明
+                // 这个异常，需要重连，具体的可以看StateMachineEnum里面的说明
                 // 重连
                 Log.e("SocketMessageProcessor", "stateEvent 连接失败：$stateMachineEnum")
                 socketListener.onDisConnected()
             }
 
             StateMachineEnum.NEW_SESSION -> {
-
                 // 连接建立，
                 Log.i("SocketMessageProcessor", "stateEvent 连接成功")
                 socketListener.onConnected()
