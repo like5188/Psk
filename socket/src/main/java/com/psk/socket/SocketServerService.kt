@@ -7,9 +7,9 @@ import android.os.IBinder
 import android.util.Log
 
 /**
- * Socket连接的服务
+ * Socket server 服务
  */
-class SocketService : Service() {
+class SocketServerService : Service() {
     override fun onCreate() {
         super.onCreate()
         Log.i("SocketService", "onCreate")
@@ -53,7 +53,7 @@ class SocketService : Service() {
          */
         fun start(context: Context) {
             Log.i("SocketService", "start")
-            val intent = Intent(context, SocketService::class.java)
+            val intent = Intent(context, SocketServerService::class.java)
             Log.i("SocketService", "startService=" + context.startService(intent))
         }
 
@@ -62,7 +62,7 @@ class SocketService : Service() {
          */
         fun stop(context: Context) {
             Log.i("SocketService", "stop")
-            val intent = Intent(context, SocketService::class.java)
+            val intent = Intent(context, SocketServerService::class.java)
             context.stopService(intent)
         }
     }
