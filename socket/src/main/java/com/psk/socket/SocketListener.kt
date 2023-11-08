@@ -1,18 +1,25 @@
 package com.psk.socket
 
+import java.nio.ByteBuffer
+
 interface SocketListener {
     /**
-     * 连接成功回调
+     * 连接成功
      */
-    fun onConnected()
+    fun onOpen(address: String?)
 
     /**
-     * 连接失败回调
+     * 连接关闭
      */
-    fun onDisConnected()
+    fun onClose(code: Int, reason: String)
+
+    /**
+     * 服务器发生错误
+     */
+    fun onError(e: Exception)
 
     /**
      * 接收到消息
      */
-    fun onReceived(msg: Msg?)
+    fun onMessage(message: ByteBuffer)
 }
