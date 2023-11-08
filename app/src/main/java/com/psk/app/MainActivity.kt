@@ -30,7 +30,6 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 override fun onMessage(message: ByteBuffer) {
-                    println("onReceived $message")
                     println("包头 ${message.getShort()}")
                     println("设备编号 ${message.getInt()}")
                     println("采样率 ${message.getShort()}")
@@ -40,7 +39,7 @@ class MainActivity : AppCompatActivity() {
                     println("增益(float) ${message.getFloat()}")
                     val ecgData = ByteArray(240)
                     message.get(ecgData, 0, 240)
-                    println(ecgData.contentToString())
+                    println("12导心电数据 ${ecgData.contentToString()}")
                     println("心率 ${message.getShort()}")
                     println("收缩压 ${message.getShort()}")
                     println("舒张压 ${message.getShort()}")
