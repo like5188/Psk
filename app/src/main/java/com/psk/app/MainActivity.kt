@@ -4,10 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.psk.app.databinding.ActivityMainBinding
-import com.psk.socket.SocketServer
-import org.java_websocket.server.WebSocketServer
-import java.net.InetSocketAddress
-import kotlin.concurrent.thread
+import com.psk.socket.SocketServerService
 
 class MainActivity : AppCompatActivity() {
     private val mBinding: ActivityMainBinding by lazy {
@@ -17,13 +14,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mBinding.btnStart.setOnClickListener {
-            thread {
-                val port = 7777
-                val server: WebSocketServer = SocketServer(InetSocketAddress(port))
-                server.run()
-            }
+            SocketServerService.start(this, 7777)
         }
         mBinding.btnStop.setOnClickListener {
+            SocketServerService.stop(this)
         }
     }
 }
