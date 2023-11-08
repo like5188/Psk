@@ -25,7 +25,6 @@ class SocketServerService : Service() {
             val port = intent.getIntExtra(KEY_SOCKET_PORT, -1)
             server = SocketServer(InetSocketAddress(port))
         }
-        // 连接socket服务器
         thread {
             try {
                 server.run()
