@@ -1,17 +1,15 @@
 package com.psk.socket
 
-import android.app.Service
+import android.app.IntentService
 import android.content.Context
 import android.content.Intent
-import android.os.IBinder
 import android.util.Log
 import java.net.InetSocketAddress
-import kotlin.concurrent.thread
 
 /**
  * Socket server 服务
  */
-class SocketServerService : Service() {
+class SocketServerService : IntentService("SocketServerService") {
     private lateinit var server: SocketServer
 
     override fun onCreate() {
@@ -19,31 +17,25 @@ class SocketServerService : Service() {
         Log.i("SocketServerService", "onCreate")
     }
 
-    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        Log.i("SocketServerService", "onStartCommand")
+    override fun onHandleIntent(intent: Intent?) {
+        intent ?: return
         if (!::server.isInitialized) {
             val port = intent.getIntExtra(KEY_SOCKET_PORT, -1)
-            server = SocketServer(InetSocketAddress(port))
-        }
-        thread {
-            try {
-                server.run()
-            } catch (e: Exception) {
-                Log.e("SocketServerService", e.message ?: "")
+            if (port != -1) {
+                server = SocketServer(InetSocketAddress(port))
+                try {
+                    server.run()// 阻塞
+                } catch (e: Exception) {
+                    Log.e("SocketServerService", e.message ?: "")
+                }
             }
         }
-        return START_REDELIVER_INTENT
     }
 
     override fun onDestroy() {
         super.onDestroy()
         Log.i("SocketServerService", "onDestroy")
         server.stop()
-    }
-
-    override fun onBind(intent: Intent): IBinder? {
-        Log.i("SocketServerService", "onBind")
-        return null
     }
 
     companion object {
