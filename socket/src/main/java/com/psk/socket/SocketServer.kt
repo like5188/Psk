@@ -6,7 +6,7 @@ import org.java_websocket.server.WebSocketServer
 import java.net.InetSocketAddress
 import java.nio.ByteBuffer
 
-class SocketServer(address: InetSocketAddress) : WebSocketServer(address) {
+class SocketServer(address: InetSocketAddress, private val listener: SocketListener? = null) : WebSocketServer(address) {
     override fun onOpen(conn: WebSocket, handshake: ClientHandshake) {
         conn.send("Welcome to the server!") //This method sends a message to the new client
         broadcast("new connection: " + handshake.resourceDescriptor) //This method sends a message to all clients connected
