@@ -126,10 +126,10 @@ class TrainViewModel : ViewModel(), KoinComponent {
 
     fun measureTargetHeart(activity: FragmentActivity) {
         val healthInfo = _uiState.value.healthInfo
-        if (healthInfo == null || healthInfo.age <= 0) {
+        if (healthInfo == null || healthInfo.age < 10 || healthInfo.age > 150) {
             _uiState.update {
                 it.copy(
-                    toastEvent = Event(ToastEvent(text = "请先填写年龄"))
+                    toastEvent = Event(ToastEvent(text = "请先填写正确的年龄。范围：10~150"))
                 )
             }
             return
@@ -212,10 +212,10 @@ class TrainViewModel : ViewModel(), KoinComponent {
         }
         val healthInfo = _uiState.value.healthInfo
         val weight = healthInfo?.weight
-        if (weight == null || weight <= 0) {
+        if (weight == null || weight < 20 || weight > 500) {
             _uiState.update {
                 it.copy(
-                    toastEvent = Event(ToastEvent(text = "请先填写体重"))
+                    toastEvent = Event(ToastEvent(text = "请先填写正确的体重。范围：20~500"))
                 )
             }
             return
