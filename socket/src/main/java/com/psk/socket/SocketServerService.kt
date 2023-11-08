@@ -21,11 +21,17 @@ class SocketServerService : Service() {
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         Log.i("SocketServerService", "onStartCommand")
-        // 连接socket服务器
-        thread {
+        if (!::server.isInitialized) {
             val port = intent.getIntExtra(KEY_SOCKET_PORT, -1)
             server = SocketServer(InetSocketAddress(port))
-            server.run()
+        }
+        // 连接socket服务器
+        thread {
+            try {
+                server.run()
+            } catch (e: Exception) {
+                Log.e("SocketServerService", e.message ?: "")
+            }
         }
         return START_REDELIVER_INTENT
     }
