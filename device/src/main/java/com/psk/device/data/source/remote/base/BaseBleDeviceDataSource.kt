@@ -7,7 +7,7 @@ import com.like.ble.central.connect.executor.ConnectExecutorFactory
 import com.like.ble.exception.BleException
 import com.like.ble.exception.BleExceptionBusy
 import com.like.ble.exception.BleExceptionCancelTimeout
-import com.like.ble.util.hexStringToByteArray
+import com.like.ble.util.toByteArray
 import com.like.common.util.Logger
 import com.psk.device.data.model.Protocol
 import kotlinx.coroutines.CoroutineScope
@@ -77,7 +77,7 @@ abstract class BaseBleDeviceDataSource {
         }
 
     suspend fun write(cmd: String): Boolean {
-        return write(cmd.hexStringToByteArray())
+        return write(cmd.toByteArray())
     }
 
     suspend fun write(cmd: ByteArray): Boolean = try {
@@ -101,7 +101,7 @@ abstract class BaseBleDeviceDataSource {
     }
 
     suspend fun writeAndWaitResult(cmd: String?): ByteArray? {
-        return writeAndWaitResult(cmd.hexStringToByteArray())
+        return writeAndWaitResult(cmd.toByteArray())
     }
 
     /**
