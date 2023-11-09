@@ -76,6 +76,9 @@ class MeasureBloodPressureDialogFragment private constructor() : BaseDialogFragm
             mBinding.tvSbp.text = bloodPressure?.sbp?.toString() ?: ""
             mBinding.tvDbp.text = bloodPressure?.dbp?.toString() ?: ""
             mCountDownTimerProgressDialog.dismiss()
+            if (bloodPressure == null) {
+                context?.showToast("测量失败，请重新测量！")
+            }
         }
     }
 
