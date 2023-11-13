@@ -32,7 +32,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end|center_vertical"
-                    android:text="扫描" />
+                    android:text="重新扫描" />
             </FrameLayout>
 
             <com.google.android.material.divider.MaterialDivider

@@ -75,6 +75,7 @@ class ScanDeviceDialogFragment private constructor() : BaseDialogFragment() {
             return
         }
         val deviceType = arguments?.getSerializable(KEY_DEVICE_TYPE) as? DeviceType ?: return
+        mAdapter.submitList(emptyList())
         job = lifecycleScope.launch {
             ScanManager.startScan(deviceType)
                 .onStart {
@@ -101,6 +102,8 @@ class ScanDeviceDialogFragment private constructor() : BaseDialogFragment() {
     override fun onDestroy() {
         super.onDestroy()
         ScanManager.close()
+        job?.cancel()
+        job = null
     }
 
     override fun initLayoutParams(layoutParams: WindowManager.LayoutParams) {
