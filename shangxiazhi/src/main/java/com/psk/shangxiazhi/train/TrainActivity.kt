@@ -152,10 +152,8 @@ class TrainActivity : AppCompatActivity() {
                         }
                     }.create()
                 dialog.setOnKeyListener { dialog, keyCode, event ->
+                    // 返回键点击事件处理
                     if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
-                        // 返回键点击事件处理
-                        dialog.dismiss(); // 关闭对话框
-                        // 执行其他操作
                         mViewModel.report()
                         finish()
                     }
