@@ -156,7 +156,8 @@
                             android:layout_marginStart="15dp"
                             android:gravity="end"
                             android:hint="请填写体重"
-                            android:inputType="number" />
+                            android:inputType="number"
+                            android:maxLength="3" />
 
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -193,7 +194,8 @@
                             android:layout_marginStart="15dp"
                             android:gravity="end"
                             android:hint="请填写年龄"
-                            android:inputType="number" />
+                            android:inputType="number"
+                            android:maxLength="3" />
 
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
