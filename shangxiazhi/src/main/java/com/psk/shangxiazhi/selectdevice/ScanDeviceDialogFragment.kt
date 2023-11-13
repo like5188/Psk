@@ -12,12 +12,14 @@ import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.like.common.base.BaseDialogFragment
+import com.like.common.util.showToast
 import com.like.recyclerview.layoutmanager.WrapLinearLayoutManager
 import com.psk.device.ScanManager
 import com.psk.device.data.model.DeviceType
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.data.model.BleScanInfo
 import com.psk.shangxiazhi.databinding.DialogFragmentScanDeviceBinding
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
@@ -40,6 +42,7 @@ class ScanDeviceDialogFragment private constructor() : BaseDialogFragment() {
     private lateinit var mBinding: DialogFragmentScanDeviceBinding
     private val mAdapter: ScanDeviceAdapter by lazy { ScanDeviceAdapter() }
     var onSelected: ((BleScanInfo) -> Unit)? = null
+    private var job: Job? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.dialog_fragment_scan_device, container, true)
@@ -48,6 +51,9 @@ class ScanDeviceDialogFragment private constructor() : BaseDialogFragment() {
         mAdapter.addOnItemClickListener {
             onSelected?.invoke(it.binding.bleScanInfo!!)
             dismiss()
+        }
+        mBinding.btnScan.setOnClickListener {
+            startScan()
         }
         return mBinding.root
     }
@@ -59,19 +65,23 @@ class ScanDeviceDialogFragment private constructor() : BaseDialogFragment() {
 
     override fun onResume() {
         super.onResume()
-        (arguments?.getSerializable(KEY_DEVICE_TYPE) as? DeviceType)?.apply {
-            startScan(this)
-        }
+        startScan()
     }
 
     @SuppressLint("MissingPermission")
-    private fun startScan(deviceType: DeviceType) {
-        lifecycleScope.launch {
+    private fun startScan() {
+        if (job != null) {
+            context?.showToast("正在扫描，请稍后")
+            return
+        }
+        val deviceType = arguments?.getSerializable(KEY_DEVICE_TYPE) as? DeviceType ?: return
+        job = lifecycleScope.launch {
             ScanManager.startScan(deviceType)
                 .onStart {
                     mBinding.tvTitle.text = "(${deviceType.des}) 扫描中……"
                 }.onCompletion {
                     mBinding.tvTitle.text = "(${deviceType.des}) 扫描完成"
+                    job = null
                 }.collect {
                     val name = it.device.name
                     val address = it.device.address
