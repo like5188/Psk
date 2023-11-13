@@ -1,6 +1,7 @@
 package com.psk.shangxiazhi.train
 
 import android.os.Bundle
+import android.view.KeyEvent
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
@@ -139,15 +140,28 @@ class TrainActivity : AppCompatActivity() {
                     return@collectDistinctProperty
                 }
                 // 如果有血压仪
-                AlertDialog.Builder(this@TrainActivity).setMessage("是否进行运动后血压测试?").setNegativeButton("取消") { _, _ ->
-                    mViewModel.report()
-                    finish()
-                }.setPositiveButton("去测量") { _, _ ->
-                    mViewModel.measureBloodPressureAfter(this@TrainActivity) {
+                val dialog = AlertDialog.Builder(this@TrainActivity).setMessage("是否进行运动后血压测试?")
+                    .setNegativeButton("取消") { _, _ ->
                         mViewModel.report()
                         finish()
                     }
-                }.show()
+                    .setPositiveButton("去测量") { _, _ ->
+                        mViewModel.measureBloodPressureAfter(this@TrainActivity) {
+                            mViewModel.report()
+                            finish()
+                        }
+                    }.create()
+                dialog.setOnKeyListener { dialog, keyCode, event ->
+                    if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
+                        // 返回键点击事件处理
+                        dialog.dismiss(); // 关闭对话框
+                        // 执行其他操作
+                        mViewModel.report()
+                        finish()
+                    }
+                    false
+                }
+                dialog.show()
             }
         }
     }

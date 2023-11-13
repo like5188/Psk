@@ -16,10 +16,10 @@ class LoginDataSource {
 
     fun login(serialNumber: String?, code: String?): Boolean {
         if (serialNumber.isNullOrEmpty()) {
-            throw IllegalArgumentException("serialNumber is null or empty")
+            throw IllegalArgumentException("序列号不能为空")
         }
         if (code.isNullOrEmpty()) {
-            throw IllegalArgumentException("code is null or empty")
+            throw IllegalArgumentException("激活码不能为空")
         }
         return DeviceUtils.calPassword(serialNumber) == code
     }
