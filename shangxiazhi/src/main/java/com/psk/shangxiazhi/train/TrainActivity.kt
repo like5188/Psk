@@ -127,6 +127,8 @@ class TrainActivity : AppCompatActivity() {
                     "${it.minTargetHeartRate}~${it.maxTargetHeartRate}"
                 }
                 mBinding.tvBloodPressureBefore.text = it.bloodPressureBefore?.toString() ?: ""
+                mBinding.etAge.setText(if (it.age == 0) "" else it.age.toString())
+                mBinding.etWeight.setText(if (it.weight == 0) "" else it.weight.toString())
             }
             collectDistinctProperty(TrainUiState::isTrainCompleted) {
                 if (!it) {
@@ -140,12 +142,11 @@ class TrainActivity : AppCompatActivity() {
                     return@collectDistinctProperty
                 }
                 // 如果有血压仪
-                val dialog = AlertDialog.Builder(this@TrainActivity).setMessage("是否进行运动后血压测试?")
-                    .setNegativeButton("取消") { _, _ ->
+                val dialog =
+                    AlertDialog.Builder(this@TrainActivity).setMessage("是否进行运动后血压测试?").setNegativeButton("取消") { _, _ ->
                         mViewModel.report()
                         finish()
-                    }
-                    .setPositiveButton("去测量") { _, _ ->
+                    }.setPositiveButton("去测量") { _, _ ->
                         mViewModel.measureBloodPressureAfter(this@TrainActivity) {
                             mViewModel.report()
                             finish()
