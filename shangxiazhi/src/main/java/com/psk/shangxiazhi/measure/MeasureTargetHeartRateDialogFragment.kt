@@ -57,6 +57,9 @@ class MeasureTargetHeartRateDialogFragment private constructor() : BaseDialogFra
     private val mCountDownTimerProgressDialog by lazy {
         CountDownTimerProgressDialog(requireContext(), "测量靶心率需要1分钟，请稍后！", onCanceled = {
             cancelJob()
+            mBinding.tvHeartRate.text = ""
+            mBinding.tvTargetHeartRate.text = ""
+            heartRates.clear()
         }) {
             cancelJob()
             val targetHeartRate = calc()
@@ -71,6 +74,8 @@ class MeasureTargetHeartRateDialogFragment private constructor() : BaseDialogFra
         }
         mCountDownTimerProgressDialog.show()
         job = lifecycleScope.launch(Dispatchers.Main) {
+            mBinding.tvHeartRate.text = ""
+            mBinding.tvTargetHeartRate.text = ""
             heartRates.clear()
             repository.fetch().filterNotNull().map {
                 it.value

@@ -25,6 +25,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * 测量血压
@@ -58,6 +59,11 @@ class MeasureBloodPressureDialogFragment private constructor() : BaseDialogFragm
                 job = null
                 delay(100)
                 repository.stopMeasure()
+                bloodPressure = null
+                withContext(Dispatchers.Main) {
+                    mBinding.tvSbp.text = ""
+                    mBinding.tvDbp.text = ""
+                }
             }
         })
     }
@@ -69,6 +75,9 @@ class MeasureBloodPressureDialogFragment private constructor() : BaseDialogFragm
         }
         job = lifecycleScope.launch(Dispatchers.Main) {
             mCountDownTimerProgressDialog.show()
+            bloodPressure = null
+            mBinding.tvSbp.text = ""
+            mBinding.tvDbp.text = ""
             delay(100)// 这里延迟一下，避免刚连接成功就测量返回null值。
             bloodPressure = repository.measure()
             cancelJob()
