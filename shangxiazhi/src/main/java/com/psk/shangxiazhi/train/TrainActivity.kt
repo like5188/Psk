@@ -127,8 +127,13 @@ class TrainActivity : AppCompatActivity() {
                     "${it.minTargetHeartRate}~${it.maxTargetHeartRate}"
                 }
                 mBinding.tvBloodPressureBefore.text = it.bloodPressureBefore?.toString() ?: ""
-                mBinding.etAge.setText(if (it.age == 0) "" else it.age.toString())
-                mBinding.etWeight.setText(if (it.weight == 0) "" else it.weight.toString())
+                // 重新选择设备后，需要清空界面上的年龄和体重。
+                if (it.age == 0) {
+                    mBinding.etAge.setText("")
+                }
+                if (it.weight == 0) {
+                    mBinding.etWeight.setText("")
+                }
             }
             collectDistinctProperty(TrainUiState::isTrainCompleted) {
                 if (!it) {
