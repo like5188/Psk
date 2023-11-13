@@ -7,9 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.core.os.bundleOf
+import androidx.core.widget.doAfterTextChanged
 import androidx.databinding.DataBindingUtil
 import com.like.common.base.BaseDialogFragment
+import com.like.common.util.gone
 import com.like.common.util.showToast
+import com.like.common.util.visible
 import com.psk.device.data.model.DeviceType
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.data.model.BleScanInfo
@@ -21,11 +24,11 @@ import com.psk.shangxiazhi.databinding.ViewSelectDeviceBinding
  */
 class SelectDeviceDialogFragment private constructor() : BaseDialogFragment() {
     companion object {
-        private const val KEY_DEVICE_TYPES = "key_device_types"
-        fun newInstance(deviceTypes: Array<DeviceType>): SelectDeviceDialogFragment {
+        private const val KEY_SELECTED_DEVICE_MAP = "key_selected_device_map"
+        fun newInstance(selectedDeviceMap: Map<DeviceType, BleScanInfo>?): SelectDeviceDialogFragment {
             return SelectDeviceDialogFragment().apply {
                 arguments = bundleOf(
-                    KEY_DEVICE_TYPES to deviceTypes
+                    KEY_SELECTED_DEVICE_MAP to selectedDeviceMap
                 )
             }
         }
@@ -33,30 +36,48 @@ class SelectDeviceDialogFragment private constructor() : BaseDialogFragment() {
 
     private lateinit var mBinding: DialogFragmentSelectDeviceBinding
     var onSelected: ((deviceMap: Map<DeviceType, BleScanInfo>) -> Unit)? = null
+    private val deviceTypes = arrayOf(
+        DeviceType.ShangXiaZhi,
+        DeviceType.BloodOxygen,
+        DeviceType.BloodPressure,
+        DeviceType.HeartRate,
+    )
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.dialog_fragment_select_device, container, true)
-        val selectDeviceMap = mutableMapOf<DeviceType, BleScanInfo>()
-        val deviceTypes = arguments?.getSerializable(KEY_DEVICE_TYPES) as? Array<DeviceType>
-        deviceTypes?.forEach { deviceType ->
+        val selectedDeviceMap =
+            (arguments?.getSerializable(KEY_SELECTED_DEVICE_MAP) as? Map<DeviceType, BleScanInfo>)?.toMutableMap() ?: mutableMapOf()
+        deviceTypes.forEach { deviceType ->
             val binding = DataBindingUtil.inflate<ViewSelectDeviceBinding>(
                 inflater, R.layout.view_select_device, mBinding.llContainer, true
             )
+            binding.ivClose.setOnClickListener {
+                binding.tvName.text = ""
+                selectedDeviceMap.remove(deviceType)
+            }
+            binding.tvName.doAfterTextChanged {
+                if (!it.isNullOrEmpty()) {
+                    binding.ivClose.visible()
+                } else {
+                    binding.ivClose.gone()
+                }
+            }
             binding.tvDeviceTypeDes.text = deviceType.des
+            binding.tvName.text = selectedDeviceMap[deviceType]?.name ?: ""
             binding.cardView.setOnClickListener {
                 ScanDeviceDialogFragment.newInstance(deviceType).apply {
                     onSelected = { bleSanInfo ->
-                        selectDeviceMap[deviceType] = bleSanInfo
+                        selectedDeviceMap[deviceType] = bleSanInfo
                         binding.tvName.text = bleSanInfo.name
                     }
                 }.show(requireActivity())
             }
         }
         mBinding.btnConfirm.setOnClickListener {
-            if (!selectDeviceMap.containsKey(DeviceType.ShangXiaZhi)) {
+            if (!selectedDeviceMap.containsKey(DeviceType.ShangXiaZhi)) {
                 context?.showToast("请先选择上下肢设备")
             } else {
-                onSelected?.invoke(selectDeviceMap)
+                onSelected?.invoke(selectedDeviceMap)
                 dismiss()
             }
         }

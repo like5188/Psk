@@ -28,12 +28,23 @@
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/tvName"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
+                android:layout_weight="1"
                 android:gravity="end"
                 android:hint="去选择 >"
                 android:textAppearance="@style/AppBody2" />
+
+            <ImageView
+                android:id="@+id/ivClose"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="10dp"
+                android:background="@drawable/selector_ic_bg"
+                android:src="@drawable/ic_close"
+                android:visibility="gone" />
+
         </LinearLayout>
 
     </com.google.android.material.card.MaterialCardView>

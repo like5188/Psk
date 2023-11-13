@@ -72,14 +72,7 @@ class TrainViewModel : ViewModel(), KoinComponent {
     }
 
     fun selectDevices(activity: FragmentActivity) {
-        SelectDeviceDialogFragment.newInstance(
-            arrayOf(
-                DeviceType.ShangXiaZhi,
-                DeviceType.BloodOxygen,
-                DeviceType.BloodPressure,
-                DeviceType.HeartRate,
-            )
-        ).apply {
+        SelectDeviceDialogFragment.newInstance(_uiState.value.deviceMap).apply {
             onSelected = { deviceMap ->
                 // 选择设备后，清空当前已经存在的数据。重新开始一个新的流程。
                 _uiState.update {
