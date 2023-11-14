@@ -66,6 +66,8 @@ class RKF_ShangXiaZhiDataSource : BaseShangXiaZhiDataSource() {
                     medicalOrderId = medicalOrderId,
                     time = secondsTimer.getSeconds().toInt()
                 )
+                // 如果是主动模式，那么会一直收到上下肢发来的数据，只是速度为0；
+                // 如果是被动模式，那么不会一直收到数据，只有上下肢开始运动时才有数据，暂停时不会有数据，即不会出现速度为0的数据；
                 secondsTimer.startOrResume()
                 onStart?.invoke()
                 trySend(shangXiaZhi)
