@@ -264,6 +264,7 @@ class TrainViewModel : ViewModel(), KoinComponent {
             }
             return
         }
+        // mets=卡路里/运动时间(分钟)/体重(kg)/0.0167
         val cal = shangXiaZhiReport.activeCal + shangXiaZhiReport.passiveCal
         val duration = (shangXiaZhiReport.activeDuration + shangXiaZhiReport.passiveDuration) / 60f// 分钟
         val met = if (duration == 0f || healthInfo.weight == 0) {
