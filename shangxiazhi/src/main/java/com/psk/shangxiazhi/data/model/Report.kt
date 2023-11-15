@@ -23,14 +23,13 @@ interface IReport : Serializable
  * 上下肢数据报告
  */
 class ShangXiaZhiReport : IReport {
-    var activeDuration: Int = 0// 主动时长
-    var passiveDuration: Int = 0// 被动时长
+    var activeDuration: Int = 0// 主动时长（不包含没有运行的时间）
+    var passiveDuration: Int = 0// 被动时长（不包含没有运行的时间）
 
     var activeMil: Float = 0f// 主动里程
     var passiveMil: Float = 0f// 被动里程
 
     var activeCal: Float = 0f// 主动卡路里
-    var passiveCal: Float = 0f// 被动卡路里
 
     var spasm: Int = 0// 痉挛次数
     val spasmLevelList = mutableListOf<Int>()// 所有痉挛等级数据集合
@@ -61,128 +60,122 @@ class ShangXiaZhiReport : IReport {
         lateinit var report: ShangXiaZhiReport
         private val decimalFormat = DecimalFormat("######0.00")
         private val decimalFormat1 = DecimalFormat("00")
+
         fun createForm(flow: Flow<ShangXiaZhi>): Flow<GameData> {
             report = ShangXiaZhiReport()
-            var preMode = -1// 前一次的模式
-            var preSeconds = 0// 前一次的计时
             var isFirstSpasm = false// 是否第一次痉挛
             var mFirstSpasm = 0// 第一次痉挛次数（因为上下肢关机之前的痉挛次数是累计的）
+            var preTime = 0
             // 这里不能用 distinctUntilChanged、conflate 等操作符，因为需要根据所有数据来计算里程等。必须得到每次数据。
             return flow.buffer(Int.MAX_VALUE).map { shangXiaZhi ->
                 val gameData = GameData().apply {
-                    val seconds = shangXiaZhi.time
-                    val minute = seconds / 60
-                    val second = seconds % 60
-                    time = "${decimalFormat1.format(minute)}:${decimalFormat1.format(second)}"
+                    time = formatTime(preTime)
                     speed = shangXiaZhi.speed
                     speedLevel = shangXiaZhi.speedLevel
                     spasmLevel = shangXiaZhi.spasmLevel
                     resistance = shangXiaZhi.resistance
                 }
-                // 速度
-                report.speedList.add(gameData.speed)
-                report.speedTotal += gameData.speed
-                report.speedArv = report.speedTotal / report.speedList.size
-                if (gameData.speed > 0) {
+                if (shangXiaZhi.speed > 0) {
+                    // 速度
+                    report.speedList.add(shangXiaZhi.speed)
+                    report.speedTotal += shangXiaZhi.speed
+                    report.speedArv = report.speedTotal / report.speedList.size
                     report.speedMin = if (report.speedMin <= 0) {
-                        gameData.speed
+                        shangXiaZhi.speed
                     } else {
-                        min(report.speedMin, gameData.speed)
+                        min(report.speedMin, shangXiaZhi.speed)
                     }
-                }
-                report.speedMax = max(report.speedMax, gameData.speed)
-                //模式
-                if (shangXiaZhi.model.toInt() == 0x01) {// 被动
-                    gameData.model = 1// 转换成游戏需要的 0：主动；1：被动
-                    //被动里程
-                    report.passiveMil += gameData.speed * 0.5f * 1000 / 3600
-                    //卡路里
-                    report.passiveCal += gameData.speed * 0.2f / 300
-                } else {// 主动
-                    gameData.model = 0
-                    //主动里程
-                    report.activeMil += gameData.speed * 0.5f * 1000 / 3600
-                    //卡路里
-                    report.activeCal += gameData.speed * 0.2f * (gameData.resistance * 1.00f / 3.0f) / 60
-                }
-                gameData.mileage = decimalFormat.format(report.activeMil + report.passiveMil)
-                gameData.cal = decimalFormat.format(report.activeCal + report.passiveCal)
-                // 时间
-                when (gameData.model) {
-                    0 -> {// 当前是主动
-                        if (preMode == 1) {// 模式刚由被动变成主动
-                            report.passiveDuration += shangXiaZhi.time - preSeconds
-                        } else {
-                            report.activeDuration += shangXiaZhi.time - preSeconds
-                        }
-                    }
+                    report.speedMax = max(report.speedMax, shangXiaZhi.speed)
 
-                    1 -> {// 当前是被动
-                        if (preMode == 0) {// 模式刚由主动变成被动
-                            report.activeDuration += shangXiaZhi.time - preSeconds
-                        } else {
-                            report.passiveDuration += shangXiaZhi.time - preSeconds
+                    if (shangXiaZhi.model.toInt() == 0x01) {// 被动模式
+                        gameData.model = 1// 转换成游戏需要的 0：主动；1：被动
+                        report.passiveDuration++// 这里因为上下肢发送数据频率是1秒1条，所以直接以数据量替代时间
+                        //被动里程
+                        report.passiveMil += shangXiaZhi.speed * 0.5f * 1000 / 3600
+                        // 功率，这里添加功率是为了在折线图中显示主动被动的区域
+                        report.powerList.add(0)
+                        //痉挛。注意：这里不直接使用 ShangXiaZhi 中的 spasm，是因为只要上下肢康复机不关机，那么它返回的痉挛次数值是一直累计的。
+                        if (!isFirstSpasm) {
+                            isFirstSpasm = true
+                            mFirstSpasm = shangXiaZhi.spasm
                         }
+                        if (shangXiaZhi.spasm - mFirstSpasm > report.spasm) {
+                            report.spasm = shangXiaZhi.spasm - mFirstSpasm
+                            gameData.spasmFlag = 1
+                        } else {
+                            gameData.spasmFlag = 0
+                        }
+                        report.spasmLevelList.add(shangXiaZhi.spasmLevel)
+                        report.spasmLevelTotal += shangXiaZhi.spasmLevel
+                        report.spasmLevelArv = report.spasmLevelTotal / report.spasmLevelList.size
+                        if (shangXiaZhi.spasmLevel > 0) {
+                            report.spasmLevelMin = if (report.spasmLevelMin <= 0) {
+                                shangXiaZhi.spasmLevel
+                            } else {
+                                min(report.spasmLevelMin, shangXiaZhi.spasmLevel)
+                            }
+                        }
+                        report.spasmLevelMax = max(report.spasmLevelMax, shangXiaZhi.spasmLevel)
+                        gameData.spasm = report.spasm
+                    } else {// 主动模式
+                        gameData.model = 0
+                        report.activeDuration++
+                        //主动里程
+                        report.activeMil += shangXiaZhi.speed * 0.5f * 1000 / 3600
+                        //卡路里
+                        report.activeCal += shangXiaZhi.speed * 0.2f * (shangXiaZhi.resistance * 1.00f / 3.0f) / 60
+                        gameData.cal = decimalFormat.format(report.activeCal)
+                        // 阻力
+                        report.resistanceList.add(shangXiaZhi.resistance)
+                        report.resistanceTotal += shangXiaZhi.resistance
+                        report.resistanceArv = report.resistanceTotal / report.resistanceList.size
+                        if (shangXiaZhi.resistance > 0) {
+                            report.resistanceMin = if (report.resistanceMin <= 0) {
+                                shangXiaZhi.resistance
+                            } else {
+                                min(report.resistanceMin, shangXiaZhi.resistance)
+                            }
+                        }
+                        report.resistanceMax = max(report.resistanceMax, shangXiaZhi.resistance)
+                        // 功率
+                        val power = ((shangXiaZhi.resistance + 3) * shangXiaZhi.speed * 0.134).toInt()
+                        report.powerList.add(power)
+                        report.powerTotal += power
+                        report.powerArv = report.powerTotal / report.powerList.size
+                        if (power > 0) {
+                            report.powerMin = if (report.powerMin <= 0) {
+                                power
+                            } else {
+                                min(report.powerMin, power)
+                            }
+                        }
+                        report.powerMax = max(report.powerMax, power)
+                        //偏差值：范围0~30 左偏：0~14     十六进制：0x00~0x0e 中：15 	     十六进制：0x0f 右偏：16~30   十六进制：0x10~0x1e
+                        gameData.offset = shangXiaZhi.offset - 15// 转换成游戏需要的 负数：左；0：不偏移；正数：右；
+                        // 转换成游戏需要的左边百分比 100~0
+                        gameData.offsetValue = 100 - shangXiaZhi.offset * 100 / 30
                     }
+                    gameData.mileage = decimalFormat.format(report.activeMil + report.passiveMil)
+                    // 时间
+                    preTime = report.activeDuration + report.passiveDuration
+                    gameData.time = formatTime(preTime)
                 }
-                preMode = gameData.model
-                preSeconds = shangXiaZhi.time
-                // 阻力
-                report.resistanceList.add(gameData.resistance)
-                report.resistanceTotal += gameData.resistance
-                report.resistanceArv = report.resistanceTotal / report.resistanceList.size
-                if (gameData.resistance > 0) {
-                    report.resistanceMin = if (report.resistanceMin <= 0) {
-                        gameData.resistance
-                    } else {
-                        min(report.resistanceMin, gameData.resistance)
-                    }
-                }
-                report.resistanceMax = max(report.resistanceMax, gameData.resistance)
-                // 功率
-                val power = ((gameData.resistance + 3) * gameData.speed * 0.134).toInt()
-                report.powerList.add(power)
-                report.powerTotal += power
-                report.powerArv = report.powerTotal / report.powerList.size
-                if (power > 0) {
-                    report.powerMin = if (report.powerMin <= 0) {
-                        power
-                    } else {
-                        min(report.powerMin, power)
-                    }
-                }
-                report.powerMax = max(report.powerMax, power)
-                //偏差值：范围0~30 左偏：0~14     十六进制：0x00~0x0e 中：15 	     十六进制：0x0f 右偏：16~30   十六进制：0x10~0x1e
-                gameData.offset = shangXiaZhi.offset - 15// 转换成游戏需要的 负数：左；0：不偏移；正数：右；
-                // 转换成游戏需要的左边百分比 100~0
-                gameData.offsetValue = 100 - shangXiaZhi.offset * 100 / 30
-                //痉挛。注意：这里不直接使用 ShangXiaZhi 中的 spasm，是因为只要上下肢康复机不关机，那么它返回的痉挛次数值是一直累计的。
-                if (!isFirstSpasm) {
-                    isFirstSpasm = true
-                    mFirstSpasm = shangXiaZhi.spasm
-                }
-                if (shangXiaZhi.spasm - mFirstSpasm > report.spasm) {
-                    report.spasm = shangXiaZhi.spasm - mFirstSpasm
-                    gameData.spasmFlag = 1
-                } else {
-                    gameData.spasmFlag = 0
-                }
-                report.spasmLevelList.add(gameData.spasmLevel)
-                report.spasmLevelTotal += gameData.spasmLevel
-                report.spasmLevelArv = report.spasmLevelTotal / report.spasmLevelList.size
-                if (gameData.spasmLevel > 0) {
-                    report.spasmLevelMin = if (report.spasmLevelMin <= 0) {
-                        gameData.spasmLevel
-                    } else {
-                        min(report.spasmLevelMin, gameData.spasmLevel)
-                    }
-                }
-                report.spasmLevelMax = max(report.spasmLevelMax, gameData.spasmLevel)
-                gameData.spasm = report.spasm
+                println(gameData)
                 gameData
             }
         }
+
+        private fun formatTime(time: Int): String {
+            if (time == 0) {
+                return "0:00:00"
+            }
+            val hour = time / 3600
+            val minute = time % 3600 / 60
+            val second = time % 60
+            return "$hour:${decimalFormat1.format(minute)}:${decimalFormat1.format(second)}"
+        }
     }
+
 }
 
 /**

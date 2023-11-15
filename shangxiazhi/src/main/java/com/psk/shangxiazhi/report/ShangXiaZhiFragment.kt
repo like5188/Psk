@@ -24,7 +24,6 @@ class ShangXiaZhiFragment : BaseLazyFragment() {
 
     private lateinit var mBinding: FragmentReportTrainBinding
     private val decimalFormat = DecimalFormat("######0.00")
-    private val decimalFormat1 = DecimalFormat("00")
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_report_train, container, false)
@@ -32,9 +31,10 @@ class ShangXiaZhiFragment : BaseLazyFragment() {
     }
 
     private fun formatDuration(duration: Int): String {
-        val min = duration / 60
-        val sec = duration % 60
-        return if (min >= 1) "${decimalFormat1.format(min)}分${decimalFormat1.format(sec)}秒" else "${decimalFormat1.format(sec)}秒"
+        val hour = duration / 3600
+        val minute = duration % 3600 / 60
+        val second = duration % 60
+        return "${hour}小时${minute}分${second}秒"
     }
 
     override fun onLazyLoadData() {
@@ -47,9 +47,7 @@ class ShangXiaZhiFragment : BaseLazyFragment() {
             mBinding.tvActiveMileage.text = decimalFormat.format(activeMil)
             mBinding.tvPassiveMileage.text = decimalFormat.format(passiveMil)
 
-            mBinding.tvCal.text = decimalFormat.format(activeCal + passiveCal)
-            mBinding.tvActiveCal.text = decimalFormat.format(activeCal)
-            mBinding.tvPassiveCal.text = decimalFormat.format(passiveCal)
+            mBinding.tvCal.text = decimalFormat.format(activeCal)
 
             mBinding.tvSpasm.text = spasm.toString()
             mBinding.tvSpasmLevelAvg.text = spasmLevelArv.toString()
