@@ -109,7 +109,7 @@ class ShangXiaZhiReport : IReport {
                         report.passiveDuration++// 这里因为上下肢发送数据频率是1秒1条，所以直接以数据量替代时间
                         //被动里程
                         report.passiveMil += shangXiaZhi.speed * 0.5f * 1000 / 3600
-                        // 功率，这里添加功率是为了在折线图中显示主动被动的区域
+                        // 功率，被动模式下没有功率，这里添加功率是为了在折线图中显示主动被动的区域
                         report.powerList.add(0)
                         //痉挛。注意：这里不直接使用 ShangXiaZhi 中的 spasm，是因为只要上下肢康复机不关机，那么它返回的痉挛次数值是一直累计的。
                         if (!isFirstSpasm) {
