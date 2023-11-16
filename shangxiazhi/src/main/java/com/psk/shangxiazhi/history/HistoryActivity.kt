@@ -32,7 +32,7 @@ class HistoryActivity : AppCompatActivity() {
         HistoryListAdapter().apply {
             addOnItemClickListener {
                 val dateAndData = currentList[it.bindingAdapterPosition]
-                val medicalOrderId = dateAndData?.data ?: return@addOnItemClickListener
+                val medicalOrderId = dateAndData?.key ?: return@addOnItemClickListener
                 lifecycleScope.launch {
                     ReportActivity.start(mViewModel.getReports(medicalOrderId), mViewModel.getHealthInfo(medicalOrderId))
                 }
@@ -58,7 +58,7 @@ class HistoryActivity : AppCompatActivity() {
             collectDistinctProperty(HistoryUiState::showTime) {
                 mBinding.tvTime.text = it ?: ""
             }
-            collectDistinctProperty(HistoryUiState::dateAndDataList) {
+            collectDistinctProperty(HistoryUiState::medicalIdAndStartTimeList) {
                 mItemAdapter.submitList(it)
             }
         }

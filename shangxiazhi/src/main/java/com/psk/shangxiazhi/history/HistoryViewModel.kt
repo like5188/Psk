@@ -32,7 +32,7 @@ class HistoryViewModel : ViewModel() {
     private val shangXiaZhiRepository = RepositoryManager.createBleDeviceRepository<ShangXiaZhiRepository>(DeviceType.ShangXiaZhi)
     private val unionRepository = RepositoryManager.unionRepository
     private val healthInfoRepository = RepositoryManager.healthInfoRepository
-    private lateinit var datas: Map<String, List<DateAndData>>// key:年月
+    private lateinit var datas: Map<String, List<Map.Entry<Long, Long>>>// key:年月
     private val sdf = SimpleDateFormat("yyyy年MM月")
 
     init {
@@ -42,18 +42,15 @@ class HistoryViewModel : ViewModel() {
                 return@launch
             }
             datas = medicalIdAndStartTimeMap.map {
-                DateAndData(
-                    time = it.value,
-                    data = it.key
-                )
+                it
             }.groupBy {
-                sdf.format(it.time)
+                sdf.format(it.value)
             }
             _uiState.update {
                 val key = datas.keys.lastOrNull()
                 val value = datas[key]
                 it.copy(
-                    showTime = key, dateAndDataList = value
+                    showTime = key, medicalIdAndStartTimeList = value
                 )
             }
         }
@@ -80,7 +77,7 @@ class HistoryViewModel : ViewModel() {
                 val key = dates[index - 1]
                 val value = datas[key]
                 it.copy(
-                    showTime = key, dateAndDataList = value
+                    showTime = key, medicalIdAndStartTimeList = value
                 )
             }
         }
@@ -107,7 +104,7 @@ class HistoryViewModel : ViewModel() {
                 val key = dates[index + 1]
                 val value = datas[key]
                 it.copy(
-                    showTime = key, dateAndDataList = value
+                    showTime = key, medicalIdAndStartTimeList = value
                 )
             }
         }
