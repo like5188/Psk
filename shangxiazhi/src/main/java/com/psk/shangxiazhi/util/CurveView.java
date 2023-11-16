@@ -104,6 +104,11 @@ public class CurveView extends RelativeLayout {
         xAxis.setAxisMinimum(0);
         xAxis.setAxisMaximum(list.size());
         xAxis.setValueFormatter(null);
+        if (list.size() <= 60) {
+            xAxis.setLabelCount(list.size() + 1, true);
+        } else {
+            xAxis.setLabelCount(list.size() / 60 + 1, true);
+        }
 
         xAxis.setAxisLineWidth(2f);
         xAxis.setDrawGridLines(false);//是否展示网格线
