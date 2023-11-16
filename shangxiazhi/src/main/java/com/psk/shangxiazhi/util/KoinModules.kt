@@ -5,6 +5,7 @@ import com.psk.shangxiazhi.data.source.ShangXiaZhiBusinessRepository
 import com.psk.shangxiazhi.history.HistoryViewModel
 import com.psk.shangxiazhi.login.LoginViewModel
 import com.psk.shangxiazhi.main.MainViewModel
+import com.psk.shangxiazhi.report.ReportViewModel
 import com.psk.shangxiazhi.train.TrainViewModel
 import com.twsz.twsystempre.GameController
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -37,6 +38,9 @@ val shangXiaZhiModule = module {
     }
     viewModel {
         TrainViewModel()
+    }
+    viewModel {
+        ReportViewModel()
     }
 
     //GameController

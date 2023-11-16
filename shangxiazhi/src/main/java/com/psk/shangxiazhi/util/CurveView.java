@@ -72,7 +72,9 @@ public class CurveView extends RelativeLayout {
         if (list == null || list.isEmpty()) {
             return;
         }
-
+        int size = list.size();
+        // 添加一个坐标原点数据
+        list.add(0, 0);
         //初始化图表
         Description description = new Description();
         description.setText("时间/s");//设置描述文字内容
@@ -102,12 +104,12 @@ public class CurveView extends RelativeLayout {
         xAxis.setTextSize(8);
         xAxis.setTextColor(MaterialColors.getColor(this, R.attr.colorSecondary));
         xAxis.setAxisMinimum(0);
-        xAxis.setAxisMaximum(list.size());
+        xAxis.setAxisMaximum(size);
         xAxis.setValueFormatter(null);
-        if (list.size() <= 60) {
-            xAxis.setLabelCount(list.size() + 1, true);
+        if (size <= 60) {
+            xAxis.setLabelCount(size + 1, true);
         } else {
-            xAxis.setLabelCount(list.size() / 60 + 1, true);
+            xAxis.setLabelCount(size / 60 + 1, true);
         }
 
         xAxis.setAxisLineWidth(2f);
@@ -135,7 +137,7 @@ public class CurveView extends RelativeLayout {
         rightAxis.setEnabled(false);
 
         ArrayList<Entry> entries = new ArrayList<>();
-        for (int i = 0; i < list.size(); i++) {
+        for (int i = 0; i < size + 1; i++) {// 这里必须包含前面添加的原点数据
             entries.add(new Entry(i, list.get(i)));
         }
 

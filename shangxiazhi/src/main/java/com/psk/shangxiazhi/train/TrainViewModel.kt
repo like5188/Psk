@@ -283,7 +283,7 @@ class TrainViewModel : ViewModel(), KoinComponent {
         viewModelScope.launch {
             healthInfoRepository.insertOrUpdate(newHealthInfo)
         }
-        ReportActivity.start(reports, newHealthInfo)
+        ReportActivity.start(newHealthInfo.medicalOrderId)
     }
 
     companion object {
