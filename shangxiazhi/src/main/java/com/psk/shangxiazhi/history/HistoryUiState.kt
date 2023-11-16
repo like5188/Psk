@@ -6,11 +6,6 @@ data class HistoryUiState(
 )
 
 data class DateAndData(
-    val year: Int? = null,
-    val month: Int? = null,
-    val day: Int? = null,
-    val hour: Int? = null,
-    val minute: Int? = null,
-    val second: Int? = null,
+    val time: Long? = null,
     val data: Long? = null,
 )

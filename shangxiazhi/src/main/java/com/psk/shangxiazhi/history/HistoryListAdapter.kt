@@ -5,7 +5,7 @@ import com.like.recyclerview.adapter.BaseListAdapter
 import com.like.recyclerview.viewholder.BindingViewHolder
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.databinding.ItemHistoryBinding
-import java.text.DecimalFormat
+import java.text.SimpleDateFormat
 
 class HistoryListAdapter : BaseListAdapter<ItemHistoryBinding, DateAndData>(DIFF) {
     companion object {
@@ -15,24 +15,19 @@ class HistoryListAdapter : BaseListAdapter<ItemHistoryBinding, DateAndData>(DIFF
             }
 
             override fun areContentsTheSame(oldItem: DateAndData, newItem: DateAndData): Boolean {
-                return oldItem.year == newItem.year &&
-                        oldItem.month == newItem.month &&
-                        oldItem.day == newItem.day &&
-                        oldItem.hour == newItem.hour &&
-                        oldItem.minute == newItem.minute &&
-                        oldItem.second == newItem.second
+                return oldItem.time == newItem.time
             }
 
         }
     }
 
-    private val decimalFormat = DecimalFormat("00")
+    private val sdf = SimpleDateFormat("MM月dd日")
+    private val sdf1 = SimpleDateFormat("HH:mm:ss")
 
     override fun onBindViewHolder(holder: BindingViewHolder<ItemHistoryBinding>, item: DateAndData?) {
         item ?: return
-        holder.binding.tvDate.text = "${decimalFormat.format(item.month)}月${decimalFormat.format(item.day)}日"
-        holder.binding.tvTime.text =
-            "${decimalFormat.format(item.hour)}:${decimalFormat.format(item.minute)}:${decimalFormat.format(item.second)}"
+        holder.binding.tvDate.text = sdf.format(item.time)
+        holder.binding.tvTime.text = sdf1.format(item.time)
     }
 
     override fun getItemViewType(position: Int, item: DateAndData?): Int {

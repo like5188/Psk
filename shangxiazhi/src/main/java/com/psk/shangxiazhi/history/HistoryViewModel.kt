@@ -21,9 +21,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.text.DecimalFormat
-import java.util.Calendar
-import java.util.Date
+import java.text.SimpleDateFormat
 
 class HistoryViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(HistoryUiState())
@@ -34,29 +32,22 @@ class HistoryViewModel : ViewModel() {
     private val shangXiaZhiRepository = RepositoryManager.createBleDeviceRepository<ShangXiaZhiRepository>(DeviceType.ShangXiaZhi)
     private val unionRepository = RepositoryManager.unionRepository
     private val healthInfoRepository = RepositoryManager.healthInfoRepository
-    private lateinit var datas: Map<String, List<DateAndData>>
-    private val decimalFormat = DecimalFormat("00")
+    private lateinit var datas: Map<String, List<DateAndData>>// key:年月
+    private val sdf = SimpleDateFormat("yyyy年MM月")
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            val medicalOrderTimeMap = unionRepository.getAllMedicalOrderWithTime()
-            if (medicalOrderTimeMap.isNullOrEmpty()) {
+            val medicalIdAndStartTimeMap = unionRepository.getAllMedicalOrderWithTime()
+            if (medicalIdAndStartTimeMap.isNullOrEmpty()) {
                 return@launch
             }
-            val cal = Calendar.getInstance()
-            datas = medicalOrderTimeMap.map {
-                cal.time = Date(it.value)
+            datas = medicalIdAndStartTimeMap.map {
                 DateAndData(
-                    year = cal.get(Calendar.YEAR),
-                    month = cal.get(Calendar.MONTH) + 1,
-                    day = cal.get(Calendar.DAY_OF_MONTH),
-                    hour = cal.get(Calendar.HOUR),
-                    minute = cal.get(Calendar.MINUTE),
-                    second = cal.get(Calendar.SECOND),
+                    time = it.value,
                     data = it.key
                 )
             }.groupBy {
-                "${it.year}年${decimalFormat.format(it.month)}月"
+                sdf.format(it.time)
             }
             _uiState.update {
                 val key = datas.keys.lastOrNull()
