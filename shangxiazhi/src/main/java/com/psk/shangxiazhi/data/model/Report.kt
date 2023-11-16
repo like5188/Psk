@@ -68,27 +68,32 @@ class ShangXiaZhiReport : IReport {
             val gameData = GameData()
             // 这里不能用 distinctUntilChanged、conflate 等操作符，因为需要根据所有数据来计算里程等。必须得到每次数据。
             return flow.buffer(Int.MAX_VALUE).map { shangXiaZhi ->
+                /*
+                  GameData中的以下字段需要处理：
+                    var model: Int = 0,
+                    var time: String? = null,
+                    var mileage: String? = null,
+                    var cal: String? = null,
+                    var offset: Int = 0,
+                    var offsetValue: Int = 0,
+                    var spasm: Int = 0,
+                    var spasmFlag: Int = 0,
+                  以下字段直接从shangXiaZhi获取值：
+                    var speed: Int = 0,
+                    var speedLevel: Int = 0,
+                    var spasmLevel: Int = 0,
+                    var resistance: Int = 0,
+                 */
+                gameData.model = if (shangXiaZhi.model.toInt() == 0x01) {// 被动模式
+                    1// 转换成游戏需要的 0：主动；1：被动
+                } else {
+                    0
+                }
+                gameData.speed = shangXiaZhi.speed
+                gameData.speedLevel = shangXiaZhi.speedLevel
+                gameData.spasmLevel = shangXiaZhi.spasmLevel
+                gameData.resistance = shangXiaZhi.resistance
                 if (shangXiaZhi.speed > 0) {
-                    /*
-                      GameData中的以下字段需要处理：
-                        var model: Int = 0,
-                        var time: String? = null,
-                        var mileage: String? = null,
-                        var cal: String? = null,
-                        var offset: Int = 0,
-                        var offsetValue: Int = 0,
-                        var spasm: Int = 0,
-                        var spasmFlag: Int = 0,
-                      以下字段直接从shangXiaZhi获取值：
-                        var speed: Int = 0,
-                        var speedLevel: Int = 0,
-                        var spasmLevel: Int = 0,
-                        var resistance: Int = 0,
-                     */
-                    gameData.speed = shangXiaZhi.speed
-                    gameData.speedLevel = shangXiaZhi.speedLevel
-                    gameData.spasmLevel = shangXiaZhi.spasmLevel
-                    gameData.resistance = shangXiaZhi.resistance
                     // 速度
                     report.speedList.add(shangXiaZhi.speed)
                     report.speedTotal += shangXiaZhi.speed
@@ -100,8 +105,7 @@ class ShangXiaZhiReport : IReport {
                     }
                     report.speedMax = max(report.speedMax, shangXiaZhi.speed)
 
-                    if (shangXiaZhi.model.toInt() == 0x01) {// 被动模式
-                        gameData.model = 1// 转换成游戏需要的 0：主动；1：被动
+                    if (gameData.model == 1) {// 被动模式
                         report.passiveDuration++// 这里因为上下肢发送数据频率是1秒1条，所以直接以数据量替代时间
                         //被动里程
                         report.passiveMil += shangXiaZhi.speed * 0.5f * 1000 / 3600
@@ -131,7 +135,6 @@ class ShangXiaZhiReport : IReport {
                         report.spasmLevelMax = max(report.spasmLevelMax, shangXiaZhi.spasmLevel)
                         gameData.spasm = report.spasm
                     } else {// 主动模式
-                        gameData.model = 0
                         report.activeDuration++
                         //主动里程
                         report.activeMil += shangXiaZhi.speed * 0.5f * 1000 / 3600
@@ -171,13 +174,9 @@ class ShangXiaZhiReport : IReport {
                     gameData.mileage = decimalFormat.format(report.activeMil + report.passiveMil)
                     // 时间
                     gameData.time = formatTime(report.activeDuration + report.passiveDuration)
-                } else {
-                    // 主动模式，速度为0。被动模式不会有速度为0的情况
-                    // 此时数据的offset值如果和前一条速度不为0的数据的offset值不相同，就不能使游戏界面停下来。
-                    // 这是unity游戏的bug。这里只有通过更改数据来处理了。所以这里把前一次的数据修改速度和模式后发出，也能保证游戏界面停下来时显示的是最近一次速度不为0时的数据，类似被动模式暂停的效果。
-                    gameData.model = 0
-                    gameData.speed = 0
                 }
+                // 速度为0时数据的offset值如果和前一条速度不为0的数据的offset值不相同，就不能使游戏界面停下来。这是unity游戏的bug。这里只有通过更改数据来处理了。
+                // 所以那些需要处理的字段直接使用前一次的旧数据，这样才能保证游戏界面停下来时显示的是最近一次速度不为0时的数据，类似被动模式暂停的效果。
                 gameData
             }
         }
