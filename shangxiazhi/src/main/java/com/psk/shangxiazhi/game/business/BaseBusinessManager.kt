@@ -45,7 +45,7 @@ abstract class BaseBusinessManager<Repository : BaseBleDeviceRepository<*>>(
         // 这里必须延迟，原因有2点：
         // 1、使最后一条数据成功插入数据库，并触发listenLatest()更新游戏界面数据。
         // 2、有可能由于overGame()方法被先调用，导致游戏界面已经结束，这时就无法更新游戏界面数据了。
-        delay(100)
+        delay(200)
         job?.cancel()
         job = null
     }
