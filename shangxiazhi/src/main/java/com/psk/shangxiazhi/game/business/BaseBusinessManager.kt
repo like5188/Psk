@@ -1,6 +1,5 @@
 package com.psk.shangxiazhi.game.business
 
-import android.os.SystemClock
 import com.psk.common.CommonApplication
 import com.psk.device.RepositoryManager
 import com.psk.device.data.model.DeviceType
@@ -10,6 +9,7 @@ import com.twsz.twsystempre.GameController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
@@ -41,11 +41,11 @@ abstract class BaseBusinessManager<Repository : BaseBleDeviceRepository<*>>(
         }
     }
 
-    fun cancelJob() {
+    suspend fun cancelJob() {
         // 这里必须延迟，原因有2点：
         // 1、使最后一条数据成功插入数据库，并触发listenLatest()更新游戏界面数据。
         // 2、有可能由于overGame()方法被先调用，导致游戏界面已经结束，这时就无法更新游戏界面数据了。
-        SystemClock.sleep(100)
+        delay(100)
         job?.cancel()
         job = null
     }
@@ -56,11 +56,15 @@ abstract class BaseBusinessManager<Repository : BaseBleDeviceRepository<*>>(
     }
 
     open fun onPauseGame() {
-        cancelJob()
+        lifecycleScope.launch(Dispatchers.IO) {
+            cancelJob()
+        }
     }
 
     open fun onOverGame() {
-        cancelJob()
+        lifecycleScope.launch(Dispatchers.IO) {
+            cancelJob()
+        }
     }
 
     // 游戏app启动回调
