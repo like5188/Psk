@@ -167,13 +167,7 @@ class ShangXiaZhiReport : IReport {
                         }
                         report.powerMax = max(report.powerMax, power)
                         //偏差值：范围0~30 左偏：0~14；中：15；右偏：16~30；
-                        var shangXiaZhiOffset = shangXiaZhi.offset
-                        if (shangXiaZhiOffset < 0) {
-                            shangXiaZhiOffset = 0
-                        }
-                        if (shangXiaZhiOffset > 30) {
-                            shangXiaZhiOffset = 30
-                        }
+                        val shangXiaZhiOffset = shangXiaZhi.offset.coerceAtLeast(0).coerceAtMost(30)
                         gameData.offset = shangXiaZhiOffset - 15// 转换成游戏需要的 负数：左；0：不偏移；正数：右；
                         gameData.offsetValue = 100 - shangXiaZhiOffset * 100 / 30// 转换成游戏需要的左边百分比 100~0
                     }
