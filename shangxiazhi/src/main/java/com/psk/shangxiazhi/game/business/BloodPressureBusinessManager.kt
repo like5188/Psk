@@ -53,8 +53,8 @@ class BloodPressureBusinessManager(
 
     override fun onDisconnected() {
         Log.e(TAG, "血压仪连接失败")
-        gameController.updateBloodPressureConnectionState(false)
         cancelJob()
+        gameController.updateBloodPressureConnectionState(false)
     }
 
     companion object {

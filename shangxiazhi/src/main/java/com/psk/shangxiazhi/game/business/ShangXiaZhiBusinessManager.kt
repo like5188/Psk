@@ -60,8 +60,8 @@ class ShangXiaZhiBusinessManager(
 
     override fun onDisconnected() {
         Log.e(TAG, "上下肢连接失败")
-        gameController.updateGameConnectionState(false)
         cancelJob()
+        gameController.updateGameConnectionState(false)
     }
 
     override fun onStartGame() {
@@ -74,8 +74,8 @@ class ShangXiaZhiBusinessManager(
     }
 
     override fun onOverGame() {
-        gameController.overGame()
         cancelJob()
+        gameController.overGame()
     }
 
     fun onGameLoading() {}
