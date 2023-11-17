@@ -66,6 +66,7 @@ class ShangXiaZhiReport : IReport {
             var isFirstSpasm = false// 是否第一次痉挛
             var mFirstSpasm = 0// 第一次痉挛次数（因为上下肢关机之前的痉挛次数是累计的）
             val gameData = GameData()
+            var i = 1
             // 这里不能用 distinctUntilChanged、conflate 等操作符，因为需要根据所有数据来计算里程等。必须得到每次数据。
             return flow.buffer(Int.MAX_VALUE).map { shangXiaZhi ->
                 /*
@@ -106,11 +107,15 @@ class ShangXiaZhiReport : IReport {
                     report.speedMax = max(report.speedMax, shangXiaZhi.speed)
 
                     if (gameData.model == 1) {// 被动模式
+                        // 运行时间
                         report.passiveDuration++// 这里因为上下肢发送数据频率是1秒1条，所以直接以数据量替代时间
-                        //被动里程
+                        // 被动里程
                         report.passiveMil += shangXiaZhi.speed * 0.5f * 1000 / 3600
                         // 功率，被动模式下没有功率，这里添加功率是为了在折线图中显示主动被动的区域
                         report.powerList.add(0)
+                        //偏差值：范围0~30 左偏：0~14；中：15；右偏：16~30；
+                        gameData.offset = 0// 转换成游戏需要的 负数：左；0：不偏移；正数：右；
+                        gameData.offsetValue = 50// 转换成游戏需要的左边百分比 100~0
                         //痉挛。注意：这里不直接使用 ShangXiaZhi 中的 spasm，是因为只要上下肢康复机不关机，那么它返回的痉挛次数值是一直累计的。
                         if (!isFirstSpasm) {
                             isFirstSpasm = true
@@ -135,6 +140,7 @@ class ShangXiaZhiReport : IReport {
                         report.spasmLevelMax = max(report.spasmLevelMax, shangXiaZhi.spasmLevel)
                         gameData.spasm = report.spasm
                     } else {// 主动模式
+                        // 运行时间
                         report.activeDuration++
                         //主动里程
                         report.activeMil += shangXiaZhi.speed * 0.5f * 1000 / 3600
@@ -177,6 +183,7 @@ class ShangXiaZhiReport : IReport {
                 }
                 // 速度为0时数据的offset值如果和前一条速度不为0的数据的offset值不相同，就不能使游戏界面停下来。这是unity游戏的bug。这里只有通过更改数据来处理了。
                 // 所以那些需要处理的字段直接使用前一次的旧数据，这样才能保证游戏界面停下来时显示的是最近一次速度不为0时的数据，类似被动模式暂停的效果。
+                println("i=${i++} $gameData")
                 gameData
             }
         }
