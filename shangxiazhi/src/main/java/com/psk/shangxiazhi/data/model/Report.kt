@@ -113,10 +113,10 @@ class ShangXiaZhiReport : IReport {
                         report.passiveMil += shangXiaZhi.speed * 0.5f * 1000 / 3600
                         // 功率，被动模式下没有功率，这里添加功率是为了在折线图中显示主动被动的区域
                         report.powerList.add(0)
-                        //偏差值：范围0~30 左偏：0~14；中：15；右偏：16~30；
+                        // 偏差值：范围0~30 左偏：0~14；中：15；右偏：16~30；
                         gameData.offset = 0// 转换成游戏需要的 负数：左；0：不偏移；正数：右；
                         gameData.offsetValue = 50// 转换成游戏需要的左边百分比 100~0
-                        //痉挛。注意：这里不直接使用 ShangXiaZhi 中的 spasm，是因为只要上下肢康复机不关机，那么它返回的痉挛次数值是一直累计的。
+                        // 痉挛。注意：这里不直接使用 ShangXiaZhi 中的 spasm，是因为只要上下肢康复机不关机，那么它返回的痉挛次数值是一直累计的。
                         if (!isFirstSpasm) {
                             isFirstSpasm = true
                             mFirstSpasm = shangXiaZhi.spasm
@@ -144,7 +144,7 @@ class ShangXiaZhiReport : IReport {
                         report.activeDuration++
                         // 里程
                         report.activeMil += shangXiaZhi.speed * 0.5f * 1000 / 3600
-                        //卡路里
+                        // 卡路里
                         report.activeCal += shangXiaZhi.speed * 0.2f * (shangXiaZhi.resistance * 1.00f / 3.0f) / 60
                         gameData.cal = decimalFormat.format(report.activeCal)
                         // 阻力
@@ -172,13 +172,14 @@ class ShangXiaZhiReport : IReport {
                             }
                         }
                         report.powerMax = max(report.powerMax, power)
-                        //偏差值：范围0~30 左偏：0~14；中：15；右偏：16~30；
+                        // 偏差值：范围0~30 左偏：0~14；中：15；右偏：16~30；
                         val shangXiaZhiOffset = shangXiaZhi.offset.coerceAtLeast(0).coerceAtMost(30)
                         gameData.offset = shangXiaZhiOffset - 15// 转换成游戏需要的 负数：左；0：不偏移；正数：右；
                         gameData.offsetValue = 100 - shangXiaZhiOffset * 100 / 30// 转换成游戏需要的左边百分比 100~0
                     }
+                    // 总里程
                     gameData.mileage = decimalFormat.format(report.activeMil + report.passiveMil)
-                    // 时间
+                    // 总运行时间
                     gameData.time = formatTime(report.activeDuration + report.passiveDuration)
                 }
                 // 速度为0时数据的offset值如果和前一条速度不为0的数据的offset值不相同，就不能使游戏界面停下来。这是unity游戏的bug。这里只有通过更改数据来处理了。
