@@ -109,7 +109,7 @@ class ShangXiaZhiReport : IReport {
                     if (gameData.model == 1) {// 被动模式
                         // 运行时间
                         report.passiveDuration++// 这里因为上下肢发送数据频率是1秒1条，所以直接以数据量替代时间
-                        // 被动里程
+                        // 里程
                         report.passiveMil += shangXiaZhi.speed * 0.5f * 1000 / 3600
                         // 功率，被动模式下没有功率，这里添加功率是为了在折线图中显示主动被动的区域
                         report.powerList.add(0)
@@ -142,7 +142,7 @@ class ShangXiaZhiReport : IReport {
                     } else {// 主动模式
                         // 运行时间
                         report.activeDuration++
-                        //主动里程
+                        // 里程
                         report.activeMil += shangXiaZhi.speed * 0.5f * 1000 / 3600
                         //卡路里
                         report.activeCal += shangXiaZhi.speed * 0.2f * (shangXiaZhi.resistance * 1.00f / 3.0f) / 60
