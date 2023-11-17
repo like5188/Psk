@@ -60,7 +60,7 @@ class ShangXiaZhiBusinessManager(
 
     override fun onDisconnected() {
         Log.e(TAG, "上下肢连接失败")
-        lifecycleScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch {
             cancelJob()
             gameController.updateGameConnectionState(false)
         }
@@ -76,7 +76,7 @@ class ShangXiaZhiBusinessManager(
     }
 
     override fun onOverGame() {
-        lifecycleScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch {
             cancelJob()
             gameController.overGame()
         }

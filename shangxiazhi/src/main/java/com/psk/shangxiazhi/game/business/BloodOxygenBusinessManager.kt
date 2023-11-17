@@ -48,7 +48,7 @@ class BloodOxygenBusinessManager(
 
     override fun onDisconnected() {
         Log.e(TAG, "血氧仪连接失败")
-        lifecycleScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch {
             cancelJob()
             gameController.updateBloodOxygenConnectionState(false)
         }

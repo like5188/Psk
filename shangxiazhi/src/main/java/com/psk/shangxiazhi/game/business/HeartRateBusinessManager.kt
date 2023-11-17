@@ -71,7 +71,7 @@ class HeartRateBusinessManager(
 
     override fun onDisconnected() {
         Log.e(TAG, "心电仪连接失败")
-        lifecycleScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch {
             cancelJob()
             gameController.updateEcgConnectionState(false)
         }
