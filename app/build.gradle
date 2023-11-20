@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId "com.psk.app"
-        minSdk 24
+        minSdk 25// remotecommands-release 要求
         targetSdk 33
         versionCode 1
         versionName "1.0"
@@ -34,6 +34,11 @@ android {
     dataBinding {
         enabled true
     }
+    repositories {
+        flatDir {
+            dirs 'libs', '../device/libs'
+        }
+    }
 }
 
 dependencies {
@@ -46,4 +51,5 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     implementation project(':common')
     implementation project(':socket')
+    implementation project(':device')
 }

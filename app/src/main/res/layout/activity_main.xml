@@ -18,6 +18,18 @@
             android:layout_height="wrap_content"
             android:text="停止 socket server" />
 
+        <Button
+            android:id="@+id/btnConnect"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="连接蓝牙" />
+
+        <Button
+            android:id="@+id/btnDisconnect"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="断开蓝牙连接" />
+
         <com.psk.app.EcgChartView
             android:id="@+id/ecgChartView"
             android:layout_width="match_parent"
