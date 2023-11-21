@@ -42,25 +42,27 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 override fun onMessage(message: ByteBuffer) {
-                    println("包头 ${message.short}")
-                    println("设备编号 ${message.int}")
-                    println("采样率 ${message.short}")
-                    println("包采样周期数 ${message.get()}")
-                    println("导联标识 ${message.get()}")
-                    println("包序号(时间) ${message.int}")
-                    println("增益(float) ${message.float}")
+                    // iCV200A心电图仪模拟数据时每秒收到25次回调，每次回调包含12导心电数据为240 byte，所以某个导联的数据量为 240/12=20，所以采样率为25*20=500
+                    print("包头 ${message.short}, ")
+                    print("设备编号 ${message.int}, ")
+                    print("采样率 ${message.short}, ")
+                    print("包采样周期数 ${message.get()}, ")
+                    print("导联标识 ${message.get()}, ")
+                    print("包序号(时间) ${message.int}, ")
+                    print("增益(float) ${message.float}, ")
                     val ecgData = ByteArray(240)
                     message.get(ecgData, 0, 240)
-                    println("12导心电数据 ${ecgData.contentToString()}")
-                    println("心率 ${message.short}")
-                    println("收缩压 ${message.short}")
-                    println("舒张压 ${message.short}")
-                    println("功率 ${message.short}")
-                    println("血氧 ${message.get()}")
+                    print("12导心电数据数量 ${ecgData.size}, ")
+                    print("心率 ${message.short}, ")
+                    print("收缩压 ${message.short}, ")
+                    print("舒张压 ${message.short}, ")
+                    print("功率 ${message.short}, ")
+                    print("血氧 ${message.get()}, ")
                     val coorYValues = ecgData.toList().chunked(12).map {
-                        it.first().toFloat()
+                        it.first() * 300f
                     }
                     mBinding.ecgChartView.addData(coorYValues)
+                    println()
                 }
             })
         }
