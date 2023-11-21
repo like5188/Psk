@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity() {
                     println("功率 ${message.short}")
                     println("血氧 ${message.get()}")
                     val coorYValues = ecgData.toList().chunked(12).map {
-                        it[1].toFloat()
+                        it.first().toFloat()
                     }
                     mBinding.ecgChartView.addData(coorYValues)
                 }
