@@ -14,7 +14,6 @@ import android.view.SurfaceHolder
 import android.view.SurfaceView
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.lifecycle.lifecycleScope
-import com.like.common.util.PhoneUtils
 import com.psk.common.util.scheduleFlow
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
