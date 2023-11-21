@@ -81,7 +81,6 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
             val mm = mV * mm_Per_mV// mV转mm
             mm * gridSpace// mm转px
         })
-        println("addData:${data.size} total:${notDrawData.size}")
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -133,7 +132,6 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
             }
         }
         if (drawData.isEmpty()) return
-        println("drawData ${drawData.size}")
         dataPath.reset()
         var x = 0f
         dataPath.moveTo(x, drawData.first())
