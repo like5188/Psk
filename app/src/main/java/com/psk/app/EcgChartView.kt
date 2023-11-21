@@ -60,8 +60,8 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     private var maxDataCount = 0// 能显示的最大数据量
     private val dashPathEffect = DashPathEffect(floatArrayOf(1f, 1f), 0f)// 虚线
     private var bgBitmap: Bitmap? = null// 背景图片
-    private val originDatas = mutableListOf<Float>()// 原始数据集合
-    private val drawDatas = mutableListOf<Float>()
+    private val notDrawData = mutableListOf<Float>()// 未绘制的数据
+    private val drawData = mutableListOf<Float>()// 需要绘制的数据
     private val dataPath = Path()
 
     init {
@@ -75,13 +75,13 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
      * 添加数据，如果添加后容量超出了，就去掉最旧的数据。
      */
     fun addData(data: List<Float>) {
-        originDatas.addAll(data.map {
+        notDrawData.addAll(data.map {
             // 把uV电压值转换成y轴坐标值
             val mV = it / 1000// uV转换成mV
             val mm = mV * mm_Per_mV// mV转mm
             mm * gridSpace// mm转px
         })
-        println("addData:${data.size} total:${originDatas.size}")
+        println("addData:${data.size} total:${notDrawData.size}")
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -122,22 +122,22 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     // 画心电数据
     private fun drawData(canvas: Canvas) {
         repeat(drawDataCountEachTime) {
-            originDatas.removeFirstOrNull()?.let {
-                drawDatas.add(it)
+            notDrawData.removeFirstOrNull()?.let {
+                drawData.add(it)
             }
         }
         // 最多只绘制 maxDataCount 个数据
-        if (maxDataCount > 0 && drawDatas.size > maxDataCount) {
-            repeat(drawDatas.size - maxDataCount) {
-                drawDatas.removeFirst()
+        if (maxDataCount > 0 && drawData.size > maxDataCount) {
+            repeat(drawData.size - maxDataCount) {
+                drawData.removeFirst()
             }
         }
-        if (drawDatas.isEmpty()) return
-        println("drawData ${drawDatas.size}")
+        if (drawData.isEmpty()) return
+        println("drawData ${drawData.size}")
         dataPath.reset()
         var x = 0f
-        dataPath.moveTo(x, drawDatas.first())
-        drawDatas.forEach {
+        dataPath.moveTo(x, drawData.first())
+        drawData.forEach {
             x += stepX
             dataPath.lineTo(x, it + yOffset)
         }
