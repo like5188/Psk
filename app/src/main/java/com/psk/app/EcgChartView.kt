@@ -84,6 +84,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         val axisXCount = (hLineCount - hLineCount % 5) / 2
         yOffset = axisXCount * gridSpace.toFloat()
         maxDataCount = (w / stepX).toInt()
+        // 绘制背景到bitmap中
         bgBitmap?.recycle()
         bgBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888).apply {
             val canvas = Canvas(this)
