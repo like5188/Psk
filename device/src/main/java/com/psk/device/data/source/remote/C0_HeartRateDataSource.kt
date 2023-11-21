@@ -41,7 +41,7 @@ if (parsable instanceof EcgPack) {	// 或者 pack.cmd == CCmd.ECG
 /**
  * SCI411C 心电仪数据源
  */
-class C00228_HeartRateDataSource : BaseHeartRateDataSource() {
+class C0_HeartRateDataSource : BaseHeartRateDataSource() {
     override val protocol = Protocol(
         "00000001-0000-1000-8000-00805f9b34fb",
         "00000003-0000-1000-8000-00805f9b34fb",
