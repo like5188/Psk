@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
                     val coorYValues = ecgData.toList().chunked(12).map {
                         it.first() * 300f
                     }
-                    mBinding.ecgChartView.addData(coorYValues)
+                    mBinding.ecgChartView.addUvData(coorYValues)
                     println()
                 }
             })
@@ -77,8 +77,8 @@ class MainActivity : AppCompatActivity() {
                     repository.fetch().filterNotNull().map {
                         it.coorYValues
                     }.buffer(Int.MAX_VALUE).collect {
-                        mBinding.ecgChartView.addData(it.map {
-                            (-it) * 1000f// uV转mV。-t表示取反，因为如果不处理，画出的波形图是反的
+                        mBinding.ecgChartView.addMvData(it.map {
+                            -it// 取反，因为如果不处理，画出的波形图是反的
                         })
                     }
                 }

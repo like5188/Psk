@@ -7,10 +7,18 @@ import android.graphics.Color
 import android.graphics.DashPathEffect
 import android.graphics.Paint
 import android.graphics.Path
+import android.graphics.PixelFormat
+import android.graphics.PorterDuff
 import android.util.AttributeSet
 import android.view.SurfaceHolder
+import android.view.SurfaceView
+import androidx.lifecycle.findViewTreeLifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import com.like.common.util.PhoneUtils
 import com.psk.common.util.scheduleFlow
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 /*
     实际心电图纸是由1mm*1mm的小方格组成，每1大格分为5小格
@@ -19,7 +27,7 @@ import com.psk.common.util.scheduleFlow
     1倍电压：1uV=10mm；1/2电压：1uV=5mm；2倍电压：1uV=20mm
     注意：如果采用非1倍电压，在计算结果时需要还原。
  */
-class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView(context, attrs) {
+class EcgChartView(context: Context, attrs: AttributeSet?) : SurfaceView(context, attrs), SurfaceHolder.Callback {
     // 画网格的画笔
     private val gridPaint by lazy {
         Paint().apply {
@@ -46,6 +54,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
 
     private val recommendInterval = 30.0// 建议循环间隔时间
     private val interval = 1000 / sampleRate// 绘制每个数据的间隔时间
+
     // 每次绘制的数据量。避免数据太多，1秒钟绘制不完，造成界面延迟严重。
     // 因为 scheduleFlow 循环任务在间隔时间太短或者处理业务耗时太长时会造成误差太多。
     // 经测试，大概16毫秒以上循环误差就比较小了，建议使用30毫秒以上，这样绘制效果较好。
@@ -63,8 +72,14 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     private val notDrawData = mutableListOf<Float>()// 未绘制的数据
     private val drawData = mutableListOf<Float>()// 需要绘制的数据
     private val dataPath = Path()
+    private var scheduleJob: Job? = null
 
     init {
+        holder.addCallback(this)
+        // 画布透明处理
+        setZOrderOnTop(true)
+        holder.setFormat(PixelFormat.TRANSLUCENT)
+
         // 1mm对应的像素值
         gridSpace = (PhoneUtils.getDensityDpi(context) / 25.4f).toInt()
         stepX = gridSpace * mm_Per_s / sampleRate.toFloat()
@@ -72,13 +87,24 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     }
 
     /**
-     * 添加数据，如果添加后容量超出了，就去掉最旧的数据。
+     * 添加 uV 数据。
      */
-    fun addData(data: List<Float>) {
+    fun addUvData(data: List<Float>) {
         notDrawData.addAll(data.map {
             // 把uV电压值转换成y轴坐标值
             val mV = it / 1000// uV转换成mV
             val mm = mV * mm_Per_mV// mV转mm
+            mm * gridSpace// mm转px
+        })
+    }
+
+    /**
+     * 添加 mV 数据。
+     */
+    fun addMvData(data: List<Float>) {
+        notDrawData.addAll(data.map {
+            // 把uV电压值转换成y轴坐标值
+            val mm = it * mm_Per_mV// mV转mm
             mm * gridSpace// mm转px
         })
     }
@@ -101,12 +127,49 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         println("onSizeChanged w=$w h=$h hLineCount=$hLineCount vLineCount=$vLineCount axisXCount=$axisXCount yOffset=$yOffset maxDataCount=$maxDataCount")
     }
 
-    override suspend fun onSurfaceDraw(holder: SurfaceHolder) {
-        val period = 1000L / sampleRate * drawDataCountEachTime
-        scheduleFlow(0, period).collect {
-            draw(holder) {
-                drawBg(it)
-                drawData(it)
+    /*
+     下面的三个函数是 实现 SurfaceHolder.Callback 接口方法
+     */
+    override fun surfaceDestroyed(holder: SurfaceHolder) {
+        scheduleJob?.cancel()
+        scheduleJob = null
+    }
+
+    override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
+    }
+
+    override fun surfaceCreated(holder: SurfaceHolder) {
+        scheduleJob = findViewTreeLifecycleOwner()?.lifecycleScope?.launch(Dispatchers.Default) {
+            val period = 1000L / sampleRate * drawDataCountEachTime
+            scheduleFlow(0, period).collect {
+                draw(holder) {
+                    drawBg(it)
+                    drawData(it)
+                }
+            }
+        }
+    }
+
+    private fun draw(holder: SurfaceHolder, onDraw: (Canvas) -> Unit) {
+        var canvas: Canvas? = null
+        try {
+            /*
+            用了两个画布，一个进行临时的绘图，一个进行最终的绘图，这样就叫做双缓冲
+            frontCanvas：实际显示的canvas。
+            backCanvas：存储的是上一次更改前的canvas。
+             */
+            canvas = holder.lockCanvas() // 获取 backCanvas
+            // 获取到的 Canvas 对象还是继续上次的 Canvas 对象，而不是一个新的 Canvas 对象。因此，之前的绘图操作都会被保留。
+            // 在绘制前，通过 drawColor() 方法来进行清屏操作。
+            canvas?.let {
+                it.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
+                onDraw(it)
+            }
+        } finally {
+            // 使用 backCanvas 替换 frontCanvas 作为新的 frontCanvas，原来的 frontCanvas 将切换到后台作为 backCanvas。
+            try {
+                holder.unlockCanvasAndPost(canvas)
+            } catch (e: Exception) {
             }
         }
     }
