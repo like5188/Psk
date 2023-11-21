@@ -43,11 +43,15 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     private val mm_Per_mV = 10// 增益（灵敏度）。1倍：10mm/mV
     private val sampleRate = 125// 采样率
 
+    private val recommendInterval = 30.0// 建议循环间隔时间
     private val interval = 1000 / sampleRate// 绘制每个数据的间隔时间
-    // 每次绘制的数据量，建议使得循环间隔时间保证在20毫秒以上。避免数据太多，1秒钟绘制不完，造成界面延迟严重。
-    // 因为 scheduleFlow 循环任务在间隔时间太短并且处理业务耗时太长时会造成延迟太多。
+
+    // 每次绘制的数据量。避免数据太多，1秒钟绘制不完，造成界面延迟严重。
+    // 因为 scheduleFlow 循环任务在间隔时间太短或者处理业务耗时太长时会造成误差太多。
+    // 经测试，大概16毫秒以上循环误差就比较小了，建议使用30毫秒以上，这样绘制效果较好。
     // Math.ceil()向上取整
-    private val drawDataCountEachTime = if (interval < 20) Math.ceil(20.0 / interval).toInt() else interval
+    private val drawDataCountEachTime = if (interval < recommendInterval) Math.ceil(recommendInterval / interval).toInt() else interval
+
     private var gridSpace = 0// 一个小格子对应的像素，即1mm对应的像素。px/mm
     private var hLineCount = 0// 水平线的数量
     private var vLineCount = 0// 垂直线的数量
