@@ -30,7 +30,6 @@ class MainViewModel(
     init {
         viewModelScope.launch {
             scheduleFlow(0, 1000).collect {
-                println(it)
                 _uiState.update {
                     it.copy(
                         time = sdf.format(Date())
