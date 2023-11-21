@@ -41,7 +41,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
 
     private val mm_Per_s = 25// 走速（速度）。标准值：25mm/s
     private val mm_Per_mV = 10// 增益（灵敏度）。1倍：10mm/mV
-    private val sampleRate = 500// 采样率
+    private val sampleRate = 125// 采样率
 
     private val recommendInterval = 30.0// 建议循环间隔时间
     private val interval = 1000 / sampleRate// 绘制每个数据的间隔时间

@@ -684,6 +684,7 @@ send(CommandUtil.getDeviceStatus()); // 向设备发送获取系统状态命令
  */
 /**
  * SCI311W 心电仪数据源
+ * 采样率：125
  */
 class A0_HeartRateDataSource : BaseHeartRateDataSource() {
     override val protocol = Protocol(
