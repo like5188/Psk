@@ -69,7 +69,7 @@ class MainActivity : AppCompatActivity() {
             SocketServerService.stop(this)
         }
         mBinding.btnConnect.setOnClickListener {
-            repository.init(this, "ER1 1391", "E7:B5:08:62:96:05")
+            repository.init(this, "A00213000334", "A0:02:13:00:03:34")
             repository.connect(lifecycleScope, 0L, {
                 showToast("心电仪连接成功，开始测量")
                 job = lifecycleScope.launch {
