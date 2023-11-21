@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.like.common.util.SecondsTimer
+import com.psk.common.util.scheduleFlow
 import com.psk.device.RepositoryManager
 import com.psk.device.ScanManager
 import com.psk.shangxiazhi.data.source.ShangXiaZhiBusinessRepository
@@ -26,9 +26,11 @@ class MainViewModel(
     private val _uiState = MutableStateFlow(MainUiState())
     val uiState = _uiState.asStateFlow()
     private val sdf: SimpleDateFormat by inject(named("yyyy-MM-dd HH:mm:ss"))
-    private val secondsTimer by lazy {
-        SecondsTimer().apply {
-            onTick = {
+
+    init {
+        viewModelScope.launch {
+            scheduleFlow(0, 1000).collect {
+                println(it)
                 _uiState.update {
                     it.copy(
                         time = sdf.format(Date())
@@ -36,10 +38,6 @@ class MainViewModel(
                 }
             }
         }
-    }
-
-    init {
-        secondsTimer.start()
     }
 
     fun init(activity: ComponentActivity) {
@@ -51,11 +49,6 @@ class MainViewModel(
 
     fun isLogin(context: Context): Boolean {
         return shangXiaZhiBusinessRepository.isLogin(context)
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        secondsTimer.stop()
     }
 
 }
