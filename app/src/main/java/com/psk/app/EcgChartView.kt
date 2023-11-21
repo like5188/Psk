@@ -75,7 +75,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
 
     init {
         // 1mm对应的像素值
-        gridSpace = (PhoneUtils.getDensityDpi(context) / 25.4f).toInt()
+        gridSpace = (context.resources.displayMetrics.densityDpi / 25.4f).toInt()
         stepX = gridSpace * mm_Per_s / sampleRate.toFloat()
         println("gridSpace=$gridSpace stepX=$stepX")
     }
