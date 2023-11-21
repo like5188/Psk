@@ -12,7 +12,6 @@ import com.psk.device.data.source.HeartRateRepository
 import com.psk.socket.SocketListener
 import com.psk.socket.SocketServerService
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
@@ -60,7 +59,7 @@ class MainActivity : AppCompatActivity() {
                     println("血氧 ${message.get()}")
                     val coorYValues = ecgData.toList().chunked(12).map {
                         it.first().toFloat()
-                    }.toFloatArray()
+                    }
                     mBinding.ecgChartView.addData(coorYValues)
                 }
             })
@@ -75,19 +74,10 @@ class MainActivity : AppCompatActivity() {
                 job = lifecycleScope.launch {
                     repository.fetch().filterNotNull().map {
                         it.coorYValues
-                    }.buffer(Int.MAX_VALUE).collect { coorYValues ->
-                        println(coorYValues.size)
-                        println(coorYValues.contentToString())
-                        // 注意：此处不能使用 onEach 进行每个数据的延迟，因为只要延迟，由于系统资源的调度损耗，延迟会比设置的值增加10多毫秒，所以延迟10多毫秒以下毫无意义，因为根本不可能达到。
-                        // 这也导致1秒钟时间段内，就算延迟1毫秒，实际上延迟却会达到10多毫秒，导致最多只能发射60多个数据（实际测试）。
-                        // 这就导致远远达不到心电仪的采样率的100多，从而会导致数据堆积越来越多，导致界面看起来会延迟很严重。
-                        coorYValues.map {
+                    }.buffer(Int.MAX_VALUE).collect {
+                        mBinding.ecgChartView.addData(it.map {
                             (-it) * 1000f// uV转mV。-t表示取反，因为如果不处理，画出的波形图是反的
-                        }.toList().chunked(5).forEach {
-                            // 5个一组，125多的采样率，那么1秒钟发射25组数据就好，平均每个数据需要延迟40毫秒。
-                            delay(1)
-                            mBinding.ecgChartView.addData(it.toFloatArray())
-                        }
+                        })
                     }
                 }
             }) {

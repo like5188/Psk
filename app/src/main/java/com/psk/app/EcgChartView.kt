@@ -8,8 +8,9 @@ import android.graphics.DashPathEffect
 import android.graphics.Paint
 import android.graphics.Path
 import android.util.AttributeSet
+import android.view.SurfaceHolder
 import com.like.common.util.PhoneUtils
-import java.util.concurrent.CopyOnWriteArrayList
+import com.psk.common.util.scheduleFlow
 
 /*
     实际心电图纸是由1mm*1mm的小方格组成，每1大格分为5小格
@@ -42,6 +43,11 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     private val mm_Per_mV = 10// 增益（灵敏度）。1倍：10mm/mV
     private val sampleRate = 125// 采样率
 
+    private val interval = 1000 / sampleRate// 绘制每个数据的间隔时间
+    // 每次绘制的数据量，建议使得循环间隔时间保证在20毫秒以上。避免数据太多，1秒钟绘制不完，造成界面延迟严重。
+    // 因为 scheduleFlow 循环任务在间隔时间太短并且处理业务耗时太长时会造成延迟太多。
+    // Math.ceil()向上取整
+    private val drawDataCountEachTime = if (interval < 20) Math.ceil(20.0 / interval).toInt() else interval
     private var gridSpace = 0// 一个小格子对应的像素，即1mm对应的像素。px/mm
     private var hLineCount = 0// 水平线的数量
     private var vLineCount = 0// 垂直线的数量
@@ -50,7 +56,9 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     private var maxDataCount = 0// 能显示的最大数据量
     private val dashPathEffect = DashPathEffect(floatArrayOf(1f, 1f), 0f)// 虚线
     private var bgBitmap: Bitmap? = null// 背景图片
-    private val datas = CopyOnWriteArrayList<Float>()// 数据集合
+    private val originDatas = mutableListOf<Float>()// 原始数据集合
+    private val drawDatas = mutableListOf<Float>()
+    private val dataPath = Path()
 
     init {
         // 1mm对应的像素值
@@ -62,18 +70,14 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     /**
      * 添加数据，如果添加后容量超出了，就去掉最旧的数据。
      */
-    fun addData(data: FloatArray) {
-        datas.addAll(data.map {
+    fun addData(data: List<Float>) {
+        originDatas.addAll(data.map {
             // 把uV电压值转换成y轴坐标值
             val mV = it / 1000// uV转换成mV
             val mm = mV * mm_Per_mV// mV转mm
             mm * gridSpace// mm转px
         })
-        if (maxDataCount > 0 && datas.size > maxDataCount) {
-            repeat(datas.size - maxDataCount) {
-                datas.removeFirst()
-            }
-        }
+        println("addData:${data.size} total:${originDatas.size}")
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -94,10 +98,14 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         println("onSizeChanged w=$w h=$h hLineCount=$hLineCount vLineCount=$vLineCount axisXCount=$axisXCount yOffset=$yOffset maxDataCount=$maxDataCount")
     }
 
-    override fun onSurfaceViewDraw(canvas: Canvas): Boolean {
-        drawBg(canvas)
-        drawData(canvas)
-        return true
+    override suspend fun onSurfaceDraw(holder: SurfaceHolder) {
+        val period = 1000L / sampleRate * drawDataCountEachTime
+        scheduleFlow(0, period).collect {
+            draw(holder) {
+                drawBg(it)
+                drawData(it)
+            }
+        }
     }
 
     // 画背景图片
@@ -109,16 +117,27 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
 
     // 画心电数据
     private fun drawData(canvas: Canvas) {
-        val list = datas.toList()
-        if (list.isEmpty()) return
-        var x = 0f
-        val path = Path()
-        path.moveTo(x, list.first())
-        list.forEach {
-            x += stepX
-            path.lineTo(x, it + yOffset)
+        repeat(drawDataCountEachTime) {
+            originDatas.removeFirstOrNull()?.let {
+                drawDatas.add(it)
+            }
         }
-        canvas.drawPath(path, dataPaint)
+        // 最多只绘制 maxDataCount 个数据
+        if (maxDataCount > 0 && drawDatas.size > maxDataCount) {
+            repeat(drawDatas.size - maxDataCount) {
+                drawDatas.removeFirst()
+            }
+        }
+        if (drawDatas.isEmpty()) return
+        println("drawData ${drawDatas.size}")
+        dataPath.reset()
+        var x = 0f
+        dataPath.moveTo(x, drawDatas.first())
+        drawDatas.forEach {
+            x += stepX
+            dataPath.lineTo(x, it + yOffset)
+        }
+        canvas.drawPath(dataPath, dataPaint)
     }
 
     // 画水平线
