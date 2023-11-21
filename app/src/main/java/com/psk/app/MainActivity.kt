@@ -58,10 +58,11 @@ class MainActivity : AppCompatActivity() {
                     print("舒张压 ${message.short}, ")
                     print("功率 ${message.short}, ")
                     print("血氧 ${message.get()}, ")
+                    // 这里的数据单位是 uV，需要 /1000f 转换成 mV
                     val coorYValues = ecgData.toList().chunked(12).map {
-                        it.first() * 300f
+                        it.first() / 1000f * 300f
                     }
-                    mBinding.ecgChartView.addUvData(coorYValues)
+                    mBinding.ecgChartView.addData(coorYValues)
                     println()
                 }
             })
@@ -77,7 +78,7 @@ class MainActivity : AppCompatActivity() {
                     repository.fetch().filterNotNull().map {
                         it.coorYValues
                     }.buffer(Int.MAX_VALUE).collect {
-                        mBinding.ecgChartView.addMvData(it.map {
+                        mBinding.ecgChartView.addData(it.map {
                             -it// 取反，因为如果不处理，画出的波形图是反的
                         })
                     }

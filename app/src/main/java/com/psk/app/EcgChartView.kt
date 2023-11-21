@@ -81,21 +81,9 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     }
 
     /**
-     * 添加 uV 数据。
+     * 添加数据，数据的单位是 mV。
      */
-    fun addUvData(data: List<Float>) {
-        notDrawData.addAll(data.map {
-            // 把uV电压值转换成y轴坐标值
-            val mV = it / 1000// uV转换成mV
-            val mm = mV * mm_Per_mV// mV转mm
-            mm * gridSpace// mm转px
-        })
-    }
-
-    /**
-     * 添加 mV 数据。
-     */
-    fun addMvData(data: List<Float>) {
+    fun addData(data: List<Float>) {
         notDrawData.addAll(data.map {
             // 把uV电压值转换成y轴坐标值
             val mm = it * mm_Per_mV// mV转mm
