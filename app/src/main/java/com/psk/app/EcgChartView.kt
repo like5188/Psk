@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
     1倍电压：1uV=10mm；1/2电压：1uV=5mm；2倍电压：1uV=20mm
     注意：如果采用非1倍电压，在计算结果时需要还原。
  */
-class EcgChartView(context: Context, attrs: AttributeSet?) : SurfaceView(context, attrs), SurfaceHolder.Callback {
+class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView(context, attrs) {
     // 画网格的画笔
     private val gridPaint by lazy {
         Paint().apply {
@@ -72,14 +72,8 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : SurfaceView(context
     private val notDrawData = mutableListOf<Float>()// 未绘制的数据
     private val drawData = mutableListOf<Float>()// 需要绘制的数据
     private val dataPath = Path()
-    private var scheduleJob: Job? = null
 
     init {
-        holder.addCallback(this)
-        // 画布透明处理
-        setZOrderOnTop(true)
-        holder.setFormat(PixelFormat.TRANSLUCENT)
-
         // 1mm对应的像素值
         gridSpace = (PhoneUtils.getDensityDpi(context) / 25.4f).toInt()
         stepX = gridSpace * mm_Per_s / sampleRate.toFloat()
@@ -127,49 +121,12 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : SurfaceView(context
         println("onSizeChanged w=$w h=$h hLineCount=$hLineCount vLineCount=$vLineCount axisXCount=$axisXCount yOffset=$yOffset maxDataCount=$maxDataCount")
     }
 
-    /*
-     下面的三个函数是 实现 SurfaceHolder.Callback 接口方法
-     */
-    override fun surfaceDestroyed(holder: SurfaceHolder) {
-        scheduleJob?.cancel()
-        scheduleJob = null
-    }
-
-    override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
-    }
-
-    override fun surfaceCreated(holder: SurfaceHolder) {
-        scheduleJob = findViewTreeLifecycleOwner()?.lifecycleScope?.launch(Dispatchers.Default) {
-            val period = 1000L / sampleRate * drawDataCountEachTime
-            scheduleFlow(0, period).collect {
-                draw(holder) {
-                    drawBg(it)
-                    drawData(it)
-                }
-            }
-        }
-    }
-
-    private fun draw(holder: SurfaceHolder, onDraw: (Canvas) -> Unit) {
-        var canvas: Canvas? = null
-        try {
-            /*
-            用了两个画布，一个进行临时的绘图，一个进行最终的绘图，这样就叫做双缓冲
-            frontCanvas：实际显示的canvas。
-            backCanvas：存储的是上一次更改前的canvas。
-             */
-            canvas = holder.lockCanvas() // 获取 backCanvas
-            // 获取到的 Canvas 对象还是继续上次的 Canvas 对象，而不是一个新的 Canvas 对象。因此，之前的绘图操作都会被保留。
-            // 在绘制前，通过 drawColor() 方法来进行清屏操作。
-            canvas?.let {
-                it.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
-                onDraw(it)
-            }
-        } finally {
-            // 使用 backCanvas 替换 frontCanvas 作为新的 frontCanvas，原来的 frontCanvas 将切换到后台作为 backCanvas。
-            try {
-                holder.unlockCanvasAndPost(canvas)
-            } catch (e: Exception) {
+    override suspend fun onSurfaceDraw(holder: SurfaceHolder) {
+        val period = 1000L / sampleRate * drawDataCountEachTime
+        scheduleFlow(0, period).collect {
+            draw(holder) {
+                drawBg(it)
+                drawData(it)
             }
         }
     }
@@ -238,5 +195,63 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : SurfaceView(context
             canvas.drawLine(x, startY, x, stopY, gridPaint)
         }
     }
+
+}
+
+abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : SurfaceView(context, attrs), SurfaceHolder.Callback {
+    private var scheduleJob: Job? = null
+
+    init {
+        holder.addCallback(this)
+        // 画布透明处理
+        setZOrderOnTop(true)
+        holder.setFormat(PixelFormat.TRANSLUCENT)
+    }
+
+    /*
+     下面的三个函数是 实现 SurfaceHolder.Callback 接口方法
+     */
+    override fun surfaceDestroyed(holder: SurfaceHolder) {
+        scheduleJob?.cancel()
+        scheduleJob = null
+    }
+
+    override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
+    }
+
+    override fun surfaceCreated(holder: SurfaceHolder) {
+        scheduleJob = findViewTreeLifecycleOwner()?.lifecycleScope?.launch(Dispatchers.Default) {
+            onSurfaceDraw(holder)
+        }
+    }
+
+    protected fun draw(holder: SurfaceHolder, onDraw: (Canvas) -> Unit) {
+        var canvas: Canvas? = null
+        try {
+            /*
+            用了两个画布，一个进行临时的绘图，一个进行最终的绘图，这样就叫做双缓冲
+            frontCanvas：实际显示的canvas。
+            backCanvas：存储的是上一次更改前的canvas。
+             */
+            canvas = holder.lockCanvas() // 获取 backCanvas
+            // 获取到的 Canvas 对象还是继续上次的 Canvas 对象，而不是一个新的 Canvas 对象。因此，之前的绘图操作都会被保留。
+            // 在绘制前，通过 drawColor() 方法来进行清屏操作。
+            canvas?.let {
+                it.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
+                onDraw(it)
+            }
+        } finally {
+            // 使用 backCanvas 替换 frontCanvas 作为新的 frontCanvas，原来的 frontCanvas 将切换到后台作为 backCanvas。
+            try {
+                holder.unlockCanvasAndPost(canvas)
+            } catch (e: Exception) {
+            }
+        }
+    }
+
+    /**
+     * 绘制
+     */
+    abstract suspend fun onSurfaceDraw(holder: SurfaceHolder)
 
 }
