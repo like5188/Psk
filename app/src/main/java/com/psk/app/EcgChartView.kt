@@ -40,7 +40,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
 
     private val mm_Per_s = 25// 走速（速度）。标准值：25mm/s
     private val mm_Per_mV = 10// 增益（灵敏度）。1倍：10mm/mV
-    private val sampleRate = 250// 采样率
+    private val sampleRate = 125// 采样率
 
     private var gridSpace = 0// 一个小格子对应的像素，即1mm对应的像素。px/mm
     private var hLineCount = 0// 水平线的数量
