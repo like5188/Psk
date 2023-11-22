@@ -131,11 +131,13 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
      * 添加数据，数据的单位是 mV。
      */
     fun addData(data: List<Float>) {
+        if (data.isEmpty()) return
         notDrawDataList.addAll(data.map {
             // 把uV电压值转换成y轴坐标值
             val mm = it * MM_PER_MV// mV转mm
             mm * gridSpace// mm转px
         })
+        startCircleDrawJob()
     }
 
     override suspend fun onSurfaceDraw(holder: SurfaceHolder) = withContext(Dispatchers.IO) {
@@ -143,6 +145,11 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         println("onSurfaceDraw")
         scheduleFlow(0, period).collect {
             draw(holder) {
+                if (notDrawDataList.isEmpty()) {
+                    cancelCircleDrawJob()
+                    return@draw
+                }
+                it.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
                 drawBg(it)
                 drawData(it)
             }
@@ -159,20 +166,19 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
 
     // 画心电数据
     private fun drawData(canvas: Canvas) {
-        if (notDrawDataList.isNotEmpty()) {
-            repeat(drawDataCountEachTime) {
-                notDrawDataList.removeFirstOrNull()?.let {
-                    drawDataList.add(it)
-                }
+        repeat(drawDataCountEachTime) {
+            notDrawDataList.removeFirstOrNull()?.let {
+                drawDataList.add(it)
             }
-            // 最多只绘制 maxDataCount 个数据
-            if (maxDataCount > 0 && drawDataList.size > maxDataCount) {
-                repeat(drawDataList.size - maxDataCount) {
-                    drawDataList.removeFirst()
-                }
+        }
+        // 最多只绘制 maxDataCount 个数据
+        if (maxDataCount > 0 && drawDataList.size > maxDataCount) {
+            repeat(drawDataList.size - maxDataCount) {
+                drawDataList.removeFirst()
             }
         }
         if (drawDataList.isEmpty()) return
+        println("drawData ${notDrawDataList.size} ${drawDataList.size}")
         dataPath.reset()
         var x = 0f
         dataPath.moveTo(x, drawDataList.first())
@@ -224,7 +230,8 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
 }
 
 abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : SurfaceView(context, attrs), SurfaceHolder.Callback {
-    private var scheduleJob: Job? = null
+    // 循环绘制任务
+    private var circleDrawJob: Job? = null
 
     init {
         holder.addCallback(this)
@@ -237,8 +244,7 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
      下面的三个函数是 实现 SurfaceHolder.Callback 接口方法
      */
     override fun surfaceDestroyed(holder: SurfaceHolder) {
-        scheduleJob?.cancel()
-        scheduleJob = null
+        cancelCircleDrawJob()
     }
 
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
@@ -246,9 +252,19 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
 
     // 在onSizeChanged()方法之后回调
     override fun surfaceCreated(holder: SurfaceHolder) {
-        scheduleJob = findViewTreeLifecycleOwner()?.lifecycleScope?.launch {
+        startCircleDrawJob()
+    }
+
+    protected fun startCircleDrawJob() {
+        if (circleDrawJob != null) return
+        circleDrawJob = findViewTreeLifecycleOwner()?.lifecycleScope?.launch {
             onSurfaceDraw(holder)
         }
+    }
+
+    protected fun cancelCircleDrawJob() {
+        circleDrawJob?.cancel()
+        circleDrawJob = null
     }
 
     protected fun draw(holder: SurfaceHolder, onDraw: (Canvas) -> Unit) {
@@ -263,7 +279,6 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
             // 获取到的 Canvas 对象还是继续上次的 Canvas 对象，而不是一个新的 Canvas 对象。因此，之前的绘图操作都会被保留。
             // 在绘制前，通过 drawColor() 方法来进行清屏操作。
             canvas?.let {
-                it.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
                 onDraw(it)
             }
         } finally {
