@@ -97,5 +97,6 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             RepositoryManager.init(this@MainActivity)
         }
+        mBinding.ecgChartView.init(125)
     }
 }

@@ -18,6 +18,7 @@ import com.psk.common.util.scheduleFlow
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlin.math.ceil
 
 /*
     实际心电图纸是由1mm*1mm的小方格组成，每1大格分为5小格
@@ -46,19 +47,14 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         }
     }
 
-    // 一下三个属性按照心电设备参数设置
-    private val mm_Per_s = 25// 走速（速度）。标准值：25mm/s
-    private val mm_Per_mV = 10// 增益（灵敏度）。1倍：10mm/mV
-    private val sampleRate = 125// 采样率
-
-    private val interval = 1000 / sampleRate// 绘制每个数据的间隔时间
-    private val recommendInterval = 30.0// 建议循环间隔时间
+    private var mm_Per_mV = 0// 增益（灵敏度）。1倍：10mm/mV
 
     // 每次绘制的数据量。避免数据太多，1秒钟绘制不完，造成界面延迟严重。
     // 因为 scheduleFlow 循环任务在间隔时间太短或者处理业务耗时太长时会造成误差太多。
     // 经测试，大概16毫秒以上循环误差就比较小了，建议使用30毫秒以上，这样绘制效果较好。
     // Math.ceil()向上取整
-    private val drawDataCountEachTime = if (interval < recommendInterval) Math.ceil(recommendInterval / interval).toInt() else interval
+    private var drawDataCountEachTime = 0
+    private var period = 0L// 循环绘制周期
 
     private var gridSpace = 0// 一个小格子对应的像素，即1mm对应的像素。px/mm
     private var hLineCount = 0// 水平线的数量
@@ -66,8 +62,9 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     private var yOffset = 0f// y轴偏移。因为原始的x轴在视图顶部。所以需要把x轴移动到视图垂直中心位置
     private var stepX = 0f// x方向的步进，两个数据在x轴方向的距离。px
     private var maxDataCount = 0// 能显示的最大数据量
-    private val dashPathEffect = DashPathEffect(floatArrayOf(1f, 1f), 0f)// 虚线
+
     private var bgBitmap: Bitmap? = null// 背景图片
+    private val dashPathEffect = DashPathEffect(floatArrayOf(1f, 1f), 0f)// 虚线
     private val notDrawDataList = mutableListOf<Float>()// 未绘制的数据集合
     private val drawDataList = mutableListOf<Float>()// 需要绘制的数据集合
     private val dataPath = Path()
@@ -75,8 +72,23 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     init {
         // 1mm对应的像素值
         gridSpace = (context.resources.displayMetrics.densityDpi / 25.4f).toInt()
+    }
+
+    /**
+     * @param sampleRate    采样率
+     * @param mm_Per_s      走速（速度）。默认为标准值：25mm/s
+     * @param mm_Per_mV     增益（灵敏度）。默认为1倍：10mm/mV
+     */
+    fun init(sampleRate: Int, mm_Per_s: Int = 25, mm_Per_mV: Int = 10) {
+        this.mm_Per_mV = mm_Per_mV
         stepX = gridSpace * mm_Per_s / sampleRate.toFloat()
-        println("gridSpace=$gridSpace stepX=$stepX")
+
+        val interval = 1000 / sampleRate// 绘制每个数据的间隔时间
+        val recommendInterval = 30.0// 建议循环间隔时间
+        drawDataCountEachTime = if (interval < recommendInterval) ceil(recommendInterval / interval).toInt() else interval
+
+        period = 1000L / sampleRate * drawDataCountEachTime
+        println("gridSpace=$gridSpace stepX=$stepX sampleRate=$sampleRate mm_Per_s=$mm_Per_s mm_Per_mV=$mm_Per_mV drawDataCountEachTime=$drawDataCountEachTime period=$period")
     }
 
     /**
@@ -109,7 +121,6 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     }
 
     override suspend fun onSurfaceDraw(holder: SurfaceHolder) {
-        val period = 1000L / sampleRate * drawDataCountEachTime
         scheduleFlow(0, period).collect {
             draw(holder) {
                 drawBg(it)
