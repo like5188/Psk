@@ -89,9 +89,9 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     /**
      * @param sampleRate    采样率
      */
-    suspend fun init(sampleRate: Int) = withContext(Dispatchers.IO) {
+    fun init(sampleRate: Int) {
         if (sampleRate <= 0) {
-            return@withContext
+            return
         }
         // 根据采样率计算
         stepX = gridSpace * MM_PER_S / sampleRate.toFloat()
@@ -166,19 +166,21 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
 
     // 画心电数据
     private fun drawData(canvas: Canvas) {
-        repeat(drawDataCountEachTime) {
-            notDrawDataList.removeFirstOrNull()?.let {
-                drawDataList.add(it)
+        if (notDrawDataList.isNotEmpty()) {
+            repeat(drawDataCountEachTime) {
+                notDrawDataList.removeFirstOrNull()?.let {
+                    drawDataList.add(it)
+                }
             }
-        }
-        // 最多只绘制 maxDataCount 个数据
-        if (maxDataCount > 0 && drawDataList.size > maxDataCount) {
-            repeat(drawDataList.size - maxDataCount) {
-                drawDataList.removeFirst()
+            // 最多只绘制 maxDataCount 个数据
+            if (maxDataCount > 0 && drawDataList.size > maxDataCount) {
+                repeat(drawDataList.size - maxDataCount) {
+                    drawDataList.removeFirst()
+                }
             }
         }
         if (drawDataList.isEmpty()) return
-        println("drawData ${notDrawDataList.size} ${drawDataList.size}")
+
         dataPath.reset()
         var x = 0f
         dataPath.moveTo(x, drawDataList.first())
@@ -250,9 +252,7 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
     }
 
-    // 在onSizeChanged()方法之后回调
     override fun surfaceCreated(holder: SurfaceHolder) {
-        startCircleDrawJob()
     }
 
     protected fun startCircleDrawJob() {
