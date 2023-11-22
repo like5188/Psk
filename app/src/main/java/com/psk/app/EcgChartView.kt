@@ -127,15 +127,17 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
 
     // 画心电数据
     private fun drawData(canvas: Canvas) {
-        repeat(drawDataCountEachTime) {
-            notDrawDataList.removeFirstOrNull()?.let {
-                drawDataList.add(it)
+        if (notDrawDataList.isNotEmpty()) {
+            repeat(drawDataCountEachTime) {
+                notDrawDataList.removeFirstOrNull()?.let {
+                    drawDataList.add(it)
+                }
             }
-        }
-        // 最多只绘制 maxDataCount 个数据
-        if (maxDataCount > 0 && drawDataList.size > maxDataCount) {
-            repeat(drawDataList.size - maxDataCount) {
-                drawDataList.removeFirst()
+            // 最多只绘制 maxDataCount 个数据
+            if (maxDataCount > 0 && drawDataList.size > maxDataCount) {
+                repeat(drawDataList.size - maxDataCount) {
+                    drawDataList.removeFirst()
+                }
             }
         }
         if (drawDataList.isEmpty()) return
