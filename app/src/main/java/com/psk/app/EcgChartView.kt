@@ -40,7 +40,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     // 画心电数据曲线的画笔
     private val dataPaint by lazy {
         Paint().apply {
-            color = Color.parseColor("#021F52")
+            color = Color.parseColor("#44C71E")
             strokeWidth = 1f
             style = Paint.Style.STROKE
             isAntiAlias = true
@@ -86,7 +86,8 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         drawDataCountEachTime = if (interval < recommendInterval) ceil(recommendInterval / interval).toInt() else interval
 
         period = 1000L / sampleRate * drawDataCountEachTime
-        println("gridSpace=$gridSpace stepX=$stepX sampleRate=$sampleRate MM_PER_S=$MM_PER_S MM_PER_MV=$MM_PER_MV drawDataCountEachTime=$drawDataCountEachTime period=$period")
+        println("sampleRate=$sampleRate MM_PER_S=$MM_PER_S MM_PER_MV=$MM_PER_MV gridSpace=$gridSpace stepX=$stepX drawDataCountEachTime=$drawDataCountEachTime period=$period")
+        calcByWidthAndHeight()
     }
 
     /**
@@ -102,20 +103,24 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        if (w <= 0 || h <= 0) return
-        hLineCount = h / gridSpace
-        vLineCount = w / gridSpace
+        calcByWidthAndHeight()
+    }
+
+    private fun calcByWidthAndHeight() {
+        if (width <= 0 || height <= 0) return
+        hLineCount = height / gridSpace
+        vLineCount = width / gridSpace
         val axisXCount = (hLineCount - hLineCount % 5) / 2
         yOffset = axisXCount * gridSpace.toFloat()
-        maxDataCount = (w / stepX).toInt()
+        maxDataCount = (width / stepX).toInt()
         // 绘制背景到bitmap中
         bgBitmap?.recycle()
-        bgBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888).apply {
+        bgBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888).apply {
             val canvas = Canvas(this)
             drawHLine(canvas)
             drawVLine(canvas)
         }
-        println("onSizeChanged w=$w h=$h hLineCount=$hLineCount vLineCount=$vLineCount axisXCount=$axisXCount yOffset=$yOffset maxDataCount=$maxDataCount")
+        println("onSizeChanged width=$width height=$height hLineCount=$hLineCount vLineCount=$vLineCount axisXCount=$axisXCount yOffset=$yOffset maxDataCount=$maxDataCount")
     }
 
     override suspend fun onSurfaceDraw(holder: SurfaceHolder) {
@@ -129,8 +134,9 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
 
     // 画背景图片
     private fun drawBg(canvas: Canvas) {
-        bgBitmap?.let {
-            canvas.drawBitmap(it, 0f, 0f, null)
+        val bmp = bgBitmap ?: return
+        if (!bmp.isRecycled) {
+            canvas.drawBitmap(bmp, 0f, 0f, null)
         }
     }
 
