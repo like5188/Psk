@@ -82,4 +82,8 @@ class ER1_HeartRateDataSource : BaseHeartRateDataSource() {
         return cmd
     }
 
+    override fun getSampleRate(): Int {
+        return 128
+    }
+
 }

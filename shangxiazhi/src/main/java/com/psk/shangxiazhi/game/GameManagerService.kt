@@ -42,9 +42,9 @@ class GameManagerService : Service() {
         bloodPressureMeasureType: Int,
         onReport: ((List<IReport>) -> Unit)? = null
     ) {
-        if (!devices.containsKey(DeviceType.ShangXiaZhi)) {
-            return
-        }
+//        if (!devices.containsKey(DeviceType.ShangXiaZhi)) {
+//            return
+//        }
         multiBusinessManager.clear()
         multiBusinessManager.onReport = {
             onReport?.invoke(it)

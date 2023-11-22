@@ -77,4 +77,7 @@ class C0_HeartRateDataSource : BaseHeartRateDataSource() {
             }
     }.flowOn(Dispatchers.IO)
 
+    override fun getSampleRate(): Int {
+        return 125
+    }
 }

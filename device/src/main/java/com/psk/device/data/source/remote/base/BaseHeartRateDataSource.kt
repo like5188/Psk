@@ -6,5 +6,5 @@ import kotlinx.coroutines.flow.Flow
 abstract class BaseHeartRateDataSource : BaseBleDeviceDataSource() {
 
     abstract fun fetch(medicalOrderId: Long): Flow<HeartRate>
-
+    abstract fun getSampleRate(): Int
 }

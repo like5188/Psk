@@ -36,4 +36,8 @@ class HeartRateRepository : BaseBleDeviceRepository<BaseHeartRateDataSource>(Dev
         return bleDeviceDataSource.fetch(-1)
     }
 
+    fun getSampleRate(): Int {
+        return bleDeviceDataSource.getSampleRate()
+    }
+
 }
