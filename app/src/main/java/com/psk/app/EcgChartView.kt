@@ -140,7 +140,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
 
     override suspend fun onSurfaceDraw(holder: SurfaceHolder) = withContext(Dispatchers.IO) {
         cd2.await()
-        println("onSurfaceDraw start draw")
+        println("onSurfaceDraw")
         scheduleFlow(0, period).collect {
             draw(holder) {
                 drawBg(it)
