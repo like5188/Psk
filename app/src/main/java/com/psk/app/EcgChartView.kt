@@ -47,7 +47,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         }
     }
 
-    private var mm_Per_mV = 0// 增益（灵敏度）。1倍：10mm/mV
+    private var mm_Per_mV = 0// 增益（灵敏度）
 
     // 每次绘制的数据量。避免数据太多，1秒钟绘制不完，造成界面延迟严重。
     // 因为 scheduleFlow 循环任务在间隔时间太短或者处理业务耗时太长时会造成误差太多。
