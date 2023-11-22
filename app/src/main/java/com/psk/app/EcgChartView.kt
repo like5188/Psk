@@ -51,8 +51,8 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     private val mm_Per_mV = 10// 增益（灵敏度）。1倍：10mm/mV
     private val sampleRate = 125// 采样率
 
-    private val recommendInterval = 30.0// 建议循环间隔时间
     private val interval = 1000 / sampleRate// 绘制每个数据的间隔时间
+    private val recommendInterval = 30.0// 建议循环间隔时间
 
     // 每次绘制的数据量。避免数据太多，1秒钟绘制不完，造成界面延迟严重。
     // 因为 scheduleFlow 循环任务在间隔时间太短或者处理业务耗时太长时会造成误差太多。
