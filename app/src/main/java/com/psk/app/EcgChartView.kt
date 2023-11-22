@@ -43,11 +43,12 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     private val dataPaint by lazy {
         Paint().apply {
             color = Color.parseColor("#44C71E")
-            strokeWidth = 1f
+            strokeWidth = 3f
             style = Paint.Style.STROKE
             isAntiAlias = true
         }
     }
+    private val drawBg = false// 是否绘制背景网格
 
     // 每次绘制的数据量。避免数据太多，1秒钟绘制不完，造成界面延迟严重。
     // 因为 scheduleFlow 循环任务在间隔时间太短或者处理业务耗时太长时会造成误差太多。
@@ -113,11 +114,13 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
             yOffset = axisXCount * gridSpace.toFloat()
             maxDataCount = (width / stepX).toInt()
             // 绘制背景到bitmap中
-            bgBitmap?.recycle()
-            bgBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888).apply {
-                val canvas = Canvas(this)
-                drawHLine(canvas)
-                drawVLine(canvas)
+            if (drawBg) {
+                bgBitmap?.recycle()
+                bgBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888).apply {
+                    val canvas = Canvas(this)
+                    drawHLine(canvas)
+                    drawVLine(canvas)
+                }
             }
             println("onSizeChanged width=$width height=$height hLineCount=$hLineCount vLineCount=$vLineCount axisXCount=$axisXCount yOffset=$yOffset maxDataCount=$maxDataCount")
             cd2.countDown()
@@ -170,7 +173,6 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
             }
         }
         if (drawDataList.isEmpty()) return
-        println("drawData ${notDrawDataList.size} ${drawDataList.size}")
         dataPath.reset()
         var x = 0f
         dataPath.moveTo(x, drawDataList.first())
