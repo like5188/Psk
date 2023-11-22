@@ -76,6 +76,9 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
      * @param sampleRate    采样率
      */
     fun init(sampleRate: Int) {
+        if (sampleRate <= 0) {
+            return
+        }
         stepX = gridSpace * MM_PER_S / sampleRate.toFloat()
 
         val interval = 1000 / sampleRate// 绘制每个数据的间隔时间
