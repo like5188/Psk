@@ -186,8 +186,9 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         dataPath.moveTo(x, drawDataList.first())
         (1 until drawDataList.size).forEach {
             x += stepX
-            dataPath.lineTo(x, drawDataList[it] + yOffset)
+            dataPath.lineTo(x, drawDataList[it])
         }
+        dataPath.offset(0f, yOffset)
         canvas.drawPath(dataPath, dataPaint)
     }
 
