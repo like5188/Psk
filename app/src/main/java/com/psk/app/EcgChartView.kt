@@ -17,10 +17,9 @@ import androidx.lifecycle.lifecycleScope
 import com.psk.common.util.scheduleFlow
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.concurrent.CountDownLatch
 import kotlin.math.ceil
 
 /*
@@ -55,6 +54,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     // 经测试，大概16毫秒以上循环误差就比较小了，建议使用30毫秒以上，这样绘制效果较好。
     // Math.ceil()向上取整
     private var drawDataCountEachTime = 0
+    private var period = 0L// 循环绘制周期间隔
 
     private var gridSpace = 0// 一个小格子对应的像素，即1mm对应的像素。px/mm
     private var hLineCount = 0// 水平线的数量
@@ -69,7 +69,15 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     private val drawDataList = mutableListOf<Float>()// 需要绘制的数据集合
     private val dataPath = Path()
 
-    private var scheduleFlow: Flow<Long>? = null
+    // 保证init(sampleRate: Int)方法执行之后才执行onSizeChanged()方法中的计算代码，因为后者计算依赖前者。
+    private val cd1 by lazy {
+        CountDownLatch(1)
+    }
+
+    // 保证onSizeChanged()方法中的计算代码执行之后才执行onSurfaceDraw()方法中的代码，否则会造成period没有计算，从而造成绘制周期不对。
+    private val cd2 by lazy {
+        CountDownLatch(1)
+    }
 
     init {
         // 1mm对应的像素值
@@ -84,38 +92,36 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         if (sampleRate <= 0) {
             return@withContext
         }
-        if (scheduleFlow != null) return@withContext
         // 根据采样率计算
         stepX = gridSpace * MM_PER_S / sampleRate.toFloat()
         val interval = 1000 / sampleRate// 绘制每个数据的间隔时间
         val recommendInterval = 30.0// 建议循环间隔时间
         drawDataCountEachTime = if (interval < recommendInterval) ceil(recommendInterval / interval).toInt() else interval
-        val flow = scheduleFlow(0, 1000L / sampleRate * drawDataCountEachTime)
-        println("sampleRate=$sampleRate stepX=$stepX drawDataCountEachTime=$drawDataCountEachTime")
-
-        while (width <= 0 || height <= 0) {
-            delay(1)
-        }
-        // 根据视图宽高计算
-        hLineCount = height / gridSpace
-        vLineCount = width / gridSpace
-        val axisXCount = (hLineCount - hLineCount % 5) / 2
-        yOffset = axisXCount * gridSpace.toFloat()
-        maxDataCount = (width / stepX).toInt()
-        // 绘制背景到bitmap中
-        bgBitmap?.recycle()
-        bgBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888).apply {
-            val canvas = Canvas(this)
-            drawHLine(canvas)
-            drawVLine(canvas)
-        }
-        println("width=$width height=$height hLineCount=$hLineCount vLineCount=$vLineCount axisXCount=$axisXCount yOffset=$yOffset maxDataCount=$maxDataCount")
-        scheduleFlow = flow
+        period = 1000L / sampleRate * drawDataCountEachTime
+        println("init sampleRate=$sampleRate stepX=$stepX drawDataCountEachTime=$drawDataCountEachTime period=$period")
+        cd1.countDown()
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        println("onSizeChanged")
+        findViewTreeLifecycleOwner()?.lifecycleScope?.launch(Dispatchers.IO) {
+            cd1.await()
+            // 根据视图宽高计算
+            hLineCount = height / gridSpace
+            vLineCount = width / gridSpace
+            val axisXCount = (hLineCount - hLineCount % 5) / 2
+            yOffset = axisXCount * gridSpace.toFloat()
+            maxDataCount = (width / stepX).toInt()
+            // 绘制背景到bitmap中
+            bgBitmap?.recycle()
+            bgBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888).apply {
+                val canvas = Canvas(this)
+                drawHLine(canvas)
+                drawVLine(canvas)
+            }
+            println("onSizeChanged width=$width height=$height hLineCount=$hLineCount vLineCount=$vLineCount axisXCount=$axisXCount yOffset=$yOffset maxDataCount=$maxDataCount")
+            cd2.countDown()
+        }
     }
 
     /**
@@ -129,12 +135,10 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         })
     }
 
-    override suspend fun onSurfaceDraw(holder: SurfaceHolder) {
-        while (scheduleFlow == null) {
-            delay(1)
-        }
+    override suspend fun onSurfaceDraw(holder: SurfaceHolder) = withContext(Dispatchers.IO) {
+        cd2.await()
         println("onSurfaceDraw start draw")
-        scheduleFlow?.collect {
+        scheduleFlow(0, period).collect {
             draw(holder) {
                 drawBg(it)
                 drawData(it)
@@ -231,7 +235,6 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
      下面的三个函数是 实现 SurfaceHolder.Callback 接口方法
      */
     override fun surfaceDestroyed(holder: SurfaceHolder) {
-        println("surfaceDestroyed")
         scheduleJob?.cancel()
         scheduleJob = null
     }
@@ -239,9 +242,9 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
     }
 
+    // 在onSizeChanged()方法之后回调
     override fun surfaceCreated(holder: SurfaceHolder) {
-        println("surfaceCreated")
-        scheduleJob = findViewTreeLifecycleOwner()?.lifecycleScope?.launch(Dispatchers.Default) {
+        scheduleJob = findViewTreeLifecycleOwner()?.lifecycleScope?.launch {
             onSurfaceDraw(holder)
         }
     }
