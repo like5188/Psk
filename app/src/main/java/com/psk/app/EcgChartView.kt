@@ -47,8 +47,6 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         }
     }
 
-    private var mm_Per_mV = 0// 增益（灵敏度）
-
     // 每次绘制的数据量。避免数据太多，1秒钟绘制不完，造成界面延迟严重。
     // 因为 scheduleFlow 循环任务在间隔时间太短或者处理业务耗时太长时会造成误差太多。
     // 经测试，大概16毫秒以上循环误差就比较小了，建议使用30毫秒以上，这样绘制效果较好。
@@ -76,19 +74,16 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
 
     /**
      * @param sampleRate    采样率
-     * @param mm_Per_s      走速（速度）。默认为标准值：25mm/s
-     * @param mm_Per_mV     增益（灵敏度）。默认为1倍：10mm/mV
      */
-    fun init(sampleRate: Int, mm_Per_s: Int = 25, mm_Per_mV: Int = 10) {
-        this.mm_Per_mV = mm_Per_mV
-        stepX = gridSpace * mm_Per_s / sampleRate.toFloat()
+    fun init(sampleRate: Int) {
+        stepX = gridSpace * MM_PER_S / sampleRate.toFloat()
 
         val interval = 1000 / sampleRate// 绘制每个数据的间隔时间
         val recommendInterval = 30.0// 建议循环间隔时间
         drawDataCountEachTime = if (interval < recommendInterval) ceil(recommendInterval / interval).toInt() else interval
 
         period = 1000L / sampleRate * drawDataCountEachTime
-        println("gridSpace=$gridSpace stepX=$stepX sampleRate=$sampleRate mm_Per_s=$mm_Per_s mm_Per_mV=$mm_Per_mV drawDataCountEachTime=$drawDataCountEachTime period=$period")
+        println("gridSpace=$gridSpace stepX=$stepX sampleRate=$sampleRate MM_PER_S=$MM_PER_S MM_PER_MV=$MM_PER_MV drawDataCountEachTime=$drawDataCountEachTime period=$period")
     }
 
     /**
@@ -97,7 +92,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     fun addData(data: List<Float>) {
         notDrawDataList.addAll(data.map {
             // 把uV电压值转换成y轴坐标值
-            val mm = it * mm_Per_mV// mV转mm
+            val mm = it * MM_PER_MV// mV转mm
             mm * gridSpace// mm转px
         })
     }
@@ -196,6 +191,10 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         }
     }
 
+    companion object {
+        private const val MM_PER_S = 25// 走速（速度）。默认为标准值：25mm/s
+        private const val MM_PER_MV = 10// 增益（灵敏度）。默认为1倍：10mm/mV
+    }
 }
 
 abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : SurfaceView(context, attrs), SurfaceHolder.Callback {
