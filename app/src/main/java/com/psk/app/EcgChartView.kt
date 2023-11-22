@@ -68,8 +68,8 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     private var maxDataCount = 0// 能显示的最大数据量
     private val dashPathEffect = DashPathEffect(floatArrayOf(1f, 1f), 0f)// 虚线
     private var bgBitmap: Bitmap? = null// 背景图片
-    private val notDrawData = mutableListOf<Float>()// 未绘制的数据
-    private val drawData = mutableListOf<Float>()// 需要绘制的数据
+    private val notDrawDataList = mutableListOf<Float>()// 未绘制的数据集合
+    private val drawDataList = mutableListOf<Float>()// 需要绘制的数据集合
     private val dataPath = Path()
 
     init {
@@ -83,7 +83,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
      * 添加数据，数据的单位是 mV。
      */
     fun addData(data: List<Float>) {
-        notDrawData.addAll(data.map {
+        notDrawDataList.addAll(data.map {
             // 把uV电压值转换成y轴坐标值
             val mm = it * mm_Per_mV// mV转mm
             mm * gridSpace// mm转px
@@ -128,21 +128,21 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     // 画心电数据
     private fun drawData(canvas: Canvas) {
         repeat(drawDataCountEachTime) {
-            notDrawData.removeFirstOrNull()?.let {
-                drawData.add(it)
+            notDrawDataList.removeFirstOrNull()?.let {
+                drawDataList.add(it)
             }
         }
         // 最多只绘制 maxDataCount 个数据
-        if (maxDataCount > 0 && drawData.size > maxDataCount) {
-            repeat(drawData.size - maxDataCount) {
-                drawData.removeFirst()
+        if (maxDataCount > 0 && drawDataList.size > maxDataCount) {
+            repeat(drawDataList.size - maxDataCount) {
+                drawDataList.removeFirst()
             }
         }
-        if (drawData.isEmpty()) return
+        if (drawDataList.isEmpty()) return
         dataPath.reset()
         var x = 0f
-        dataPath.moveTo(x, drawData.first())
-        drawData.forEach {
+        dataPath.moveTo(x, drawDataList.first())
+        drawDataList.forEach {
             x += stepX
             dataPath.lineTo(x, it + yOffset)
         }
