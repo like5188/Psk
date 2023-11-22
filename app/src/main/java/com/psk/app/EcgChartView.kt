@@ -184,9 +184,9 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         dataPath.reset()
         var x = 0f
         dataPath.moveTo(x, drawDataList.first())
-        drawDataList.forEach {
+        (1 until drawDataList.size).forEach {
             x += stepX
-            dataPath.lineTo(x, it + yOffset)
+            dataPath.lineTo(x, drawDataList[it] + yOffset)
         }
         canvas.drawPath(dataPath, dataPaint)
     }
@@ -269,8 +269,7 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
 
     protected fun draw(holder: SurfaceHolder, onDraw: (Canvas) -> Unit) {
         var canvas: Canvas? = null
-        try {
-            /*
+        try {/*
             用了两个画布，一个进行临时的绘图，一个进行最终的绘图，这样就叫做双缓冲
             frontCanvas：实际显示的canvas。
             backCanvas：存储的是上一次更改前的canvas。
