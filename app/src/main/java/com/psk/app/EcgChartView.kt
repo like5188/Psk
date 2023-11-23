@@ -21,6 +21,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.LinkedList
+import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.SynchronousQueue
 import kotlin.math.ceil
 import kotlin.system.measureTimeMillis
@@ -66,8 +69,8 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     private var maxDataCount = 0// 能显示的最大数据量
 
     private var bgBitmap: Bitmap? = null// 背景图片
-    private val notDrawDataList = mutableListOf<Float>()// 未绘制的数据集合
-    private val drawDataList = mutableListOf<Float>()// 需要绘制的数据集合
+    private val notDrawDataQueue = LinkedBlockingQueue<Float>()// 未绘制的数据集合
+    private val drawDataList = LinkedList<Float>()// 需要绘制的数据集合
 
     init {
         // 1mm对应的像素值
@@ -131,20 +134,21 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
      */
     fun addData(data: List<Float>) {
         if (data.isEmpty()) return
-        notDrawDataList.addAll(data.map {
+        data.forEach {
             // 把uV电压值转换成y轴坐标值
             val mm = it * MM_PER_MV// mV转mm
-            mm * gridSpace// mm转px
-        })
+            val px = mm * gridSpace// mm转px
+            notDrawDataQueue.put(px)// put 如果队列已满，阻塞
+        }
     }
 
-    override suspend fun onCalcPath(): Path {
-        while (notDrawDataList.isEmpty()) {
-            delay(1)
-        }
-        repeat(drawDataCountEachTime) {
-            notDrawDataList.removeFirstOrNull()?.let {
-                drawDataList.add(it)
+    override suspend fun onCalcPath(): Path = withContext(Dispatchers.IO) {
+        // 总共需要取出 drawDataCountEachTime 个数据
+        drawDataList.addLast(notDrawDataQueue.take())// take 当队列为空，阻塞。保证至少有一个数据需要绘制。
+        repeat(drawDataCountEachTime - 1) {
+            // poll 弹出队顶元素，队列为空时返回null。此时不用 take 方法是因为避免没有那么多数据。
+            notDrawDataQueue.poll()?.let {
+                drawDataList.addLast(it)
             }
         }
         // 最多只绘制 maxDataCount 个数据
@@ -155,16 +159,19 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         }
         val dataPath = Path()
         var x = 0f
-        dataPath.moveTo(x, drawDataList.first())
-        (1 until drawDataList.size).forEach {
+        drawDataList.forEachIndexed { index, fl ->
+            if (index == 0) {
+                dataPath.moveTo(x, fl)
+            } else {
+                dataPath.lineTo(x, fl)
+            }
             x += stepX
-            dataPath.lineTo(x, drawDataList[it])
         }
         dataPath.offset(0f, yOffset)
-        return dataPath
+        dataPath
     }
 
-    override fun onSurfaceDraw(canvas: Canvas, path: Path) {
+    override fun onCircleDraw(canvas: Canvas, path: Path) {
         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
         drawBg(canvas)
         drawData(canvas, path)
@@ -258,8 +265,8 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
                         // 获取到的 Canvas 对象还是继续上次的 Canvas 对象，而不是一个新的 Canvas 对象。因此，之前的绘图操作都会被保留。
                         // 在绘制前，通过 drawColor() 方法来进行清屏操作。
                         canvas?.let {
-                            Log.v(TAG, "onSurfaceDraw")
-                            onSurfaceDraw(it, pathQueue.take())
+                            Log.v(TAG, "onCircleDraw")
+                            onCircleDraw(it, pathQueue.take())
                         }
                     } finally {
                         // 使用 backCanvas 替换 frontCanvas 作为新的 frontCanvas，原来的 frontCanvas 将切换到后台作为 backCanvas。
@@ -280,9 +287,7 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
         calcPathJob = findViewTreeLifecycleOwner()?.lifecycleScope?.launch(Dispatchers.IO) {
             while (isActive) {
                 Log.v(TAG, "onCalcPath")
-                onCalcPath()?.let {
-                    pathQueue.put(it)
-                }
+                pathQueue.put(onCalcPath())
                 delay(1)
             }
         }
@@ -304,9 +309,9 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
     override fun surfaceCreated(holder: SurfaceHolder) {}
 
     /**
-     * 绘制
+     * 循环绘制
      */
-    abstract fun onSurfaceDraw(canvas: Canvas, path: Path)
+    abstract fun onCircleDraw(canvas: Canvas, path: Path)
 
     /**
      * 计算路径
