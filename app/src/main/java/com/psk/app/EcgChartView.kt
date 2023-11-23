@@ -123,8 +123,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         )
         pathFactory = CirclePathFactory(gridSize, drawDataCountEachTime, yOffset, stepX, maxDataCount)
         // 启动任务
-        startCalcPathJob()
-        startCircleDrawJob(period)
+        startJob(period)
     }
 
     /**
@@ -224,7 +223,12 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
         holder.setFormat(PixelFormat.TRANSLUCENT)
     }
 
-    protected fun startCircleDrawJob(period: Long) {
+    fun startJob(period: Long) {
+        startCalcPathJob()
+        startCircleDrawJob(period)
+    }
+
+    private fun startCircleDrawJob(period: Long) {
         if (circleDrawJob != null || period <= 0) return
         Log.w(TAG, "startCircleDrawJob period=$period")
         circleDrawJob = findViewTreeLifecycleOwner()?.lifecycleScope?.launch(Dispatchers.IO) {
@@ -252,7 +256,7 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
         }
     }
 
-    protected fun startCalcPathJob() {
+    private fun startCalcPathJob() {
         if (calcPathJob != null) return
         Log.w(TAG, "startCalcPathJob")
         calcPathJob = findViewTreeLifecycleOwner()?.lifecycleScope?.launch(Dispatchers.IO) {
