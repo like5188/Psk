@@ -151,18 +151,19 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         return calcCirclePath()
     }
 
-    var i = 0
+    // 循环效果时，不需要画线的数据的index。即视图中看起来是空白的部分。
+    private var spaceIndex = 0
 
     /**
      * 循环效果
      */
     private suspend fun calcCirclePath(): Path = withContext(Dispatchers.IO) {
         if (drawDataList.size == maxDataCount) {
-            drawDataList.removeAt(i)
-            drawDataList.add(i, notDrawDataQueue.take())
-            i++
-            if (i == maxDataCount) {
-                i = 0
+            drawDataList.removeAt(spaceIndex)
+            drawDataList.add(spaceIndex, notDrawDataQueue.take())
+            spaceIndex++
+            if (spaceIndex == maxDataCount) {
+                spaceIndex = 0
             }
         } else {
             drawDataList.addLast(notDrawDataQueue.take())
@@ -170,11 +171,11 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         repeat(drawDataCountEachTime - 1) {
             notDrawDataQueue.poll()?.let {
                 if (drawDataList.size == maxDataCount) {
-                    drawDataList.removeAt(i)
-                    drawDataList.add(i, it)
-                    i++
-                    if (i == maxDataCount) {
-                        i = 0
+                    drawDataList.removeAt(spaceIndex)
+                    drawDataList.add(spaceIndex, it)
+                    spaceIndex++
+                    if (spaceIndex == maxDataCount) {
+                        spaceIndex = 0
                     }
                 } else {
                     drawDataList.addLast(it)
@@ -183,7 +184,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         }
         val dataPath = Path()
         drawDataList.forEachIndexed { index, fl ->
-            if (index == i) {
+            if (index == spaceIndex) {
                 dataPath.moveTo(index * stepX, fl)
             } else {
                 dataPath.lineTo(index * stepX, fl)
