@@ -180,7 +180,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         val dataPath = Path()
         drawDataList.forEachIndexed { index, fl ->
             if (index == spaceIndex) {
-                dataPath.moveTo(index * stepX, fl)
+                dataPath.moveTo(index * stepX, fl)// 达到空白效果
             } else {
                 dataPath.lineTo(index * stepX, fl)
             }
