@@ -153,14 +153,8 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
             }
         }
         val dataPath = Path()
-        var x = 0f
         drawDataList.forEachIndexed { index, fl ->
-            if (index == 0) {
-                dataPath.moveTo(x, fl)
-            } else {
-                dataPath.lineTo(x, fl)
-            }
-            x += stepX
+            dataPath.lineTo(index * stepX, fl)
         }
         dataPath.offset(0f, yOffset)
         dataPath
