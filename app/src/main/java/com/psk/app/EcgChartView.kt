@@ -9,12 +9,15 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.PixelFormat
 import android.graphics.PorterDuff
+import android.text.TextPaint
 import android.util.AttributeSet
 import android.util.Log
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.lifecycle.lifecycleScope
+import com.like.common.util.dp
+import com.like.common.util.sp
 import com.psk.common.util.scheduleFlow
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -35,6 +38,16 @@ import kotlin.math.ceil
     注意：如果采用非1倍电压，在计算结果时需要还原。
  */
 class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView(context, attrs) {
+    // 画文字的画笔
+    private val textPaint by lazy {
+        TextPaint().apply {
+            color = Color.parseColor("#88000000")
+            textSize = 12f.sp
+            strokeWidth = 1f
+            isAntiAlias = true
+        }
+    }
+
     // 画网格的画笔
     private val gridPaint by lazy {
         Paint().apply {
@@ -160,6 +173,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     override fun onCircleDraw(canvas: Canvas, path: Path) {
         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
         drawBg(canvas)
+        drawText(canvas)
         drawData(canvas, path)
     }
 
@@ -169,6 +183,11 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         if (!bmp.isRecycled) {
             canvas.drawBitmap(bmp, 0f, 0f, null)
         }
+    }
+
+    // 画文字
+    private fun drawText(canvas: Canvas) {
+        canvas.drawText("${MM_PER_S}mm/s        ${MM_PER_MV}mm/mV", 20f.dp, height.toFloat() - 10.dp, textPaint)
     }
 
     // 画心电数据
