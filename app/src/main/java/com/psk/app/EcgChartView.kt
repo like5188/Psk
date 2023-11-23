@@ -38,6 +38,11 @@ import kotlin.math.ceil
     注意：如果采用非1倍电压，在计算结果时需要还原。
  */
 class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView(context, attrs) {
+    companion object {
+        private const val MM_PER_S = 25// 走速（速度）。默认为标准值：25mm/s
+        private const val MM_PER_MV = 10// 增益（灵敏度）。默认为1倍：10mm/mV
+    }
+
     // 画文字的画笔
     private val textPaint by lazy {
         TextPaint().apply {
@@ -273,10 +278,6 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         }
     }
 
-    companion object {
-        private const val MM_PER_S = 25// 走速（速度）。默认为标准值：25mm/s
-        private const val MM_PER_MV = 10// 增益（灵敏度）。默认为1倍：10mm/mV
-    }
 }
 
 abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : SurfaceView(context, attrs), SurfaceHolder.Callback {
