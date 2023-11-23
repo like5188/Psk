@@ -125,6 +125,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
             TAG,
             "w=$w h=$h hLineCount=$hLineCount vLineCount=$vLineCount axisXCount=$axisXCount yOffset=$yOffset maxDataCount=$maxDataCount"
         )
+        // 启动任务
         startCalcPathJob()
         startCircleDrawJob(period)
     }
