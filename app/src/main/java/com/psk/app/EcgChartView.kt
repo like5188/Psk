@@ -241,23 +241,6 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
         holder.setFormat(PixelFormat.TRANSLUCENT)
     }
 
-    /*
-     下面的三个函数是 实现 SurfaceHolder.Callback 接口方法
-     */
-    override fun surfaceDestroyed(holder: SurfaceHolder) {
-        Log.w(TAG, "surfaceDestroyed")
-        circleDrawJob?.cancel()
-        circleDrawJob = null
-        calcPathJob?.cancel()
-        calcPathJob = null
-    }
-
-    override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
-    }
-
-    override fun surfaceCreated(holder: SurfaceHolder) {
-    }
-
     protected fun startCircleDrawJob(period: Long) {
         if (circleDrawJob != null || period <= 0) return
         Log.w(TAG, "startCircleDrawJob period=$period")
@@ -301,6 +284,21 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
             }
         }
     }
+
+    /*
+     下面的三个函数是 实现 SurfaceHolder.Callback 接口方法
+     */
+    override fun surfaceDestroyed(holder: SurfaceHolder) {
+        Log.w(TAG, "surfaceDestroyed")
+        circleDrawJob?.cancel()
+        circleDrawJob = null
+        calcPathJob?.cancel()
+        calcPathJob = null
+    }
+
+    override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {}
+
+    override fun surfaceCreated(holder: SurfaceHolder) {}
 
     /**
      * 绘制
