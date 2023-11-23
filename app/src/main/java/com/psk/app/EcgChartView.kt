@@ -10,6 +10,7 @@ import android.graphics.Path
 import android.graphics.PixelFormat
 import android.graphics.PorterDuff
 import android.util.AttributeSet
+import android.util.Log
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import androidx.lifecycle.findViewTreeLifecycleOwner
@@ -20,7 +21,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.concurrent.CountDownLatch
+import java.util.concurrent.SynchronousQueue
 import kotlin.math.ceil
+import kotlin.system.measureTimeMillis
 
 /*
     实际心电图纸是由1mm*1mm的小方格组成，每1大格分为5小格
@@ -69,7 +72,6 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     private val dashPathEffect = DashPathEffect(floatArrayOf(1f, 1f), 0f)// 虚线
     private val notDrawDataList = mutableListOf<Float>()// 未绘制的数据集合
     private val drawDataList = mutableListOf<Float>()// 需要绘制的数据集合
-    private val dataPath = Path()
 
     // 保证calcParams方法执行之后才执行scheduleFlow(0, period)，因为后者依赖前者的period。
     private val countDownLatch by lazy {
@@ -79,21 +81,21 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     init {
         // 1mm对应的像素值
         gridSpace = (context.resources.displayMetrics.densityDpi / 25.4f).toInt()
-        println("MM_PER_S=$MM_PER_S MM_PER_MV=$MM_PER_MV gridSpace=$gridSpace")
+        Log.i(TAG, "MM_PER_S=$MM_PER_S MM_PER_MV=$MM_PER_MV gridSpace=$gridSpace")
     }
 
     /**
      * @param sampleRate    采样率
      */
     fun init(sampleRate: Int) {
-        println("init")
+        Log.w(TAG, "init")
         this.sampleRate = sampleRate
         calcParams(sampleRate, width, height)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        println("onSizeChanged")
+        Log.w(TAG, "onSizeChanged")
         calcParams(sampleRate, w, h)
     }
 
@@ -108,7 +110,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         val recommendInterval = 30.0// 建议循环间隔时间
         drawDataCountEachTime = if (interval < recommendInterval) ceil(recommendInterval / interval).toInt() else interval
         period = 1000L / sampleRate * drawDataCountEachTime
-        println("sampleRate=$sampleRate stepX=$stepX drawDataCountEachTime=$drawDataCountEachTime period=$period")
+        Log.i(TAG, "sampleRate=$sampleRate stepX=$stepX drawDataCountEachTime=$drawDataCountEachTime period=$period")
 
         // 根据视图宽高计算
         hLineCount = h / gridSpace
@@ -125,7 +127,10 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
                 drawVLine(canvas)
             }
         }
-        println("w=$w h=$h hLineCount=$hLineCount vLineCount=$vLineCount axisXCount=$axisXCount yOffset=$yOffset maxDataCount=$maxDataCount")
+        Log.i(
+            TAG,
+            "w=$w h=$h hLineCount=$hLineCount vLineCount=$vLineCount axisXCount=$axisXCount yOffset=$yOffset maxDataCount=$maxDataCount"
+        )
         countDownLatch.countDown()
     }
 
@@ -139,35 +144,11 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
             val mm = it * MM_PER_MV// mV转mm
             mm * gridSpace// mm转px
         })
+        startCalcPathJob()
         startCircleDrawJob()
     }
 
-    override suspend fun onSurfaceDraw(holder: SurfaceHolder) = withContext(Dispatchers.IO) {
-        countDownLatch.await()
-        println("onSurfaceDraw period=$period")
-        scheduleFlow(0, period).collect {
-            draw(holder) {
-                if (notDrawDataList.isEmpty()) {
-                    cancelCircleDrawJob()
-                    return@draw
-                }
-                it.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
-                drawBg(it)
-                drawData(it)
-            }
-        }
-    }
-
-    // 画背景图片
-    private fun drawBg(canvas: Canvas) {
-        val bmp = bgBitmap ?: return
-        if (!bmp.isRecycled) {
-            canvas.drawBitmap(bmp, 0f, 0f, null)
-        }
-    }
-
-    // 画心电数据
-    private fun drawData(canvas: Canvas) {
+    override fun onCalcPath(): Path? {
         if (notDrawDataList.isNotEmpty()) {
             repeat(drawDataCountEachTime) {
                 notDrawDataList.removeFirstOrNull()?.let {
@@ -181,17 +162,52 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
                 }
             }
         }
-        if (drawDataList.isEmpty()) return
-
-        dataPath.reset()
-        var x = 0f
-        dataPath.moveTo(x, drawDataList.first())
-        (1 until drawDataList.size).forEach {
-            x += stepX
-            dataPath.lineTo(x, drawDataList[it])
+        return if (drawDataList.isNotEmpty()) {
+            val dataPath = Path()
+            var x = 0f
+            dataPath.moveTo(x, drawDataList.first())
+            (1 until drawDataList.size).forEach {
+                x += stepX
+                dataPath.lineTo(x, drawDataList[it])
+            }
+            dataPath.offset(0f, yOffset)
+            dataPath
+        } else {
+            null
         }
-        dataPath.offset(0f, yOffset)
-        canvas.drawPath(dataPath, dataPaint)
+    }
+
+    override suspend fun onSurfaceDraw(holder: SurfaceHolder) = withContext(Dispatchers.IO) {
+        countDownLatch.await()
+        Log.w(TAG, "onSurfaceDraw period=$period")
+        scheduleFlow(0, period).collect {
+            val cost = measureTimeMillis {
+                draw(holder) {
+                    if (notDrawDataList.isEmpty()) {
+                        cancelCalcPathJob()
+                        cancelCircleDrawJob()
+                        return@draw
+                    }
+                    it.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
+                    drawBg(it)
+                    drawData(it)
+                }
+            }
+            Log.d(TAG, "耗时：$cost ms 数据量：${drawDataList.size}")
+        }
+    }
+
+    // 画背景图片
+    private fun drawBg(canvas: Canvas) {
+        val bmp = bgBitmap ?: return
+        if (!bmp.isRecycled) {
+            canvas.drawBitmap(bmp, 0f, 0f, null)
+        }
+    }
+
+    // 画心电数据
+    private fun drawData(canvas: Canvas) {
+        canvas.drawPath(takePath(), dataPaint)
     }
 
     // 画水平线
@@ -238,6 +254,12 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
     // 循环绘制任务
     private var circleDrawJob: Job? = null
 
+    // 计算任务
+    private var calcPathJob: Job? = null
+
+    // Path 队列，放一个才能取一个，否则阻塞。
+    private val calcPathQueue = SynchronousQueue<Path>()
+
     init {
         holder.addCallback(this)
         // 画布透明处理
@@ -245,11 +267,14 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
         holder.setFormat(PixelFormat.TRANSLUCENT)
     }
 
+    protected fun takePath() = calcPathQueue.take()
+
     /*
      下面的三个函数是 实现 SurfaceHolder.Callback 接口方法
      */
     override fun surfaceDestroyed(holder: SurfaceHolder) {
         cancelCircleDrawJob()
+        cancelCalcPathJob()
     }
 
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
@@ -260,16 +285,34 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
 
     protected fun startCircleDrawJob() {
         if (circleDrawJob != null) return
-        println("startCircleDrawJob")
+        Log.w(TAG, "startCircleDrawJob")
         circleDrawJob = findViewTreeLifecycleOwner()?.lifecycleScope?.launch {
             onSurfaceDraw(holder)
         }
     }
 
     protected fun cancelCircleDrawJob() {
-        println("cancelCircleDrawJob")
+        Log.w(TAG, "cancelCircleDrawJob")
         circleDrawJob?.cancel()
         circleDrawJob = null
+    }
+
+    protected fun startCalcPathJob() {
+        if (calcPathJob != null) return
+        Log.w(TAG, "startCalcPathJob")
+        calcPathJob = findViewTreeLifecycleOwner()?.lifecycleScope?.launch(Dispatchers.IO) {
+            while (true) {
+                onCalcPath()?.let {
+                    calcPathQueue.put(it)
+                }
+            }
+        }
+    }
+
+    protected fun cancelCalcPathJob() {
+        Log.w(TAG, "cancelCalcPathJob")
+        calcPathJob?.cancel()
+        calcPathJob = null
     }
 
     protected fun draw(holder: SurfaceHolder, onDraw: (Canvas) -> Unit) {
@@ -299,4 +342,11 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
      */
     abstract suspend fun onSurfaceDraw(holder: SurfaceHolder)
 
+    /**
+     * 计算路径
+     */
+    abstract fun onCalcPath(): Path?
+
 }
+
+private const val TAG = "EcgChartView"
