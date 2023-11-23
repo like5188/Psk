@@ -105,7 +105,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         // 根据视图宽高计算
         val hLineCount = h / gridSpace// 水平线的数量
         val vLineCount = w / gridSpace// 垂直线的数量
-        val axisXCount = (hLineCount - hLineCount % 5) / 2
+        val axisXCount = (hLineCount - hLineCount % 5) / 2// x坐标轴需要偏移的格数
         yOffset = axisXCount * gridSpace.toFloat()
         maxDataCount = (w / stepX).toInt()
         // 绘制背景到bitmap中
