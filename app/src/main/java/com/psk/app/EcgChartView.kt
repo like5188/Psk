@@ -152,6 +152,32 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     }
 
     /**
+     * 循环效果
+     */
+    private suspend fun calcCirclePath(): Path = withContext(Dispatchers.IO) {
+        // 总共需要取出 drawDataCountEachTime 个数据
+        drawDataList.addLast(notDrawDataQueue.take())// take 当队列为空，阻塞。保证至少有一个数据需要绘制。
+        repeat(drawDataCountEachTime - 1) {
+            // poll 弹出队顶元素，队列为空时返回null。此时不用 take 方法是因为避免没有那么多数据。
+            notDrawDataQueue.poll()?.let {
+                drawDataList.addLast(it)
+            }
+        }
+        // 最多只绘制 maxDataCount 个数据
+        if (maxDataCount > 0 && drawDataList.size > maxDataCount) {
+            repeat(drawDataList.size - maxDataCount) {
+                drawDataList.removeFirst()
+            }
+        }
+        val dataPath = Path()
+        drawDataList.forEachIndexed { index, fl ->
+            dataPath.lineTo(index * stepX, fl)
+        }
+        dataPath.offset(0f, yOffset)
+        dataPath
+    }
+
+    /**
      * 滚动效果
      */
     private suspend fun calcScrollPath(): Path = withContext(Dispatchers.IO) {
