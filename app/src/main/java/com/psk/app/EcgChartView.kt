@@ -61,14 +61,11 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     private var sampleRate = 0// 采样率
 
     private var gridSpace = 0// 一个小格子对应的像素，即1mm对应的像素。px/mm
-    private var hLineCount = 0// 水平线的数量
-    private var vLineCount = 0// 垂直线的数量
     private var yOffset = 0f// y轴偏移。因为原始的x轴在视图顶部。所以需要把x轴移动到视图垂直中心位置
     private var stepX = 0f// x方向的步进，两个数据在x轴方向的距离。px
     private var maxDataCount = 0// 能显示的最大数据量
 
     private var bgBitmap: Bitmap? = null// 背景图片
-    private val dashPathEffect = DashPathEffect(floatArrayOf(1f, 1f), 0f)// 虚线
     private val notDrawDataList = mutableListOf<Float>()// 未绘制的数据集合
     private val drawDataList = mutableListOf<Float>()// 需要绘制的数据集合
 
@@ -107,8 +104,8 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         Log.i(TAG, "sampleRate=$sampleRate stepX=$stepX drawDataCountEachTime=$drawDataCountEachTime period=$period")
 
         // 根据视图宽高计算
-        hLineCount = h / gridSpace
-        vLineCount = w / gridSpace
+        val hLineCount = h / gridSpace// 水平线的数量
+        val vLineCount = w / gridSpace// 垂直线的数量
         val axisXCount = (hLineCount - hLineCount % 5) / 2
         yOffset = axisXCount * gridSpace.toFloat()
         maxDataCount = (w / stepX).toInt()
@@ -117,8 +114,8 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
             bgBitmap?.recycle()
             bgBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888).apply {
                 val canvas = Canvas(this)
-                drawHLine(canvas)
-                drawVLine(canvas)
+                drawHLine(canvas, hLineCount, w)
+                drawVLine(canvas, vLineCount, h)
             }
         }
         Log.i(
@@ -186,10 +183,11 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     }
 
     // 画水平线
-    private fun drawHLine(canvas: Canvas) {
+    private fun drawHLine(canvas: Canvas, count: Int, w: Int) {
+        val dashPathEffect = DashPathEffect(floatArrayOf(1f, 1f), 0f)// 虚线
         val startX = 0f
-        val stopX = width.toFloat()
-        (0..hLineCount).forEach {
+        val stopX = w.toFloat()
+        (0..count).forEach {
             if (it % 5 == 0) {
                 gridPaint.pathEffect = null
                 gridPaint.alpha = 255
@@ -203,10 +201,11 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     }
 
     // 画垂直线
-    private fun drawVLine(canvas: Canvas) {
+    private fun drawVLine(canvas: Canvas, count: Int, h: Int) {
+        val dashPathEffect = DashPathEffect(floatArrayOf(1f, 1f), 0f)// 虚线
         val startY = 0f
-        val stopY = height.toFloat()
-        (0..vLineCount).forEach {
+        val stopY = h.toFloat()
+        (0..count).forEach {
             if (it % 5 == 0) {
                 gridPaint.pathEffect = null
                 gridPaint.alpha = 255
