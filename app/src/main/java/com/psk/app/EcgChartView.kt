@@ -158,28 +158,23 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
      * 循环效果
      */
     private suspend fun calcCirclePath(): Path = withContext(Dispatchers.IO) {
-        if (drawDataList.size == maxDataCount) {
-            drawDataList.removeAt(spaceIndex)
-            drawDataList.add(spaceIndex, notDrawDataQueue.take())
-            spaceIndex++
-            if (spaceIndex == maxDataCount) {
-                spaceIndex = 0
+        fun add(data: Float) {
+            if (drawDataList.size == maxDataCount) {
+                drawDataList.removeAt(spaceIndex)
+                drawDataList.add(spaceIndex, data)
+                spaceIndex++
+                if (spaceIndex == maxDataCount) {
+                    spaceIndex = 0
+                }
+            } else {
+                drawDataList.addLast(data)
             }
-        } else {
-            drawDataList.addLast(notDrawDataQueue.take())
         }
+
+        add(notDrawDataQueue.take())
         repeat(drawDataCountEachTime - 1) {
             notDrawDataQueue.poll()?.let {
-                if (drawDataList.size == maxDataCount) {
-                    drawDataList.removeAt(spaceIndex)
-                    drawDataList.add(spaceIndex, it)
-                    spaceIndex++
-                    if (spaceIndex == maxDataCount) {
-                        spaceIndex = 0
-                    }
-                } else {
-                    drawDataList.addLast(it)
-                }
+                add(it)
             }
         }
         val dataPath = Path()
