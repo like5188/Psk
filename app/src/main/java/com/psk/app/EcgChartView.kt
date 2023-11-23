@@ -54,13 +54,14 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         }
     }
 
+    private var sampleRate = 0// 采样率
+    private var gridSize = 0// 一个小格子对应的像素
+
     // 每次绘制的数据量。避免数据太多，1秒钟绘制不完，造成界面延迟严重。
     // 因为 scheduleFlow 循环任务在间隔时间太短或者处理业务耗时太长时会造成误差太多。
     // 经测试，大概16毫秒以上循环误差就比较小了，建议使用30毫秒以上，这样绘制效果较好。
     // Math.ceil()向上取整
     private var drawDataCountEachTime = 0
-    private var sampleRate = 0// 采样率
-    private var gridSpace = 0// 一个小格子对应的像素，即1mm对应的像素。px/mm
     private var yOffset = 0f// y轴偏移。因为原始的x轴在视图顶部。所以需要把x轴移动到视图垂直中心位置
     private var stepX = 0f// x方向的步进，两个数据在x轴方向的距离。px
     private var maxDataCount = 0// 能显示的最大数据量
@@ -68,45 +69,41 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     private val notDrawDataQueue = LinkedBlockingQueue<Float>()// 未绘制的数据集合
     private val drawDataList = LinkedList<Float>()// 需要绘制的数据集合
 
-    init {
-        // 1mm对应的像素值
-        gridSpace = (context.resources.displayMetrics.densityDpi / 25.4f).toInt()
-        Log.i(TAG, "MM_PER_S=$MM_PER_S MM_PER_MV=$MM_PER_MV gridSpace=$gridSpace")
-    }
-
     /**
      * @param sampleRate    采样率
+     * @param gridSize      一个小格子对应的像素，默认为设备实际1mm对应的像素。
      */
-    fun init(sampleRate: Int) {
+    fun init(sampleRate: Int, gridSize: Int = (context.resources.displayMetrics.densityDpi / 25.4f).toInt()) {
         Log.w(TAG, "init")
         this.sampleRate = sampleRate
-        calcParams(sampleRate, width, height)
+        this.gridSize = gridSize
+        calcParams(gridSize, sampleRate, width, height)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         Log.w(TAG, "onSizeChanged")
-        calcParams(sampleRate, w, h)
+        calcParams(gridSize, sampleRate, w, h)
     }
 
     // 计算相关参数
-    private fun calcParams(sampleRate: Int, w: Int, h: Int) {
-        if (sampleRate <= 0 || w <= 0 || h <= 0) {
+    private fun calcParams(gridSize: Int, sampleRate: Int, w: Int, h: Int) {
+        if (gridSize <= 0 || sampleRate <= 0 || w <= 0 || h <= 0) {
             return
         }
         // 根据采样率计算
-        stepX = gridSpace * MM_PER_S / sampleRate.toFloat()
+        stepX = gridSize * MM_PER_S / sampleRate.toFloat()
         val interval = 1000 / sampleRate// 绘制每个数据的间隔时间
         val recommendInterval = 30.0// 建议循环间隔时间
         drawDataCountEachTime = if (interval < recommendInterval) ceil(recommendInterval / interval).toInt() else interval
         val period = 1000L / sampleRate * drawDataCountEachTime// 循环绘制周期间隔
-        Log.i(TAG, "sampleRate=$sampleRate stepX=$stepX drawDataCountEachTime=$drawDataCountEachTime period=$period")
+        Log.i(TAG, "gridSize=$gridSize sampleRate=$sampleRate stepX=$stepX drawDataCountEachTime=$drawDataCountEachTime period=$period")
 
         // 根据视图宽高计算
-        val hLineCount = h / gridSpace// 水平线的数量
-        val vLineCount = w / gridSpace// 垂直线的数量
+        val hLineCount = h / gridSize// 水平线的数量
+        val vLineCount = w / gridSize// 垂直线的数量
         val axisXCount = (hLineCount - hLineCount % 5) / 2// x坐标轴需要偏移的格数
-        yOffset = axisXCount * gridSpace.toFloat()
+        yOffset = axisXCount * gridSize.toFloat()
         maxDataCount = (w / stepX).toInt()
         // 绘制背景到bitmap中
         bgBitmap?.recycle()
@@ -132,7 +129,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         data.forEach {
             // 把uV电压值转换成y轴坐标值
             val mm = it * MM_PER_MV// mV转mm
-            val px = mm * gridSpace// mm转px
+            val px = mm * gridSize// mm转px
             notDrawDataQueue.put(px)// put 如果队列已满，阻塞
         }
     }
@@ -192,7 +189,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
                 gridPaint.pathEffect = dashPathEffect
                 gridPaint.alpha = 100
             }
-            val y = it * gridSpace.toFloat()
+            val y = it * gridSize.toFloat()
             canvas.drawLine(startX, y, stopX, y, gridPaint)
         }
     }
@@ -210,7 +207,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
                 gridPaint.pathEffect = dashPathEffect
                 gridPaint.alpha = 100
             }
-            val x = it * gridSpace.toFloat()
+            val x = it * gridSize.toFloat()
             canvas.drawLine(x, startY, x, stopY, gridPaint)
         }
     }

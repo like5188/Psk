@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
+import com.like.common.util.dp
 import com.like.common.util.showToast
 import com.psk.app.databinding.ActivityMainBinding
 import com.psk.device.RepositoryManager
@@ -97,6 +98,6 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             RepositoryManager.init(this@MainActivity)
         }
-        mBinding.ecgChartView.init(125)
+        mBinding.ecgChartView.init(125, 10.dp)
     }
 }
