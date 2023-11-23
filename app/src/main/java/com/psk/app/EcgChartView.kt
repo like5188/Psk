@@ -167,6 +167,20 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         } else {
             drawDataList.addLast(notDrawDataQueue.take())
         }
+        repeat(drawDataCountEachTime - 1) {
+            notDrawDataQueue.poll()?.let {
+                if (drawDataList.size == maxDataCount) {
+                    drawDataList.removeAt(i)
+                    drawDataList.add(i, it)
+                    i++
+                    if (i == maxDataCount) {
+                        i = 0
+                    }
+                } else {
+                    drawDataList.addLast(it)
+                }
+            }
+        }
         val dataPath = Path()
         drawDataList.forEachIndexed { index, fl ->
             if (index == i) {
