@@ -18,9 +18,9 @@ import androidx.lifecycle.lifecycleScope
 import com.psk.common.util.scheduleFlow
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.util.concurrent.CountDownLatch
 import java.util.concurrent.SynchronousQueue
 import kotlin.math.ceil
 import kotlin.system.measureTimeMillis
@@ -72,11 +72,6 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     private val dashPathEffect = DashPathEffect(floatArrayOf(1f, 1f), 0f)// 虚线
     private val notDrawDataList = mutableListOf<Float>()// 未绘制的数据集合
     private val drawDataList = mutableListOf<Float>()// 需要绘制的数据集合
-
-    // 保证calcParams方法执行之后才执行scheduleFlow(0, period)，因为后者依赖前者的period。
-    private val countDownLatch by lazy {
-        CountDownLatch(1)
-    }
 
     init {
         // 1mm对应的像素值
@@ -131,7 +126,8 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
             TAG,
             "w=$w h=$h hLineCount=$hLineCount vLineCount=$vLineCount axisXCount=$axisXCount yOffset=$yOffset maxDataCount=$maxDataCount"
         )
-        countDownLatch.countDown()
+        startCalcPathJob()
+        startCircleDrawJob()
     }
 
     /**
@@ -144,57 +140,39 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
             val mm = it * MM_PER_MV// mV转mm
             mm * gridSpace// mm转px
         })
-        startCalcPathJob()
-        startCircleDrawJob()
     }
 
     override fun onCalcPath(): Path? {
-        if (notDrawDataList.isNotEmpty()) {
-            repeat(drawDataCountEachTime) {
-                notDrawDataList.removeFirstOrNull()?.let {
-                    drawDataList.add(it)
-                }
-            }
-            // 最多只绘制 maxDataCount 个数据
-            if (maxDataCount > 0 && drawDataList.size > maxDataCount) {
-                repeat(drawDataList.size - maxDataCount) {
-                    drawDataList.removeFirst()
-                }
+        if (notDrawDataList.isEmpty()) return null
+        repeat(drawDataCountEachTime) {
+            notDrawDataList.removeFirstOrNull()?.let {
+                drawDataList.add(it)
             }
         }
-        return if (drawDataList.isNotEmpty()) {
-            val dataPath = Path()
-            var x = 0f
-            dataPath.moveTo(x, drawDataList.first())
-            (1 until drawDataList.size).forEach {
-                x += stepX
-                dataPath.lineTo(x, drawDataList[it])
+        // 最多只绘制 maxDataCount 个数据
+        if (maxDataCount > 0 && drawDataList.size > maxDataCount) {
+            repeat(drawDataList.size - maxDataCount) {
+                drawDataList.removeFirst()
             }
-            dataPath.offset(0f, yOffset)
-            dataPath
-        } else {
-            null
         }
+        if (drawDataList.isEmpty()) return null
+        val dataPath = Path()
+        var x = 0f
+        dataPath.moveTo(x, drawDataList.first())
+        (1 until drawDataList.size).forEach {
+            x += stepX
+            dataPath.lineTo(x, drawDataList[it])
+        }
+        dataPath.offset(0f, yOffset)
+        return dataPath
     }
 
-    override suspend fun onSurfaceDraw(holder: SurfaceHolder) = withContext(Dispatchers.IO) {
-        countDownLatch.await()
-        Log.w(TAG, "onSurfaceDraw period=$period")
-        scheduleFlow(0, period).collect {
-            val cost = measureTimeMillis {
-                draw(holder) {
-                    if (notDrawDataList.isEmpty()) {
-                        cancelCalcPathJob()
-                        cancelCircleDrawJob()
-                        return@draw
-                    }
-                    it.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
-                    drawBg(it)
-                    drawData(it)
-                }
-            }
-            Log.d(TAG, "耗时：$cost ms 数据量：${drawDataList.size}")
-        }
+    override fun getPeriod(): Long = period
+
+    override fun onSurfaceDraw(canvas: Canvas, path: Path) {
+        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
+        drawBg(canvas)
+        drawData(canvas, path)
     }
 
     // 画背景图片
@@ -206,8 +184,8 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     }
 
     // 画心电数据
-    private fun drawData(canvas: Canvas) {
-        canvas.drawPath(takePath(), dataPaint)
+    private fun drawData(canvas: Canvas, path: Path) {
+        canvas.drawPath(path, dataPaint)
     }
 
     // 画水平线
@@ -267,14 +245,15 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
         holder.setFormat(PixelFormat.TRANSLUCENT)
     }
 
-    protected fun takePath() = calcPathQueue.take()
-
     /*
      下面的三个函数是 实现 SurfaceHolder.Callback 接口方法
      */
     override fun surfaceDestroyed(holder: SurfaceHolder) {
-        cancelCircleDrawJob()
-        cancelCalcPathJob()
+        Log.w(TAG, "surfaceDestroyed")
+        circleDrawJob?.cancel()
+        circleDrawJob = null
+        calcPathJob?.cancel()
+        calcPathJob = null
     }
 
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
@@ -285,54 +264,45 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
 
     protected fun startCircleDrawJob() {
         if (circleDrawJob != null) return
-        Log.w(TAG, "startCircleDrawJob")
-        circleDrawJob = findViewTreeLifecycleOwner()?.lifecycleScope?.launch {
-            onSurfaceDraw(holder)
+        val period = getPeriod()
+        Log.w(TAG, "startCircleDrawJob period=$period")
+        circleDrawJob = findViewTreeLifecycleOwner()?.lifecycleScope?.launch(Dispatchers.IO) {
+            scheduleFlow(0, period).collect {
+                val cost = measureTimeMillis {
+                    var canvas: Canvas? = null
+                    try {/*
+                        用了两个画布，一个进行临时的绘图，一个进行最终的绘图，这样就叫做双缓冲
+                        frontCanvas：实际显示的canvas。
+                        backCanvas：存储的是上一次更改前的canvas。
+                         */
+                        canvas = holder.lockCanvas() // 获取 backCanvas
+                        // 获取到的 Canvas 对象还是继续上次的 Canvas 对象，而不是一个新的 Canvas 对象。因此，之前的绘图操作都会被保留。
+                        // 在绘制前，通过 drawColor() 方法来进行清屏操作。
+                        canvas?.let {
+                            onSurfaceDraw(it, calcPathQueue.take())
+                        }
+                    } finally {
+                        // 使用 backCanvas 替换 frontCanvas 作为新的 frontCanvas，原来的 frontCanvas 将切换到后台作为 backCanvas。
+                        try {
+                            holder.unlockCanvasAndPost(canvas)
+                        } catch (e: Exception) {
+                        }
+                    }
+                }
+                Log.d(TAG, "耗时：$cost ms")
+            }
         }
-    }
-
-    protected fun cancelCircleDrawJob() {
-        Log.w(TAG, "cancelCircleDrawJob")
-        circleDrawJob?.cancel()
-        circleDrawJob = null
     }
 
     protected fun startCalcPathJob() {
         if (calcPathJob != null) return
         Log.w(TAG, "startCalcPathJob")
         calcPathJob = findViewTreeLifecycleOwner()?.lifecycleScope?.launch(Dispatchers.IO) {
-            while (true) {
+            while (isActive) {
                 onCalcPath()?.let {
                     calcPathQueue.put(it)
                 }
-            }
-        }
-    }
-
-    protected fun cancelCalcPathJob() {
-        Log.w(TAG, "cancelCalcPathJob")
-        calcPathJob?.cancel()
-        calcPathJob = null
-    }
-
-    protected fun draw(holder: SurfaceHolder, onDraw: (Canvas) -> Unit) {
-        var canvas: Canvas? = null
-        try {/*
-            用了两个画布，一个进行临时的绘图，一个进行最终的绘图，这样就叫做双缓冲
-            frontCanvas：实际显示的canvas。
-            backCanvas：存储的是上一次更改前的canvas。
-             */
-            canvas = holder.lockCanvas() // 获取 backCanvas
-            // 获取到的 Canvas 对象还是继续上次的 Canvas 对象，而不是一个新的 Canvas 对象。因此，之前的绘图操作都会被保留。
-            // 在绘制前，通过 drawColor() 方法来进行清屏操作。
-            canvas?.let {
-                onDraw(it)
-            }
-        } finally {
-            // 使用 backCanvas 替换 frontCanvas 作为新的 frontCanvas，原来的 frontCanvas 将切换到后台作为 backCanvas。
-            try {
-                holder.unlockCanvasAndPost(canvas)
-            } catch (e: Exception) {
+                delay(1)
             }
         }
     }
@@ -340,7 +310,12 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
     /**
      * 绘制
      */
-    abstract suspend fun onSurfaceDraw(holder: SurfaceHolder)
+    abstract fun onSurfaceDraw(canvas: Canvas, path: Path)
+
+    /**
+     * 获取有效的 period
+     */
+    abstract fun getPeriod(): Long
 
     /**
      * 计算路径
@@ -349,4 +324,4 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
 
 }
 
-private const val TAG = "EcgChartView"
+private const val TAG = "EcgChartViewTAG"
