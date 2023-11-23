@@ -70,17 +70,10 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     private var sampleRate = 0// 采样率
     private var gridSize = 0// 一个小格子对应的像素
 
-    // 每次绘制的数据量。避免数据太多，1秒钟绘制不完，造成界面延迟严重。
-    // 因为 scheduleFlow 循环任务在间隔时间太短或者处理业务耗时太长时会造成误差太多。
-    // 经测试，大概16毫秒以上循环误差就比较小了，建议使用30毫秒以上，这样绘制效果较好。
-    // Math.ceil()向上取整
-    private var drawDataCountEachTime = 0
-    private var yOffset = 0f// y轴偏移。因为原始的x轴在视图顶部。所以需要把x轴移动到视图垂直中心位置
-    private var stepX = 0f// x方向的步进，两个数据在x轴方向的距离。px
-    private var maxDataCount = 0// 能显示的最大数据量
     private var bgBitmap: Bitmap? = null// 背景图片
     private val notDrawDataQueue = LinkedBlockingQueue<Float>()// 未绘制的数据集合
     private val drawDataList = LinkedList<Float>()// 需要绘制的数据集合
+    private lateinit var pathFactory: AbstractPathFactory
 
     /**
      * @param sampleRate    采样率
@@ -105,10 +98,11 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
             return
         }
         // 根据采样率计算
-        stepX = gridSize * MM_PER_S / sampleRate.toFloat()
+        val stepX = gridSize * MM_PER_S / sampleRate.toFloat()
         val interval = 1000 / sampleRate// 绘制每个数据的间隔时间
         val recommendInterval = 30.0// 建议循环间隔时间
-        drawDataCountEachTime = if (interval < recommendInterval) ceil(recommendInterval / interval).toInt() else interval
+        val drawDataCountEachTime =
+            if (interval < recommendInterval) ceil(recommendInterval / interval).toInt() else interval// Math.ceil()向上取整
         val period = 1000L / sampleRate * drawDataCountEachTime// 循环绘制周期间隔
         Log.i(TAG, "gridSize=$gridSize sampleRate=$sampleRate stepX=$stepX drawDataCountEachTime=$drawDataCountEachTime period=$period")
 
@@ -116,8 +110,8 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         val hLineCount = h / gridSize// 水平线的数量
         val vLineCount = w / gridSize// 垂直线的数量
         val axisXCount = (hLineCount - hLineCount % 5) / 2// x坐标轴需要偏移的格数
-        yOffset = axisXCount * gridSize.toFloat()
-        maxDataCount = (w / stepX).toInt()
+        val yOffset = axisXCount * gridSize.toFloat()
+        val maxDataCount = (w / stepX).toInt()
         // 绘制背景到bitmap中
         bgBitmap?.recycle()
         bgBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888).apply {
@@ -129,6 +123,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
             TAG,
             "w=$w h=$h hLineCount=$hLineCount vLineCount=$vLineCount axisXCount=$axisXCount yOffset=$yOffset maxDataCount=$maxDataCount"
         )
+        pathFactory = CirclePathFactory(drawDataCountEachTime, yOffset, stepX, maxDataCount)
         // 启动任务
         startCalcPathJob()
         startCircleDrawJob(period)
@@ -148,71 +143,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     }
 
     override suspend fun onCalcPath(): Path {
-        return calcCirclePath()
-    }
-
-    // 循环效果时，不需要画线的数据的index。即视图中看起来是空白的部分。
-    private var spaceIndex = 0
-
-    /**
-     * 循环效果
-     */
-    private suspend fun calcCirclePath(): Path = withContext(Dispatchers.IO) {
-        fun add(data: Float) {
-            if (drawDataList.size == maxDataCount) {
-                drawDataList.removeAt(spaceIndex)
-                drawDataList.add(spaceIndex, data)
-                spaceIndex++
-                if (spaceIndex == maxDataCount) {
-                    spaceIndex = 0
-                }
-            } else {
-                drawDataList.addLast(data)
-            }
-        }
-
-        add(notDrawDataQueue.take())
-        repeat(drawDataCountEachTime - 1) {
-            notDrawDataQueue.poll()?.let {
-                add(it)
-            }
-        }
-        val dataPath = Path()
-        drawDataList.forEachIndexed { index, fl ->
-            if (index == spaceIndex) {
-                dataPath.moveTo(index * stepX, fl)// 达到空白效果
-            } else {
-                dataPath.lineTo(index * stepX, fl)
-            }
-        }
-        dataPath.offset(0f, yOffset)
-        dataPath
-    }
-
-    /**
-     * 滚动效果
-     */
-    private suspend fun calcScrollPath(): Path = withContext(Dispatchers.IO) {
-        // 总共需要取出 drawDataCountEachTime 个数据
-        drawDataList.addLast(notDrawDataQueue.take())// take 当队列为空，阻塞。保证至少有一个数据需要绘制。
-        repeat(drawDataCountEachTime - 1) {
-            // poll 弹出队顶元素，队列为空时返回null。此时不用 take 方法是因为避免没有那么多数据。
-            notDrawDataQueue.poll()?.let {
-                drawDataList.addLast(it)
-            }
-        }
-        // 最多只绘制 maxDataCount 个数据
-        if (maxDataCount > 0 && drawDataList.size > maxDataCount) {
-            repeat(drawDataList.size - maxDataCount) {
-                drawDataList.removeFirst()
-            }
-        }
-        val dataPath = Path()
-        drawDataList.forEachIndexed { index, fl ->
-            dataPath.lineTo(index * stepX, fl)
-        }
-        dataPath.offset(0f, yOffset)
-        dataPath
+        return pathFactory.createPath(notDrawDataQueue, drawDataList)
     }
 
     override fun onCircleDraw(canvas: Canvas, path: Path) {
@@ -362,6 +293,107 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
      */
     abstract suspend fun onCalcPath(): Path
 
+}
+
+/**
+ * Path工厂
+ * @param drawDataCountEachTime     每次绘制的数据量
+ * 避免数据太多，1秒钟绘制不完，造成界面延迟严重。因为 scheduleFlow 循环任务在间隔时间太短或者处理业务耗时太长时会造成误差太多。经测试，大概16毫秒以上循环误差就比较小了，建议使用30毫秒以上，这样绘制效果较好。
+ * @param yOffset                   y轴偏移。因为原始的x轴在视图顶部。所以需要把x轴移动到视图垂直中心位置
+ * @param stepX                     x方向的步进，两个数据在x轴方向的距离。px
+ * @param maxDataCount              能显示的最大数据量
+ */
+abstract class AbstractPathFactory(
+    val drawDataCountEachTime: Int,
+    val yOffset: Float,
+    val stepX: Float,
+    val maxDataCount: Int
+) {
+    /**
+     * @param notDrawDataQueue  未绘制的数据集合
+     * @param drawDataList      需要绘制的数据集合
+     */
+    abstract suspend fun createPath(notDrawDataQueue: LinkedBlockingQueue<Float>, drawDataList: LinkedList<Float>): Path
+}
+
+/**
+ * 循环效果Path工厂
+ */
+class CirclePathFactory(
+    drawDataCountEachTime: Int,
+    yOffset: Float,
+    stepX: Float,
+    maxDataCount: Int
+) : AbstractPathFactory(drawDataCountEachTime, yOffset, stepX, maxDataCount) {
+    // 循环效果时，不需要画线的数据的index。即视图中看起来是空白的部分。
+    private var spaceIndex = 0
+    override suspend fun createPath(notDrawDataQueue: LinkedBlockingQueue<Float>, drawDataList: LinkedList<Float>): Path =
+        withContext(Dispatchers.IO) {
+            fun add(data: Float) {
+                if (drawDataList.size == maxDataCount) {
+                    drawDataList.removeAt(spaceIndex)
+                    drawDataList.add(spaceIndex, data)
+                    spaceIndex++
+                    if (spaceIndex == maxDataCount) {
+                        spaceIndex = 0
+                    }
+                } else {
+                    drawDataList.addLast(data)
+                }
+            }
+
+            add(notDrawDataQueue.take())
+            repeat(drawDataCountEachTime - 1) {
+                notDrawDataQueue.poll()?.let {
+                    add(it)
+                }
+            }
+            val dataPath = Path()
+            drawDataList.forEachIndexed { index, fl ->
+                if (index == spaceIndex) {
+                    dataPath.moveTo(index * stepX, fl)// 达到空白效果
+                } else {
+                    dataPath.lineTo(index * stepX, fl)
+                }
+            }
+            dataPath.offset(0f, yOffset)
+            dataPath
+        }
+}
+
+/**
+ * 滚动效果Path工厂
+ */
+class ScrollPathFactory(
+    drawDataCountEachTime: Int,
+    yOffset: Float,
+    stepX: Float,
+    maxDataCount: Int
+) : AbstractPathFactory(drawDataCountEachTime, yOffset, stepX, maxDataCount) {
+
+    override suspend fun createPath(notDrawDataQueue: LinkedBlockingQueue<Float>, drawDataList: LinkedList<Float>): Path =
+        withContext(Dispatchers.IO) {
+            // 总共需要取出 drawDataCountEachTime 个数据
+            drawDataList.addLast(notDrawDataQueue.take())// take 当队列为空，阻塞。保证至少有一个数据需要绘制。
+            repeat(drawDataCountEachTime - 1) {
+                // poll 弹出队顶元素，队列为空时返回null。此时不用 take 方法是因为避免没有那么多数据。
+                notDrawDataQueue.poll()?.let {
+                    drawDataList.addLast(it)
+                }
+            }
+            // 最多只绘制 maxDataCount 个数据
+            if (maxDataCount > 0 && drawDataList.size > maxDataCount) {
+                repeat(drawDataList.size - maxDataCount) {
+                    drawDataList.removeFirst()
+                }
+            }
+            val dataPath = Path()
+            drawDataList.forEachIndexed { index, fl ->
+                dataPath.lineTo(index * stepX, fl)
+            }
+            dataPath.offset(0f, yOffset)
+            dataPath
+        }
 }
 
 private const val TAG = "EcgChartViewTAG"
