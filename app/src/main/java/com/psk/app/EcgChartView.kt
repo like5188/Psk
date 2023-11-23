@@ -245,9 +245,9 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
         if (circleDrawJob != null || period <= 0) return
         Log.w(TAG, "startCircleDrawJob period=$period")
         circleDrawJob = findViewTreeLifecycleOwner()?.lifecycleScope?.launch(Dispatchers.IO) {
+            var canvas: Canvas? = null
             scheduleFlow(0, period).collect {
                 val cost = measureTimeMillis {
-                    var canvas: Canvas? = null
                     try {/*
                         用了两个画布，一个进行临时的绘图，一个进行最终的绘图，这样就叫做双缓冲
                         frontCanvas：实际显示的canvas。
