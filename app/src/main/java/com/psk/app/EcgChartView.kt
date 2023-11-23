@@ -54,7 +54,6 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
             isAntiAlias = true
         }
     }
-    private val drawBg = false// 是否绘制背景网格
 
     // 每次绘制的数据量。避免数据太多，1秒钟绘制不完，造成界面延迟严重。
     // 因为 scheduleFlow 循环任务在间隔时间太短或者处理业务耗时太长时会造成误差太多。
@@ -62,12 +61,10 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     // Math.ceil()向上取整
     private var drawDataCountEachTime = 0
     private var sampleRate = 0// 采样率
-
     private var gridSpace = 0// 一个小格子对应的像素，即1mm对应的像素。px/mm
     private var yOffset = 0f// y轴偏移。因为原始的x轴在视图顶部。所以需要把x轴移动到视图垂直中心位置
     private var stepX = 0f// x方向的步进，两个数据在x轴方向的距离。px
     private var maxDataCount = 0// 能显示的最大数据量
-
     private var bgBitmap: Bitmap? = null// 背景图片
     private val notDrawDataQueue = LinkedBlockingQueue<Float>()// 未绘制的数据集合
     private val drawDataList = LinkedList<Float>()// 需要绘制的数据集合
@@ -113,13 +110,11 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         yOffset = axisXCount * gridSpace.toFloat()
         maxDataCount = (w / stepX).toInt()
         // 绘制背景到bitmap中
-        if (drawBg) {
-            bgBitmap?.recycle()
-            bgBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888).apply {
-                val canvas = Canvas(this)
-                drawHLine(canvas, hLineCount, w)
-                drawVLine(canvas, vLineCount, h)
-            }
+        bgBitmap?.recycle()
+        bgBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888).apply {
+            val canvas = Canvas(this)
+            drawHLine(canvas, hLineCount, w)
+            drawVLine(canvas, vLineCount, h)
         }
         Log.i(
             TAG,
