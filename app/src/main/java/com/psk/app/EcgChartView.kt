@@ -164,7 +164,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
             }
         }
         // 最多只绘制 maxDataCount 个数据
-        if (maxDataCount > 0 && drawDataList.size > maxDataCount) {
+        if (drawDataList.size > maxDataCount) {
             repeat(drawDataList.size - maxDataCount) {
                 drawDataList.removeFirst()
             }
