@@ -261,7 +261,6 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
                         // 获取到的 Canvas 对象还是继续上次的 Canvas 对象，而不是一个新的 Canvas 对象。因此，之前的绘图操作都会被保留。
                         // 在绘制前，通过 drawColor() 方法来进行清屏操作。
                         canvas?.let {
-                            Log.v(TAG, "onCircleDraw")
                             onCircleDraw(it, pathQueue.take())
                         }
                     } finally {
@@ -282,7 +281,6 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
         Log.w(TAG, "startCalcPathJob")
         calcPathJob = findViewTreeLifecycleOwner()?.lifecycleScope?.launch(Dispatchers.IO) {
             while (isActive) {
-                Log.v(TAG, "onCalcPath")
                 pathQueue.put(onCalcPath())
                 delay(1)
             }
