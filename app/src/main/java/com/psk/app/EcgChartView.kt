@@ -232,7 +232,7 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
     private var calcPathJob: Job? = null
 
     // Path 队列，放一个才能取一个，否则阻塞。
-    private val calcPathQueue = SynchronousQueue<Path>()
+    private val pathQueue = SynchronousQueue<Path>()
 
     init {
         holder.addCallback(this)
@@ -274,7 +274,7 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
                         // 获取到的 Canvas 对象还是继续上次的 Canvas 对象，而不是一个新的 Canvas 对象。因此，之前的绘图操作都会被保留。
                         // 在绘制前，通过 drawColor() 方法来进行清屏操作。
                         canvas?.let {
-                            onSurfaceDraw(it, calcPathQueue.take())
+                            onSurfaceDraw(it, pathQueue.take())
                         }
                     } finally {
                         // 使用 backCanvas 替换 frontCanvas 作为新的 frontCanvas，原来的 frontCanvas 将切换到后台作为 backCanvas。
@@ -295,7 +295,7 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
         calcPathJob = findViewTreeLifecycleOwner()?.lifecycleScope?.launch(Dispatchers.IO) {
             while (isActive) {
                 onCalcPath()?.let {
-                    calcPathQueue.put(it)
+                    pathQueue.put(it)
                 }
                 delay(1)
             }
