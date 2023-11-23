@@ -58,7 +58,6 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     // 经测试，大概16毫秒以上循环误差就比较小了，建议使用30毫秒以上，这样绘制效果较好。
     // Math.ceil()向上取整
     private var drawDataCountEachTime = 0
-    private var period = 0L// 循环绘制周期间隔
     private var sampleRate = 0// 采样率
 
     private var gridSpace = 0// 一个小格子对应的像素，即1mm对应的像素。px/mm
@@ -104,7 +103,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         val interval = 1000 / sampleRate// 绘制每个数据的间隔时间
         val recommendInterval = 30.0// 建议循环间隔时间
         drawDataCountEachTime = if (interval < recommendInterval) ceil(recommendInterval / interval).toInt() else interval
-        period = 1000L / sampleRate * drawDataCountEachTime
+        val period = 1000L / sampleRate * drawDataCountEachTime// 循环绘制周期间隔
         Log.i(TAG, "sampleRate=$sampleRate stepX=$stepX drawDataCountEachTime=$drawDataCountEachTime period=$period")
 
         // 根据视图宽高计算
@@ -127,7 +126,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
             "w=$w h=$h hLineCount=$hLineCount vLineCount=$vLineCount axisXCount=$axisXCount yOffset=$yOffset maxDataCount=$maxDataCount"
         )
         startCalcPathJob()
-        startCircleDrawJob()
+        startCircleDrawJob(period)
     }
 
     /**
@@ -166,8 +165,6 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         dataPath.offset(0f, yOffset)
         return dataPath
     }
-
-    override fun getPeriod(): Long = period
 
     override fun onSurfaceDraw(canvas: Canvas, path: Path) {
         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
@@ -262,9 +259,8 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
     override fun surfaceCreated(holder: SurfaceHolder) {
     }
 
-    protected fun startCircleDrawJob() {
-        if (circleDrawJob != null) return
-        val period = getPeriod()
+    protected fun startCircleDrawJob(period: Long) {
+        if (circleDrawJob != null || period <= 0) return
         Log.w(TAG, "startCircleDrawJob period=$period")
         circleDrawJob = findViewTreeLifecycleOwner()?.lifecycleScope?.launch(Dispatchers.IO) {
             scheduleFlow(0, period).collect {
@@ -311,11 +307,6 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
      * 绘制
      */
     abstract fun onSurfaceDraw(canvas: Canvas, path: Path)
-
-    /**
-     * 获取有效的 period
-     */
-    abstract fun getPeriod(): Long
 
     /**
      * 计算路径
