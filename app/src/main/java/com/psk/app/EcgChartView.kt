@@ -1,7 +1,6 @@
 package com.psk.app
 
 import android.content.Context
-import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -13,11 +12,12 @@ import android.graphics.PorterDuff
 import android.text.TextPaint
 import android.util.AttributeSet
 import android.util.Log
-import android.util.TypedValue
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.lifecycle.lifecycleScope
+import com.like.common.util.dp
+import com.like.common.util.sp
 import com.psk.common.util.scheduleFlow
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -318,17 +318,5 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
     abstract suspend fun onCalcPath(): Path
 
 }
-
-private inline val Float.dp: Float
-    get() = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, this, Resources.getSystem().displayMetrics)
-
-private inline val Int.dp: Int
-    get() = this.toFloat().dp.toInt()
-
-private inline val Float.sp: Float
-    get() = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, this, Resources.getSystem().displayMetrics)
-
-private inline val Int.sp: Int
-    get() = this.toFloat().sp.toInt()
 
 private const val TAG = "EcgChartViewTAG"
