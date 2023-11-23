@@ -56,6 +56,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     // Math.ceil()向上取整
     private var drawDataCountEachTime = 0
     private var period = 0L// 循环绘制周期间隔
+    private var sampleRate = 0// 采样率
 
     private var gridSpace = 0// 一个小格子对应的像素，即1mm对应的像素。px/mm
     private var hLineCount = 0// 水平线的数量
@@ -70,13 +71,8 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     private val drawDataList = mutableListOf<Float>()// 需要绘制的数据集合
     private val dataPath = Path()
 
-    // 保证init(sampleRate: Int)方法执行之后才执行onSizeChanged()方法中的计算代码，因为后者计算依赖前者。
-    private val cd1 by lazy {
-        CountDownLatch(1)
-    }
-
-    // 保证onSizeChanged()方法中的计算代码执行之后才执行onSurfaceDraw()方法中的代码，否则会造成period没有计算，从而造成绘制周期不对。
-    private val cd2 by lazy {
+    // 保证calcParams方法执行之后才执行scheduleFlow(0, period)，因为后者依赖前者的period。
+    private val countDownLatch by lazy {
         CountDownLatch(1)
     }
 
@@ -90,7 +86,20 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
      * @param sampleRate    采样率
      */
     fun init(sampleRate: Int) {
-        if (sampleRate <= 0) {
+        println("init")
+        this.sampleRate = sampleRate
+        calcParams(sampleRate, width, height)
+    }
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        println("onSizeChanged")
+        calcParams(sampleRate, w, h)
+    }
+
+    // 计算相关参数
+    private fun calcParams(sampleRate: Int, w: Int, h: Int) {
+        if (sampleRate <= 0 || w <= 0 || h <= 0) {
             return
         }
         // 根据采样率计算
@@ -99,32 +108,25 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         val recommendInterval = 30.0// 建议循环间隔时间
         drawDataCountEachTime = if (interval < recommendInterval) ceil(recommendInterval / interval).toInt() else interval
         period = 1000L / sampleRate * drawDataCountEachTime
-        println("init sampleRate=$sampleRate stepX=$stepX drawDataCountEachTime=$drawDataCountEachTime period=$period")
-        cd1.countDown()
-    }
+        println("sampleRate=$sampleRate stepX=$stepX drawDataCountEachTime=$drawDataCountEachTime period=$period")
 
-    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        super.onSizeChanged(w, h, oldw, oldh)
-        findViewTreeLifecycleOwner()?.lifecycleScope?.launch(Dispatchers.IO) {
-            cd1.await()
-            // 根据视图宽高计算
-            hLineCount = height / gridSpace
-            vLineCount = width / gridSpace
-            val axisXCount = (hLineCount - hLineCount % 5) / 2
-            yOffset = axisXCount * gridSpace.toFloat()
-            maxDataCount = (width / stepX).toInt()
-            // 绘制背景到bitmap中
-            if (drawBg) {
-                bgBitmap?.recycle()
-                bgBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888).apply {
-                    val canvas = Canvas(this)
-                    drawHLine(canvas)
-                    drawVLine(canvas)
-                }
+        // 根据视图宽高计算
+        hLineCount = h / gridSpace
+        vLineCount = w / gridSpace
+        val axisXCount = (hLineCount - hLineCount % 5) / 2
+        yOffset = axisXCount * gridSpace.toFloat()
+        maxDataCount = (w / stepX).toInt()
+        // 绘制背景到bitmap中
+        if (drawBg) {
+            bgBitmap?.recycle()
+            bgBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888).apply {
+                val canvas = Canvas(this)
+                drawHLine(canvas)
+                drawVLine(canvas)
             }
-            println("onSizeChanged width=$width height=$height hLineCount=$hLineCount vLineCount=$vLineCount axisXCount=$axisXCount yOffset=$yOffset maxDataCount=$maxDataCount")
-            cd2.countDown()
         }
+        println("w=$w h=$h hLineCount=$hLineCount vLineCount=$vLineCount axisXCount=$axisXCount yOffset=$yOffset maxDataCount=$maxDataCount")
+        countDownLatch.countDown()
     }
 
     /**
@@ -141,8 +143,8 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     }
 
     override suspend fun onSurfaceDraw(holder: SurfaceHolder) = withContext(Dispatchers.IO) {
-        cd2.await()
-        println("onSurfaceDraw")
+        countDownLatch.await()
+        println("onSurfaceDraw period=$period")
         scheduleFlow(0, period).collect {
             draw(holder) {
                 if (notDrawDataList.isEmpty()) {
@@ -258,12 +260,14 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
 
     protected fun startCircleDrawJob() {
         if (circleDrawJob != null) return
+        println("startCircleDrawJob")
         circleDrawJob = findViewTreeLifecycleOwner()?.lifecycleScope?.launch {
             onSurfaceDraw(holder)
         }
     }
 
     protected fun cancelCircleDrawJob() {
+        println("cancelCircleDrawJob")
         circleDrawJob?.cancel()
         circleDrawJob = null
     }
