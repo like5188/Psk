@@ -26,7 +26,6 @@ import java.util.LinkedList
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.SynchronousQueue
 import kotlin.math.ceil
-import kotlin.system.measureTimeMillis
 
 /*
     实际心电图纸是由1mm*1mm的小方格组成，每1大格分为5小格
@@ -251,27 +250,23 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
         circleDrawJob = findViewTreeLifecycleOwner()?.lifecycleScope?.launch(Dispatchers.IO) {
             var canvas: Canvas? = null
             scheduleFlow(0, period).collect {
-                val cost = measureTimeMillis {
-                    try {/*
-                        用了两个画布，一个进行临时的绘图，一个进行最终的绘图，这样就叫做双缓冲
-                        frontCanvas：实际显示的canvas。
-                        backCanvas：存储的是上一次更改前的canvas。
-                         */
-                        canvas = holder.lockCanvas() // 获取 backCanvas
-                        // 获取到的 Canvas 对象还是继续上次的 Canvas 对象，而不是一个新的 Canvas 对象。因此，之前的绘图操作都会被保留。
-                        // 在绘制前，通过 drawColor() 方法来进行清屏操作。
-                        canvas?.let {
-                            onCircleDraw(it, pathQueue.take())
-                        }
-                    } finally {
-                        // 使用 backCanvas 替换 frontCanvas 作为新的 frontCanvas，原来的 frontCanvas 将切换到后台作为 backCanvas。
-                        try {
-                            holder.unlockCanvasAndPost(canvas)
-                        } catch (e: Exception) {
-                        }
+                try {
+                    // 用了两个画布，一个进行临时的绘图，一个进行最终的绘图，这样就叫做双缓冲
+                    // frontCanvas：实际显示的canvas。
+                    // backCanvas：存储的是上一次更改前的canvas。
+                    canvas = holder.lockCanvas() // 获取 backCanvas
+                    // 获取到的 Canvas 对象还是继续上次的 Canvas 对象，而不是一个新的 Canvas 对象。因此，之前的绘图操作都会被保留。
+                    // 在绘制前，通过 drawColor() 方法来进行清屏操作。
+                    canvas?.let {
+                        onCircleDraw(it, pathQueue.take())
+                    }
+                } finally {
+                    // 使用 backCanvas 替换 frontCanvas 作为新的 frontCanvas，原来的 frontCanvas 将切换到后台作为 backCanvas。
+                    try {
+                        holder.unlockCanvasAndPost(canvas)
+                    } catch (e: Exception) {
                     }
                 }
-                Log.d(TAG, "耗时：$cost ms")
             }
         }
     }
