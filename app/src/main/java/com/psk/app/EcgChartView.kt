@@ -138,8 +138,10 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         })
     }
 
-    override fun onCalcPath(): Path? {
-        if (notDrawDataList.isEmpty()) return null
+    override suspend fun onCalcPath(): Path {
+        while (notDrawDataList.isEmpty()) {
+            delay(1)
+        }
         repeat(drawDataCountEachTime) {
             notDrawDataList.removeFirstOrNull()?.let {
                 drawDataList.add(it)
@@ -151,7 +153,6 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
                 drawDataList.removeFirst()
             }
         }
-        if (drawDataList.isEmpty()) return null
         val dataPath = Path()
         var x = 0f
         dataPath.moveTo(x, drawDataList.first())
@@ -257,6 +258,7 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
                         // 获取到的 Canvas 对象还是继续上次的 Canvas 对象，而不是一个新的 Canvas 对象。因此，之前的绘图操作都会被保留。
                         // 在绘制前，通过 drawColor() 方法来进行清屏操作。
                         canvas?.let {
+                            Log.v(TAG, "onSurfaceDraw")
                             onSurfaceDraw(it, pathQueue.take())
                         }
                     } finally {
@@ -277,6 +279,7 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
         Log.w(TAG, "startCalcPathJob")
         calcPathJob = findViewTreeLifecycleOwner()?.lifecycleScope?.launch(Dispatchers.IO) {
             while (isActive) {
+                Log.v(TAG, "onCalcPath")
                 onCalcPath()?.let {
                     pathQueue.put(it)
                 }
@@ -308,7 +311,7 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
     /**
      * 计算路径
      */
-    abstract fun onCalcPath(): Path?
+    abstract suspend fun onCalcPath(): Path
 
 }
 
