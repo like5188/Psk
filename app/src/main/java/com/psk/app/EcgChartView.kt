@@ -171,7 +171,6 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     }
 
     override fun onCircleDraw(canvas: Canvas, path: Path) {
-        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
         drawBg(canvas)
         drawText(canvas)
         drawData(canvas, path)
@@ -268,6 +267,7 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
                     // 获取到的 Canvas 对象还是继续上次的 Canvas 对象，而不是一个新的 Canvas 对象。因此，之前的绘图操作都会被保留。
                     // 在绘制前，通过 drawColor() 方法来进行清屏操作。
                     canvas?.let {
+                        it.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
                         onCircleDraw(it, pathQueue.take())
                     }
                 } finally {
