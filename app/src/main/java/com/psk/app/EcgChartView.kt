@@ -147,7 +147,14 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         }
     }
 
-    override suspend fun onCalcPath(): Path = withContext(Dispatchers.IO) {
+    override suspend fun onCalcPath(): Path {
+        return calcScrollPath()
+    }
+
+    /**
+     * 滚动效果
+     */
+    private suspend fun calcScrollPath(): Path = withContext(Dispatchers.IO) {
         // 总共需要取出 drawDataCountEachTime 个数据
         drawDataList.addLast(notDrawDataQueue.take())// take 当队列为空，阻塞。保证至少有一个数据需要绘制。
         repeat(drawDataCountEachTime - 1) {
