@@ -146,7 +146,7 @@ class ShangXiaZhiReport : IReport {
                         report.activeMil += shangXiaZhi.speed * 0.5f * 1000 / 3600
                         // 卡路里
                         report.activeCal += shangXiaZhi.speed * 0.2f * (shangXiaZhi.resistance * 1.00f / 3.0f) / 60
-                        gameData.cal = report.activeCal.maximumFractionDigits(4)
+                        gameData.cal = report.activeCal.maximumFractionDigits(2)
                         // 阻力
                         report.resistanceList.add(shangXiaZhi.resistance)
                         report.resistanceTotal += shangXiaZhi.resistance
@@ -178,7 +178,7 @@ class ShangXiaZhiReport : IReport {
                         gameData.offsetValue = 100 - shangXiaZhiOffset * 100 / 30// 转换成游戏需要的左边百分比 100~0
                     }
                     // 总里程
-                    gameData.mileage = (report.activeMil + report.passiveMil).maximumFractionDigits(4)
+                    gameData.mileage = (report.activeMil + report.passiveMil).maximumFractionDigits(2)
                     // 总运行时间
                     gameData.time = formatTime(report.activeDuration + report.passiveDuration)
                 }
