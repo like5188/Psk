@@ -266,11 +266,11 @@ class TrainViewModel : ViewModel(), KoinComponent {
         }
         // mets=卡路里/主动模式运动时间(分钟)/体重(kg)/0.0167
         val cal = shangXiaZhiReport.activeCal
-        val duration = shangXiaZhiReport.activeDuration / 60f// 分钟
-        val met = if (duration == 0f || healthInfo.weight == 0) {
+        val activeDuration = shangXiaZhiReport.activeDuration
+        val met = if (activeDuration == 0 || healthInfo.weight == 0) {
             0f
         } else {
-            cal / duration / healthInfo.weight / 0.0167f
+            cal / activeDuration / 60 / healthInfo.weight / 0.0167f
         }
         val newHealthInfo = healthInfo.copy(
             met = met
