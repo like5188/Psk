@@ -247,7 +247,7 @@ class TrainViewModel : ViewModel(), KoinComponent {
         val shangXiaZhiReport = reports?.firstOrNull {
             it is ShangXiaZhiReport
         } as? ShangXiaZhiReport
-        if (shangXiaZhiReport == null) {
+        if (shangXiaZhiReport == null || (shangXiaZhiReport.activeDuration == 0 && shangXiaZhiReport.passiveDuration == 0)) {
             _uiState.update {
                 it.copy(
                     toastEvent = Event(ToastEvent(text = "请先进行训练"))
