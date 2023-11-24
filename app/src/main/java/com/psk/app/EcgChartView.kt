@@ -234,7 +234,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
 
     // 画文字
     private fun drawText(canvas: Canvas) {
-        canvas.drawText("${MM_PER_S}mm/s        ${MM_PER_MV}mm/mV", 20f.dp, height.toFloat() - 10.dp, textPaint)
+        canvas.drawText("${MM_PER_S}mm/s  ${MM_PER_MV}mm/mV", 20f.dp, height.toFloat() - 10.dp, textPaint)
     }
 
     // 画心电数据
