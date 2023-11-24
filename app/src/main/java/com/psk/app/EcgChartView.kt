@@ -87,7 +87,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     private val drawDataList = LinkedList<Float>()// 需要绘制的数据集合
 
     /**
-     * @param sampleRate    采样率
+     * @param sampleRate    采样率，为了让动画看起来没有延迟，即每秒钟绘制的数据基本达到采样率。
      * @param gridSize      一个小格子对应的像素，默认为设备实际1mm对应的像素。
      */
     fun init(sampleRate: Int, gridSize: Int = (context.resources.displayMetrics.densityDpi / 25.4f).toInt()) {
