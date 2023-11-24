@@ -7,10 +7,10 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import com.like.common.base.BaseLazyFragment
+import com.like.common.util.maximumFractionDigits
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.data.model.ShangXiaZhiReport
 import com.psk.shangxiazhi.databinding.FragmentReportTrainBinding
-import java.text.DecimalFormat
 
 class ShangXiaZhiFragment : BaseLazyFragment() {
     companion object {
@@ -23,7 +23,6 @@ class ShangXiaZhiFragment : BaseLazyFragment() {
     }
 
     private lateinit var mBinding: FragmentReportTrainBinding
-    private val decimalFormat = DecimalFormat("######0.00")
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_report_train, container, false)
@@ -43,11 +42,11 @@ class ShangXiaZhiFragment : BaseLazyFragment() {
             mBinding.tvActiveDuration.text = formatDuration(activeDuration)
             mBinding.tvPassiveDuration.text = formatDuration(passiveDuration)
 
-            mBinding.tvMileage.text = decimalFormat.format(activeMil + passiveMil)
-            mBinding.tvActiveMileage.text = decimalFormat.format(activeMil)
-            mBinding.tvPassiveMileage.text = decimalFormat.format(passiveMil)
+            mBinding.tvMileage.text = (activeMil + passiveMil).maximumFractionDigits(4)
+            mBinding.tvActiveMileage.text = activeMil.maximumFractionDigits(4)
+            mBinding.tvPassiveMileage.text = passiveMil.maximumFractionDigits(4)
 
-            mBinding.tvCal.text = decimalFormat.format(activeCal)
+            mBinding.tvCal.text = activeCal.maximumFractionDigits(4)
 
             mBinding.tvSpasm.text = spasm.toString()
             mBinding.tvSpasmLevelAvg.text = spasmLevelArv.toString()

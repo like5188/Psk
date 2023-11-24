@@ -1,5 +1,6 @@
 package com.psk.shangxiazhi.data.model
 
+import com.like.common.util.maximumFractionDigits
 import com.psk.device.data.model.BloodOxygen
 import com.psk.device.data.model.BloodPressure
 import com.psk.device.data.model.HeartRate
@@ -58,8 +59,7 @@ class ShangXiaZhiReport : IReport {
 
     companion object {
         lateinit var report: ShangXiaZhiReport
-        private val decimalFormat = DecimalFormat("######0.00")
-        private val decimalFormat1 = DecimalFormat("00")
+        private val decimalFormat = DecimalFormat("00")
 
         fun createForm(flow: Flow<ShangXiaZhi>): Flow<GameData> {
             report = ShangXiaZhiReport()
@@ -146,7 +146,7 @@ class ShangXiaZhiReport : IReport {
                         report.activeMil += shangXiaZhi.speed * 0.5f * 1000 / 3600
                         // 卡路里
                         report.activeCal += shangXiaZhi.speed * 0.2f * (shangXiaZhi.resistance * 1.00f / 3.0f) / 60
-                        gameData.cal = decimalFormat.format(report.activeCal)
+                        gameData.cal = report.activeCal.maximumFractionDigits(4)
                         // 阻力
                         report.resistanceList.add(shangXiaZhi.resistance)
                         report.resistanceTotal += shangXiaZhi.resistance
@@ -178,7 +178,7 @@ class ShangXiaZhiReport : IReport {
                         gameData.offsetValue = 100 - shangXiaZhiOffset * 100 / 30// 转换成游戏需要的左边百分比 100~0
                     }
                     // 总里程
-                    gameData.mileage = decimalFormat.format(report.activeMil + report.passiveMil)
+                    gameData.mileage = (report.activeMil + report.passiveMil).maximumFractionDigits(4)
                     // 总运行时间
                     gameData.time = formatTime(report.activeDuration + report.passiveDuration)
                 }
@@ -196,7 +196,7 @@ class ShangXiaZhiReport : IReport {
             val hour = time / 3600
             val minute = time % 3600 / 60
             val second = time % 60
-            return "$hour:${decimalFormat1.format(minute)}:${decimalFormat1.format(second)}"
+            return "$hour:${decimalFormat.format(minute)}:${decimalFormat.format(second)}"
         }
     }
 

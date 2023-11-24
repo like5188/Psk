@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import com.like.common.base.BaseLazyFragment
+import com.like.common.util.maximumFractionDigits
 import com.psk.device.data.model.HealthInfo
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.data.model.BloodOxygenReport
@@ -14,7 +15,6 @@ import com.psk.shangxiazhi.data.model.BloodPressureReport
 import com.psk.shangxiazhi.data.model.HeartRateReport
 import com.psk.shangxiazhi.data.model.IReport
 import com.psk.shangxiazhi.databinding.FragmentReportDevicesBinding
-import java.text.DecimalFormat
 
 class OtherDevicesFragment : BaseLazyFragment() {
     companion object {
@@ -31,7 +31,6 @@ class OtherDevicesFragment : BaseLazyFragment() {
     }
 
     private lateinit var mBinding: FragmentReportDevicesBinding
-    private val decimalFormat = DecimalFormat("######0.0")
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_report_devices, container, false)
@@ -41,7 +40,7 @@ class OtherDevicesFragment : BaseLazyFragment() {
     override fun onLazyLoadData() {
         arguments?.getParcelable<HealthInfo>(KEY_HEALTH_INFO)?.apply {
             mBinding.tvTargetHeartRate.text = "$minTargetHeartRate~$maxTargetHeartRate"
-            mBinding.tvMet.text = decimalFormat.format(met)
+            mBinding.tvMet.text = met.maximumFractionDigits(4)
             mBinding.tvBloodPressureBefore.text = if (bloodPressureBefore == null) {
                 ""
             } else {
