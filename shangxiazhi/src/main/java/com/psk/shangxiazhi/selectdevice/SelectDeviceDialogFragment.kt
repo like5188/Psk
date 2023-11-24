@@ -74,12 +74,12 @@ class SelectDeviceDialogFragment private constructor() : BaseDialogFragment() {
             }
         }
         mBinding.btnConfirm.setOnClickListener {
-//            if (!selectedDeviceMap.containsKey(DeviceType.ShangXiaZhi)) {
-//                context?.showToast("请先选择上下肢设备")
-//            } else {
+            if (!selectedDeviceMap.containsKey(DeviceType.ShangXiaZhi)) {
+                context?.showToast("请先选择上下肢设备")
+            } else {
                 onSelected?.invoke(selectedDeviceMap)
                 dismiss()
-//            }
+            }
         }
         return mBinding.root
     }
