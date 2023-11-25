@@ -70,9 +70,9 @@ class GlEcgChartView(context: Context, attrs: AttributeSet?) : GLSurfaceView(con
         // 设置渲染器
         setRenderer(EcgRenderer())
         // 设置渲染方式
-        // RENDERMODE_WHEN_DIRTY表示被动渲染，只有在调用requestRender或者onResume等方法时才会进行渲染。
-        // RENDERMODE_CONTINUOUSLY表示持续渲染。这是默认值
-        renderMode = RENDERMODE_CONTINUOUSLY
+        // RENDERMODE_WHEN_DIRTY 表示被动渲染，只有在调用requestRender或者onResume等方法时才会进行渲染。
+        // RENDERMODE_CONTINUOUSLY 表示持续渲染。这是默认值
+        renderMode = RENDERMODE_WHEN_DIRTY
         // 打开调试和日志
         debugFlags = DEBUG_CHECK_GL_ERROR or DEBUG_LOG_GL_CALLS
     }
@@ -94,7 +94,7 @@ class GlEcgChartView(context: Context, attrs: AttributeSet?) : GLSurfaceView(con
 
 class EcgRenderer : GLSurfaceView.Renderer {
     // 添加顶点着色器和片段着色器的代码。它们将顶点位置传递给渲染管线并使用固定颜色进行渲染
-    // 顶点着色器的代码
+    // 顶点着色器的代码，使用的是opengl的着色语言OpenGl Shader Language(GLSL)，详细语法参考https://juejin.cn/post/6874885969653596167
     private val vertexShaderCode = "attribute vec4 vPosition;" +
             "void main() {" +
             "  gl_Position = vPosition;" +
@@ -159,25 +159,87 @@ class EcgRenderer : GLSurfaceView.Renderer {
 
     /**
      * 添加编译和链接着色器的方法
+     * opengl程序就是把一个顶点着色器和一个片段着色器链接在一起编程单个对象，顶点着色器和片段着色器总在一起工作，不能分开，但是并不意味之他们是一一配对的，我们也可以在多个程序使用同一个着色器
      * @return  返回着色器程序的 ID
      */
     private fun loadShaderProgram(vertexCode: String, fragmentCode: String): Int {
         // 编译顶点着色器
-        val vertexShader = GLES20.glCreateShader(GLES20.GL_VERTEX_SHADER)
-        GLES20.glShaderSource(vertexShader, vertexCode)
-        GLES20.glCompileShader(vertexShader)
+        val vertexShader = compileShader(GLES20.GL_VERTEX_SHADER, vertexCode)
 
         // 编译片段着色器
-        val fragmentShader = GLES20.glCreateShader(GLES20.GL_FRAGMENT_SHADER)
-        GLES20.glShaderSource(fragmentShader, fragmentCode)
-        GLES20.glCompileShader(fragmentShader)
+        val fragmentShader = compileShader(GLES20.GL_FRAGMENT_SHADER, fragmentCode)
 
         // 链接着色器程序
-        val program = GLES20.glCreateProgram()
-        GLES20.glAttachShader(program, vertexShader)
-        GLES20.glAttachShader(program, fragmentShader)
-        GLES20.glLinkProgram(program)
+        val program = linkProgram(vertexShader, fragmentShader)
         return program
+    }
+
+    /**
+     * 链接着色器
+     * @return  返回着色器程序的 ID
+     */
+    private fun linkProgram(vertexShader: Int, fragmentShader: Int): Int {
+        //创建程序对象
+        val programId = GLES20.glCreateProgram()
+        if (programId == 0) {
+            println("创建program失败")
+            return 0
+        }
+        //依附着色器
+        GLES20.glAttachShader(programId, vertexShader)
+        GLES20.glAttachShader(programId, fragmentShader)
+        //链接程序
+        GLES20.glLinkProgram(programId)
+        //检查链接状态
+        val linkStatus = IntArray(1)
+        GLES20.glGetProgramiv(programId, GLES20.GL_LINK_STATUS, linkStatus, 0)
+        println("链接程序" + GLES20.glGetProgramInfoLog(programId))
+        if (linkStatus[0] == 0) {
+            GLES20.glDeleteProgram(programId)
+            println("链接program失败")
+            return 0
+        }
+        return programId
+    }
+
+    /**
+     * 编译着色器
+     * @param type      着色器类型。[GLES20.GL_VERTEX_SHADER]、[GLES20.GL_FRAGMENT_SHADER]
+     * @param source    着色器代码
+     */
+    private fun compileShader(type: Int, source: String): Int {
+        //创建shader
+        val shaderId = GLES20.glCreateShader(type)
+        if (shaderId == 0) {
+            println("创建shader失败")
+            return 0
+        }
+        //上传shader源码
+        GLES20.glShaderSource(shaderId, source)
+        //编译shader源代码
+        GLES20.glCompileShader(shaderId)
+        //取出编译结果
+        val compileStatus = IntArray(1)
+        //取出shaderId的编译状态并把他写入compileStatus的0索引
+        GLES20.glGetShaderiv(shaderId, GLES20.GL_COMPILE_STATUS, compileStatus, 0)
+        println("编译状态${GLES20.glGetShaderInfoLog(shaderId)}")
+        if (compileStatus[0] == 0) {
+            GLES20.glDeleteShader(shaderId)
+            println("创建shader失败")
+            return 0
+        }
+        return shaderId
+    }
+
+    /**
+     * 在使用opengl之前我们应该验证一下，看当前程序对opengl是否有效
+     */
+    fun validateProgram(program: Int): Boolean {
+        GLES20.glValidateProgram(program)
+        val validateStatus = IntArray(1)
+        GLES20.glGetProgramiv(program, GLES20.GL_VALIDATE_STATUS, validateStatus, 0)
+        println("当前opengl情况" + validateStatus[0] + "/" + GLES20.glGetProgramInfoLog(program))
+        return validateStatus[0] != 0
     }
 
     // 当surface被创建时，GlsurfaceView会调用这个方法，这个发生在应用程序
@@ -234,13 +296,25 @@ class EcgRenderer : GLSurfaceView.Renderer {
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vertexBufferId)
         val positionLocation = GLES20.glGetAttribLocation(shaderProgramId, "vPosition")
         GLES20.glEnableVertexAttribArray(positionLocation)
+        // 关联属性和顶点数据
+        /*
+         * 第一个参数，这个就是shader属性
+         * 第二个参数，每个顶点有多少分量，我们这个只有3个分量
+         * 第三个参数，数据类型
+         * 第四个参数，只有整形才有意义，忽略
+         * 第5个参数，一个数组有多个属性才有意义，我们只有一个属性，传0
+         * 第六个参数，opengl从哪里读取数据
+         */
         GLES20.glVertexAttribPointer(positionLocation, 3, GLES20.GL_FLOAT, false, 0, 0)
 
         // 设置片段着色器的颜色
-        val colorLocation = GLES20.glGetUniformLocation(shaderProgramId, "vColor")
-        GLES20.glUniform4f(colorLocation, 1.0f, 0.0f, 0.0f, 1.0f)
+        val colorLocation = GLES20.glGetUniformLocation(shaderProgramId, "vColor")// 获取指定uniform的位置，并保存在返回值u_color变量中，方便之后使用
+        GLES20.glUniform4f(colorLocation, 1.0f, 0.0f, 0.0f, 1.0f)//指定着色器u_color的颜色
 
         // 绘制三角形
+        // 第一个参数：你想画什么，有三种模式GLES20.GL_TRIANGLES三角形，GLES20.GL_LINES线，GLES20.GL_POINTS点，
+        // 第二个参数：从数组那个位置开始读，
+        // 第三个参数：一共读取几个顶点
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 3) // GL_TRIANGLES:三角形 GL_POINTS:点
 
         // 禁用顶点属性并解除顶点缓冲区对象的绑定
