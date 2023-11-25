@@ -95,50 +95,39 @@ class GlEcgChartView(context: Context, attrs: AttributeSet?) : GLSurfaceView(con
 class EcgRenderer : GLSurfaceView.Renderer {
     // 添加顶点着色器和片段着色器的代码。它们将顶点位置传递给渲染管线并使用固定颜色进行渲染
     // 顶点着色器的代码，使用的是opengl的着色语言OpenGl Shader Language(GLSL)，详细语法参考https://juejin.cn/post/6874885969653596167
-    private val vertexShaderCode = "attribute vec4 vPosition;" +
+    // gl_Position 放置顶点坐标信息；gl_PointSize 绘制点的大小
+    private val vertexShaderCode = "attribute vec4 a_position;" +
             "void main() {" +
-            "  gl_Position = vPosition;" +
+            "  gl_Position = a_position;" +
+            "  gl_PointSize = 10.0;" +
             "}"
 
     // 片段着色器的代码
     private val fragmentShaderCode = "precision mediump float;" +
-            "uniform vec4 vColor;" +
+            "uniform vec4 u_color;" +
             "void main() {" +
-            "  gl_FragColor = vColor;" +
+            "  gl_FragColor = u_color;" +
             "}"
-
-    // 顶点数据。对应openGL的世界坐标系
-    private val vertexData = floatArrayOf(
-        0.0f, 0.5f, 0.0f,// 点1：x，y，z
-        -0.5f, -0.5f, 0.0f,
-        0.5f, -0.5f, 0.0f
-    )
-
-    // 顶点缓冲区对象
-    private var vertexBufferId = 0
-
-    // 着色器程序id
-    private var shaderProgramId = 0
 
     // 在代码中这些顶点会用浮点数数组来表示，因为是二维坐标，所以每个顶点要用俩个浮点数来记录，一个标记x轴位置，一个标记y轴位置，这个数组通常被称为属性（attribute）数组
     // 这个数组表示俩个三角形，每个三角形都以逆时针表示，一共四个顶点，俩个三角形共用俩个顶点，这样就形成了一个矩形。
     // 定义好顶点了，但是我们的java代码是运行在虚拟机上，而opengl是运行在本地的硬件上的，那么如何才能把java数据可以让opengl使用呢？
     // ByteBuffer 可以分配本地的内存块，并且把java数据复制到本地内存
     private val tableVertices = floatArrayOf(
-        //第一个三角形
-        0f, 0f,
-        9f, 14f,
-        0f, 14f,
-        //第二个三角形
-        0f, 0f,
-        9f, 0f,
-        9f, 14f,
-        //中间的直线
-        0f, 7f,
-        9f, 7f,
+        //第一个三角
+        -0.5f, -0.5f,
+        0.5f, 0.5f,
+        -0.5f, 0.5f,
+        //第二个三角
+        -0.5f, -0.5f,
+        0.5f, -0.5f,
+        0.5f, 0.5f,
+        //线
+        -0.5f, 0f,
+        0.5f, 0f,
         //点
-        4.5f, 2f,
-        4.5f, 12f
+        0f, -0.25f,
+        0f, 0.25f
     )
 
     // allocateDirect 分配一块本地内存，分配大小由外部传入
@@ -157,22 +146,8 @@ class EcgRenderer : GLSurfaceView.Renderer {
     一旦最终的颜色生成后，opengl会把他们写到一块称为帧缓冲区（frame buffer）的内存块中，然后Android会把这个帧缓冲区显示到屏幕上
      */
 
-    /**
-     * 添加编译和链接着色器的方法
-     * opengl程序就是把一个顶点着色器和一个片段着色器链接在一起编程单个对象，顶点着色器和片段着色器总在一起工作，不能分开，但是并不意味之他们是一一配对的，我们也可以在多个程序使用同一个着色器
-     * @return  返回着色器程序的 ID
-     */
-    private fun loadShaderProgram(vertexCode: String, fragmentCode: String): Int {
-        // 编译顶点着色器
-        val vertexShader = compileShader(GLES20.GL_VERTEX_SHADER, vertexCode)
-
-        // 编译片段着色器
-        val fragmentShader = compileShader(GLES20.GL_FRAGMENT_SHADER, fragmentCode)
-
-        // 链接着色器程序
-        val program = linkProgram(vertexShader, fragmentShader)
-        return program
-    }
+    private var u_color = 0
+    private var a_position = 0
 
     /**
      * 链接着色器
@@ -248,30 +223,31 @@ class EcgRenderer : GLSurfaceView.Renderer {
         println("onSurfaceCreated")
         // 设置清除屏幕时使用的颜色
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
-
-        // 创建顶点缓冲区对象
-        val buffers = IntArray(1)
-        GLES20.glGenBuffers(1, buffers, 0)
-        vertexBufferId = buffers[0]
-
-        // 将顶点数据上传到缓冲区对象
-        val vertexBuffer = ByteBuffer.allocateDirect(vertexData.size * 4)
-            .order(ByteOrder.nativeOrder())
-            .asFloatBuffer()
-        vertexBuffer.put(vertexData)
-        vertexBuffer.position(0)
-
-        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vertexBufferId)
-        GLES20.glBufferData(
-            GLES20.GL_ARRAY_BUFFER,
-            vertexData.size * 4,
-            vertexBuffer,
-            GLES20.GL_STATIC_DRAW
-        )
-        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0)
-
-        // 加载并创建着色器程序
-        shaderProgramId = loadShaderProgram(vertexShaderCode, fragmentShaderCode)
+        // 编译顶点着色器
+        val vertexShader = compileShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode)
+        // 编译片段着色器
+        val fragmentShader = compileShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode)
+        // 链接着色器程序
+        val program = linkProgram(vertexShader, fragmentShader)
+        // 验证程序
+        validateProgram(program)
+        // 使用程序
+        GLES20.glUseProgram(program)
+        //获取shader属性
+        u_color = GLES20.glGetUniformLocation(program, "u_color")// 获取指定uniform的位置，并保存在返回值u_color变量中，方便之后使用
+        a_position = GLES20.glGetAttribLocation(program, "a_position")
+        //绑定a_position和verticeData顶点位置
+        /**
+         * 第一个参数，这个就是shader属性
+         * 第二个参数，每个顶点有多少分量，我们这个只有2个分量
+         * 第三个参数，数据类型
+         * 第四个参数，只有整形才有意义，忽略
+         * 第5个参数，一个数组有多个属性才有意义，我们只有一个属性，传0
+         * 第六个参数，opengl从哪里读取数据
+         */
+        GLES20.glVertexAttribPointer(a_position, 2, GLES20.GL_FLOAT, false, 0, verticesData)
+        //开启顶点
+        GLES20.glEnableVertexAttribArray(a_position)
     }
 
     //在Surface创建以后，每次surface尺寸大小发生变化，这个方法会被调用到，比如横竖屏切换
@@ -289,36 +265,28 @@ class EcgRenderer : GLSurfaceView.Renderer {
         // 清空屏幕，并用之前glClearColor定义的颜色填充
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
 
-        // 使用着色器程序
-        GLES20.glUseProgram(shaderProgramId)
-
-        // 绑定顶点缓冲区对象并启用顶点属性
-        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vertexBufferId)
-        val positionLocation = GLES20.glGetAttribLocation(shaderProgramId, "vPosition")
-        GLES20.glEnableVertexAttribArray(positionLocation)
-        // 关联属性和顶点数据
-        /*
-         * 第一个参数，这个就是shader属性
-         * 第二个参数，每个顶点有多少分量，我们这个只有3个分量
-         * 第三个参数，数据类型
-         * 第四个参数，只有整形才有意义，忽略
-         * 第5个参数，一个数组有多个属性才有意义，我们只有一个属性，传0
-         * 第六个参数，opengl从哪里读取数据
+        //绘制长方形
+        //指定着色器u_color的颜色为白色
+        GLES20.glUniform4f(u_color, 1.0f, 1.0f, 1.0f, 1.0f);
+        /**
+         * 绘制三角形
+         * 第一个参数：你想画什么，有三种模式GLES20.GL_TRIANGLES三角形，GLES20.GL_LINES线，GLES20.GL_POINTS点，
+         * 第二个参数：从数组那个位置开始读，
+         * 第三个参数：一共读取几个顶点
+         *
+         * 最终绘制俩个三角形，组成矩形
          */
-        GLES20.glVertexAttribPointer(positionLocation, 3, GLES20.GL_FLOAT, false, 0, 0)
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 6);
 
-        // 设置片段着色器的颜色
-        val colorLocation = GLES20.glGetUniformLocation(shaderProgramId, "vColor")// 获取指定uniform的位置，并保存在返回值u_color变量中，方便之后使用
-        GLES20.glUniform4f(colorLocation, 1.0f, 0.0f, 0.0f, 1.0f)//指定着色器u_color的颜色
+        //绘制分割线
+        GLES20.glUniform4f(u_color, 1.0f, 0.0f, 0.0f, 1.0f);
+        GLES20.glDrawArrays(GLES20.GL_LINES, 6, 2);
 
-        // 绘制三角形
-        // 第一个参数：你想画什么，有三种模式GLES20.GL_TRIANGLES三角形，GLES20.GL_LINES线，GLES20.GL_POINTS点，
-        // 第二个参数：从数组那个位置开始读，
-        // 第三个参数：一共读取几个顶点
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 3) // GL_TRIANGLES:三角形 GL_POINTS:点
+        //绘制点
+        GLES20.glUniform4f(u_color, 0.0f, 0.0f, 1.0f, 1.0f);
+        GLES20.glDrawArrays(GLES20.GL_POINTS, 8, 1);
 
-        // 禁用顶点属性并解除顶点缓冲区对象的绑定
-        GLES20.glDisableVertexAttribArray(positionLocation)
-        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0)
+        GLES20.glUniform4f(u_color, 1.0f, 0.0f, 0.0f, 1.0f);
+        GLES20.glDrawArrays(GLES20.GL_POINTS, 9, 1);
     }
 }
