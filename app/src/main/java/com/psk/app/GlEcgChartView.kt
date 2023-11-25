@@ -96,17 +96,17 @@ class EcgRenderer : GLSurfaceView.Renderer {
     // 添加顶点着色器和片段着色器的代码。它们将顶点位置传递给渲染管线并使用固定颜色进行渲染
     // 顶点着色器的代码，使用的是opengl的着色语言OpenGl Shader Language(GLSL)，详细语法参考https://juejin.cn/post/6874885969653596167
     // gl_Position 放置顶点坐标信息；gl_PointSize 绘制点的大小
-    private val vertexShaderCode = "attribute vec4 a_position" +
+    private val vertexShaderCode = "attribute vec4 a_position;" +
             "void main() {" +
-            "  gl_Position = a_position" +
-            "  gl_PointSize = 10.0" +
+            "  gl_Position = a_position;" +
+            "  gl_PointSize = 10.0;" +
             "}"
 
     // 片段着色器的代码
-    private val fragmentShaderCode = "precision mediump float" +
-            "uniform vec4 u_color" +
+    private val fragmentShaderCode = "precision mediump float;" +
+            "uniform vec4 u_color;" +
             "void main() {" +
-            "  gl_FragColor = u_color" +
+            "  gl_FragColor = u_color;" +
             "}"
 
     // 在代码中这些顶点会用浮点数数组来表示，因为是二维坐标，所以每个顶点要用俩个浮点数来记录，一个标记x轴位置，一个标记y轴位置，这个数组通常被称为属性（attribute）数组
@@ -114,22 +114,20 @@ class EcgRenderer : GLSurfaceView.Renderer {
     // 定义好顶点了，但是我们的java代码是运行在虚拟机上，而opengl是运行在本地的硬件上的，那么如何才能把java数据可以让opengl使用呢？
     // ByteBuffer 可以分配本地的内存块，并且把java数据复制到本地内存
     // opengl会把屏幕映射到【-1，1】的范围内
-    private val tableVertices = floatArrayOf(
-        //第一个三角
-        -0.5f, -0.5f,
-        0.5f, 0.5f,
-        -0.5f, 0.5f,
-        //第二个三角
-        -0.5f, -0.5f,
-        0.5f, -0.5f,
-        0.5f, 0.5f,
-        //线
-        -0.5f, 0f,
-        0.5f, 0f,
-        //点
-        0f, -0.25f,
-        0f, 0.25f
-    )
+    private val tableVertices: FloatArray by lazy {
+        val size = 2
+        val scale = 0.1f
+        // 准备顶点数据
+        val vertices = FloatArray(size * size * 2)
+        for (i in 0 until size) {
+            for (j in 0 until size) {
+                vertices[(i * size + j) * 2] = j * scale
+                vertices[(i * size + j) * 2 + 1] = i * scale
+            }
+        }
+        println(vertices.contentToString())
+        vertices
+    }
 
     // allocateDirect 分配一块本地内存，分配大小由外部传入
     // 每个浮点数有32位精度，而每个byte有8位精度，所以每个浮点数都占4个字节
@@ -191,29 +189,14 @@ class EcgRenderer : GLSurfaceView.Renderer {
         // 清空屏幕，并用之前glClearColor定义的颜色填充
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
 
-        //绘制长方形
         //指定着色器u_color的颜色为白色
-        GLES20.glUniform4f(u_color, 1.0f, 1.0f, 1.0f, 1.0f)
+        GLES20.glUniform4f(u_color, 1.0f, 0.0f, 0.0f, 1.0f)
         /**
-         * 绘制三角形
          * 第一个参数：你想画什么，有三种模式GLES20.GL_TRIANGLES三角形，GLES20.GL_LINES线，GLES20.GL_POINTS点，
          * 第二个参数：从数组那个位置开始读，
          * 第三个参数：一共读取几个顶点
-         *
-         * 最终绘制俩个三角形，组成矩形
          */
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 6)
-
-        //绘制分割线
-        GLES20.glUniform4f(u_color, 1.0f, 0.0f, 0.0f, 1.0f)
-        GLES20.glDrawArrays(GLES20.GL_LINES, 6, 2)
-
-        //绘制点
-        GLES20.glUniform4f(u_color, 0.0f, 0.0f, 1.0f, 1.0f)
-        GLES20.glDrawArrays(GLES20.GL_POINTS, 8, 1)
-
-        GLES20.glUniform4f(u_color, 1.0f, 0.0f, 0.0f, 1.0f)
-        GLES20.glDrawArrays(GLES20.GL_POINTS, 9, 1)
+        GLES20.glDrawArrays(GLES20.GL_LINES, 0, tableVertices.size / 2)
     }
 }
 
