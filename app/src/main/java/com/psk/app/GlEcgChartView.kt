@@ -150,73 +150,6 @@ class EcgRenderer : GLSurfaceView.Renderer {
     private var u_color = 0
     private var a_position = 0
 
-    /**
-     * 链接着色器
-     * @return  返回着色器程序的 ID
-     */
-    private fun linkProgram(vertexShader: Int, fragmentShader: Int): Int {
-        //创建程序对象
-        val programId = GLES20.glCreateProgram()
-        if (programId == 0) {
-            println("创建program失败")
-            return 0
-        }
-        //依附着色器
-        GLES20.glAttachShader(programId, vertexShader)
-        GLES20.glAttachShader(programId, fragmentShader)
-        //链接程序
-        GLES20.glLinkProgram(programId)
-        //检查链接状态
-        val linkStatus = IntArray(1)
-        GLES20.glGetProgramiv(programId, GLES20.GL_LINK_STATUS, linkStatus, 0)
-        println("链接程序" + GLES20.glGetProgramInfoLog(programId))
-        if (linkStatus[0] == 0) {
-            GLES20.glDeleteProgram(programId)
-            println("链接program失败")
-            return 0
-        }
-        return programId
-    }
-
-    /**
-     * 编译着色器
-     * @param type      着色器类型。[GLES20.GL_VERTEX_SHADER]、[GLES20.GL_FRAGMENT_SHADER]
-     * @param source    着色器代码
-     */
-    private fun compileShader(type: Int, source: String): Int {
-        //创建shader
-        val shaderId = GLES20.glCreateShader(type)
-        if (shaderId == 0) {
-            println("创建shader失败")
-            return 0
-        }
-        //上传shader源码
-        GLES20.glShaderSource(shaderId, source)
-        //编译shader源代码
-        GLES20.glCompileShader(shaderId)
-        //取出编译结果
-        val compileStatus = IntArray(1)
-        //取出shaderId的编译状态并把他写入compileStatus的0索引
-        GLES20.glGetShaderiv(shaderId, GLES20.GL_COMPILE_STATUS, compileStatus, 0)
-        println("编译状态${GLES20.glGetShaderInfoLog(shaderId)}")
-        if (compileStatus[0] == 0) {
-            GLES20.glDeleteShader(shaderId)
-            println("创建shader失败")
-            return 0
-        }
-        return shaderId
-    }
-
-    /**
-     * 在使用opengl之前我们应该验证一下，看当前程序对opengl是否有效
-     */
-    fun validateProgram(program: Int): Boolean {
-        GLES20.glValidateProgram(program)
-        val validateStatus = IntArray(1)
-        GLES20.glGetProgramiv(program, GLES20.GL_VALIDATE_STATUS, validateStatus, 0)
-        println("当前opengl情况" + validateStatus[0] + "/" + GLES20.glGetProgramInfoLog(program))
-        return validateStatus[0] != 0
-    }
 
     // 当surface被创建时，GlsurfaceView会调用这个方法，这个发生在应用程序
     // 第一次运行的时候或者从其他Activity回来的时候也会调用
@@ -224,30 +157,22 @@ class EcgRenderer : GLSurfaceView.Renderer {
         println("onSurfaceCreated")
         // 设置清除屏幕时使用的颜色
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
-        // 编译顶点着色器
-        val vertexShader = compileShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode)
-        // 编译片段着色器
-        val fragmentShader = compileShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode)
-        // 链接着色器程序
-        val program = linkProgram(vertexShader, fragmentShader)
-        // 验证程序
-        validateProgram(program)
-        // 使用程序
-        GLES20.glUseProgram(program)
+        // 加载程序
+        val program = RenderHelper.loadProgram(vertexShaderCode, fragmentShaderCode)
         //获取shader属性
         u_color = GLES20.glGetUniformLocation(program, "u_color")// 获取指定uniform的位置，并保存在返回值u_color变量中，方便之后使用
         a_position = GLES20.glGetAttribLocation(program, "a_position")
-        //绑定a_position和verticeData顶点位置
         /**
-         * 第一个参数，这个就是shader属性
-         * 第二个参数，每个顶点有多少分量，我们这个只有2个分量
-         * 第三个参数，数据类型
-         * 第四个参数，只有整形才有意义，忽略
-         * 第5个参数，一个数组有多个属性才有意义，我们只有一个属性，传0
-         * 第六个参数，opengl从哪里读取数据
+         * 告诉opengl，可以在缓冲区 verticesData中找a_Position对应的数据
+         * 第一个参数，这个是属性的位置，传入之前获取的a_position
+         * 第二个参数，这个是每个属性的数据计数，对于这个属性有多少个分量与每一个顶点关联，我们上一节定义顶点用了俩个分量x,y,这就意味着每个顶点需要俩个分量，我们为顶点设置了俩个分量，但是a_Position定义为vec4，他有4个分量，如果没有有指定值，那么默认第三个分量为0，第四个分量为1
+         * 第三个参数，这个是数据类型，我们是浮点数所以设置为GLES20.GL_FLOAT
+         * 第四个参数，只有使用整形数据他才有意义，我们暂时忽略设为false
+         * 第5个参数，当数组存储多个属性时他才有意义，本章只有一个属性，暂时忽略传0
+         * 第六个参数，告诉opengl在哪里读取数据
          */
         GLES20.glVertexAttribPointer(a_position, 2, GLES20.GL_FLOAT, false, 0, verticesData)
-        //开启顶点
+        //使用这个属性顶点
         GLES20.glEnableVertexAttribArray(a_position)
     }
 
@@ -289,5 +214,95 @@ class EcgRenderer : GLSurfaceView.Renderer {
 
         GLES20.glUniform4f(u_color, 1.0f, 0.0f, 0.0f, 1.0f);
         GLES20.glDrawArrays(GLES20.GL_POINTS, 9, 1);
+    }
+}
+
+object RenderHelper {
+
+    /**
+     * 加载程序
+     */
+    fun loadProgram(vertexShaderCode: String, fragmentShaderCode: String): Int {
+        // 编译顶点着色器
+        val vertexShader = compileShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode)
+        // 编译片段着色器
+        val fragmentShader = compileShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode)
+        // 链接着色器程序
+        val program = linkProgram(vertexShader, fragmentShader)
+        // 验证程序
+        if (!validateProgram(program)) {
+            return 0
+        }
+        // 使用程序
+        GLES20.glUseProgram(program)
+        return program
+    }
+
+    /**
+     * 编译着色器
+     * @param type      着色器类型。[GLES20.GL_VERTEX_SHADER]、[GLES20.GL_FRAGMENT_SHADER]
+     * @param source    着色器代码
+     */
+    private fun compileShader(type: Int, source: String): Int {
+        //创建shader
+        val shaderId = GLES20.glCreateShader(type)
+        if (shaderId == 0) {
+            println("创建shader失败")
+            return 0
+        }
+        //上传shader源码
+        GLES20.glShaderSource(shaderId, source)
+        //编译shader源代码
+        GLES20.glCompileShader(shaderId)
+        //取出编译结果
+        val compileStatus = IntArray(1)
+        //取出shaderId的编译状态并把他写入compileStatus的0索引
+        GLES20.glGetShaderiv(shaderId, GLES20.GL_COMPILE_STATUS, compileStatus, 0)
+        println("编译状态${GLES20.glGetShaderInfoLog(shaderId)}")
+        if (compileStatus[0] == 0) {
+            GLES20.glDeleteShader(shaderId)
+            println("创建shader失败")
+            return 0
+        }
+        return shaderId
+    }
+
+    /**
+     * 链接着色器
+     * @return  返回着色器程序的 ID
+     */
+    private fun linkProgram(vertexShader: Int, fragmentShader: Int): Int {
+        //创建程序对象
+        val programId = GLES20.glCreateProgram()
+        if (programId == 0) {
+            println("创建program失败")
+            return 0
+        }
+        //依附着色器
+        GLES20.glAttachShader(programId, vertexShader)
+        GLES20.glAttachShader(programId, fragmentShader)
+        //链接程序
+        GLES20.glLinkProgram(programId)
+        //检查链接状态
+        val linkStatus = IntArray(1)
+        GLES20.glGetProgramiv(programId, GLES20.GL_LINK_STATUS, linkStatus, 0)
+        println("链接程序" + GLES20.glGetProgramInfoLog(programId))
+        if (linkStatus[0] == 0) {
+            GLES20.glDeleteProgram(programId)
+            println("链接program失败")
+            return 0
+        }
+        return programId
+    }
+
+    /**
+     * 在使用opengl之前我们应该验证一下，看当前程序对opengl是否有效
+     */
+    private fun validateProgram(program: Int): Boolean {
+        GLES20.glValidateProgram(program)
+        val validateStatus = IntArray(1)
+        GLES20.glGetProgramiv(program, GLES20.GL_VALIDATE_STATUS, validateStatus, 0)
+        println("当前opengl情况" + validateStatus[0] + "/" + GLES20.glGetProgramInfoLog(program))
+        return validateStatus[0] != 0
     }
 }
