@@ -113,6 +113,7 @@ class EcgRenderer : GLSurfaceView.Renderer {
     // 这个数组表示俩个三角形，每个三角形都以逆时针表示，一共四个顶点，俩个三角形共用俩个顶点，这样就形成了一个矩形。
     // 定义好顶点了，但是我们的java代码是运行在虚拟机上，而opengl是运行在本地的硬件上的，那么如何才能把java数据可以让opengl使用呢？
     // ByteBuffer 可以分配本地的内存块，并且把java数据复制到本地内存
+    // opengl会把屏幕映射到【-1，1】的范围内
     private val tableVertices = floatArrayOf(
         //第一个三角
         -0.5f, -0.5f,
