@@ -103,11 +103,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        println("MainActivity onResume")
         mBinding.glEcgChartView.onResume()
     }
 
     override fun onPause() {
         super.onPause()
+        println("MainActivity onPause")
         mBinding.glEcgChartView.onPause()
     }
 
