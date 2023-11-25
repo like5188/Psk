@@ -41,6 +41,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     companion object {
         private const val MM_PER_S = 25// 走速（速度）。默认为标准值：25mm/s
         private const val MM_PER_MV = 10// 增益（灵敏度）。默认为1倍：10mm/mV
+        private const val DRAW_TEXT = "${MM_PER_S}mm/s  ${MM_PER_MV}mm/mV"
     }
 
     // 画文字的画笔
@@ -226,15 +227,14 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
 
     // 画背景图片
     private fun drawBg(canvas: Canvas) {
-        val bmp = bgBitmap ?: return
-        if (!bmp.isRecycled) {
-            canvas.drawBitmap(bmp, 0f, 0f, null)
+        if (bgBitmap?.isRecycled == false) {
+            canvas.drawBitmap(bgBitmap!!, 0f, 0f, null)
         }
     }
 
     // 画文字
     private fun drawText(canvas: Canvas) {
-        canvas.drawText("${MM_PER_S}mm/s  ${MM_PER_MV}mm/mV", 20f.dp, height.toFloat() - 10.dp, textPaint)
+        canvas.drawText(DRAW_TEXT, 20f.dp, height.toFloat() - 10.dp, textPaint)
     }
 
     // 画心电数据
