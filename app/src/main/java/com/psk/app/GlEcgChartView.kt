@@ -109,20 +109,22 @@ class EcgRenderer : GLSurfaceView.Renderer {
             "  gl_FragColor = u_color;" +
             "}"
 
+    private val hLineCount = 5
+    private val yLineCount = 4
+    private val scale = 0.1f
+
     // 在代码中这些顶点会用浮点数数组来表示，因为是二维坐标，所以每个顶点要用俩个浮点数来记录，一个标记x轴位置，一个标记y轴位置，这个数组通常被称为属性（attribute）数组
     // 这个数组表示俩个三角形，每个三角形都以逆时针表示，一共四个顶点，俩个三角形共用俩个顶点，这样就形成了一个矩形。
     // 定义好顶点了，但是我们的java代码是运行在虚拟机上，而opengl是运行在本地的硬件上的，那么如何才能把java数据可以让opengl使用呢？
     // ByteBuffer 可以分配本地的内存块，并且把java数据复制到本地内存
     // opengl会把屏幕映射到【-1，1】的范围内
     private val hVertices: FloatArray by lazy {
-        val size = 2
-        val scale = 0.5f
         // 准备顶点数据
-        val vertices = FloatArray(size * size * 2)
-        for (i in 0 until size) {
-            for (j in 0 until size) {
-                vertices[(i * size + j) * 2] = j * scale
-                vertices[(i * size + j) * 2 + 1] = i * scale
+        val vertices = FloatArray(hLineCount * 2 * 2)
+        for (i in 0 until hLineCount) {
+            for (j in 0 until 2) {
+                vertices[(i * 2 + j) * 2] = j * hLineCount * scale
+                vertices[(i * 2 + j) * 2 + 1] = i * scale
             }
         }
         println("hVertices=${vertices.contentToString()}")
@@ -147,14 +149,12 @@ class EcgRenderer : GLSurfaceView.Renderer {
 
     // 垂直线顶点数据
     private val vVertices: FloatArray by lazy {
-        val size = 2
-        val scale = 0.5f
         // 准备顶点数据
-        val vertices = FloatArray(size * size * 2)
-        for (i in 0 until size) {
-            for (j in 0 until size) {
-                vertices[(i * size + j) * 2] = i * scale
-                vertices[(i * size + j) * 2 + 1] = j * scale
+        val vertices = FloatArray(yLineCount * 2 * 2)
+        for (i in 0 until yLineCount) {
+            for (j in 0 until 2) {
+                vertices[(i * 2 + j) * 2] = i * scale
+                vertices[(i * 2 + j) * 2 + 1] = j * yLineCount * scale
             }
         }
         println("vVertices=${vertices.contentToString()}")
@@ -227,9 +227,9 @@ class EcgRenderer : GLSurfaceView.Renderer {
          * 第二个参数：从数组那个位置开始读，
          * 第三个参数：一共读取几个顶点
          */
-        GLES20.glDrawArrays(GLES20.GL_LINES, 0, 4)
+        GLES20.glDrawArrays(GLES20.GL_LINES, 0, hVerticesData.capacity() / 2)
         GLES20.glVertexAttribPointer(a_position, 2, GLES20.GL_FLOAT, false, 0, vVerticesData)
-        GLES20.glDrawArrays(GLES20.GL_LINES, 0, 4)
+        GLES20.glDrawArrays(GLES20.GL_LINES, 0, vVerticesData.capacity() / 2)
     }
 }
 
