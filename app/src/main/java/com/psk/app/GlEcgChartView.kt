@@ -113,9 +113,9 @@ class EcgRenderer : GLSurfaceView.Renderer {
         }
     """
 
-    private val hLineCount = 5
-    private val vLineCount = 4
-    private val scale = 0.1f
+    private val hLineCount = 50
+    private val vLineCount = 50
+    private val scale = 0.02f
 
     // 在代码中这些顶点会用浮点数数组来表示，因为是二维坐标，所以每个顶点要用俩个浮点数来记录，一个标记x轴位置，一个标记y轴位置，这个数组通常被称为属性（attribute）数组
     // 这个数组表示俩个三角形，每个三角形都以逆时针表示，一共四个顶点，俩个三角形共用俩个顶点，这样就形成了一个矩形。
@@ -127,8 +127,8 @@ class EcgRenderer : GLSurfaceView.Renderer {
         val vertices = FloatArray(hLineCount * 2 * 2)
         for (i in 0 until hLineCount) {
             for (j in 0 until 2) {
-                vertices[(i * 2 + j) * 2] = j * (vLineCount - 1) * scale
-                vertices[(i * 2 + j) * 2 + 1] = i * scale
+                vertices[(i * 2 + j) * 2] = j * (vLineCount - 1) * scale - 0.5f// -0.5是为了居中
+                vertices[(i * 2 + j) * 2 + 1] = i * scale - 0.5f
             }
         }
         println("hVertices=${vertices.contentToString()}")
@@ -157,8 +157,8 @@ class EcgRenderer : GLSurfaceView.Renderer {
         val vertices = FloatArray(vLineCount * 2 * 2)
         for (i in 0 until vLineCount) {
             for (j in 0 until 2) {
-                vertices[(i * 2 + j) * 2] = i * scale
-                vertices[(i * 2 + j) * 2 + 1] = j * (hLineCount - 1) * scale
+                vertices[(i * 2 + j) * 2] = i * scale - 0.5f
+                vertices[(i * 2 + j) * 2 + 1] = j * (hLineCount - 1) * scale - 0.5f
             }
         }
         println("vVertices=${vertices.contentToString()}")
