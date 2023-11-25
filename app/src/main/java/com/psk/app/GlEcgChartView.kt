@@ -114,9 +114,9 @@ class EcgRenderer : GLSurfaceView.Renderer {
     // 定义好顶点了，但是我们的java代码是运行在虚拟机上，而opengl是运行在本地的硬件上的，那么如何才能把java数据可以让opengl使用呢？
     // ByteBuffer 可以分配本地的内存块，并且把java数据复制到本地内存
     // opengl会把屏幕映射到【-1，1】的范围内
-    private val tableVertices: FloatArray by lazy {
+    private val hVertices: FloatArray by lazy {
         val size = 2
-        val scale = 0.1f
+        val scale = 0.5f
         // 准备顶点数据
         val vertices = FloatArray(size * size * 2)
         for (i in 0 until size) {
@@ -125,16 +125,16 @@ class EcgRenderer : GLSurfaceView.Renderer {
                 vertices[(i * size + j) * 2 + 1] = i * scale
             }
         }
-        println(vertices.contentToString())
+        println("hVertices=${vertices.contentToString()}")
         vertices
     }
 
     // allocateDirect 分配一块本地内存，分配大小由外部传入
     // 每个浮点数有32位精度，而每个byte有8位精度，所以每个浮点数都占4个字节
-    private val verticesData: FloatBuffer = ByteBuffer.allocateDirect(tableVertices.size * 4)
+    private val hVerticesData: FloatBuffer = ByteBuffer.allocateDirect(hVertices.size * 4)
         .order(ByteOrder.nativeOrder())// 告诉缓冲区，按照本地字节序组织内容
         .asFloatBuffer()
-        .put(tableVertices).apply {
+        .put(hVertices).apply {
             position(0)
         }
     /*
@@ -144,6 +144,30 @@ class EcgRenderer : GLSurfaceView.Renderer {
     片段着色器（fragment shader）：为组成点，线，三角形的每个片段生成最终的颜色，针对每个片段他都会执行一次，一个片段是一个小的，单一颜色的长方形区域，类似计算机屏幕上的一个像素
     一旦最终的颜色生成后，opengl会把他们写到一块称为帧缓冲区（frame buffer）的内存块中，然后Android会把这个帧缓冲区显示到屏幕上
      */
+
+    // 垂直线顶点数据
+    private val vVertices: FloatArray by lazy {
+        val size = 2
+        val scale = 0.5f
+        // 准备顶点数据
+        val vertices = FloatArray(size * size * 2)
+        for (i in 0 until size) {
+            for (j in 0 until size) {
+                vertices[(i * size + j) * 2] = i * scale
+                vertices[(i * size + j) * 2 + 1] = j * scale
+            }
+        }
+        println("vVertices=${vertices.contentToString()}")
+        vertices
+    }
+
+    // 垂直线顶点数据缓存
+    private val vVerticesData: FloatBuffer = ByteBuffer.allocateDirect(vVertices.size * 4)
+        .order(ByteOrder.nativeOrder())// 告诉缓冲区，按照本地字节序组织内容
+        .asFloatBuffer()
+        .put(vVertices).apply {
+            position(0)
+        }
 
     private var u_color = 0
     private var a_position = 0
@@ -160,16 +184,6 @@ class EcgRenderer : GLSurfaceView.Renderer {
         //获取shader属性
         u_color = GLES20.glGetUniformLocation(program, "u_color")// 获取指定uniform的位置，并保存在返回值u_color变量中，方便之后使用
         a_position = GLES20.glGetAttribLocation(program, "a_position")
-        /**
-         * 告诉opengl，可以在缓冲区 verticesData中找a_Position对应的数据
-         * 第一个参数，这个是属性的位置，传入之前获取的a_position
-         * 第二个参数，这个是每个属性的数据计数，对于这个属性有多少个分量与每一个顶点关联，我们上一节定义顶点用了俩个分量x,y,这就意味着每个顶点需要俩个分量，我们为顶点设置了俩个分量，但是a_Position定义为vec4，他有4个分量，如果没有有指定值，那么默认第三个分量为0，第四个分量为1
-         * 第三个参数，这个是数据类型，我们是浮点数所以设置为GLES20.GL_FLOAT
-         * 第四个参数，只有使用整形数据他才有意义，我们暂时忽略设为false
-         * 第5个参数，当数组存储多个属性时他才有意义，本章只有一个属性，暂时忽略传0
-         * 第六个参数，告诉opengl在哪里读取数据
-         */
-        GLES20.glVertexAttribPointer(a_position, 2, GLES20.GL_FLOAT, false, 0, verticesData)
         //启用顶点属性
         GLES20.glEnableVertexAttribArray(a_position)
     }
@@ -192,6 +206,16 @@ class EcgRenderer : GLSurfaceView.Renderer {
         //指定着色器u_color的颜色为白色
         GLES20.glUniform4f(u_color, 1.0f, 0.0f, 0.0f, 1.0f)
         /*
+         * 告诉opengl，可以在缓冲区 verticesData中找a_Position对应的数据
+         * 第一个参数，这个是属性的位置，传入之前获取的a_position
+         * 第二个参数，这个是每个属性的数据计数，对于这个属性有多少个分量与每一个顶点关联，我们上一节定义顶点用了俩个分量x,y,这就意味着每个顶点需要俩个分量，我们为顶点设置了俩个分量，但是a_Position定义为vec4，他有4个分量，如果没有有指定值，那么默认第三个分量为0，第四个分量为1
+         * 第三个参数，这个是数据类型，我们是浮点数所以设置为GLES20.GL_FLOAT
+         * 第四个参数，只有使用整形数据他才有意义，我们暂时忽略设为false
+         * 第5个参数，当数组存储多个属性时他才有意义，本章只有一个属性，暂时忽略传0
+         * 第六个参数，告诉opengl在哪里读取数据
+         */
+        GLES20.glVertexAttribPointer(a_position, 2, GLES20.GL_FLOAT, false, 0, hVerticesData)
+        /*
          * 第一个参数：你想画什么，
         GL_POINTS           //将传入的顶点坐标作为单独的点绘制
         GL_LINES            //将传入的坐标作为单独线条绘制，ABCDEFG六个顶点，绘制AB、CD、EF三条线
@@ -203,7 +227,9 @@ class EcgRenderer : GLSurfaceView.Renderer {
          * 第二个参数：从数组那个位置开始读，
          * 第三个参数：一共读取几个顶点
          */
-        GLES20.glDrawArrays(GLES20.GL_LINES, 0, 8)
+        GLES20.glDrawArrays(GLES20.GL_LINES, 0, 4)
+        GLES20.glVertexAttribPointer(a_position, 2, GLES20.GL_FLOAT, false, 0, vVerticesData)
+        GLES20.glDrawArrays(GLES20.GL_LINES, 0, 4)
     }
 }
 
