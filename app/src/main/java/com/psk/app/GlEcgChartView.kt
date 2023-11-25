@@ -110,7 +110,7 @@ class EcgRenderer : GLSurfaceView.Renderer {
             "}"
 
     private val hLineCount = 5
-    private val yLineCount = 4
+    private val vLineCount = 4
     private val scale = 0.1f
 
     // 在代码中这些顶点会用浮点数数组来表示，因为是二维坐标，所以每个顶点要用俩个浮点数来记录，一个标记x轴位置，一个标记y轴位置，这个数组通常被称为属性（attribute）数组
@@ -123,7 +123,7 @@ class EcgRenderer : GLSurfaceView.Renderer {
         val vertices = FloatArray(hLineCount * 2 * 2)
         for (i in 0 until hLineCount) {
             for (j in 0 until 2) {
-                vertices[(i * 2 + j) * 2] = j * hLineCount * scale
+                vertices[(i * 2 + j) * 2] = j * vLineCount * scale
                 vertices[(i * 2 + j) * 2 + 1] = i * scale
             }
         }
@@ -150,11 +150,11 @@ class EcgRenderer : GLSurfaceView.Renderer {
     // 垂直线顶点数据
     private val vVertices: FloatArray by lazy {
         // 准备顶点数据
-        val vertices = FloatArray(yLineCount * 2 * 2)
-        for (i in 0 until yLineCount) {
+        val vertices = FloatArray(vLineCount * 2 * 2)
+        for (i in 0 until vLineCount) {
             for (j in 0 until 2) {
                 vertices[(i * 2 + j) * 2] = i * scale
-                vertices[(i * 2 + j) * 2 + 1] = j * yLineCount * scale
+                vertices[(i * 2 + j) * 2 + 1] = j * hLineCount * scale
             }
         }
         println("vVertices=${vertices.contentToString()}")
