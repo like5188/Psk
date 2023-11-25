@@ -100,4 +100,15 @@ class MainActivity : AppCompatActivity() {
         }
         mBinding.ecgChartView.init(125, 10.dp)
     }
+
+    override fun onResume() {
+        super.onResume()
+        mBinding.glEcgChartView.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mBinding.glEcgChartView.onPause()
+    }
+
 }
