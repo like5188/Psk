@@ -191,12 +191,19 @@ class EcgRenderer : GLSurfaceView.Renderer {
 
         //指定着色器u_color的颜色为白色
         GLES20.glUniform4f(u_color, 1.0f, 0.0f, 0.0f, 1.0f)
-        /**
-         * 第一个参数：你想画什么，有三种模式GLES20.GL_TRIANGLES三角形，GLES20.GL_LINES线，GLES20.GL_POINTS点，
+        /*
+         * 第一个参数：你想画什么，
+        GL_POINTS           //将传入的顶点坐标作为单独的点绘制
+        GL_LINES            //将传入的坐标作为单独线条绘制，ABCDEFG六个顶点，绘制AB、CD、EF三条线
+        GL_LINE_STRIP       //将传入的顶点作为折线绘制，ABCD四个顶点，绘制AB、BC、CD三条线
+        GL_LINE_LOOP        //将传入的顶点作为闭合折线绘制，ABCD四个顶点，绘制AB、BC、CD、DA四条线。
+        GL_TRIANGLES        //将传入的顶点作为单独的三角形绘制，ABCDEF绘制ABC,DEF两个三角形
+        GL_TRIANGLE_FAN     //将传入的顶点作为扇面绘制，ABCDEF绘制ABC、ACD、ADE、AEF四个三角形
+        GL_TRIANGLE_STRIP   //将传入的顶点作为三角条带绘制，ABCDEF绘制ABC,BCD,CDE,DEF四个三角形
          * 第二个参数：从数组那个位置开始读，
          * 第三个参数：一共读取几个顶点
          */
-        GLES20.glDrawArrays(GLES20.GL_LINES, 0, tableVertices.size / 2)
+        GLES20.glDrawArrays(GLES20.GL_LINES, 0, 8)
     }
 }
 
