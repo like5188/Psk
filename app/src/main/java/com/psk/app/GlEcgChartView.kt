@@ -96,17 +96,17 @@ class EcgRenderer : GLSurfaceView.Renderer {
     // 添加顶点着色器和片段着色器的代码。它们将顶点位置传递给渲染管线并使用固定颜色进行渲染
     // 顶点着色器的代码，使用的是opengl的着色语言OpenGl Shader Language(GLSL)，详细语法参考https://juejin.cn/post/6874885969653596167
     // gl_Position 放置顶点坐标信息；gl_PointSize 绘制点的大小
-    private val vertexShaderCode = "attribute vec4 a_position;" +
+    private val vertexShaderCode = "attribute vec4 a_position" +
             "void main() {" +
-            "  gl_Position = a_position;" +
-            "  gl_PointSize = 10.0;" +
+            "  gl_Position = a_position" +
+            "  gl_PointSize = 10.0" +
             "}"
 
     // 片段着色器的代码
-    private val fragmentShaderCode = "precision mediump float;" +
-            "uniform vec4 u_color;" +
+    private val fragmentShaderCode = "precision mediump float" +
+            "uniform vec4 u_color" +
             "void main() {" +
-            "  gl_FragColor = u_color;" +
+            "  gl_FragColor = u_color" +
             "}"
 
     // 在代码中这些顶点会用浮点数数组来表示，因为是二维坐标，所以每个顶点要用俩个浮点数来记录，一个标记x轴位置，一个标记y轴位置，这个数组通常被称为属性（attribute）数组
@@ -172,7 +172,7 @@ class EcgRenderer : GLSurfaceView.Renderer {
          * 第六个参数，告诉opengl在哪里读取数据
          */
         GLES20.glVertexAttribPointer(a_position, 2, GLES20.GL_FLOAT, false, 0, verticesData)
-        //使用这个属性顶点
+        //启用顶点属性
         GLES20.glEnableVertexAttribArray(a_position)
     }
 
@@ -193,7 +193,7 @@ class EcgRenderer : GLSurfaceView.Renderer {
 
         //绘制长方形
         //指定着色器u_color的颜色为白色
-        GLES20.glUniform4f(u_color, 1.0f, 1.0f, 1.0f, 1.0f);
+        GLES20.glUniform4f(u_color, 1.0f, 1.0f, 1.0f, 1.0f)
         /**
          * 绘制三角形
          * 第一个参数：你想画什么，有三种模式GLES20.GL_TRIANGLES三角形，GLES20.GL_LINES线，GLES20.GL_POINTS点，
@@ -202,18 +202,18 @@ class EcgRenderer : GLSurfaceView.Renderer {
          *
          * 最终绘制俩个三角形，组成矩形
          */
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 6);
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 6)
 
         //绘制分割线
-        GLES20.glUniform4f(u_color, 1.0f, 0.0f, 0.0f, 1.0f);
-        GLES20.glDrawArrays(GLES20.GL_LINES, 6, 2);
+        GLES20.glUniform4f(u_color, 1.0f, 0.0f, 0.0f, 1.0f)
+        GLES20.glDrawArrays(GLES20.GL_LINES, 6, 2)
 
         //绘制点
-        GLES20.glUniform4f(u_color, 0.0f, 0.0f, 1.0f, 1.0f);
-        GLES20.glDrawArrays(GLES20.GL_POINTS, 8, 1);
+        GLES20.glUniform4f(u_color, 0.0f, 0.0f, 1.0f, 1.0f)
+        GLES20.glDrawArrays(GLES20.GL_POINTS, 8, 1)
 
-        GLES20.glUniform4f(u_color, 1.0f, 0.0f, 0.0f, 1.0f);
-        GLES20.glDrawArrays(GLES20.GL_POINTS, 9, 1);
+        GLES20.glUniform4f(u_color, 1.0f, 0.0f, 0.0f, 1.0f)
+        GLES20.glDrawArrays(GLES20.GL_POINTS, 9, 1)
     }
 }
 
