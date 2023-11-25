@@ -1,13 +1,16 @@
 package com.psk.app
 
+import android.app.ActivityManager
 import android.content.Context
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
+import android.os.Build
 import android.util.AttributeSet
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
+
 
 /**
  * Android中GLES20 API的一些主要功能说明：
@@ -58,16 +61,33 @@ glClear：清除颜色缓冲区、深度缓冲区和/或模板缓冲区。
  */
 class GlEcgChartView(context: Context, attrs: AttributeSet?) : GLSurfaceView(context, attrs) {
     init {
+        if (!supportsEs2()) {
+            throw UnsupportedOperationException("not support opengl es2.0")
+        }
         // 设置 OpenGL ES 版本
         setEGLContextClientVersion(2)
-        //打开调试和日志
-        debugFlags = DEBUG_CHECK_GL_ERROR or DEBUG_LOG_GL_CALLS
         // 设置渲染器
         setRenderer(EcgRenderer())
         // 设置渲染方式
         // RENDERMODE_WHEN_DIRTY表示被动渲染，只有在调用requestRender或者onResume等方法时才会进行渲染。
         // RENDERMODE_CONTINUOUSLY表示持续渲染。这是默认值
         renderMode = RENDERMODE_CONTINUOUSLY
+        // 打开调试和日志
+        debugFlags = DEBUG_CHECK_GL_ERROR or DEBUG_LOG_GL_CALLS
+    }
+
+    /**
+     * 判断设备是否支持2.0版本
+     */
+    private fun supportsEs2(): Boolean {
+        val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager
+        val configurationInfo = activityManager?.deviceConfigurationInfo ?: return false
+        return (configurationInfo.reqGlEsVersion >= 0x20000 ||
+                Build.FINGERPRINT.startsWith("generic") ||
+                Build.FINGERPRINT.startsWith("unknown") ||
+                Build.MODEL.contains("google_sdk") ||
+                Build.MODEL.contains("Emulator") ||
+                Build.MODEL.contains("Android SDK built for x86"))
     }
 }
 
@@ -122,7 +142,8 @@ class EcgRenderer : GLSurfaceView.Renderer {
         return program
     }
 
-
+    // 当surface被创建时，GlsurfaceView会调用这个方法，这个发生在应用程序
+    // 第一次运行的时候或者从其他Activity回来的时候也会调用
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
         println("onSurfaceCreated")
         // 设置清除屏幕时使用的颜色
@@ -153,15 +174,18 @@ class EcgRenderer : GLSurfaceView.Renderer {
         shaderProgramId = loadShaderProgram(vertexShaderCode, fragmentShaderCode)
     }
 
+    //在Surface创建以后，每次surface尺寸大小发生变化，这个方法会被调用到，比如横竖屏切换
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
         println("onSurfaceChanged")
-        // 设置视口大小
+        // 设置视口大小，告诉opengl需要渲染的surface尺寸大小
         GLES20.glViewport(0, 0, width, height)
     }
 
+    // 当绘制每一帧数据的时候，会调用这个放方法，这个方法一定要绘制一些东西，即使只是清空屏幕
+    // 因为这个方法返回后，渲染区的数据会被交换并显示在屏幕上，如果什么都没有话，会看到闪烁效果
     override fun onDrawFrame(gl: GL10?) {
         println("onDrawFrame")
-        // 清除屏幕
+        // 清空屏幕，并用之前glClearColor定义的颜色填充
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
 
         // 使用着色器程序
