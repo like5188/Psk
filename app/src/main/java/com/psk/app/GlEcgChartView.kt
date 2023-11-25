@@ -123,7 +123,7 @@ class EcgRenderer : GLSurfaceView.Renderer {
         val vertices = FloatArray(hLineCount * 2 * 2)
         for (i in 0 until hLineCount) {
             for (j in 0 until 2) {
-                vertices[(i * 2 + j) * 2] = j * vLineCount * scale
+                vertices[(i * 2 + j) * 2] = j * (vLineCount - 1) * scale
                 vertices[(i * 2 + j) * 2 + 1] = i * scale
             }
         }
@@ -154,7 +154,7 @@ class EcgRenderer : GLSurfaceView.Renderer {
         for (i in 0 until vLineCount) {
             for (j in 0 until 2) {
                 vertices[(i * 2 + j) * 2] = i * scale
-                vertices[(i * 2 + j) * 2 + 1] = j * hLineCount * scale
+                vertices[(i * 2 + j) * 2 + 1] = j * (hLineCount - 1) * scale
             }
         }
         println("vVertices=${vertices.contentToString()}")
