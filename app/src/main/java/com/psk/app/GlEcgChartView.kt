@@ -96,18 +96,22 @@ class EcgRenderer : GLSurfaceView.Renderer {
     // 添加顶点着色器和片段着色器的代码。它们将顶点位置传递给渲染管线并使用固定颜色进行渲染
     // 顶点着色器的代码，使用的是opengl的着色语言OpenGl Shader Language(GLSL)，详细语法参考https://juejin.cn/post/6874885969653596167
     // gl_Position 放置顶点坐标信息；gl_PointSize 绘制点的大小
-    private val vertexShaderCode = "attribute vec4 a_position;" +
-            "void main() {" +
-            "  gl_Position = a_position;" +
-            "  gl_PointSize = 10.0;" +
-            "}"
+    private val vertexShaderCode = """
+        attribute vec4 a_position;
+        void main() {
+          gl_Position = a_position;
+          gl_PointSize = 10.0;
+        }
+    """
 
     // 片段着色器的代码
-    private val fragmentShaderCode = "precision mediump float;" +
-            "uniform vec4 u_color;" +
-            "void main() {" +
-            "  gl_FragColor = u_color;" +
-            "}"
+    private val fragmentShaderCode = """
+        precision mediump float;
+        uniform vec4 u_color;
+        void main() {
+            gl_FragColor = u_color;
+        }
+    """
 
     private val hLineCount = 5
     private val vLineCount = 4
