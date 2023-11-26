@@ -113,9 +113,9 @@ class EcgRenderer : GLSurfaceView.Renderer {
         }
     """
 
-    private val hLineCount = 50
-    private val vLineCount = 50
-    private val scale = 0.02f
+    private val hLineCount = 5
+    private val vLineCount = 5
+    private val scale = 0.1f
 
     // 在代码中这些顶点会用浮点数数组来表示，因为是二维坐标，所以每个顶点要用俩个浮点数来记录，一个标记x轴位置，一个标记y轴位置，这个数组通常被称为属性（attribute）数组
     // 这个数组表示俩个三角形，每个三角形都以逆时针表示，一共四个顶点，俩个三角形共用俩个顶点，这样就形成了一个矩形。
@@ -207,7 +207,7 @@ class EcgRenderer : GLSurfaceView.Renderer {
         // 清空屏幕，并用之前glClearColor定义的颜色填充
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
 
-        //指定着色器u_color的颜色为白色
+        //指定着色器u_color的颜色
         GLES20.glUniform4f(u_color, 1.0f, 0.0f, 0.0f, 1.0f)
         /*
          * 告诉opengl，可以在缓冲区 verticesData中找a_Position对应的数据
@@ -232,6 +232,8 @@ class EcgRenderer : GLSurfaceView.Renderer {
          * 第三个参数：一共读取几个顶点
          */
         GLES20.glDrawArrays(GLES20.GL_LINES, 0, hVerticesData.capacity() / 2)
+
+        GLES20.glUniform4f(u_color, 0.0f, 1.0f, 0.0f, 1.0f)
         GLES20.glVertexAttribPointer(a_position, 2, GLES20.GL_FLOAT, false, 0, vVerticesData)
         GLES20.glDrawArrays(GLES20.GL_LINES, 0, vVerticesData.capacity() / 2)
     }
