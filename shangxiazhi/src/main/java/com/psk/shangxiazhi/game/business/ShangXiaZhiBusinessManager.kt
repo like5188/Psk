@@ -7,10 +7,9 @@ import com.psk.shangxiazhi.data.model.IReport
 import com.psk.shangxiazhi.data.model.ShangXiaZhiReport
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.CountDownLatch
 
 class ShangXiaZhiBusinessManager(
     lifecycleScope: CoroutineScope,
@@ -23,7 +22,7 @@ class ShangXiaZhiBusinessManager(
     var onStartGame: (() -> Unit)? = null
     var onPauseGame: (() -> Unit)? = null
     var onOverGame: (() -> Unit)? = null
-    private var isStart = AtomicBoolean(false)
+    private var isStart = CountDownLatch(1)
 
     init {
         bleDeviceRepository.setCallback(
@@ -53,7 +52,7 @@ class ShangXiaZhiBusinessManager(
         Log.w(TAG, "上下肢连接成功")
         gameController.updateGameConnectionState(true)
         lifecycleScope.launch(Dispatchers.IO) {
-            waitStart()// 等待游戏开始运行
+            isStart.await()// 等待游戏开始运行
             startJob()
         }
     }
@@ -85,7 +84,7 @@ class ShangXiaZhiBusinessManager(
     fun onGameLoading() {}
 
     fun onGameStart() {
-        isStart.compareAndSet(false, true)
+        isStart.countDown()
     }
 
     fun onGameResume() {
@@ -103,12 +102,6 @@ class ShangXiaZhiBusinessManager(
     fun onGameOver() {
         lifecycleScope.launch(Dispatchers.IO) {
             bleDeviceRepository.stop()
-        }
-    }
-
-    private suspend fun waitStart() {
-        while (!isStart.get()) {
-            delay(10)
         }
     }
 
