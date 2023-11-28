@@ -198,7 +198,7 @@ class EcgRenderer : GLSurfaceView.Renderer {
         // 设置uniform值：指定着色器u_color的颜色。
         GLES20.glUniform4f(u_color, 1.0f, 0.0f, 0.0f, 1.0f)
         /*
-         * 告诉opengl，可以在缓冲区 verticesData中找a_Position对应的数据
+         * 设置attribute数据：告诉opengl，可以在缓冲区 verticesData中找a_Position对应的数据
          * 第一个参数，这个是属性的位置，传入之前获取的a_position
          * 第二个参数，这个是每个属性的数据计数，对于这个属性有多少个分量与每一个顶点关联，我们上一节定义顶点用了俩个分量x,y,这就意味着每个顶点需要俩个分量，我们为顶点设置了俩个分量，但是a_Position定义为vec4，他有4个分量，如果没有有指定值，那么默认第三个分量为0，第四个分量为1
          * 第三个参数，这个是数据类型，我们是浮点数所以设置为GLES20.GL_FLOAT
