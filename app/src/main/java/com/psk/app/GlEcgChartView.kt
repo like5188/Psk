@@ -105,6 +105,7 @@ class EcgRenderer : GLSurfaceView.Renderer {
 
     varying是GLSL中限定符，varying限定的变量只能在shader之间传递，是Vertex Shader（顶点着色器）的输出，Fragment Shader（片段着色器）的输入，Shader中的声明和类型要保持一致。
     varying也有数量限制，OpenGL ES 2.0至少支持8个。
+    varying不仅有个数的限制，还有大小的限制，varying变量最多可以传递32个float数据，或者8个vec4，或者2个mat4矩阵。
      */
     // 顶点着色器的代码。
     // gl_Position 放置顶点坐标信息；gl_PointSize 绘制点的大小
