@@ -6,6 +6,7 @@ import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.os.Build
 import android.util.AttributeSet
+import com.psk.app.RenderHelper.toFloatBuffer
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
@@ -122,7 +123,7 @@ class EcgRenderer : GLSurfaceView.Renderer {
     // 定义好顶点了，但是我们的java代码是运行在虚拟机上，而opengl是运行在本地的硬件上的，那么如何才能把java数据可以让opengl使用呢？
     // ByteBuffer 可以分配本地的内存块，并且把java数据复制到本地内存
     // opengl会把屏幕映射到【-1，1】的范围内
-    private val hVertices: FloatArray by lazy {
+    private val hVerticesData: FloatBuffer by lazy {
         // 准备顶点数据
         val vertices = FloatArray(hLineCount * 2 * 2)
         for (i in 0 until hLineCount) {
@@ -132,27 +133,11 @@ class EcgRenderer : GLSurfaceView.Renderer {
             }
         }
         println("hVertices=${vertices.contentToString()}")
-        vertices
+        vertices.toFloatBuffer()
     }
 
-    // allocateDirect 分配一块本地内存，分配大小由外部传入
-    // 每个浮点数有32位精度，而每个byte有8位精度，所以每个浮点数都占4个字节
-    private val hVerticesData: FloatBuffer = ByteBuffer.allocateDirect(hVertices.size * 4)
-        .order(ByteOrder.nativeOrder())// 告诉缓冲区，按照本地字节序组织内容
-        .asFloatBuffer()
-        .put(hVertices).apply {
-            position(0)
-        }
-    /*
-    现在opengl已经拥有了数据，在把矩形画到屏幕之前，他们还需要在opengl的管道（pipeline）中传递，这一步就需要使用着色器（shader），
-    这些着色器会告诉图形处理单元（GPU）如何绘制数据，有俩种着色器我们需要定义：
-    顶点着色器（vertex shader）：生成每个顶点的最终位置，针对每个顶点他都会执行一次，一旦位置确定，opengl就可以把这些顶点组装成点，线和三角形
-    片段着色器（fragment shader）：为组成点，线，三角形的每个片段生成最终的颜色，针对每个片段他都会执行一次，一个片段是一个小的，单一颜色的长方形区域，类似计算机屏幕上的一个像素
-    一旦最终的颜色生成后，opengl会把他们写到一块称为帧缓冲区（frame buffer）的内存块中，然后Android会把这个帧缓冲区显示到屏幕上
-     */
-
-    // 垂直线顶点数据
-    private val vVertices: FloatArray by lazy {
+    // 垂直线顶点数据缓存
+    private val vVerticesData: FloatBuffer by lazy {
         // 准备顶点数据
         val vertices = FloatArray(vLineCount * 2 * 2)
         for (i in 0 until vLineCount) {
@@ -162,16 +147,15 @@ class EcgRenderer : GLSurfaceView.Renderer {
             }
         }
         println("vVertices=${vertices.contentToString()}")
-        vertices
+        vertices.toFloatBuffer()
     }
-
-    // 垂直线顶点数据缓存
-    private val vVerticesData: FloatBuffer = ByteBuffer.allocateDirect(vVertices.size * 4)
-        .order(ByteOrder.nativeOrder())// 告诉缓冲区，按照本地字节序组织内容
-        .asFloatBuffer()
-        .put(vVertices).apply {
-            position(0)
-        }
+    /*
+    现在opengl已经拥有了数据，在把矩形画到屏幕之前，他们还需要在opengl的管道（pipeline）中传递，这一步就需要使用着色器（shader），
+    这些着色器会告诉图形处理单元（GPU）如何绘制数据，有俩种着色器我们需要定义：
+    顶点着色器（vertex shader）：生成每个顶点的最终位置，针对每个顶点他都会执行一次，一旦位置确定，opengl就可以把这些顶点组装成点，线和三角形
+    片段着色器（fragment shader）：为组成点，线，三角形的每个片段生成最终的颜色，针对每个片段他都会执行一次，一个片段是一个小的，单一颜色的长方形区域，类似计算机屏幕上的一个像素
+    一旦最终的颜色生成后，opengl会把他们写到一块称为帧缓冲区（frame buffer）的内存块中，然后Android会把这个帧缓冲区显示到屏幕上
+     */
 
     private var u_color = 0
     private var a_position = 0
@@ -240,6 +224,15 @@ class EcgRenderer : GLSurfaceView.Renderer {
 }
 
 object RenderHelper {
+
+    // allocateDirect 分配一块本地内存，分配大小由外部传入
+    // 每个浮点数有32位精度，而每个byte有8位精度，所以每个浮点数都占4个字节
+    fun FloatArray.toFloatBuffer(): FloatBuffer = ByteBuffer.allocateDirect(size * 4)
+        .order(ByteOrder.nativeOrder())// 告诉缓冲区，按照本地字节序组织内容
+        .asFloatBuffer()
+        .put(this).apply {
+            position(0)
+        }
 
     /**
      * 加载程序
