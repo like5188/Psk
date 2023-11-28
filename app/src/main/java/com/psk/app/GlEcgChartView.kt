@@ -173,10 +173,10 @@ class EcgRenderer : GLSurfaceView.Renderer {
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
         // 加载程序
         val program = RenderHelper.loadProgram(vertexShaderCode, fragmentShaderCode)
-        //获取shader属性
+        // 获取shader属性
         u_color = GLES20.glGetUniformLocation(program, "u_color")// 获取指定uniform的位置，并保存在返回值u_color变量中，方便之后使用
         a_position = GLES20.glGetAttribLocation(program, "a_position")
-        //启用顶点属性
+        // 启用顶点属性
         GLES20.glEnableVertexAttribArray(a_position)
     }
 
@@ -195,7 +195,7 @@ class EcgRenderer : GLSurfaceView.Renderer {
         // 清空屏幕，并用之前glClearColor定义的颜色填充
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
 
-        //指定着色器u_color的颜色
+        // 设置uniform值：指定着色器u_color的颜色。
         GLES20.glUniform4f(u_color, 1.0f, 0.0f, 0.0f, 1.0f)
         /*
          * 告诉opengl，可以在缓冲区 verticesData中找a_Position对应的数据
