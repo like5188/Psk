@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity() {
                     print("增益(float) ${message.float}, ")
                     val ecgData = ByteArray(240)
                     message.get(ecgData, 0, 240)
-                    print("12导心电数据数量 ${ecgData.contentToString()}, ")
+                    print("12导心电数据 ${ecgData.contentToString()}, ")
                     print("心率 ${message.short}, ")
                     print("收缩压 ${message.short}, ")
                     print("舒张压 ${message.short}, ")
