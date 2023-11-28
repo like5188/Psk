@@ -181,7 +181,7 @@ class EcgRenderer : GLSurfaceView.Renderer {
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
         // 加载程序
         val program = RenderHelper.loadProgram(vertexShaderCode, fragmentShaderCode)
-        // 获取shader属性
+        // 获取shader参数句柄
         u_color = GLES20.glGetUniformLocation(program, "u_color")// 获取指定uniform的位置，并保存在返回值u_color变量中，方便之后使用
         a_position = GLES20.glGetAttribLocation(program, "a_position")
         // 启用顶点属性
