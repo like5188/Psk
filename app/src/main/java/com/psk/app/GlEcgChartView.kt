@@ -96,6 +96,8 @@ class GlEcgChartView(context: Context, attrs: AttributeSet?) : GLSurfaceView(con
 class EcgRenderer : GLSurfaceView.Renderer {
     // 添加顶点着色器和片段着色器的代码。它们将顶点位置传递给渲染管线并使用固定颜色进行渲染
     // 顶点着色器的代码，使用的是opengl的着色语言OpenGl Shader Language(GLSL)，详细语法参考https://juejin.cn/post/6874885969653596167
+    // attribute是GLSL中特殊的变量类型，用于从“外部”到顶点着色器的通信，只能用于Vertex Shader（顶点着色器），不能用于其他Shader中，attribute 通常用来存储位置坐标、法向量、纹理坐标和颜色等
+    // OpenGL 标准化组织规定OpenGL ES 2.0 至少支持8个attribute，OpenGL ES 3.0至少支持16个attribute
     // gl_Position 放置顶点坐标信息；gl_PointSize 绘制点的大小
     private val vertexShaderCode = """
         attribute vec4 a_position;
@@ -106,6 +108,8 @@ class EcgRenderer : GLSurfaceView.Renderer {
     """
 
     // 片段着色器的代码
+    // uniform是GLSL中变量类型的限定符，使用uniform限定的变量是只读值，在Shader中无法更改，只能通过应用程序传递给uniform。 uniform变量为全局共享变量，可以在所有的Shader中可以获取
+    // uniform 变量通常是存储在GPU的”常量区”，这一区域的内存是有限的，因此uniform有个数限制，但比attribute要多很多，OpenGL 标准化组织规定OpenGL ES 2.0规定至少支持128个顶点uniform和16个片段（Fragment）uniform。
     private val fragmentShaderCode = """
         precision mediump float;
         uniform vec4 u_color;
