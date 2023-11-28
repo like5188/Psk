@@ -198,8 +198,8 @@ class EcgRenderer : GLSurfaceView.Renderer {
          * 第一个参数，这个是属性的位置，传入之前获取的a_position
          * 第二个参数，这个是每个属性的数据计数，对于这个属性有多少个分量与每一个顶点关联，我们上一节定义顶点用了俩个分量x,y,这就意味着每个顶点需要俩个分量，我们为顶点设置了俩个分量，但是a_Position定义为vec4，他有4个分量，如果没有有指定值，那么默认第三个分量为0，第四个分量为1
          * 第三个参数，这个是数据类型，我们是浮点数所以设置为GLES20.GL_FLOAT
-         * 第四个参数，只有使用整形数据他才有意义，我们暂时忽略设为false
-         * 第5个参数，当数组存储多个属性时他才有意义，本章只有一个属性，暂时忽略传0
+         * 第四个参数，是否归一化，将不是float的类型转为float，比如short转float，Android正常情况下不需要归一化，所以设置false。
+         * 第五个参数，两个连续顶点之间的偏移量，对于本应用程序来说，顶点之间是连续的，设置为0。
          * 第六个参数，告诉opengl在哪里读取数据
          */
         GLES20.glVertexAttribPointer(a_position, 2, GLES20.GL_FLOAT, false, 0, hVerticesData)
