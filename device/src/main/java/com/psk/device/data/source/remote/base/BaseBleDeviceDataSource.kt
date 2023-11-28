@@ -59,7 +59,6 @@ abstract class BaseBleDeviceDataSource {
         }
     }
 
-    @Throws(BleExceptionBusy::class)
     fun setNotifyCallback(): Flow<ByteArray> =
         connectExecutor.setCharacteristicNotificationAndNotifyCallback(protocol.notifyUUID, protocol.serviceUUID).catch {
             when (it) {
@@ -69,7 +68,6 @@ abstract class BaseBleDeviceDataSource {
 
                 is BleExceptionBusy -> {
                     Logger.w("setNotifyCallback 失败：${it.message}")
-                    throw it
                 }
 
                 else -> {

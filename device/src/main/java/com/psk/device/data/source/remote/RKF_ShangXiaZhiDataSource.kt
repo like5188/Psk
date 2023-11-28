@@ -1,6 +1,5 @@
 package com.psk.device.data.source.remote
 
-import com.like.ble.exception.BleExceptionBusy
 import com.psk.device.data.model.Protocol
 import com.psk.device.data.model.ShangXiaZhi
 import com.psk.device.data.model.ShangXiaZhiParams
@@ -9,9 +8,7 @@ import com.psk.device.util.ShangXiaZhiDataParser
 import com.psk.device.util.ShangXiaZhiReceiver
 import com.twsz.remotecommands.RemoteCommand
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.flowOn
 
@@ -78,20 +75,10 @@ class RKF_ShangXiaZhiDataSource : BaseShangXiaZhiDataSource() {
             }
 
         }
-        collectData()
-    }.flowOn(Dispatchers.IO)
-
-    private suspend fun collectData() {
-        setNotifyCallback().catch {
-            if (it is BleExceptionBusy) {// 如果设置通知失败，就重新设置，直到成功。否则会造成游戏界面明明显示连接成功，却无法获取到数据的情况。
-                println("设置通知失败，1秒后重新设置")
-                delay(1000)
-                collectData()
-            }
-        }.collect {
+        setNotifyCallback().collect {
             shangXiaZhiDataParser.putData(it)
         }
-    }
+    }.flowOn(Dispatchers.IO)
 
     override suspend fun start(): Boolean {
         return write(RemoteCommand.generateStartParam())
