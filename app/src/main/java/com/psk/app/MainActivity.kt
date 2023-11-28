@@ -44,6 +44,7 @@ class MainActivity : AppCompatActivity() {
 
                 override fun onMessage(message: ByteBuffer) {
                     // iCV200A心电图仪模拟数据时每秒收到25次回调，每次回调包含12导心电数据为240 byte，所以某个导联的数据量为 240/12=20，所以采样率为25*20=500
+                    println("数据量 ${message.capacity()}, ")
                     print("包头 ${message.short}, ")
                     print("设备编号 ${message.int}, ")
                     print("采样率 ${message.short}, ")
@@ -53,7 +54,7 @@ class MainActivity : AppCompatActivity() {
                     print("增益(float) ${message.float}, ")
                     val ecgData = ByteArray(240)
                     message.get(ecgData, 0, 240)
-                    print("12导心电数据数量 ${ecgData.size}, ")
+                    print("12导心电数据数量 ${ecgData.contentToString()}, ")
                     print("心率 ${message.short}, ")
                     print("收缩压 ${message.short}, ")
                     print("舒张压 ${message.short}, ")
