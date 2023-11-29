@@ -10,7 +10,7 @@ import androidx.sqlite.db.SupportSQLiteQuery
 abstract class UnionDao {
 
     /**
-     * 获取所有医嘱及其开始时间（任意设备第一条数据存入数据库的时间）
+     * 获取所有医嘱id及其开始时间（任意设备第一条数据存入数据库的时间）
      * @return key:medicalOrderId ; value:createTime;
      */
     suspend fun getAllMedicalOrderWithTime(): Map<Long, Long>? {
