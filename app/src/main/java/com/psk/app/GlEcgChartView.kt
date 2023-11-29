@@ -6,7 +6,6 @@ import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.os.Build
 import android.util.AttributeSet
-import com.like.common.util.dp
 import com.psk.app.RenderHelper.toFloatBuffer
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -127,8 +126,8 @@ class EcgRenderer : GLSurfaceView.Renderer {
         }
     """
 
-    private val gridSizePx = 10.dp// 一个小格子的长度，px
-    private val dashPathIntervalsPx = floatArrayOf(2f, 2f)// 虚线的间隔，px。第一个为实线段长度，第二个为空白段长度
+    private val gridSizePx = 50// 一个小格子的长度，px
+    private val dashPathIntervalsPx = floatArrayOf(10f, 10f)// 虚线的间隔，px。第一个为实线段长度，第二个为空白段长度
 
     private val vec = 2// 顶点分量。这里只有x,y
     private val xOffset = 1f// x方向偏移，相对。中心点在视图中心。
@@ -153,27 +152,33 @@ class EcgRenderer : GLSurfaceView.Renderer {
         val solidLineCount =
             if (lineLength % dashPathLengthX > 0f) (lineLength / dashPathLengthX).toInt() + 1 else (lineLength / dashPathLengthX).toInt()// 实线段数量
         val pointCountInLine = solidLineCount * 2// 一条虚线上的点数。每个实线段2个点，空白段没有点。
-        val vertices = FloatArray(hLineCount * pointCountInLine * vec)
+        val vertices = mutableListOf<Float>()
         for (i in 0 until hLineCount) {
             val y = i * gridSizeY - yOffset// 点的y坐标
-            for (j in 0 until pointCountInLine) {
-                val index = (i * pointCountInLine + j) * vec
-                if (j % 2 == 0) {// 偶数
-                    vertices[index] = (j / 2) * dashPathLengthX - xOffset// 点的x坐标
-                    vertices[index + 1] = y
-                } else {// 奇数
-                    if (j == pointCountInLine - 1) {// 最后一个点，直接使用lineLength，避免超出。
-                        vertices[index] = lineLength - xOffset
-                        vertices[index + 1] = y
-                    } else {
-                        vertices[index] = (j / 2 + 1) * dashPathIntervalsX[0] + (j / 2) * dashPathIntervalsX[1] - xOffset
-                        vertices[index + 1] = y
+            if (i % 5 == 0) {// 实线
+                for (j in 0 until 2) {
+                    vertices.add(if (j == 0) 0 - xOffset else lineLength - xOffset)
+                    vertices.add(y)
+                }
+            } else {// 虚线
+                for (j in 0 until pointCountInLine) {
+                    if (j % 2 == 0) {// 偶数
+                        vertices.add((j / 2) * dashPathLengthX - xOffset)// 点的x坐标
+                        vertices.add(y)
+                    } else {// 奇数
+                        if (j == pointCountInLine - 1) {// 最后一个点，直接使用lineLength，避免超出。
+                            vertices.add(lineLength - xOffset)
+                            vertices.add(y)
+                        } else {
+                            vertices.add((j / 2 + 1) * dashPathIntervalsX[0] + (j / 2) * dashPathIntervalsX[1] - xOffset)
+                            vertices.add(y)
+                        }
                     }
                 }
             }
         }
-        println("水平线数据：lineLength=$lineLength solidLineCount=$solidLineCount pointCountInLine=$pointCountInLine size=${vertices.size} ${vertices.contentToString()}")
-        vertices.toFloatBuffer()
+        println("水平线数据：lineLength=$lineLength solidLineCount=$solidLineCount pointCountInLine=$pointCountInLine size=${vertices.size} $vertices")
+        vertices.toFloatArray().toFloatBuffer()
     }
 
     // 垂直线顶点数据缓存
@@ -183,27 +188,33 @@ class EcgRenderer : GLSurfaceView.Renderer {
         val solidLineCount =
             if (lineLength % dashPathLengthY > 0f) (lineLength / dashPathLengthY).toInt() + 1 else (lineLength / dashPathLengthY).toInt()
         val pointCountInLine = solidLineCount * 2
-        val vertices = FloatArray(vLineCount * pointCountInLine * vec)
+        val vertices = mutableListOf<Float>()
         for (i in 0 until vLineCount) {
             val x = i * gridSizeX - xOffset
-            for (j in 0 until pointCountInLine) {
-                val index = (i * pointCountInLine + j) * vec
-                if (j % 2 == 0) {
-                    vertices[index] = x
-                    vertices[index + 1] = (j / 2) * dashPathLengthY - yOffset
-                } else {
-                    if (j == pointCountInLine - 1) {
-                        vertices[index] = x
-                        vertices[index + 1] = lineLength - yOffset
+            if (i % 5 == 0) {
+                for (j in 0 until 2) {
+                    vertices.add(x)
+                    vertices.add(if (j == 0) 0 - yOffset else lineLength - yOffset)
+                }
+            } else {
+                for (j in 0 until pointCountInLine) {
+                    if (j % 2 == 0) {
+                        vertices.add(x)
+                        vertices.add((j / 2) * dashPathLengthY - yOffset)
                     } else {
-                        vertices[index] = x
-                        vertices[index + 1] = (j / 2 + 1) * dashPathIntervalsY[0] + (j / 2) * dashPathIntervalsY[1] - yOffset
+                        if (j == pointCountInLine - 1) {
+                            vertices.add(x)
+                            vertices.add(lineLength - yOffset)
+                        } else {
+                            vertices.add(x)
+                            vertices.add((j / 2 + 1) * dashPathIntervalsY[0] + (j / 2) * dashPathIntervalsY[1] - yOffset)
+                        }
                     }
                 }
             }
         }
-        println("垂直线数据：lineLength=$lineLength solidLineCount=$solidLineCount pointCountInLine=$pointCountInLine size=${vertices.size} ${vertices.contentToString()}")
-        vertices.toFloatBuffer()
+        println("垂直线数据：lineLength=$lineLength solidLineCount=$solidLineCount pointCountInLine=$pointCountInLine size=${vertices.size} $vertices")
+        vertices.toFloatArray().toFloatBuffer()
     }
     /*
     现在opengl已经拥有了数据，在把矩形画到屏幕之前，他们还需要在opengl的管道（pipeline）中传递，这一步就需要使用着色器（shader），
