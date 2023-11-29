@@ -156,7 +156,7 @@ class EcgRenderer : GLSurfaceView.Renderer {
         for (i in 0 until hLineCount) {
             val y = yOffset - i * gridSizeY // 点的y坐标。这里如果使用 i * gridSizeY - yOffset ，那么就是从下往上绘制。和习惯相反了。
             if (i % 5 == 0) {// 实线
-                for (j in 0 until 2) {
+                for (j in 0 until 2) {// 只有收尾两个顶点
                     vertices.add(if (j == 0) 0 - xOffset else lineLength - xOffset)
                     vertices.add(y)
                 }
