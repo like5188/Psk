@@ -243,47 +243,33 @@ class TrainViewModel : ViewModel(), KoinComponent {
             }
             return
         }
+        // 计算mets值
         val reports = _uiState.value.reports
         val shangXiaZhiReport = reports?.firstOrNull {
             it is ShangXiaZhiReport
         } as? ShangXiaZhiReport
-        if (shangXiaZhiReport == null || (shangXiaZhiReport.activeDuration == 0 && shangXiaZhiReport.passiveDuration == 0)) {
-            _uiState.update {
-                it.copy(
-                    toastEvent = Event(ToastEvent(text = "请先进行训练"))
-                )
-            }
-            return
-        }
         val healthInfo = _uiState.value.healthInfo
-        if (healthInfo == null) {
-            _uiState.update {
-                it.copy(
-                    toastEvent = Event(ToastEvent(text = "请先进行训练"))
+        if (shangXiaZhiReport != null && healthInfo != null) {
+            val cal = shangXiaZhiReport.activeCal
+            val activeDuration = shangXiaZhiReport.activeDuration
+            val weight = healthInfo.weight
+            if (activeDuration > 0 && weight > 0) {
+                val newHealthInfo = healthInfo.copy(
+                    // mets=卡路里/主动模式运动时间(分钟)/体重(kg)/0.0167
+                    met = cal / activeDuration / 60 / weight / 0.0167f
                 )
+                _uiState.update {
+                    it.copy(
+                        healthInfo = newHealthInfo,
+                    )
+                }
+                viewModelScope.launch {
+                    healthInfoRepository.insertOrUpdate(newHealthInfo)
+                }
             }
-            return
         }
-        // mets=卡路里/主动模式运动时间(分钟)/体重(kg)/0.0167
-        val cal = shangXiaZhiReport.activeCal
-        val activeDuration = shangXiaZhiReport.activeDuration
-        val met = if (activeDuration == 0 || healthInfo.weight == 0) {
-            0f
-        } else {
-            cal / activeDuration / 60 / healthInfo.weight / 0.0167f
-        }
-        val newHealthInfo = healthInfo.copy(
-            met = met
-        )
-        _uiState.update {
-            it.copy(
-                healthInfo = newHealthInfo,
-            )
-        }
-        viewModelScope.launch {
-            healthInfoRepository.insertOrUpdate(newHealthInfo)
-        }
-        ReportActivity.start(newHealthInfo.medicalOrderId)
+
+        ReportActivity.start(healthInfo?.medicalOrderId)
     }
 
     companion object {
