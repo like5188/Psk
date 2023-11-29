@@ -18,6 +18,7 @@ import com.like.common.util.mvi.Event
 import com.psk.device.RepositoryManager
 import com.psk.device.data.model.DeviceType
 import com.psk.device.data.model.HealthInfo
+import com.psk.device.data.model.Order
 import com.psk.shangxiazhi.data.model.ShangXiaZhiReport
 import com.psk.shangxiazhi.game.GameManagerService
 import com.psk.shangxiazhi.measure.MeasureBloodPressureDialogFragment
@@ -37,6 +38,7 @@ import org.koin.core.component.KoinComponent
 class TrainViewModel : ViewModel(), KoinComponent {
     private val _uiState = MutableStateFlow(TrainUiState())
     val uiState = _uiState.asStateFlow()
+    private val orderRepository = RepositoryManager.orderRepository
     private val healthInfoRepository = RepositoryManager.healthInfoRepository
 
     @SuppressLint("StaticFieldLeak")
@@ -222,9 +224,6 @@ class TrainViewModel : ViewModel(), KoinComponent {
                 healthInfo = newHealthInfo,
             )
         }
-        viewModelScope.launch {
-            healthInfoRepository.insert(newHealthInfo)
-        }
         gameManagerService?.start(viewModelScope, orderId, deviceMap, scene, bloodPressureMeasureType) { reports ->
             _uiState.update {
                 it.copy(
@@ -249,27 +248,30 @@ class TrainViewModel : ViewModel(), KoinComponent {
             it is ShangXiaZhiReport
         } as? ShangXiaZhiReport
         val healthInfo = _uiState.value.healthInfo
+        var met = 0f
         if (shangXiaZhiReport != null && healthInfo != null) {
             val cal = shangXiaZhiReport.activeCal
             val activeDuration = shangXiaZhiReport.activeDuration
             val weight = healthInfo.weight
             if (activeDuration > 0 && weight > 0) {
-                val newHealthInfo = healthInfo.copy(
-                    // mets=卡路里/主动模式运动时间(分钟)/体重(kg)/0.0167
-                    met = cal / activeDuration / 60 / weight / 0.0167f
-                )
-                _uiState.update {
-                    it.copy(
-                        healthInfo = newHealthInfo,
-                    )
-                }
-                viewModelScope.launch {
-                    healthInfoRepository.insertOrUpdate(newHealthInfo)
-                }
+                // mets=卡路里/主动模式运动时间(分钟)/体重(kg)/0.0167
+                met = cal / activeDuration / 60 / weight / 0.0167f
             }
         }
-
-        ReportActivity.start(healthInfo?.orderId)
+        if (met > 0f) {
+            _uiState.update {
+                it.copy(
+                    healthInfo = healthInfo?.copy(met = met),
+                )
+            }
+        }
+        viewModelScope.launch {
+            _uiState.value.healthInfo?.let {
+                orderRepository.insert(Order(orderId = it.orderId))
+                healthInfoRepository.insert(it)
+                ReportActivity.start(it.orderId)
+            }
+        }
     }
 
     companion object {

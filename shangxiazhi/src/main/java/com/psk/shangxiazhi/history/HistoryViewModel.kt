@@ -3,6 +3,7 @@ package com.psk.shangxiazhi.history
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.psk.device.RepositoryManager
+import com.psk.device.data.model.Order
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,26 +14,24 @@ import java.text.SimpleDateFormat
 class HistoryViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(HistoryUiState())
     val uiState = _uiState.asStateFlow()
-    private val unionRepository = RepositoryManager.unionRepository
-    private lateinit var datas: Map<String, List<Map.Entry<Long, Long>>>// key:年月
+    private val orderRepository = RepositoryManager.orderRepository
+    private lateinit var datas: Map<String, List<Order>>// key:年月
     private val sdf = SimpleDateFormat("yyyy年MM月")
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            val orderIdAndStartTimeMap = unionRepository.getAllOrderWithTime()
-            if (orderIdAndStartTimeMap.isNullOrEmpty()) {
+            val orderList = orderRepository.getAll()
+            if (orderList.isNullOrEmpty()) {
                 return@launch
             }
-            datas = orderIdAndStartTimeMap.map {
-                it
-            }.groupBy {
-                sdf.format(it.value)
+            datas = orderList.groupBy {
+                sdf.format(it.createTime)
             }
             _uiState.update {
                 val key = datas.keys.lastOrNull()
                 val value = datas[key]
                 it.copy(
-                    showTime = key, orderIdAndStartTimeList = value
+                    showTime = key, orderList = value
                 )
             }
         }
@@ -59,7 +58,7 @@ class HistoryViewModel : ViewModel() {
                 val key = dates[index - 1]
                 val value = datas[key]
                 it.copy(
-                    showTime = key, orderIdAndStartTimeList = value
+                    showTime = key, orderList = value
                 )
             }
         }
@@ -86,7 +85,7 @@ class HistoryViewModel : ViewModel() {
                 val key = dates[index + 1]
                 val value = datas[key]
                 it.copy(
-                    showTime = key, orderIdAndStartTimeList = value
+                    showTime = key, orderList = value
                 )
             }
         }

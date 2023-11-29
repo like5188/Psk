@@ -20,7 +20,4 @@ class HealthInfoRepository {
         dbDataSource.insert(data)
     }
 
-    suspend fun insertOrUpdate(data: HealthInfo) {
-        dbDataSource.insertOrUpdate(data)
-    }
 }

@@ -29,9 +29,8 @@ class HistoryActivity : AppCompatActivity() {
     private val mItemAdapter by lazy {
         HistoryListAdapter().apply {
             addOnItemClickListener {
-                val dateAndData = currentList[it.bindingAdapterPosition]
-                val orderId = dateAndData?.key ?: return@addOnItemClickListener
-                ReportActivity.start(orderId)
+                val order = currentList[it.bindingAdapterPosition]
+                ReportActivity.start(order?.orderId)
             }
         }
     }
@@ -54,7 +53,7 @@ class HistoryActivity : AppCompatActivity() {
             collectDistinctProperty(HistoryUiState::showTime) {
                 mBinding.tvTime.text = it ?: ""
             }
-            collectDistinctProperty(HistoryUiState::orderIdAndStartTimeList) {
+            collectDistinctProperty(HistoryUiState::orderList) {
                 mItemAdapter.submitList(it)
             }
         }

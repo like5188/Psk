@@ -15,8 +15,4 @@ class HealthInfoDbDataSource(
         healthInfoDao.insert(data)
     }
 
-    suspend fun insertOrUpdate(data: HealthInfo) {
-        healthInfoDao.insertOrUpdate(data)
-    }
-
 }
