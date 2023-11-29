@@ -1,8 +1,8 @@
 package com.psk.shangxiazhi.history
 
-import com.psk.device.data.model.Order
+import com.psk.device.data.model.OrderInfo
 
 data class HistoryUiState(
     val showTime: String? = null,
-    val orderList: List<Order>? = null,
+    val orderInfoList: List<OrderInfo>? = null,
 )

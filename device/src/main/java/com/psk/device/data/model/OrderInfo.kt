@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
  * 训练
  */
 @Entity
-data class Order(
+data class OrderInfo(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val createTime: Long = System.currentTimeMillis(),
@@ -15,7 +15,7 @@ data class Order(
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is Order) return false
+        if (other !is OrderInfo) return false
 
         if (orderId != other.orderId) return false
 

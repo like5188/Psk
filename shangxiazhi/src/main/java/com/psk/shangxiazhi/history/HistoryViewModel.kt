@@ -3,7 +3,7 @@ package com.psk.shangxiazhi.history
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.psk.device.RepositoryManager
-import com.psk.device.data.model.Order
+import com.psk.device.data.model.OrderInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,13 +14,13 @@ import java.text.SimpleDateFormat
 class HistoryViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(HistoryUiState())
     val uiState = _uiState.asStateFlow()
-    private val orderRepository = RepositoryManager.orderRepository
-    private lateinit var datas: Map<String, List<Order>>// key:年月
+    private val orderInfoRepository = RepositoryManager.orderInfoRepository
+    private lateinit var datas: Map<String, List<OrderInfo>>// key:年月
     private val sdf = SimpleDateFormat("yyyy年MM月")
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            val orderList = orderRepository.getAll()
+            val orderList = orderInfoRepository.getAll()
             if (orderList.isNullOrEmpty()) {
                 return@launch
             }
@@ -31,7 +31,7 @@ class HistoryViewModel : ViewModel() {
                 val key = datas.keys.lastOrNull()
                 val value = datas[key]
                 it.copy(
-                    showTime = key, orderList = value
+                    showTime = key, orderInfoList = value
                 )
             }
         }
@@ -58,7 +58,7 @@ class HistoryViewModel : ViewModel() {
                 val key = dates[index - 1]
                 val value = datas[key]
                 it.copy(
-                    showTime = key, orderList = value
+                    showTime = key, orderInfoList = value
                 )
             }
         }
@@ -85,7 +85,7 @@ class HistoryViewModel : ViewModel() {
                 val key = dates[index + 1]
                 val value = datas[key]
                 it.copy(
-                    showTime = key, orderList = value
+                    showTime = key, orderInfoList = value
                 )
             }
         }

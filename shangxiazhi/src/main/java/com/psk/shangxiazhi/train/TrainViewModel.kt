@@ -18,7 +18,7 @@ import com.like.common.util.mvi.Event
 import com.psk.device.RepositoryManager
 import com.psk.device.data.model.DeviceType
 import com.psk.device.data.model.HealthInfo
-import com.psk.device.data.model.Order
+import com.psk.device.data.model.OrderInfo
 import com.psk.shangxiazhi.data.model.ShangXiaZhiReport
 import com.psk.shangxiazhi.game.GameManagerService
 import com.psk.shangxiazhi.measure.MeasureBloodPressureDialogFragment
@@ -38,7 +38,7 @@ import org.koin.core.component.KoinComponent
 class TrainViewModel : ViewModel(), KoinComponent {
     private val _uiState = MutableStateFlow(TrainUiState())
     val uiState = _uiState.asStateFlow()
-    private val orderRepository = RepositoryManager.orderRepository
+    private val orderInfoRepository = RepositoryManager.orderInfoRepository
     private val healthInfoRepository = RepositoryManager.healthInfoRepository
 
     @SuppressLint("StaticFieldLeak")
@@ -267,7 +267,7 @@ class TrainViewModel : ViewModel(), KoinComponent {
         }
         viewModelScope.launch {
             _uiState.value.healthInfo?.let {
-                orderRepository.insert(Order(orderId = it.orderId))
+                orderInfoRepository.insert(OrderInfo(orderId = it.orderId))
                 healthInfoRepository.insert(it)
                 ReportActivity.start(it.orderId)
             }

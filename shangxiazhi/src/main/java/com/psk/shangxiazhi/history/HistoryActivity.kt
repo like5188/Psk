@@ -53,7 +53,7 @@ class HistoryActivity : AppCompatActivity() {
             collectDistinctProperty(HistoryUiState::showTime) {
                 mBinding.tvTime.text = it ?: ""
             }
-            collectDistinctProperty(HistoryUiState::orderList) {
+            collectDistinctProperty(HistoryUiState::orderInfoList) {
                 mItemAdapter.submitList(it)
             }
         }
