@@ -9,7 +9,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.concurrent.CountDownLatch
 
 class ShangXiaZhiBusinessManager(
     lifecycleScope: CoroutineScope,
@@ -22,7 +21,6 @@ class ShangXiaZhiBusinessManager(
     var onStartGame: (() -> Unit)? = null
     var onPauseGame: (() -> Unit)? = null
     var onOverGame: (() -> Unit)? = null
-    private var isStart = CountDownLatch(1)
 
     init {
         bleDeviceRepository.setCallback(
@@ -51,10 +49,7 @@ class ShangXiaZhiBusinessManager(
     override fun onConnected() {
         Log.w(TAG, "上下肢连接成功")
         gameController.updateGameConnectionState(true)
-        lifecycleScope.launch(Dispatchers.IO) {
-            isStart.await()// 等待游戏开始运行
-            startJob()
-        }
+        startJob()
     }
 
     override fun onDisconnected() {
@@ -83,9 +78,7 @@ class ShangXiaZhiBusinessManager(
 
     fun onGameLoading() {}
 
-    fun onGameStart() {
-        isStart.countDown()
-    }
+    fun onGameStart() {}
 
     fun onGameResume() {
         lifecycleScope.launch(Dispatchers.IO) {
