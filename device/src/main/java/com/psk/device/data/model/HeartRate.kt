@@ -16,11 +16,11 @@ data class HeartRate(
      * 心电图的 y 坐标值
      */
     val coorYValues: FloatArray,
-    val medicalOrderId: Long
+    val orderId: Long
 ) {
 
     override fun toString(): String {
-        return "HeartRate(id=$id, createTime=$createTime, value=$value, coorYValuesSize=${coorYValues.size}, medicalOrderId=$medicalOrderId)"
+        return "HeartRate(id=$id, createTime=$createTime, value=$value, coorYValuesSize=${coorYValues.size}, orderId=$orderId)"
     }
 
     override fun equals(other: Any?): Boolean {

@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 abstract class BaseShangXiaZhiDataSource : BaseBleDeviceDataSource() {
 
-    abstract fun fetch(medicalOrderId: Long): Flow<ShangXiaZhi>
+    abstract fun fetch(orderId: Long): Flow<ShangXiaZhi>
 
     /**
      * 开始运行

@@ -14,11 +14,11 @@ import kotlinx.coroutines.withContext
 
 class BloodOxygenBusinessManager(
     lifecycleScope: CoroutineScope,
-    medicalOrderId: Long,
+    orderId: Long,
     deviceName: String,
     deviceAddress: String,
 ) : BaseBusinessManager<BloodOxygenRepository>(
-    lifecycleScope, medicalOrderId, deviceName, deviceAddress, DeviceType.BloodOxygen
+    lifecycleScope, orderId, deviceName, deviceAddress, DeviceType.BloodOxygen
 ) {
 
     override fun getReport(): IReport? {
@@ -31,7 +31,7 @@ class BloodOxygenBusinessManager(
 
     override suspend fun run() = withContext(Dispatchers.IO) {
         Log.d(TAG, "startBloodOxygenJob")
-        val flow = bleDeviceRepository.getFlow(this, medicalOrderId, 1000)
+        val flow = bleDeviceRepository.getFlow(this, orderId, 1000)
         launch {
             BloodOxygenReport.createForm(flow)
         }

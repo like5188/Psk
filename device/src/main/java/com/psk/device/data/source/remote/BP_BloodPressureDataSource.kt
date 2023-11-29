@@ -44,21 +44,21 @@ class BP_BloodPressureDataSource : BaseBloodPressureDataSource() {
         }
     }
 
-    override suspend fun fetch(medicalOrderId: Long): BloodPressure? {
+    override suspend fun fetch(orderId: Long): BloodPressure? {
         val data = writeAndWaitResult("")
-        return parseBloodPressure(data, medicalOrderId)
+        return parseBloodPressure(data, orderId)
     }
 
-    override suspend fun measure(medicalOrderId: Long): BloodPressure? {
+    override suspend fun measure(orderId: Long): BloodPressure? {
         val data = writeAndWaitResult("cc80020301020002")
-        return parseBloodPressure(data, medicalOrderId)
+        return parseBloodPressure(data, orderId)
     }
 
     override suspend fun stopMeasure() {
         write("cc80020301030003")
     }
 
-    private fun parseBloodPressure(data: ByteArray?, medicalOrderId: Long): BloodPressure? {
+    private fun parseBloodPressure(data: ByteArray?, orderId: Long): BloodPressure? {
         return if (data?.size == 20) {
             // 高8位左移8位+低8位。比如：高8位(0x01),低8位(0x78)。结果：0x01 shl 8 + 0x78 = 256 + 120 = 376
             val v0: Int = data[13].toInt() and 0xff shl 8
@@ -67,7 +67,7 @@ class BP_BloodPressureDataSource : BaseBloodPressureDataSource() {
             val v2: Int = data[15].toInt() and 0xff shl 8
             val v3: Int = data[16].toInt() and 0xff
             val dbp: Int = v2 + v3
-            BloodPressure(sbp = sbp, dbp = dbp, medicalOrderId = medicalOrderId)
+            BloodPressure(sbp = sbp, dbp = dbp, orderId = orderId)
         } else {
             null
         }

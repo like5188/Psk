@@ -34,7 +34,7 @@ class RKF_ShangXiaZhiDataSource : BaseShangXiaZhiDataSource() {
     // 上下肢结束时回调
     var onOver: (() -> Unit)? = null
 
-    override fun fetch(medicalOrderId: Long): Flow<ShangXiaZhi> = channelFlow {
+    override fun fetch(orderId: Long): Flow<ShangXiaZhi> = channelFlow {
         shangXiaZhiDataParser.receiver = object : ShangXiaZhiReceiver {
             // 如果是主动模式，那么会一直收到上下肢发来的数据，即使没有运行，也会收到速度为0的数据；
             // 如果是被动模式，那么只有上下肢开始运行时才有数据，没有运行时不会有数据。即不会出现主动模式那种速度为0的数据；
@@ -61,7 +61,7 @@ class RKF_ShangXiaZhiDataSource : BaseShangXiaZhiDataSource() {
                         resistance = resistance,
                         intelligence = intelligence,
                         direction = direction,
-                        medicalOrderId = medicalOrderId,
+                        orderId = orderId,
                     )
                 )
             }

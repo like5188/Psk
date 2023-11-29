@@ -11,8 +11,8 @@ class ShangXiaZhiDbDataSource(
         return shangXiaZhiDao.listenLatest(startTime)
     }
 
-    suspend fun getByMedicalOrderId(medicalOrderId: Long): List<ShangXiaZhi>? {
-        return shangXiaZhiDao.getByMedicalOrderId(medicalOrderId)
+    suspend fun getByOrderId(orderId: Long): List<ShangXiaZhi>? {
+        return shangXiaZhiDao.getByOrderId(orderId)
     }
 
     suspend fun insert(data: ShangXiaZhi) {

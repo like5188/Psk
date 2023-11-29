@@ -213,9 +213,9 @@ class TrainViewModel : ViewModel(), KoinComponent {
             }
             return
         }
-        val medicalOrderId = System.currentTimeMillis()
+        val orderId = System.currentTimeMillis()
         val newHealthInfo = healthInfo.copy(
-            medicalOrderId = medicalOrderId
+            orderId = orderId
         )
         _uiState.update {
             it.copy(
@@ -225,7 +225,7 @@ class TrainViewModel : ViewModel(), KoinComponent {
         viewModelScope.launch {
             healthInfoRepository.insert(newHealthInfo)
         }
-        gameManagerService?.start(viewModelScope, medicalOrderId, deviceMap, scene, bloodPressureMeasureType) { reports ->
+        gameManagerService?.start(viewModelScope, orderId, deviceMap, scene, bloodPressureMeasureType) { reports ->
             _uiState.update {
                 it.copy(
                     isTrainCompleted = true, reports = reports
@@ -269,7 +269,7 @@ class TrainViewModel : ViewModel(), KoinComponent {
             }
         }
 
-        ReportActivity.start(healthInfo?.medicalOrderId)
+        ReportActivity.start(healthInfo?.orderId)
     }
 
     companion object {

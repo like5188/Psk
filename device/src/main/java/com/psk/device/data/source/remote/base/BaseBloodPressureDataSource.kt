@@ -7,12 +7,12 @@ abstract class BaseBloodPressureDataSource : BaseBleDeviceDataSource() {
     /**
      * 等待手动操作血压计进行测量的结果
      */
-    abstract suspend fun fetch(medicalOrderId: Long): BloodPressure?
+    abstract suspend fun fetch(orderId: Long): BloodPressure?
 
     /**
      * 发送开始测量命令
      */
-    abstract suspend fun measure(medicalOrderId: Long): BloodPressure?
+    abstract suspend fun measure(orderId: Long): BloodPressure?
 
     /**
      * 发送停止测量命令

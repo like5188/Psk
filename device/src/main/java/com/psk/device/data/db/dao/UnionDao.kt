@@ -11,15 +11,15 @@ abstract class UnionDao {
 
     /**
      * 获取所有医嘱id及其开始时间（任意设备第一条数据存入数据库的时间）
-     * @return key:medicalOrderId ; value:createTime;
+     * @return key:orderId ; value:createTime;
      */
-    suspend fun getAllMedicalOrderWithTime(): Map<Long, Long>? {
+    suspend fun getAllOrderWithTime(): Map<Long, Long>? {
         val query =
-            SimpleSQLiteQuery("SELECT medicalOrderId,createTime FROM (SELECT medicalOrderId,createTime FROM BloodOxygen UNION SELECT medicalOrderId,createTime FROM BloodPressure UNION SELECT medicalOrderId,createTime FROM HeartRate UNION SELECT medicalOrderId,createTime FROM ShangXiaZhi) AS a GROUP BY medicalOrderId ORDER BY createTime")
-        return getAllMedicalOrderWithTime(query)
+            SimpleSQLiteQuery("SELECT orderId,createTime FROM (SELECT orderId,createTime FROM BloodOxygen UNION SELECT orderId,createTime FROM BloodPressure UNION SELECT orderId,createTime FROM HeartRate UNION SELECT orderId,createTime FROM ShangXiaZhi) AS a GROUP BY orderId ORDER BY createTime")
+        return getAllOrderWithTime(query)
     }
 
-    @MapInfo(keyColumn = "medicalOrderId", valueColumn = "createTime")
+    @MapInfo(keyColumn = "orderId", valueColumn = "createTime")
     @RawQuery
-    protected abstract suspend fun getAllMedicalOrderWithTime(query: SupportSQLiteQuery): Map<Long, Long>?
+    protected abstract suspend fun getAllOrderWithTime(query: SupportSQLiteQuery): Map<Long, Long>?
 }

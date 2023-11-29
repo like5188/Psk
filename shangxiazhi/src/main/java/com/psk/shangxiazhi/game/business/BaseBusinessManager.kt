@@ -22,7 +22,7 @@ import org.koin.core.component.inject
 @OptIn(KoinApiExtension::class)
 abstract class BaseBusinessManager<Repository : BaseBleDeviceRepository<*>>(
     protected val lifecycleScope: CoroutineScope,
-    protected val medicalOrderId: Long,
+    protected val orderId: Long,
     deviceName: String,
     deviceAddress: String,
     deviceType: DeviceType,

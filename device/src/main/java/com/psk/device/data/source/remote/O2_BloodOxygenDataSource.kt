@@ -18,7 +18,7 @@ class O2_BloodOxygenDataSource : BaseBloodOxygenDataSource() {
         }
     ) { it.lastOrNull() == BleCRC.calCRC8(it) }
 
-    override suspend fun fetch(medicalOrderId: Long): BloodOxygen? {
+    override suspend fun fetch(orderId: Long): BloodOxygen? {
         val data = writeAndWaitResult("AA17E800000100002A")
         return if (data != null && data.size >= 8) {
             val bloodOxygen = if (data[7].toInt() < 0) {
@@ -26,7 +26,7 @@ class O2_BloodOxygenDataSource : BaseBloodOxygenDataSource() {
             } else {
                 data[7].toInt()
             }
-            BloodOxygen(value = bloodOxygen, medicalOrderId = medicalOrderId)
+            BloodOxygen(value = bloodOxygen, orderId = orderId)
         } else {
             null
         }

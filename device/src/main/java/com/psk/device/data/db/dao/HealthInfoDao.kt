@@ -7,10 +7,10 @@ import com.psk.device.data.model.HealthInfo
 abstract class HealthInfoDao : BaseDao<HealthInfo>() {
 
     /**
-     * 根据medicalOrderId来判断。如果存在数据则更新，不存在数据则插入。
+     * 根据orderId来判断。如果存在数据则更新，不存在数据则插入。
      */
     suspend fun insertOrUpdate(data: HealthInfo) {
-        val oldHealthInfo = getByMedicalOrderId(data.medicalOrderId)?.firstOrNull()
+        val oldHealthInfo = getByOrderId(data.orderId)?.firstOrNull()
         if (oldHealthInfo == null) {
             insert(data)
         } else {

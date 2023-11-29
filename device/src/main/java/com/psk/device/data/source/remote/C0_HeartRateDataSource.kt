@@ -48,7 +48,7 @@ class C0_HeartRateDataSource : BaseHeartRateDataSource() {
         "00000002-0000-1000-8000-00805f9b34fb",
     )
 
-    override fun fetch(medicalOrderId: Long): Flow<HeartRate> = channelFlow<HeartRate> {
+    override fun fetch(orderId: Long): Flow<HeartRate> = channelFlow<HeartRate> {
         // 把二进制数据构建成数据包
         val packBuilder = Pack.Builder()
 

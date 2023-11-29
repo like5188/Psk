@@ -21,13 +21,13 @@ class ShangXiaZhiRepository : BaseBleDeviceRepository<BaseShangXiaZhiDataSource>
         ShangXiaZhiDbDataSource(DeviceDatabaseManager.db.shangXiaZhiDao())
     }
 
-    suspend fun getListByMedicalOrderId(medicalOrderId: Long): List<ShangXiaZhi>? {
-        return dbDataSource.getByMedicalOrderId(medicalOrderId)
+    suspend fun getListByOrderId(orderId: Long): List<ShangXiaZhi>? {
+        return dbDataSource.getByOrderId(orderId)
     }
 
-    fun getFlow(scope: CoroutineScope, medicalOrderId: Long): Flow<ShangXiaZhi> {
+    fun getFlow(scope: CoroutineScope, orderId: Long): Flow<ShangXiaZhi> {
         scope.launch(Dispatchers.IO) {
-            bleDeviceDataSource.fetch(medicalOrderId).collect {
+            bleDeviceDataSource.fetch(orderId).collect {
                 dbDataSource.insert(it)
             }
         }

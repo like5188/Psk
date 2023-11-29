@@ -21,14 +21,14 @@ class BloodPressureRepository : BaseBleDeviceRepository<BaseBloodPressureDataSou
         BloodPressureDbDataSource(DeviceDatabaseManager.db.bloodPressureDao())
     }
 
-    suspend fun getListByMedicalOrderId(medicalOrderId: Long): List<BloodPressure>? {
-        return dbDataSource.getByMedicalOrderId(medicalOrderId)
+    suspend fun getListByOrderId(orderId: Long): List<BloodPressure>? {
+        return dbDataSource.getByOrderId(orderId)
     }
 
-    fun getFetchFlow(scope: CoroutineScope, medicalOrderId: Long, interval: Long): Flow<BloodPressure> {
+    fun getFetchFlow(scope: CoroutineScope, orderId: Long, interval: Long): Flow<BloodPressure> {
         scope.launch(Dispatchers.IO) {
             while (isActive) {
-                bleDeviceDataSource.fetch(medicalOrderId)?.apply {
+                bleDeviceDataSource.fetch(orderId)?.apply {
                     dbDataSource.insert(this)
                 }
                 // 设备大概在3秒内可以多次获取同一次测量结果。
@@ -38,12 +38,12 @@ class BloodPressureRepository : BaseBleDeviceRepository<BaseBloodPressureDataSou
         return dbDataSource.listenLatest(System.currentTimeMillis()).filterNotNull()
     }
 
-    fun getMeasureFlow(scope: CoroutineScope, medicalOrderId: Long, interval: Long): Flow<BloodPressure> {
+    fun getMeasureFlow(scope: CoroutineScope, orderId: Long, interval: Long): Flow<BloodPressure> {
         scope.launch(Dispatchers.IO) {
             delay(100)// 这里必须延迟一下，否则在机顶盒上，会出现连接成功开始测量失败。
             while (isActive) {
                 println("开始测量血压")
-                bleDeviceDataSource.measure(medicalOrderId)?.apply {
+                bleDeviceDataSource.measure(orderId)?.apply {
                     dbDataSource.insert(this)
                 }
                 println("血压测量完成")

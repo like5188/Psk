@@ -11,8 +11,8 @@ class BloodOxygenDbDataSource(
         return bloodOxygenDao.listenLatest(startTime)
     }
 
-    suspend fun getByMedicalOrderId(medicalOrderId: Long): List<BloodOxygen>? {
-        return bloodOxygenDao.getByMedicalOrderId(medicalOrderId)
+    suspend fun getByOrderId(orderId: Long): List<BloodOxygen>? {
+        return bloodOxygenDao.getByOrderId(orderId)
     }
 
     suspend fun insert(data: BloodOxygen) {

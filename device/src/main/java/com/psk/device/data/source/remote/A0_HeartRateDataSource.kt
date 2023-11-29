@@ -697,7 +697,7 @@ class A0_HeartRateDataSource : BaseHeartRateDataSource() {
         StarData.init()
     }
 
-    override fun fetch(medicalOrderId: Long): Flow<HeartRate> = channelFlow {
+    override fun fetch(orderId: Long): Flow<HeartRate> = channelFlow {
         StarData.setDataReceiver(object : DataReceiverSample() {
             override fun onDataPoints(list: List<DataPoint>) {
                 // DataPoint：心电数据点（采样率为125，1秒钟有125个点）。画波形使用这个就可以
@@ -713,7 +713,7 @@ class A0_HeartRateDataSource : BaseHeartRateDataSource() {
                         BigDecimal.valueOf(it.value.toDouble()).setScale(5, BigDecimal.ROUND_HALF_DOWN).toFloat() / 150f
                     }.toFloatArray()
                 }
-                trySend(HeartRate(value = heartRate, coorYValues = coorYValues, medicalOrderId = medicalOrderId))
+                trySend(HeartRate(value = heartRate, coorYValues = coorYValues, orderId = orderId))
             }
 
             override fun onAlertSwitch(alertSwitch: AlertSwitch?) {

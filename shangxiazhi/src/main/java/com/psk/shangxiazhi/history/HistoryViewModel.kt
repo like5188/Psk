@@ -19,11 +19,11 @@ class HistoryViewModel : ViewModel() {
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            val medicalIdAndStartTimeMap = unionRepository.getAllMedicalOrderWithTime()
-            if (medicalIdAndStartTimeMap.isNullOrEmpty()) {
+            val orderIdAndStartTimeMap = unionRepository.getAllOrderWithTime()
+            if (orderIdAndStartTimeMap.isNullOrEmpty()) {
                 return@launch
             }
-            datas = medicalIdAndStartTimeMap.map {
+            datas = orderIdAndStartTimeMap.map {
                 it
             }.groupBy {
                 sdf.format(it.value)
@@ -32,7 +32,7 @@ class HistoryViewModel : ViewModel() {
                 val key = datas.keys.lastOrNull()
                 val value = datas[key]
                 it.copy(
-                    showTime = key, medicalIdAndStartTimeList = value
+                    showTime = key, orderIdAndStartTimeList = value
                 )
             }
         }
@@ -59,7 +59,7 @@ class HistoryViewModel : ViewModel() {
                 val key = dates[index - 1]
                 val value = datas[key]
                 it.copy(
-                    showTime = key, medicalIdAndStartTimeList = value
+                    showTime = key, orderIdAndStartTimeList = value
                 )
             }
         }
@@ -86,7 +86,7 @@ class HistoryViewModel : ViewModel() {
                 val key = dates[index + 1]
                 val value = datas[key]
                 it.copy(
-                    showTime = key, medicalIdAndStartTimeList = value
+                    showTime = key, orderIdAndStartTimeList = value
                 )
             }
         }

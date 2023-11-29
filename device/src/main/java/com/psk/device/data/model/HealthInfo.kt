@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
 @Entity
 data class HealthInfo(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val medicalOrderId: Long = 0,
+    val orderId: Long = 0,
     val age: Int = 0,// 年龄
     val weight: Int = 0,// 体重（kg）
     val met: Float = 0f,// met值
@@ -32,7 +32,7 @@ data class HealthInfo(
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeLong(id)
-        parcel.writeLong(medicalOrderId)
+        parcel.writeLong(orderId)
         parcel.writeInt(age)
         parcel.writeInt(weight)
         parcel.writeFloat(met)

@@ -23,29 +23,29 @@ class ReportViewModel : ViewModel() {
     private val shangXiaZhiRepository = RepositoryManager.createBleDeviceRepository<ShangXiaZhiRepository>(DeviceType.ShangXiaZhi)
     private val healthInfoRepository = RepositoryManager.healthInfoRepository
 
-    suspend fun getReports(medicalOrderId: Long): List<IReport> {
+    suspend fun getReports(orderId: Long): List<IReport> {
         val result = mutableListOf<IReport>()
-        bloodOxygenRepository.getListByMedicalOrderId(medicalOrderId)?.let {
+        bloodOxygenRepository.getListByOrderId(orderId)?.let {
             BloodOxygenReport.createForm(it.asFlow())
             result.add(BloodOxygenReport.report)
         }
-        bloodPressureRepository.getListByMedicalOrderId(medicalOrderId)?.let {
+        bloodPressureRepository.getListByOrderId(orderId)?.let {
             BloodPressureReport.createForm(it.asFlow())
             result.add(BloodPressureReport.report)
         }
-        heartRateRepository.getListByMedicalOrderId(medicalOrderId)?.let {
+        heartRateRepository.getListByOrderId(orderId)?.let {
             HeartRateReport.createForm(it.asFlow())
             result.add(HeartRateReport.report)
         }
-        shangXiaZhiRepository.getListByMedicalOrderId(medicalOrderId)?.let {
+        shangXiaZhiRepository.getListByOrderId(orderId)?.let {
             ShangXiaZhiReport.createForm(it.asFlow()).collect()
             result.add(ShangXiaZhiReport.report)
         }
         return result
     }
 
-    suspend fun getHealthInfo(medicalOrderId: Long): HealthInfo? {
-        return healthInfoRepository.getByMedicalOrderId(medicalOrderId)
+    suspend fun getHealthInfo(orderId: Long): HealthInfo? {
+        return healthInfoRepository.getByOrderId(orderId)
     }
 
 }

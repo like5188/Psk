@@ -14,11 +14,11 @@ import kotlinx.coroutines.withContext
 
 class BloodPressureBusinessManager(
     lifecycleScope: CoroutineScope,
-    medicalOrderId: Long,
+    orderId: Long,
     deviceName: String,
     deviceAddress: String,
 ) : BaseBusinessManager<BloodPressureRepository>(
-    lifecycleScope, medicalOrderId, deviceName, deviceAddress, DeviceType.BloodPressure
+    lifecycleScope, orderId, deviceName, deviceAddress, DeviceType.BloodPressure
 ) {
     var bloodPressureMeasureType: Int = 0
 
@@ -33,8 +33,8 @@ class BloodPressureBusinessManager(
     override suspend fun run() = withContext(Dispatchers.IO) {
         Log.d(TAG, "startBloodPressureJob")
         val flow = when (bloodPressureMeasureType) {
-            0 -> bleDeviceRepository.getFetchFlow(this, medicalOrderId, 1000)
-            1 -> bleDeviceRepository.getMeasureFlow(this, medicalOrderId, 1000 * 60 * 5)
+            0 -> bleDeviceRepository.getFetchFlow(this, orderId, 1000)
+            1 -> bleDeviceRepository.getMeasureFlow(this, orderId, 1000 * 60 * 5)
             else -> null
         } ?: return@withContext
         launch {

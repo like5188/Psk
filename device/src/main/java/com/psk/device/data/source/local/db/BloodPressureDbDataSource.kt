@@ -11,8 +11,8 @@ class BloodPressureDbDataSource(
         return bloodPressureDao.listenLatest(startTime)
     }
 
-    suspend fun getByMedicalOrderId(medicalOrderId: Long): List<BloodPressure>? {
-        return bloodPressureDao.getByMedicalOrderId(medicalOrderId)
+    suspend fun getByOrderId(orderId: Long): List<BloodPressure>? {
+        return bloodPressureDao.getByOrderId(orderId)
     }
 
     suspend fun insert(data: BloodPressure) {

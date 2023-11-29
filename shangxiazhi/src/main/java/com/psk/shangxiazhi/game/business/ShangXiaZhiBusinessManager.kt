@@ -12,11 +12,11 @@ import kotlinx.coroutines.withContext
 
 class ShangXiaZhiBusinessManager(
     lifecycleScope: CoroutineScope,
-    medicalOrderId: Long,
+    orderId: Long,
     deviceName: String,
     deviceAddress: String,
 ) : BaseBusinessManager<ShangXiaZhiRepository>(
-    lifecycleScope, medicalOrderId, deviceName, deviceAddress, DeviceType.ShangXiaZhi
+    lifecycleScope, orderId, deviceName, deviceAddress, DeviceType.ShangXiaZhi
 ) {
     var onStartGame: (() -> Unit)? = null
     var onPauseGame: (() -> Unit)? = null
@@ -40,7 +40,7 @@ class ShangXiaZhiBusinessManager(
 
     override suspend fun run() = withContext(Dispatchers.IO) {
         Log.d(TAG, "startShangXiaZhiJob")
-        val flow = bleDeviceRepository.getFlow(this, medicalOrderId)
+        val flow = bleDeviceRepository.getFlow(this, orderId)
         ShangXiaZhiReport.createForm(flow).collect {
             gameController.updateGameData(it)
         }

@@ -19,13 +19,13 @@ class HeartRateRepository : BaseBleDeviceRepository<BaseHeartRateDataSource>(Dev
         HeartRateDbDataSource(DeviceDatabaseManager.db.heartRateDao())
     }
 
-    suspend fun getListByMedicalOrderId(medicalOrderId: Long): List<HeartRate>? {
-        return dbDataSource.getByMedicalOrderId(medicalOrderId)
+    suspend fun getListByOrderId(orderId: Long): List<HeartRate>? {
+        return dbDataSource.getByOrderId(orderId)
     }
 
-    fun getFlow(scope: CoroutineScope, medicalOrderId: Long): Flow<HeartRate> {
+    fun getFlow(scope: CoroutineScope, orderId: Long): Flow<HeartRate> {
         scope.launch(Dispatchers.IO) {
-            bleDeviceDataSource.fetch(medicalOrderId).collect {
+            bleDeviceDataSource.fetch(orderId).collect {
                 dbDataSource.insert(it)
             }
         }

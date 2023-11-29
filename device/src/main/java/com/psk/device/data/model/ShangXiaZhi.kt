@@ -19,7 +19,7 @@ data class ShangXiaZhi(
     val resistance: Int = 0,//阻力(被动模式永远返回1)：范围1~12           十六进制：0x01~0x0c
     val intelligence: Byte = 0,//智能： 0x40 表示 关闭 0x41 表示 打开
     val direction: Byte = 0,//正反转： 0x50 表示 反转 0x51 表示 正转
-    val medicalOrderId: Long = 0,
+    val orderId: Long = 0,
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

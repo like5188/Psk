@@ -9,7 +9,7 @@ data class BloodOxygen(
     val id: Long = 0,
     val createTime: Long = System.currentTimeMillis(),
     val value: Int,
-    val medicalOrderId: Long
+    val orderId: Long
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

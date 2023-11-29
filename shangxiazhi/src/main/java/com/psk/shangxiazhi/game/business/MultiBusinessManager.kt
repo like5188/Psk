@@ -97,7 +97,7 @@ class MultiBusinessManager : RemoteCallback.Stub(), KoinComponent {
 
         fun createBusinessManager(
             lifecycleScope: CoroutineScope,
-            medicalOrderId: Long,
+            orderId: Long,
             deviceType: DeviceType,
             deviceName: String,
             deviceAddress: String
@@ -113,7 +113,7 @@ class MultiBusinessManager : RemoteCallback.Stub(), KoinComponent {
             constructor.isAccessible = true
             return constructor.newInstance(
                 lifecycleScope,
-                medicalOrderId,
+                orderId,
                 deviceName,
                 deviceAddress
             ) as BaseBusinessManager<*>

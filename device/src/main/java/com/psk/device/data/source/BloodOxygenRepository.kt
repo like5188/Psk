@@ -21,14 +21,14 @@ class BloodOxygenRepository : BaseBleDeviceRepository<BaseBloodOxygenDataSource>
         BloodOxygenDbDataSource(DeviceDatabaseManager.db.bloodOxygenDao())
     }
 
-    suspend fun getListByMedicalOrderId(medicalOrderId: Long): List<BloodOxygen>? {
-        return dbDataSource.getByMedicalOrderId(medicalOrderId)
+    suspend fun getListByOrderId(orderId: Long): List<BloodOxygen>? {
+        return dbDataSource.getByOrderId(orderId)
     }
 
-    fun getFlow(scope: CoroutineScope, medicalOrderId: Long, interval: Long): Flow<BloodOxygen> {
+    fun getFlow(scope: CoroutineScope, orderId: Long, interval: Long): Flow<BloodOxygen> {
         scope.launch(Dispatchers.IO) {
             while (isActive) {
-                bleDeviceDataSource.fetch(medicalOrderId)?.apply {
+                bleDeviceDataSource.fetch(orderId)?.apply {
                     dbDataSource.insert(this)
                 }
                 delay(interval)

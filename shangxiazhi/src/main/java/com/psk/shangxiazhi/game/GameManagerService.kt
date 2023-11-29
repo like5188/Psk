@@ -36,7 +36,7 @@ class GameManagerService : Service() {
 
     fun start(
         scope: CoroutineScope,
-        medicalOrderId: Long,
+        orderId: Long,
         devices: Map<DeviceType, BleScanInfo>,
         scene: TrainScene,
         bloodPressureMeasureType: Int,
@@ -53,7 +53,7 @@ class GameManagerService : Service() {
             val deviceType = it.key
             val bleScanInfo = it.value
             MultiBusinessManager.createBusinessManager(
-                scope, medicalOrderId, deviceType, bleScanInfo.name, bleScanInfo.address
+                scope, orderId, deviceType, bleScanInfo.name, bleScanInfo.address
             ).apply {
                 multiBusinessManager.add(deviceType, this)
                 when (this) {

@@ -4,6 +4,6 @@ import com.psk.device.data.model.BloodOxygen
 
 abstract class BaseBloodOxygenDataSource : BaseBleDeviceDataSource() {
 
-    abstract suspend fun fetch(medicalOrderId: Long): BloodOxygen?
+    abstract suspend fun fetch(orderId: Long): BloodOxygen?
 
 }

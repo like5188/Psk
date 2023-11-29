@@ -18,7 +18,7 @@ data class BloodPressure(
      * 舒张压
      */
     val dbp: Int,
-    val medicalOrderId: Long
+    val orderId: Long
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readLong(),
@@ -52,7 +52,7 @@ data class BloodPressure(
         parcel.writeLong(createTime)
         parcel.writeInt(sbp)
         parcel.writeInt(dbp)
-        parcel.writeLong(medicalOrderId)
+        parcel.writeLong(orderId)
     }
 
     override fun describeContents(): Int {

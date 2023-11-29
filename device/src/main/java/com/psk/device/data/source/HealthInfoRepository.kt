@@ -12,8 +12,8 @@ class HealthInfoRepository {
         HealthInfoDbDataSource(DeviceDatabaseManager.db.healthInfoDao())
     }
 
-    suspend fun getByMedicalOrderId(medicalOrderId: Long): HealthInfo? {
-        return dbDataSource.getByMedicalOrderId(medicalOrderId)?.firstOrNull()
+    suspend fun getByOrderId(orderId: Long): HealthInfo? {
+        return dbDataSource.getByOrderId(orderId)?.firstOrNull()
     }
 
     suspend fun insert(data: HealthInfo) {

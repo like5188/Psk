@@ -7,8 +7,8 @@ class HealthInfoDbDataSource(
     private val healthInfoDao: HealthInfoDao
 ) {
 
-    suspend fun getByMedicalOrderId(medicalOrderId: Long): List<HealthInfo>? {
-        return healthInfoDao.getByMedicalOrderId(medicalOrderId)
+    suspend fun getByOrderId(orderId: Long): List<HealthInfo>? {
+        return healthInfoDao.getByOrderId(orderId)
     }
 
     suspend fun insert(data: HealthInfo) {

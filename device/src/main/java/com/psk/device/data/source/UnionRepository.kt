@@ -11,7 +11,7 @@ class UnionRepository {
         UnionDbDataSource(DeviceDatabaseManager.db.unionDao())
     }
 
-    suspend fun getAllMedicalOrderWithTime(): Map<Long, Long>? {
-        return dbDataSource.getAllMedicalOrderWithTime()
+    suspend fun getAllOrderWithTime(): Map<Long, Long>? {
+        return dbDataSource.getAllOrderWithTime()
     }
 }

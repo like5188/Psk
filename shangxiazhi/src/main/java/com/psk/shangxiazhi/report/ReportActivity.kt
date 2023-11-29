@@ -22,15 +22,15 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
  */
 class ReportActivity : AppCompatActivity() {
     companion object {
-        fun start(medicalOrderId: Long?) {
+        fun start(orderId: Long?) {
             CommonApplication.sInstance.startActivity<ReportActivity>(
-                "medicalOrderId" to medicalOrderId,
+                "orderId" to orderId,
             )
         }
     }
 
     @AutoWired
-    val medicalOrderId: Long? = null
+    val orderId: Long? = null
 
     private val mBinding: ActivityReportBinding by lazy {
         DataBindingUtil.setContentView(this, R.layout.activity_report)
@@ -56,14 +56,14 @@ class ReportActivity : AppCompatActivity() {
                 }
             }
         }
-        if (medicalOrderId == null) {
+        if (orderId == null) {
             showToast("获取报告失败")
             finish()
             return
         }
         lifecycleScope.launch {
-            val reports = mViewModel.getReports(medicalOrderId)
-            val healthInfo = mViewModel.getHealthInfo(medicalOrderId)
+            val reports = mViewModel.getReports(orderId)
+            val healthInfo = mViewModel.getHealthInfo(orderId)
             shangXiaZhiFragment = ShangXiaZhiFragment.newInstance(reports.firstOrNull {
                 it is ShangXiaZhiReport
             } as? ShangXiaZhiReport)

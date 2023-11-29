@@ -58,17 +58,17 @@ abstract class BaseDao<T> {
     protected abstract suspend fun getAll(query: SupportSQLiteQuery): List<T>?
 
     /**
-     * 获取指定医嘱id的数据
+     * 获取指定训练id的数据
      */
-    suspend fun getByMedicalOrderId(medicalOrderId: Long): List<T>? {
+    suspend fun getByOrderId(orderId: Long): List<T>? {
         val query = SimpleSQLiteQuery(
-            "SELECT * FROM $tableName WHERE medicalOrderId = ?",
-            arrayOf<Any>(medicalOrderId)
+            "SELECT * FROM $tableName WHERE orderId = ?",
+            arrayOf<Any>(orderId)
         )
-        return getByMedicalOrderId(query)
+        return getByOrderId(query)
     }
 
     @RawQuery
-    protected abstract suspend fun getByMedicalOrderId(query: SupportSQLiteQuery): List<T>?
+    protected abstract suspend fun getByOrderId(query: SupportSQLiteQuery): List<T>?
 
 }

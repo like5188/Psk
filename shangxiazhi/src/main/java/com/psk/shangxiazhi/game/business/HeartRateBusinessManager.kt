@@ -16,12 +16,12 @@ import kotlinx.coroutines.withContext
 
 class HeartRateBusinessManager(
     lifecycleScope: CoroutineScope,
-    medicalOrderId: Long,
+    orderId: Long,
     deviceName: String,
     deviceAddress: String,
 ) : BaseBusinessManager<HeartRateRepository>(
     lifecycleScope,
-    medicalOrderId,
+    orderId,
     deviceName,
     deviceAddress,
     DeviceType.HeartRate
@@ -38,7 +38,7 @@ class HeartRateBusinessManager(
     override suspend fun run() = withContext(Dispatchers.IO) {
         Log.d(TAG, "startHeartRateJob")
         gameController.setEcgConfig(bleDeviceRepository.getSampleRate())
-        val flow = bleDeviceRepository.getFlow(this, medicalOrderId)
+        val flow = bleDeviceRepository.getFlow(this, orderId)
         launch {
             HeartRateReport.createForm(flow)
         }
