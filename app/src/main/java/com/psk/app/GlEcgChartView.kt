@@ -126,39 +126,74 @@ class EcgRenderer : GLSurfaceView.Renderer {
         }
     """
 
-    private val hLineCount = 5
-    private val vLineCount = 5
-    private val scale = 0.1f
+    private val gridSize = 1f// 一个小格子的长度
+    private val dashPathIntervals = floatArrayOf(0.2f, 0.1f)// 虚线的间隔。第一个为实线段长度，第二个为空白段长度
+
+    private val dashPathLength = dashPathIntervals[0] + dashPathIntervals[1]// 虚线的实线段+空白段的长度
+    private val vec = 2// 顶点分量。这里只有x,y
+    private val hLineCount = 2// 水平线数量
+    private val vLineCount = 2// 垂直线数量
 
     // 在代码中这些顶点会用浮点数数组来表示，因为是二维坐标，所以每个顶点要用俩个浮点数来记录，一个标记x轴位置，一个标记y轴位置，这个数组通常被称为属性（attribute）数组
     // 这个数组表示俩个三角形，每个三角形都以逆时针表示，一共四个顶点，俩个三角形共用俩个顶点，这样就形成了一个矩形。
     // 定义好顶点了，但是我们的java代码是运行在虚拟机上，而opengl是运行在本地的硬件上的，那么如何才能把java数据可以让opengl使用呢？
     // ByteBuffer 可以分配本地的内存块，并且把java数据复制到本地内存
     // opengl会把屏幕映射到【-1，1】的范围内
+    // 水平线顶点数据缓存
     private val hVerticesData: FloatBuffer by lazy {
-        // 准备顶点数据
-        val vertices = FloatArray(hLineCount * 2 * 2)
+        val lineLength = (vLineCount - 1) * gridSize// 线长度
+        val solidLineCount =
+            if (lineLength % dashPathLength > 0f) (lineLength / dashPathLength).toInt() + 1 else (lineLength / dashPathLength).toInt()// 实线段数量
+        val pointCountInLine = solidLineCount * 2// 一条虚线上的点数。每个实线段2个点，空白段没有点。
+        val vertices = FloatArray(hLineCount * pointCountInLine * vec)
         for (i in 0 until hLineCount) {
-            for (j in 0 until 2) {
-                vertices[(i * 2 + j) * 2] = j * (vLineCount - 1) * scale - 0.5f// -0.5是为了居中
-                vertices[(i * 2 + j) * 2 + 1] = i * scale - 0.5f
+            val y = i * gridSize - 0.5f// 点的y坐标
+            for (j in 0 until pointCountInLine) {
+                val index = (i * pointCountInLine + j) * vec
+                if (j % 2 == 0) {// 偶数
+                    vertices[index] = (j / 2) * dashPathLength - 0.5f// 点的x坐标
+                    vertices[index + 1] = y
+                } else {// 奇数
+                    if (j == pointCountInLine - 1) {// 最后一个点，直接使用lineLength，避免超出。
+                        vertices[index] = lineLength - 0.5f
+                        vertices[index + 1] = y
+                    } else {
+                        vertices[index] = (j / 2 + 1) * dashPathIntervals[0] + (j / 2) * dashPathIntervals[1] - 0.5f
+                        vertices[index + 1] = y
+                    }
+                }
             }
         }
-        println("hVertices=${vertices.contentToString()}")
+        println("水平线数据：lineLength=$lineLength solidLineCount=$solidLineCount pointCountInLine=$pointCountInLine size=${vertices.size} ${vertices.contentToString()}")
         vertices.toFloatBuffer()
     }
 
     // 垂直线顶点数据缓存
     private val vVerticesData: FloatBuffer by lazy {
-        // 准备顶点数据
-        val vertices = FloatArray(vLineCount * 2 * 2)
+        val lineLength = (hLineCount - 1) * gridSize
+        val solidLineCount =
+            if (lineLength % dashPathLength > 0f) (lineLength / dashPathLength).toInt() + 1 else (lineLength / dashPathLength).toInt()
+        val pointCountInLine = solidLineCount * 2
+        val vertices = FloatArray(vLineCount * pointCountInLine * vec)
         for (i in 0 until vLineCount) {
-            for (j in 0 until 2) {
-                vertices[(i * 2 + j) * 2] = i * scale - 0.5f
-                vertices[(i * 2 + j) * 2 + 1] = j * (hLineCount - 1) * scale - 0.5f
+            val x = i * gridSize - 0.5f
+            for (j in 0 until pointCountInLine) {
+                val index = (i * pointCountInLine + j) * vec
+                if (j % 2 == 0) {
+                    vertices[index] = x
+                    vertices[index + 1] = (j / 2) * dashPathLength - 0.5f
+                } else {
+                    if (j == pointCountInLine - 1) {
+                        vertices[index] = x
+                        vertices[index + 1] = lineLength - 0.5f
+                    } else {
+                        vertices[index] = x
+                        vertices[index + 1] = (j / 2 + 1) * dashPathIntervals[0] + (j / 2) * dashPathIntervals[1] - 0.5f
+                    }
+                }
             }
         }
-        println("vVertices=${vertices.contentToString()}")
+        println("垂直线数据：lineLength=$lineLength solidLineCount=$solidLineCount pointCountInLine=$pointCountInLine size=${vertices.size} ${vertices.contentToString()}")
         vertices.toFloatBuffer()
     }
     /*
@@ -214,7 +249,7 @@ class EcgRenderer : GLSurfaceView.Renderer {
          * 第五个参数，两个连续顶点之间的偏移量，对于本应用程序来说，顶点之间是连续的，设置为0。
          * 第六个参数，告诉opengl在哪里读取数据
          */
-        GLES20.glVertexAttribPointer(a_position, 2, GLES20.GL_FLOAT, false, 0, hVerticesData)
+        GLES20.glVertexAttribPointer(a_position, vec, GLES20.GL_FLOAT, false, 0, hVerticesData)
         /*
          * 第一个参数：你想画什么，
         GL_POINTS           //将传入的顶点坐标作为单独的点绘制
@@ -230,7 +265,7 @@ class EcgRenderer : GLSurfaceView.Renderer {
         GLES20.glDrawArrays(GLES20.GL_LINES, 0, hVerticesData.capacity() / 2)
 
         GLES20.glUniform4f(u_color, 0.0f, 1.0f, 0.0f, 1.0f)
-        GLES20.glVertexAttribPointer(a_position, 2, GLES20.GL_FLOAT, false, 0, vVerticesData)
+        GLES20.glVertexAttribPointer(a_position, vec, GLES20.GL_FLOAT, false, 0, vVerticesData)
         GLES20.glDrawArrays(GLES20.GL_LINES, 0, vVerticesData.capacity() / 2)
     }
 }
