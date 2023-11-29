@@ -38,8 +38,9 @@
 
         <com.psk.app.GlEcgChartView
             android:id="@+id/glEcgChartView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="900px"
+            android:layout_height="600px"
+            android:layout_gravity="center_horizontal"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp" />
     </LinearLayout>

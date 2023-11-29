@@ -6,6 +6,7 @@ import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.os.Build
 import android.util.AttributeSet
+import com.like.common.util.dp
 import com.psk.app.RenderHelper.toFloatBuffer
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -68,14 +69,14 @@ class GlEcgChartView(context: Context, attrs: AttributeSet?) : GLSurfaceView(con
         }
         // 设置 OpenGL ES 版本
         setEGLContextClientVersion(2)
+        // 打开调试和日志
+        debugFlags = DEBUG_CHECK_GL_ERROR or DEBUG_LOG_GL_CALLS
         // 设置渲染器
         setRenderer(EcgRenderer())
         // 设置渲染方式
         // RENDERMODE_WHEN_DIRTY 表示被动渲染，只有在调用requestRender或者onResume等方法时才会进行渲染。
         // RENDERMODE_CONTINUOUSLY 表示持续渲染。这是默认值
         renderMode = RENDERMODE_WHEN_DIRTY
-        // 打开调试和日志
-        debugFlags = DEBUG_CHECK_GL_ERROR or DEBUG_LOG_GL_CALLS
     }
 
     /**
@@ -126,13 +127,19 @@ class EcgRenderer : GLSurfaceView.Renderer {
         }
     """
 
-    private val gridSize = 1f// 一个小格子的长度
-    private val dashPathIntervals = floatArrayOf(0.2f, 0.1f)// 虚线的间隔。第一个为实线段长度，第二个为空白段长度
+    private val gridSizePx = 10.dp// 一个小格子的长度，px
+    private val dashPathIntervalsPx = floatArrayOf(2f, 2f)// 虚线的间隔，px。第一个为实线段长度，第二个为空白段长度
 
-    private val dashPathLength = dashPathIntervals[0] + dashPathIntervals[1]// 虚线的实线段+空白段的长度
     private val vec = 2// 顶点分量。这里只有x,y
-    private val hLineCount = 2// 水平线数量
-    private val vLineCount = 2// 垂直线数量
+    private val xOffset = 1f// x方向偏移，相对。中心点在视图中心。
+    private val yOffset = 1f// y方向偏移，相对。中心点在视图中心。
+
+    private var hLineCount = 0// 水平线数量
+    private var vLineCount = 0// 垂直线数量
+    private var gridSizeX = 0f// x方向上一个小格子的长度，相对
+    private var gridSizeY = 0f// y方向上一个小格子的长度，相对
+    private val dashPathIntervalsX = floatArrayOf(0f, 0f)// 水平虚线的间隔，相对。第一个为实线段长度，第二个为空白段长度
+    private val dashPathIntervalsY = floatArrayOf(0f, 0f)// 垂直虚线的间隔，相对。第一个为实线段长度，第二个为空白段长度
 
     // 在代码中这些顶点会用浮点数数组来表示，因为是二维坐标，所以每个顶点要用俩个浮点数来记录，一个标记x轴位置，一个标记y轴位置，这个数组通常被称为属性（attribute）数组
     // 这个数组表示俩个三角形，每个三角形都以逆时针表示，一共四个顶点，俩个三角形共用俩个顶点，这样就形成了一个矩形。
@@ -141,24 +148,25 @@ class EcgRenderer : GLSurfaceView.Renderer {
     // opengl会把屏幕映射到【-1，1】的范围内
     // 水平线顶点数据缓存
     private val hVerticesData: FloatBuffer by lazy {
-        val lineLength = (vLineCount - 1) * gridSize// 线长度
+        val dashPathLengthX = dashPathIntervalsX[0] + dashPathIntervalsX[1]// 水平虚线的实线段+空白段的长度
+        val lineLength = (vLineCount - 1) * gridSizeX// 线长度
         val solidLineCount =
-            if (lineLength % dashPathLength > 0f) (lineLength / dashPathLength).toInt() + 1 else (lineLength / dashPathLength).toInt()// 实线段数量
+            if (lineLength % dashPathLengthX > 0f) (lineLength / dashPathLengthX).toInt() + 1 else (lineLength / dashPathLengthX).toInt()// 实线段数量
         val pointCountInLine = solidLineCount * 2// 一条虚线上的点数。每个实线段2个点，空白段没有点。
         val vertices = FloatArray(hLineCount * pointCountInLine * vec)
         for (i in 0 until hLineCount) {
-            val y = i * gridSize - 0.5f// 点的y坐标
+            val y = i * gridSizeY - yOffset// 点的y坐标
             for (j in 0 until pointCountInLine) {
                 val index = (i * pointCountInLine + j) * vec
                 if (j % 2 == 0) {// 偶数
-                    vertices[index] = (j / 2) * dashPathLength - 0.5f// 点的x坐标
+                    vertices[index] = (j / 2) * dashPathLengthX - xOffset// 点的x坐标
                     vertices[index + 1] = y
                 } else {// 奇数
                     if (j == pointCountInLine - 1) {// 最后一个点，直接使用lineLength，避免超出。
-                        vertices[index] = lineLength - 0.5f
+                        vertices[index] = lineLength - xOffset
                         vertices[index + 1] = y
                     } else {
-                        vertices[index] = (j / 2 + 1) * dashPathIntervals[0] + (j / 2) * dashPathIntervals[1] - 0.5f
+                        vertices[index] = (j / 2 + 1) * dashPathIntervalsX[0] + (j / 2) * dashPathIntervalsX[1] - xOffset
                         vertices[index + 1] = y
                     }
                 }
@@ -170,25 +178,26 @@ class EcgRenderer : GLSurfaceView.Renderer {
 
     // 垂直线顶点数据缓存
     private val vVerticesData: FloatBuffer by lazy {
-        val lineLength = (hLineCount - 1) * gridSize
+        val dashPathLengthY = dashPathIntervalsY[0] + dashPathIntervalsY[1]// 垂直虚线的实线段+空白段的长度
+        val lineLength = (hLineCount - 1) * gridSizeY
         val solidLineCount =
-            if (lineLength % dashPathLength > 0f) (lineLength / dashPathLength).toInt() + 1 else (lineLength / dashPathLength).toInt()
+            if (lineLength % dashPathLengthY > 0f) (lineLength / dashPathLengthY).toInt() + 1 else (lineLength / dashPathLengthY).toInt()
         val pointCountInLine = solidLineCount * 2
         val vertices = FloatArray(vLineCount * pointCountInLine * vec)
         for (i in 0 until vLineCount) {
-            val x = i * gridSize - 0.5f
+            val x = i * gridSizeX - xOffset
             for (j in 0 until pointCountInLine) {
                 val index = (i * pointCountInLine + j) * vec
                 if (j % 2 == 0) {
                     vertices[index] = x
-                    vertices[index + 1] = (j / 2) * dashPathLength - 0.5f
+                    vertices[index + 1] = (j / 2) * dashPathLengthY - yOffset
                 } else {
                     if (j == pointCountInLine - 1) {
                         vertices[index] = x
-                        vertices[index + 1] = lineLength - 0.5f
+                        vertices[index + 1] = lineLength - yOffset
                     } else {
                         vertices[index] = x
-                        vertices[index + 1] = (j / 2 + 1) * dashPathIntervals[0] + (j / 2) * dashPathIntervals[1] - 0.5f
+                        vertices[index + 1] = (j / 2 + 1) * dashPathIntervalsY[0] + (j / 2) * dashPathIntervalsY[1] - yOffset
                     }
                 }
             }
@@ -228,6 +237,17 @@ class EcgRenderer : GLSurfaceView.Renderer {
         println("onSurfaceChanged")
         // 设置视口大小，告诉opengl需要渲染的surface尺寸大小
         GLES20.glViewport(0, 0, width, height)
+        // 整个视图的宽高都为2f，视图中心为原点
+        gridSizeX = 2f / (width / gridSizePx)
+        gridSizeY = 2f / (height / gridSizePx)
+        vLineCount = width / gridSizePx + 1
+        hLineCount = height / gridSizePx + 1
+        dashPathIntervalsX[0] = 2f / (width / dashPathIntervalsPx[0])
+        dashPathIntervalsX[1] = 2f / (width / dashPathIntervalsPx[1])
+        dashPathIntervalsY[0] = 2f / (height / dashPathIntervalsPx[0])
+        dashPathIntervalsY[1] = 2f / (height / dashPathIntervalsPx[1])
+        println("width=$width height=$height gridSizePx=$gridSizePx gridSizeX=$gridSizeX gridSizeY=$gridSizeY vLineCount=$vLineCount hLineCount=$hLineCount")
+        println("dashPathIntervalsPx=${dashPathIntervalsPx.contentToString()} dashPathIntervalsX=${dashPathIntervalsX.contentToString()} dashPathIntervalsY=${dashPathIntervalsY.contentToString()}")
     }
 
     // 当绘制每一帧数据的时候，会调用这个放方法，这个方法一定要绘制一些东西，即使只是清空屏幕，
