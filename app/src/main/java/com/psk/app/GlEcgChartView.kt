@@ -154,7 +154,7 @@ class EcgRenderer : GLSurfaceView.Renderer {
         val pointCountInLine = solidLineCount * 2// 一条虚线上的点数。每个实线段2个点，空白段没有点。
         val vertices = mutableListOf<Float>()
         for (i in 0 until hLineCount) {
-            val y = i * gridSizeY - yOffset// 点的y坐标
+            val y = yOffset - i * gridSizeY // 点的y坐标。这里如果使用 i * gridSizeY - yOffset ，那么就是从下往上绘制。和习惯相反了。
             if (i % 5 == 0) {// 实线
                 for (j in 0 until 2) {
                     vertices.add(if (j == 0) 0 - xOffset else lineLength - xOffset)
