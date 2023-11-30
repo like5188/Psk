@@ -4,7 +4,6 @@ import android.app.ActivityManager
 import android.content.Context
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
-import android.os.Build
 import android.util.AttributeSet
 import com.psk.app.RenderHelper.toFloatBuffer
 import java.nio.ByteBuffer
@@ -84,12 +83,7 @@ class GlEcgChartView(context: Context, attrs: AttributeSet?) : GLSurfaceView(con
     private fun supportsEs2(): Boolean {
         val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager
         val configurationInfo = activityManager?.deviceConfigurationInfo ?: return false
-        return (configurationInfo.reqGlEsVersion >= 0x20000 ||
-                Build.FINGERPRINT.startsWith("generic") ||
-                Build.FINGERPRINT.startsWith("unknown") ||
-                Build.MODEL.contains("google_sdk") ||
-                Build.MODEL.contains("Emulator") ||
-                Build.MODEL.contains("Android SDK built for x86"))
+        return configurationInfo.reqGlEsVersion >= 0x2000
     }
 }
 
@@ -129,7 +123,7 @@ class EcgRenderer : GLSurfaceView.Renderer {
     private val gridSizePx = 50// 一个小格子的长度，px
     private val dashPathIntervalsPx = floatArrayOf(10f, 10f)// 虚线的间隔，px。第一个为实线段长度，第二个为空白段长度
 
-    private val vec = 2// 顶点分量。这里只有x,y
+    private val SIZE_PER_VERTEX = 2// 顶点分量。这里只有x,y
     private val xOffset = 1f// x方向偏移，相对。中心点在视图中心。
     private val yOffset = 1f// y方向偏移，相对。中心点在视图中心。
 
@@ -272,7 +266,7 @@ class EcgRenderer : GLSurfaceView.Renderer {
          * 第五个参数，两个连续顶点之间的偏移量，对于本应用程序来说，顶点之间是连续的，设置为0。
          * 第六个参数，告诉opengl在哪里读取数据
          */
-        GLES20.glVertexAttribPointer(a_position, vec, GLES20.GL_FLOAT, false, 0, hVerticesData)
+        GLES20.glVertexAttribPointer(a_position, SIZE_PER_VERTEX, GLES20.GL_FLOAT, false, 0, hVerticesData)
         /*
          * 第一个参数：你想画什么，
         GL_POINTS           //将传入的顶点坐标作为单独的点绘制
@@ -288,7 +282,7 @@ class EcgRenderer : GLSurfaceView.Renderer {
         GLES20.glDrawArrays(GLES20.GL_LINES, 0, hVerticesData.capacity() / 2)
 
         GLES20.glUniform4f(u_color, 0.0f, 1.0f, 0.0f, 1.0f)
-        GLES20.glVertexAttribPointer(a_position, vec, GLES20.GL_FLOAT, false, 0, vVerticesData)
+        GLES20.glVertexAttribPointer(a_position, SIZE_PER_VERTEX, GLES20.GL_FLOAT, false, 0, vVerticesData)
         GLES20.glDrawArrays(GLES20.GL_LINES, 0, vVerticesData.capacity() / 2)
     }
 }
