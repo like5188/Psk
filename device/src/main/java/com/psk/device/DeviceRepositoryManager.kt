@@ -2,28 +2,21 @@ package com.psk.device
 
 import androidx.activity.ComponentActivity
 import com.like.ble.util.PermissionUtils
-import com.psk.device.RepositoryManager.createBleDeviceRepository
-import com.psk.device.RepositoryManager.healthInfoRepository
-import com.psk.device.RepositoryManager.init
-import com.psk.device.RepositoryManager.orderInfoRepository
+import com.psk.device.DeviceRepositoryManager.createBleDeviceRepository
+import com.psk.device.DeviceRepositoryManager.init
 import com.psk.device.data.db.DeviceDatabaseManager
 import com.psk.device.data.model.DeviceType
 import com.psk.device.data.source.BaseBleDeviceRepository
-import com.psk.device.data.source.HealthInfoRepository
-import com.psk.device.data.source.OrderInfoRepository
 import com.psk.device.data.source.remote.BleDataSourceFactory
 import kotlin.collections.set
 
 /**
  * 仓库管理工具类。
  * 1、调用[init]进行初始化
- * 2、可以直接使用[orderInfoRepository]、[healthInfoRepository]仓库。
- * 3、也可以使用[createBleDeviceRepository]创建的设备仓库。
+ * 2、使用[createBleDeviceRepository]创建的设备仓库。
  */
-object RepositoryManager {
+object DeviceRepositoryManager {
     private val bleDeviceRepositories = mutableMapOf<DeviceType, BaseBleDeviceRepository<*>>()
-    val orderInfoRepository by lazy { OrderInfoRepository() }
-    val healthInfoRepository by lazy { HealthInfoRepository() }
 
     suspend fun init(activity: ComponentActivity) {
         PermissionUtils.requestConnectEnvironment(activity)

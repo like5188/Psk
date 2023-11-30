@@ -14,7 +14,7 @@ import com.like.common.base.BaseDialogFragment
 import com.like.common.util.showToast
 import com.psk.common.customview.CountDownTimerProgressDialog
 import com.psk.common.customview.ProgressDialog
-import com.psk.device.RepositoryManager
+import com.psk.device.DeviceRepositoryManager
 import com.psk.device.data.model.BloodPressure
 import com.psk.device.data.model.DeviceType
 import com.psk.device.data.source.BloodPressureRepository
@@ -43,7 +43,7 @@ class MeasureBloodPressureDialogFragment private constructor() : BaseDialogFragm
         }
     }
 
-    private val repository = RepositoryManager.createBleDeviceRepository<BloodPressureRepository>(DeviceType.BloodPressure)
+    private val repository = DeviceRepositoryManager.createBleDeviceRepository<BloodPressureRepository>(DeviceType.BloodPressure)
     private lateinit var mBinding: DialogFragmentMeasureBloodPressureBinding
     var onSelected: ((BloodPressure) -> Unit)? = null
     var onCanceled: (() -> Unit)? = null

@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.psk.device.RepositoryManager
+import com.psk.device.DeviceRepositoryManager
 import com.psk.device.ScanManager
 import com.psk.device.data.model.DeviceType
 import com.psk.device.data.model.ShangXiaZhiParams
@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 
 class MainViewModel : ViewModel() {
     private val bleDeviceRepository: ShangXiaZhiRepository by lazy {
-        RepositoryManager.createBleDeviceRepository(DeviceType.ShangXiaZhi)
+        DeviceRepositoryManager.createBleDeviceRepository(DeviceType.ShangXiaZhi)
     }
     private val _uiState = MutableStateFlow(MainUiState())
     val uiState = _uiState.asStateFlow()
@@ -28,7 +28,7 @@ class MainViewModel : ViewModel() {
     fun init(activity: ComponentActivity) {
         viewModelScope.launch {
             ScanManager.init(activity)
-            RepositoryManager.init(activity)
+            DeviceRepositoryManager.init(activity)
         }
     }
 

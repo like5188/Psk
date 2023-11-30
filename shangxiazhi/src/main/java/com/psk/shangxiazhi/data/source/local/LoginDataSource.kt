@@ -1,4 +1,4 @@
-package com.psk.shangxiazhi.data.source
+package com.psk.shangxiazhi.data.source.local
 
 import android.content.Context
 import com.like.common.util.SPUtils

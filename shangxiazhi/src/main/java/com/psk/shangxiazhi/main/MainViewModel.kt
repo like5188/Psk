@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.psk.common.util.scheduleFlow
-import com.psk.device.RepositoryManager
+import com.psk.device.DeviceRepositoryManager
 import com.psk.device.ScanManager
 import com.psk.shangxiazhi.data.source.ShangXiaZhiBusinessRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,7 +42,7 @@ class MainViewModel(
     fun init(activity: ComponentActivity) {
         viewModelScope.launch {
             ScanManager.init(activity)
-            RepositoryManager.init(activity)
+            DeviceRepositoryManager.init(activity)
         }
     }
 

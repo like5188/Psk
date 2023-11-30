@@ -2,8 +2,8 @@ package com.psk.shangxiazhi.history
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.psk.device.RepositoryManager
-import com.psk.device.data.model.OrderInfo
+import com.psk.shangxiazhi.data.model.OrderInfo
+import com.psk.shangxiazhi.data.source.OrderInfoRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -11,10 +11,11 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 
-class HistoryViewModel : ViewModel() {
+class HistoryViewModel(
+    private val orderInfoRepository: OrderInfoRepository,
+) : ViewModel() {
     private val _uiState = MutableStateFlow(HistoryUiState())
     val uiState = _uiState.asStateFlow()
-    private val orderInfoRepository = RepositoryManager.orderInfoRepository
     private lateinit var datas: Map<String, List<OrderInfo>>// key:年月
     private val sdf = SimpleDateFormat("yyyy年MM月")
 

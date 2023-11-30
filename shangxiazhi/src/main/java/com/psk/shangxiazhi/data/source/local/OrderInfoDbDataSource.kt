@@ -1,7 +1,7 @@
-package com.psk.device.data.source.local.db
+package com.psk.shangxiazhi.data.source.local
 
-import com.psk.device.data.db.dao.OrderInfoDao
-import com.psk.device.data.model.OrderInfo
+import com.psk.shangxiazhi.data.db.dao.OrderInfoDao
+import com.psk.shangxiazhi.data.model.OrderInfo
 
 class OrderInfoDbDataSource(
     private val orderInfoDao: OrderInfoDao

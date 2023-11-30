@@ -2,7 +2,7 @@ package com.psk.shangxiazhi.game.business
 
 import com.like.common.util.Logger
 import com.psk.common.CommonApplication
-import com.psk.device.RepositoryManager
+import com.psk.device.DeviceRepositoryManager
 import com.psk.device.data.model.DeviceType
 import com.psk.device.data.source.BaseBleDeviceRepository
 import com.psk.shangxiazhi.data.model.IReport
@@ -30,7 +30,7 @@ abstract class BaseBusinessManager<Repository : BaseBleDeviceRepository<*>>(
 ) : KoinComponent {
     private var job: Job? = null
     protected val gameController by inject<GameController>()
-    protected val bleDeviceRepository = RepositoryManager.createBleDeviceRepository<Repository>(deviceType).apply {
+    protected val bleDeviceRepository = DeviceRepositoryManager.createBleDeviceRepository<Repository>(deviceType).apply {
         init(CommonApplication.Companion.sInstance, deviceName, deviceAddress)
     }
 

@@ -15,11 +15,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.like.common.util.ToastEvent
 import com.like.common.util.mvi.Event
-import com.psk.device.RepositoryManager
 import com.psk.device.data.model.DeviceType
-import com.psk.device.data.model.HealthInfo
-import com.psk.device.data.model.OrderInfo
+import com.psk.shangxiazhi.data.model.HealthInfo
+import com.psk.shangxiazhi.data.model.OrderInfo
 import com.psk.shangxiazhi.data.model.ShangXiaZhiReport
+import com.psk.shangxiazhi.data.source.HealthInfoRepository
+import com.psk.shangxiazhi.data.source.OrderInfoRepository
 import com.psk.shangxiazhi.game.GameManagerService
 import com.psk.shangxiazhi.measure.MeasureBloodPressureDialogFragment
 import com.psk.shangxiazhi.measure.MeasureTargetHeartRateDialogFragment
@@ -35,11 +36,12 @@ import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 
 @OptIn(KoinApiExtension::class)
-class TrainViewModel : ViewModel(), KoinComponent {
+class TrainViewModel(
+    private val orderInfoRepository: OrderInfoRepository,
+    private val healthInfoRepository: HealthInfoRepository,
+) : ViewModel(), KoinComponent {
     private val _uiState = MutableStateFlow(TrainUiState())
     val uiState = _uiState.asStateFlow()
-    private val orderInfoRepository = RepositoryManager.orderInfoRepository
-    private val healthInfoRepository = RepositoryManager.healthInfoRepository
 
     @SuppressLint("StaticFieldLeak")
     private var gameManagerService: GameManagerService? = null

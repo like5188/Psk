@@ -1,7 +1,9 @@
 package com.psk.shangxiazhi.util
 
-import com.psk.shangxiazhi.data.source.LoginDataSource
+import com.psk.shangxiazhi.data.source.HealthInfoRepository
+import com.psk.shangxiazhi.data.source.OrderInfoRepository
 import com.psk.shangxiazhi.data.source.ShangXiaZhiBusinessRepository
+import com.psk.shangxiazhi.data.source.local.LoginDataSource
 import com.psk.shangxiazhi.history.HistoryViewModel
 import com.psk.shangxiazhi.login.LoginViewModel
 import com.psk.shangxiazhi.main.MainViewModel
@@ -25,6 +27,12 @@ val shangXiaZhiModule = module {
     factory {
         ShangXiaZhiBusinessRepository(get())
     }
+    factory {
+        HealthInfoRepository()
+    }
+    factory {
+        OrderInfoRepository()
+    }
 
     //viewModel
     viewModel {
@@ -34,13 +42,13 @@ val shangXiaZhiModule = module {
         MainViewModel(get())
     }
     viewModel {
-        HistoryViewModel()
+        HistoryViewModel(get())
     }
     viewModel {
-        TrainViewModel()
+        TrainViewModel(get(), get())
     }
     viewModel {
-        ReportViewModel()
+        ReportViewModel(get())
     }
 
     //GameController

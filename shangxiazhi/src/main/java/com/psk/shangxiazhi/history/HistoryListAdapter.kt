@@ -3,8 +3,8 @@ package com.psk.shangxiazhi.history
 import androidx.recyclerview.widget.DiffUtil
 import com.like.recyclerview.adapter.BaseListAdapter
 import com.like.recyclerview.viewholder.BindingViewHolder
-import com.psk.device.data.model.OrderInfo
 import com.psk.shangxiazhi.R
+import com.psk.shangxiazhi.data.model.OrderInfo
 import com.psk.shangxiazhi.databinding.ItemHistoryBinding
 import java.text.SimpleDateFormat
 
