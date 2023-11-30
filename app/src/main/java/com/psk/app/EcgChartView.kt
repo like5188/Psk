@@ -174,19 +174,58 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
 
     // 画心电数据
     private fun drawData(canvas: Canvas) {
-        // 滚动效果
-        if (notDrawDataList.isNotEmpty()) {
-            // 总共需要取出 drawDataCountEachTime 个数据
-            repeat(drawDataCountEachTime) {
-                notDrawDataList.removeFirstOrNull()?.let {
+        calcCirclePath()
+        canvas.drawPath(path, dataPaint)
+    }
+
+    // 循环效果时，不需要画线的数据的index。即视图中看起来是空白的部分。
+    private var spaceIndex = 0
+
+    /**
+     * 循环效果
+     */
+    private fun calcCirclePath() {
+        repeat(drawDataCountEachTime) {
+            notDrawDataList.removeFirstOrNull()?.let {
+                if (drawDataList.size == maxDataCount) {
+                    drawDataList.removeAt(spaceIndex)
+                    drawDataList.add(spaceIndex, it)
+                    spaceIndex++
+                    if (spaceIndex == maxDataCount) {
+                        spaceIndex = 0
+                    }
+                } else {
                     drawDataList.addLast(it)
                 }
             }
-            // 最多只绘制 maxDataCount 个数据
-            if (maxDataCount > 0 && drawDataList.size > maxDataCount) {
-                repeat(drawDataList.size - maxDataCount) {
-                    drawDataList.removeFirst()
-                }
+        }
+        if (drawDataList.isEmpty()) return
+        path.reset()
+        drawDataList.forEachIndexed { index, fl ->
+            if (index == spaceIndex) {
+                path.moveTo(index * stepX, fl)// 达到空白效果
+            } else {
+                path.lineTo(index * stepX, fl)
+            }
+        }
+        path.offset(0f, yOffset)
+    }
+
+    /**
+     * 滚动效果
+     */
+    private fun calcScrollPath() {
+        if (notDrawDataList.isEmpty()) return
+        // 总共需要取出 drawDataCountEachTime 个数据
+        repeat(drawDataCountEachTime) {
+            notDrawDataList.removeFirstOrNull()?.let {
+                drawDataList.addLast(it)
+            }
+        }
+        // 最多只绘制 maxDataCount 个数据
+        if (maxDataCount > 0 && drawDataList.size > maxDataCount) {
+            repeat(drawDataList.size - maxDataCount) {
+                drawDataList.removeFirst()
             }
         }
         if (drawDataList.isEmpty()) return
@@ -195,7 +234,6 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
             path.lineTo(index * stepX, fl)
         }
         path.offset(0f, yOffset)
-        canvas.drawPath(path, dataPaint)
     }
 
     // 画水平线
