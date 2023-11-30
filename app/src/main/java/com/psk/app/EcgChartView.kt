@@ -186,19 +186,20 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
      * 循环效果
      */
     private fun calcCirclePath() {
-        if (notDrawDataQueue.isEmpty()) return
-        repeat(drawDataCountEachTime) {
-            // 出队，空时返回null
-            notDrawDataQueue.poll()?.let {
-                if (drawDataList.size == maxDataCount) {
-                    drawDataList.removeAt(spaceIndex)
-                    drawDataList.add(spaceIndex, it)
-                    spaceIndex++
-                    if (spaceIndex == maxDataCount) {
-                        spaceIndex = 0
+        if (notDrawDataQueue.isNotEmpty()) {
+            repeat(drawDataCountEachTime) {
+                // 出队，空时返回null
+                notDrawDataQueue.poll()?.let {
+                    if (drawDataList.size == maxDataCount) {
+                        drawDataList.removeAt(spaceIndex)
+                        drawDataList.add(spaceIndex, it)
+                        spaceIndex++
+                        if (spaceIndex == maxDataCount) {
+                            spaceIndex = 0
+                        }
+                    } else {
+                        drawDataList.addLast(it)
                     }
-                } else {
-                    drawDataList.addLast(it)
                 }
             }
         }
@@ -218,17 +219,18 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
      * 滚动效果
      */
     private fun calcScrollPath() {
-        if (notDrawDataQueue.isEmpty()) return
-        // 总共需要取出 drawDataCountEachTime 个数据
-        repeat(drawDataCountEachTime) {
-            notDrawDataQueue.poll()?.let {
-                drawDataList.addLast(it)
+        if (notDrawDataQueue.isNotEmpty()) {
+            // 总共需要取出 drawDataCountEachTime 个数据
+            repeat(drawDataCountEachTime) {
+                notDrawDataQueue.poll()?.let {
+                    drawDataList.addLast(it)
+                }
             }
-        }
-        // 最多只绘制 maxDataCount 个数据
-        if (maxDataCount > 0 && drawDataList.size > maxDataCount) {
-            repeat(drawDataList.size - maxDataCount) {
-                drawDataList.removeFirst()
+            // 最多只绘制 maxDataCount 个数据
+            if (maxDataCount > 0 && drawDataList.size > maxDataCount) {
+                repeat(drawDataList.size - maxDataCount) {
+                    drawDataList.removeFirst()
+                }
             }
         }
         if (drawDataList.isEmpty()) return
