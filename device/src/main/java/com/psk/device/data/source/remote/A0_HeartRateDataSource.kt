@@ -1,5 +1,6 @@
 package com.psk.device.data.source.remote
 
+import com.like.common.util.Logger
 import com.psk.device.data.model.HeartRate
 import com.psk.device.data.model.Protocol
 import com.psk.device.data.source.remote.base.BaseHeartRateDataSource
@@ -726,6 +727,7 @@ class A0_HeartRateDataSource : BaseHeartRateDataSource() {
                 }
             }
         })
+        Logger.i("A0_HeartRateDataSource setNotifyCallback")
         setNotifyCallback().collect {
             StarData.putData(it)
         }

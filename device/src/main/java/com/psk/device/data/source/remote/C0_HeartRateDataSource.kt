@@ -1,5 +1,6 @@
 package com.psk.device.data.source.remote
 
+import com.like.common.util.Logger
 import com.psk.device.data.model.HeartRate
 import com.psk.device.data.model.Protocol
 import com.psk.device.data.source.remote.base.BaseHeartRateDataSource
@@ -52,6 +53,7 @@ class C0_HeartRateDataSource : BaseHeartRateDataSource() {
         // 把二进制数据构建成数据包
         val packBuilder = Pack.Builder()
 
+        Logger.i("C0_HeartRateDataSource setNotifyCallback")
         setNotifyCallback().filter {
             packBuilder.append(it)// 添加收到的二进制数据
             packBuilder.size() > 0// 表示组包成功，至少有一个完整数据包
