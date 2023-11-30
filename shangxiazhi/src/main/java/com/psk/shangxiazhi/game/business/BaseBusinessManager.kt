@@ -66,12 +66,13 @@ abstract class BaseBusinessManager<Repository : BaseBleDeviceRepository<*>>(
        2023-11-30 09:41:39.968 I/BaseConnectExecutor: 连接成功 A0:02:19:00:02:19
        2023-11-30 09:41:39.969 W/HeartRateBusinessManager: 心电仪连接成功
         */
+        Logger.w("${this::class.java.simpleName} isConnected=${bleDeviceRepository.isConnected()} isLocked=${bleDeviceRepository.isLocked()}")
         if (bleDeviceRepository.isConnected() && !bleDeviceRepository.isLocked()) {
             job = lifecycleScope.launch(Dispatchers.IO) {
                 run()
             }
         } else {
-            Logger.e("${this::class.java.simpleName} 启动任务失败：isConnected=${bleDeviceRepository.isConnected()} isLocked=${bleDeviceRepository.isLocked()}")
+            Logger.e("${this::class.java.simpleName} 启动任务失败")
         }
     }
 
