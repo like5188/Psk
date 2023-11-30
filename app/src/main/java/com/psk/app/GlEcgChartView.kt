@@ -166,13 +166,8 @@ class EcgRenderer : GLSurfaceView.Renderer {
                         vertices.add((j / 2) * dashPathLengthX - xOffset)// 点的x坐标
                         vertices.add(y)
                     } else {// 奇数
-                        if (j == pointCountInLine - 1) {// 最后一个点，直接使用lineLength，避免超出。
-                            vertices.add(lineLength - xOffset)
-                            vertices.add(y)
-                        } else {
-                            vertices.add((j / 2 + 1) * dashPathIntervalsX[0] + (j / 2) * dashPathIntervalsX[1] - xOffset)
-                            vertices.add(y)
-                        }
+                        vertices.add((j / 2 + 1) * dashPathIntervalsX[0] + (j / 2) * dashPathIntervalsX[1] - xOffset)
+                        vertices.add(y)
                     }
                 }
             }
@@ -202,13 +197,8 @@ class EcgRenderer : GLSurfaceView.Renderer {
                         vertices.add(x)
                         vertices.add((j / 2) * dashPathLengthY - yOffset)
                     } else {
-                        if (j == pointCountInLine - 1) {
-                            vertices.add(x)
-                            vertices.add(lineLength - yOffset)
-                        } else {
-                            vertices.add(x)
-                            vertices.add((j / 2 + 1) * dashPathIntervalsY[0] + (j / 2) * dashPathIntervalsY[1] - yOffset)
-                        }
+                        vertices.add(x)
+                        vertices.add((j / 2 + 1) * dashPathIntervalsY[0] + (j / 2) * dashPathIntervalsY[1] - yOffset)
                     }
                 }
             }
