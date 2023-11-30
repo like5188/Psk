@@ -23,6 +23,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.util.LinkedList
+import java.util.concurrent.ConcurrentLinkedQueue
 import kotlin.math.ceil
 
 /*
@@ -86,7 +87,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     private var stepX = 0f// x方向的步进，两个数据在x轴方向的距离。px
     private var maxDataCount = 0// 能显示的最大数据量
     private var bgBitmap: Bitmap? = null// 背景图片
-    private val notDrawDataList = LinkedList<Float>()// 未绘制的数据集合
+    private val notDrawDataQueue = ConcurrentLinkedQueue<Float>()// 未绘制的数据集合
     private val drawDataList = LinkedList<Float>()// 需要绘制的数据集合
     private val path = Path()
 
@@ -150,7 +151,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
             // 把uV电压值转换成y轴坐标值
             val mm = it * MM_PER_MV// mV转mm
             val px = mm * gridSize// mm转px
-            notDrawDataList.addLast(px)
+            notDrawDataQueue.offer(px)// 入队成功返回true，失败返回false
         }
     }
 
@@ -185,8 +186,10 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
      * 循环效果
      */
     private fun calcCirclePath() {
+        if (notDrawDataQueue.isEmpty()) return
         repeat(drawDataCountEachTime) {
-            notDrawDataList.removeFirstOrNull()?.let {
+            // 出队，空时返回null
+            notDrawDataQueue.poll()?.let {
                 if (drawDataList.size == maxDataCount) {
                     drawDataList.removeAt(spaceIndex)
                     drawDataList.add(spaceIndex, it)
@@ -215,10 +218,10 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
      * 滚动效果
      */
     private fun calcScrollPath() {
-        if (notDrawDataList.isEmpty()) return
+        if (notDrawDataQueue.isEmpty()) return
         // 总共需要取出 drawDataCountEachTime 个数据
         repeat(drawDataCountEachTime) {
-            notDrawDataList.removeFirstOrNull()?.let {
+            notDrawDataQueue.poll()?.let {
                 drawDataList.addLast(it)
             }
         }
