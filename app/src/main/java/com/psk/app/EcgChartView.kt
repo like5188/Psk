@@ -187,9 +187,11 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
      */
     private fun calcCirclePath() {
         if (notDrawDataQueue.isNotEmpty()) {
+            // 总共需要取出 drawDataCountEachTime 个数据
             repeat(drawDataCountEachTime) {
                 // 出队，空时返回null
                 notDrawDataQueue.poll()?.let {
+                    // 最多只绘制 maxDataCount 个数据
                     if (drawDataList.size == maxDataCount) {
                         drawDataList.removeAt(spaceIndex)
                         drawDataList.add(spaceIndex, it)
@@ -222,14 +224,13 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         if (notDrawDataQueue.isNotEmpty()) {
             // 总共需要取出 drawDataCountEachTime 个数据
             repeat(drawDataCountEachTime) {
+                // 出队，空时返回null
                 notDrawDataQueue.poll()?.let {
+                    // 最多只绘制 maxDataCount 个数据
+                    if (drawDataList.size == maxDataCount) {
+                        drawDataList.removeFirst()
+                    }
                     drawDataList.addLast(it)
-                }
-            }
-            // 最多只绘制 maxDataCount 个数据
-            if (maxDataCount > 0 && drawDataList.size > maxDataCount) {
-                repeat(drawDataList.size - maxDataCount) {
-                    drawDataList.removeFirst()
                 }
             }
         }
