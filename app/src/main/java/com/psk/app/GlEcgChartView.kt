@@ -140,11 +140,13 @@ class EcgRenderer : GLSurfaceView.Renderer {
     private val dashPathIntervalsX = floatArrayOf(0f, 0f)// 水平虚线的间隔，相对。第一个为实线段长度，第二个为空白段长度
     private val dashPathIntervalsY = floatArrayOf(0f, 0f)// 垂直虚线的间隔，相对。第一个为实线段长度，第二个为空白段长度
 
-    // 在代码中这些顶点会用浮点数数组来表示，因为是二维坐标，所以每个顶点要用俩个浮点数来记录，一个标记x轴位置，一个标记y轴位置，这个数组通常被称为属性（attribute）数组
-    // 这个数组表示俩个三角形，每个三角形都以逆时针表示，一共四个顶点，俩个三角形共用俩个顶点，这样就形成了一个矩形。
-    // 定义好顶点了，但是我们的java代码是运行在虚拟机上，而opengl是运行在本地的硬件上的，那么如何才能把java数据可以让opengl使用呢？
-    // ByteBuffer 可以分配本地的内存块，并且把java数据复制到本地内存
-    // opengl会把屏幕映射到【-1，1】的范围内
+    /*
+    在代码中这些顶点会用浮点数数组来表示，因为是二维坐标，所以每个顶点要用俩个浮点数来记录，一个标记x轴位置，一个标记y轴位置，这个数组通常被称为属性（attribute）数组
+    这个数组表示俩个三角形，每个三角形都以逆时针表示，一共四个顶点，俩个三角形共用俩个顶点，这样就形成了一个矩形。
+    定义好顶点了，但是我们的java代码是运行在虚拟机上，而opengl是运行在本地的硬件上的，那么如何才能把java数据可以让opengl使用呢？
+    ByteBuffer 可以分配本地的内存块，并且把java数据复制到本地内存
+    opengl会把屏幕映射到【-1，1】的范围内
+     */
     // 水平线顶点数据缓存
     private val hVerticesData: FloatBuffer by lazy {
         val dashPathLengthX = dashPathIntervalsX[0] + dashPathIntervalsX[1]// 水平虚线的实线段+空白段的长度
@@ -166,13 +168,8 @@ class EcgRenderer : GLSurfaceView.Renderer {
                         vertices.add((j / 2) * dashPathLengthX - xOffset)// 点的x坐标
                         vertices.add(y)
                     } else {// 奇数
-                        if (j == pointCountInLine - 1) {// 最后一个点，直接使用lineLength，避免超出。
-                            vertices.add(lineLength - xOffset)
-                            vertices.add(y)
-                        } else {
-                            vertices.add((j / 2 + 1) * dashPathIntervalsX[0] + (j / 2) * dashPathIntervalsX[1] - xOffset)
-                            vertices.add(y)
-                        }
+                        vertices.add((j / 2 + 1) * dashPathIntervalsX[0] + (j / 2) * dashPathIntervalsX[1] - xOffset)
+                        vertices.add(y)
                     }
                 }
             }
@@ -202,13 +199,8 @@ class EcgRenderer : GLSurfaceView.Renderer {
                         vertices.add(x)
                         vertices.add((j / 2) * dashPathLengthY - yOffset)
                     } else {
-                        if (j == pointCountInLine - 1) {
-                            vertices.add(x)
-                            vertices.add(lineLength - yOffset)
-                        } else {
-                            vertices.add(x)
-                            vertices.add((j / 2 + 1) * dashPathIntervalsY[0] + (j / 2) * dashPathIntervalsY[1] - yOffset)
-                        }
+                        vertices.add(x)
+                        vertices.add((j / 2 + 1) * dashPathIntervalsY[0] + (j / 2) * dashPathIntervalsY[1] - yOffset)
                     }
                 }
             }

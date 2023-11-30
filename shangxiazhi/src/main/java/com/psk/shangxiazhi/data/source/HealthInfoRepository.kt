@@ -1,15 +1,15 @@
-package com.psk.device.data.source
+package com.psk.shangxiazhi.data.source
 
-import com.psk.device.data.db.DeviceDatabaseManager
-import com.psk.device.data.model.HealthInfo
-import com.psk.device.data.source.local.db.HealthInfoDbDataSource
+import com.psk.shangxiazhi.data.db.ShangXiaZhiDatabaseManager
+import com.psk.shangxiazhi.data.model.HealthInfo
+import com.psk.shangxiazhi.data.source.local.HealthInfoDbDataSource
 
 /**
  * 健康信息数据仓库
  */
 class HealthInfoRepository {
     private val dbDataSource by lazy {
-        HealthInfoDbDataSource(DeviceDatabaseManager.db.healthInfoDao())
+        HealthInfoDbDataSource(ShangXiaZhiDatabaseManager.db.healthInfoDao())
     }
 
     suspend fun getByOrderId(orderId: Long): HealthInfo? {

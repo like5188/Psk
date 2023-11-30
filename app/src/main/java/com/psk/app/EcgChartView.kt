@@ -21,13 +21,8 @@ import com.like.common.util.sp
 import com.psk.common.util.scheduleFlow
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.LinkedList
-import java.util.concurrent.LinkedBlockingQueue
-import java.util.concurrent.SynchronousQueue
 import kotlin.math.ceil
 
 /*
@@ -54,7 +49,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     // 画文字的画笔
     private val textPaint by lazy {
         TextPaint().apply {
-            color = Color.parseColor("#88000000")
+            color = Color.parseColor("#88ffffff")
             textSize = 12f.sp
             strokeWidth = 1f
             isAntiAlias = true
@@ -91,8 +86,9 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     private var stepX = 0f// x方向的步进，两个数据在x轴方向的距离。px
     private var maxDataCount = 0// 能显示的最大数据量
     private var bgBitmap: Bitmap? = null// 背景图片
-    private val notDrawDataQueue = LinkedBlockingQueue<Float>()// 未绘制的数据集合
+    private val notDrawDataList = LinkedList<Float>()// 未绘制的数据集合
     private val drawDataList = LinkedList<Float>()// 需要绘制的数据集合
+    private val path = Path()
 
     /**
      * @param sampleRate    采样率，为了让动画看起来没有延迟，即每秒钟绘制的数据基本达到采样率。
@@ -141,8 +137,8 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
             TAG,
             "w=$w h=$h hLineCount=$hLineCount vLineCount=$vLineCount axisXCount=$axisXCount yOffset=$yOffset maxDataCount=$maxDataCount"
         )
-        // 启动任务
-        startJob(period)
+        // 启动循环绘制任务
+        startCircleDrawJob(period)
     }
 
     /**
@@ -154,82 +150,14 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
             // 把uV电压值转换成y轴坐标值
             val mm = it * MM_PER_MV// mV转mm
             val px = mm * gridSize// mm转px
-            notDrawDataQueue.put(px)// put 如果队列已满，阻塞
+            notDrawDataList.addLast(px)
         }
     }
 
-    override suspend fun onCalcPath(): Path {
-        return calcCirclePath()
-    }
-
-    // 循环效果时，不需要画线的数据的index。即视图中看起来是空白的部分。
-    private var spaceIndex = 0
-
-    /**
-     * 循环效果
-     */
-    private suspend fun calcCirclePath(): Path = withContext(Dispatchers.IO) {
-        fun add(data: Float) {
-            if (drawDataList.size == maxDataCount) {
-                drawDataList.removeAt(spaceIndex)
-                drawDataList.add(spaceIndex, data)
-                spaceIndex++
-                if (spaceIndex == maxDataCount) {
-                    spaceIndex = 0
-                }
-            } else {
-                drawDataList.addLast(data)
-            }
-        }
-
-        add(notDrawDataQueue.take())
-        repeat(drawDataCountEachTime - 1) {
-            notDrawDataQueue.poll()?.let {
-                add(it)
-            }
-        }
-        val dataPath = Path()
-        drawDataList.forEachIndexed { index, fl ->
-            if (index == spaceIndex) {
-                dataPath.moveTo(index * stepX, fl)// 达到空白效果
-            } else {
-                dataPath.lineTo(index * stepX, fl)
-            }
-        }
-        dataPath.offset(0f, yOffset)
-        dataPath
-    }
-
-    /**
-     * 滚动效果
-     */
-    private suspend fun calcScrollPath(): Path = withContext(Dispatchers.IO) {
-        // 总共需要取出 drawDataCountEachTime 个数据
-        drawDataList.addLast(notDrawDataQueue.take())// take 当队列为空，阻塞。保证至少有一个数据需要绘制。
-        repeat(drawDataCountEachTime - 1) {
-            // poll 弹出队顶元素，队列为空时返回null。此时不用 take 方法是因为避免没有那么多数据。
-            notDrawDataQueue.poll()?.let {
-                drawDataList.addLast(it)
-            }
-        }
-        // 最多只绘制 maxDataCount 个数据
-        if (maxDataCount > 0 && drawDataList.size > maxDataCount) {
-            repeat(drawDataList.size - maxDataCount) {
-                drawDataList.removeFirst()
-            }
-        }
-        val dataPath = Path()
-        drawDataList.forEachIndexed { index, fl ->
-            dataPath.lineTo(index * stepX, fl)
-        }
-        dataPath.offset(0f, yOffset)
-        dataPath
-    }
-
-    override fun onCircleDraw(canvas: Canvas, path: Path) {
-        drawBg(canvas)
+    override fun onCircleDraw(canvas: Canvas) {
+//        drawBg(canvas)
         drawText(canvas)
-        drawData(canvas, path)
+        drawData(canvas)
     }
 
     // 画背景图片
@@ -245,8 +173,67 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     }
 
     // 画心电数据
-    private fun drawData(canvas: Canvas, path: Path) {
+    private fun drawData(canvas: Canvas) {
+        calcCirclePath()
         canvas.drawPath(path, dataPaint)
+    }
+
+    // 循环效果时，不需要画线的数据的index。即视图中看起来是空白的部分。
+    private var spaceIndex = 0
+
+    /**
+     * 循环效果
+     */
+    private fun calcCirclePath() {
+        repeat(drawDataCountEachTime) {
+            notDrawDataList.removeFirstOrNull()?.let {
+                if (drawDataList.size == maxDataCount) {
+                    drawDataList.removeAt(spaceIndex)
+                    drawDataList.add(spaceIndex, it)
+                    spaceIndex++
+                    if (spaceIndex == maxDataCount) {
+                        spaceIndex = 0
+                    }
+                } else {
+                    drawDataList.addLast(it)
+                }
+            }
+        }
+        if (drawDataList.isEmpty()) return
+        path.reset()
+        drawDataList.forEachIndexed { index, fl ->
+            if (index == spaceIndex) {
+                path.moveTo(index * stepX, fl)// 达到空白效果
+            } else {
+                path.lineTo(index * stepX, fl)
+            }
+        }
+        path.offset(0f, yOffset)
+    }
+
+    /**
+     * 滚动效果
+     */
+    private fun calcScrollPath() {
+        if (notDrawDataList.isEmpty()) return
+        // 总共需要取出 drawDataCountEachTime 个数据
+        repeat(drawDataCountEachTime) {
+            notDrawDataList.removeFirstOrNull()?.let {
+                drawDataList.addLast(it)
+            }
+        }
+        // 最多只绘制 maxDataCount 个数据
+        if (maxDataCount > 0 && drawDataList.size > maxDataCount) {
+            repeat(drawDataList.size - maxDataCount) {
+                drawDataList.removeFirst()
+            }
+        }
+        if (drawDataList.isEmpty()) return
+        path.reset()
+        drawDataList.forEachIndexed { index, fl ->
+            path.lineTo(index * stepX, fl)
+        }
+        path.offset(0f, yOffset)
     }
 
     // 画水平线
@@ -291,12 +278,6 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
     // 循环绘制任务
     private var circleDrawJob: Job? = null
 
-    // 计算任务
-    private var calcPathJob: Job? = null
-
-    // Path 队列，放一个才能取一个，否则阻塞。
-    private val pathQueue = SynchronousQueue<Path>()
-
     init {
         holder.addCallback(this)
         // 画布透明处理
@@ -304,12 +285,7 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
         holder.setFormat(PixelFormat.TRANSLUCENT)
     }
 
-    fun startJob(period: Long) {
-        startCalcPathJob()
-        startCircleDrawJob(period)
-    }
-
-    private fun startCircleDrawJob(period: Long) {
+    fun startCircleDrawJob(period: Long) {
         if (circleDrawJob != null || period <= 0) return
         Log.w(TAG, "startCircleDrawJob period=$period")
         circleDrawJob = findViewTreeLifecycleOwner()?.lifecycleScope?.launch(Dispatchers.IO) {
@@ -324,7 +300,7 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
                     // 在绘制前，通过 drawColor() 方法来进行清屏操作。
                     canvas?.let {
                         it.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
-                        onCircleDraw(it, pathQueue.take())
+                        onCircleDraw(it)
                     }
                 } finally {
                     // 使用 backCanvas 替换 frontCanvas 作为新的 frontCanvas，原来的 frontCanvas 将切换到后台作为 backCanvas。
@@ -337,17 +313,6 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
         }
     }
 
-    private fun startCalcPathJob() {
-        if (calcPathJob != null) return
-        Log.w(TAG, "startCalcPathJob")
-        calcPathJob = findViewTreeLifecycleOwner()?.lifecycleScope?.launch(Dispatchers.IO) {
-            while (isActive) {
-                pathQueue.put(onCalcPath())
-                delay(1)
-            }
-        }
-    }
-
     /*
      下面的三个函数是 实现 SurfaceHolder.Callback 接口方法
      */
@@ -355,8 +320,6 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
         Log.w(TAG, "surfaceDestroyed")
         circleDrawJob?.cancel()
         circleDrawJob = null
-        calcPathJob?.cancel()
-        calcPathJob = null
     }
 
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {}
@@ -366,12 +329,7 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
     /**
      * 循环绘制
      */
-    abstract fun onCircleDraw(canvas: Canvas, path: Path)
-
-    /**
-     * 计算路径
-     */
-    abstract suspend fun onCalcPath(): Path
+    abstract fun onCircleDraw(canvas: Canvas)
 
 }
 

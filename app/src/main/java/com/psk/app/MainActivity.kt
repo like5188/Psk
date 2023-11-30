@@ -7,7 +7,7 @@ import androidx.lifecycle.lifecycleScope
 import com.like.common.util.dp
 import com.like.common.util.showToast
 import com.psk.app.databinding.ActivityMainBinding
-import com.psk.device.RepositoryManager
+import com.psk.device.DeviceRepositoryManager
 import com.psk.device.data.model.DeviceType
 import com.psk.device.data.source.HeartRateRepository
 import com.psk.socket.SocketListener
@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
     private val mBinding: ActivityMainBinding by lazy {
         DataBindingUtil.setContentView(this, R.layout.activity_main)
     }
-    private val repository = RepositoryManager.createBleDeviceRepository<HeartRateRepository>(DeviceType.HeartRate)
+    private val repository = DeviceRepositoryManager.createBleDeviceRepository<HeartRateRepository>(DeviceType.HeartRate)
     private var job: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -100,7 +100,7 @@ class MainActivity : AppCompatActivity() {
             repository.close()
         }
         lifecycleScope.launch {
-            RepositoryManager.init(this@MainActivity)
+            DeviceRepositoryManager.init(this@MainActivity)
         }
     }
 

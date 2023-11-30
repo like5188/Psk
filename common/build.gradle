@@ -57,6 +57,9 @@ dependencies {
     // coil
     api 'io.coil-kt:coil:1.4.0'
     api 'io.coil-kt:coil-gif:1.4.0'
+    // room
+    api 'androidx.room:room-runtime:2.4.3'
+    api 'androidx.room:room-ktx:2.4.3'
     // viewModel 支持
     api 'androidx.fragment:fragment-ktx:1.5.7'
     api 'com.github.like5188:Common:7.1.0'

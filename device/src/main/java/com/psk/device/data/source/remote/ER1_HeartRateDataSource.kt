@@ -1,5 +1,6 @@
 package com.psk.device.data.source.remote
 
+import com.like.common.util.Logger
 import com.psk.device.data.model.HeartRate
 import com.psk.device.data.model.Protocol
 import com.psk.device.data.source.remote.base.BaseHeartRateDataSource
@@ -57,6 +58,7 @@ class ER1_HeartRateDataSource : BaseHeartRateDataSource() {
                 }
             }
         }
+        Logger.i("ER1_HeartRateDataSource setNotifyCallback")
         var pool: ByteArray = byteArrayOf()
         setNotifyCallback().collect {
             pool += it

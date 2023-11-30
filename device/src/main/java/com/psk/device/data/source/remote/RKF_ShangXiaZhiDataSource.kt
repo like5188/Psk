@@ -1,5 +1,6 @@
 package com.psk.device.data.source.remote
 
+import com.like.common.util.Logger
 import com.psk.device.data.model.Protocol
 import com.psk.device.data.model.ShangXiaZhi
 import com.psk.device.data.model.ShangXiaZhiParams
@@ -75,6 +76,7 @@ class RKF_ShangXiaZhiDataSource : BaseShangXiaZhiDataSource() {
             }
 
         }
+        Logger.i("RKF_ShangXiaZhiDataSource setNotifyCallback")
         setNotifyCallback().collect {
             shangXiaZhiDataParser.putData(it)
         }
