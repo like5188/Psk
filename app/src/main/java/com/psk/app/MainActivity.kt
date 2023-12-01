@@ -30,6 +30,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         mBinding.btnStart.setOnClickListener {
             mBinding.ecgChartView.init(250, 10.dp)
+            // E/SocketServerService: Parameter specified as non-null is null: method kotlin.jvm.internal.Intrinsics.checkNotNullParameter, parameter conn
             SocketServerService.start(this, 7777, object : SocketListener {
                 override fun onOpen(address: String?) {
                     println("onOpen address=$address")
@@ -123,6 +124,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         super.onBackPressed()
+        println("MainActivity onBackPressed")
+        SocketServerService.stop(this)
         finish()
     }
 
