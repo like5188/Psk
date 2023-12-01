@@ -64,7 +64,7 @@ class MainActivity : AppCompatActivity() {
                     print("血氧 ${message.get()}, ")
                     // 这里的数据单位是 uV，需要 /1000f 转换成 mV
                     val coorYValues = ecgData.chunked(12).map {
-                        it.get(1) / -1000f
+                        it.first() / -1000f
                     }
                     mBinding.ecgChartView.addData(coorYValues)
                     println()
