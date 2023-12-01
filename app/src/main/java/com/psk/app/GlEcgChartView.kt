@@ -214,8 +214,7 @@ class EcgRenderer : GLSurfaceView.Renderer {
     private var a_position = 0
 
 
-    // 当surface被创建时，GlsurfaceView会调用这个方法，这个发生在应用程序
-    // 第一次运行的时候或者从其他Activity回来的时候也会调用
+    // activity onResume时调用
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
         println("onSurfaceCreated")
         // 设置清除屏幕时使用的颜色
@@ -229,7 +228,6 @@ class EcgRenderer : GLSurfaceView.Renderer {
         GLES20.glEnableVertexAttribArray(a_position)
     }
 
-    //在Surface创建以后，每次surface尺寸大小发生变化，这个方法会被调用到，比如横竖屏切换
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
         println("onSurfaceChanged")
         // 设置视口大小，告诉opengl需要渲染的surface尺寸大小
