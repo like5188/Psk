@@ -155,7 +155,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
      * 添加数据，数据的单位是 mV。
      */
     fun addData(data: List<Float>) {
-        // 在surface创建后，即可以绘制的时候，才允许添加数据，以免造成数据堆积。
+        // 在surface创建后，即可以绘制的时候，才允许添加数据，在surface销毁后禁止添加数据，以免造成数据堆积。
         if (data.isEmpty() || !isCreated) return
         data.forEach {
             // 把uV电压值转换成y轴坐标值
@@ -163,12 +163,12 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
             val px = mm * gridSize// mm转px
             notDrawDataQueue.offer(px)// 入队成功返回true，失败返回false
         }
-        startJob()
+        startJob()// 有数据时启动任务
     }
 
     override fun onCircleDraw(canvas: Canvas) {
         Log.v(TAG, "onCircleDraw")
-        if (notDrawDataQueue.isEmpty()) cancelJob()
+        if (notDrawDataQueue.isEmpty()) cancelJob()// 没有数据时取消任务
 //        drawBg(canvas)
         drawText(canvas)
         drawData(canvas)
