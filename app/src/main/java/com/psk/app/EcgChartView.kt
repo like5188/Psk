@@ -308,7 +308,7 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
     override fun surfaceDestroyed(holder: SurfaceHolder) {
         Log.w(TAG, "surfaceDestroyed")
         isCreated = false
-        cancelJob("surfaceDestroyed")
+        cancelJob("surfaceDestroyed")// 其实这里可以不必调用，因为没有数据时会调用
     }
 
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {}
@@ -317,7 +317,7 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
     override fun surfaceCreated(holder: SurfaceHolder) {
         Log.w(TAG, "surfaceCreated")
         isCreated = true
-        startJob()
+        startJob()// 其实这里可以不必调用，因为有数据时会调用
     }
 
     protected fun startJob() {
