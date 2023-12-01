@@ -186,26 +186,25 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
      * 循环效果
      */
     private fun calcCirclePath() {
-        if (notDrawDataQueue.isNotEmpty()) {
-            // 总共需要取出 drawDataCountEachTime 个数据
-            repeat(drawDataCountEachTime) {
-                // 出队，空时返回null
-                notDrawDataQueue.poll()?.let {
-                    // 最多只绘制 maxDataCount 个数据
-                    if (drawDataList.size == maxDataCount) {
-                        drawDataList.removeAt(spaceIndex)
-                        drawDataList.add(spaceIndex, it)
-                        spaceIndex++
-                        if (spaceIndex == maxDataCount) {
-                            spaceIndex = 0
-                        }
-                    } else {
-                        drawDataList.addLast(it)
+        if (notDrawDataQueue.isEmpty()) return
+        // 总共需要取出 drawDataCountEachTime 个数据
+        repeat(drawDataCountEachTime) {
+            // 出队，空时返回null
+            notDrawDataQueue.poll()?.let {
+                // 最多只绘制 maxDataCount 个数据
+                if (drawDataList.size == maxDataCount) {
+                    drawDataList.removeAt(spaceIndex)
+                    drawDataList.add(spaceIndex, it)
+                    spaceIndex++
+                    if (spaceIndex == maxDataCount) {
+                        spaceIndex = 0
                     }
+                } else {
+                    drawDataList.addLast(it)
                 }
             }
         }
-        if (drawDataList.isEmpty()) return
+        // 设置path
         path.reset()
         drawDataList.forEachIndexed { index, fl ->
             if (index == spaceIndex) {
@@ -221,20 +220,19 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
      * 滚动效果
      */
     private fun calcScrollPath() {
-        if (notDrawDataQueue.isNotEmpty()) {
-            // 总共需要取出 drawDataCountEachTime 个数据
-            repeat(drawDataCountEachTime) {
-                // 出队，空时返回null
-                notDrawDataQueue.poll()?.let {
-                    // 最多只绘制 maxDataCount 个数据
-                    if (drawDataList.size == maxDataCount) {
-                        drawDataList.removeFirst()
-                    }
-                    drawDataList.addLast(it)
+        if (notDrawDataQueue.isEmpty()) return
+        // 总共需要取出 drawDataCountEachTime 个数据
+        repeat(drawDataCountEachTime) {
+            // 出队，空时返回null
+            notDrawDataQueue.poll()?.let {
+                // 最多只绘制 maxDataCount 个数据
+                if (drawDataList.size == maxDataCount) {
+                    drawDataList.removeFirst()
                 }
+                drawDataList.addLast(it)
             }
         }
-        if (drawDataList.isEmpty()) return
+        // 设置path
         path.reset()
         drawDataList.forEachIndexed { index, fl ->
             path.lineTo(index * stepX, fl)
