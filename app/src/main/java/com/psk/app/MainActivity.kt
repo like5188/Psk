@@ -121,4 +121,9 @@ class MainActivity : AppCompatActivity() {
         println("MainActivity onDestroy")
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        finish()
+    }
+
 }

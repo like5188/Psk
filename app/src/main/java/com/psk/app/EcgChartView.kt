@@ -21,8 +21,6 @@ import com.like.common.util.sp
 import com.psk.common.util.scheduleFlow
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.util.LinkedList
 import java.util.concurrent.ConcurrentLinkedQueue
@@ -168,7 +166,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
 
     override fun onCircleDraw(canvas: Canvas) {
         Log.v(TAG, "onCircleDraw")
-        if (notDrawDataQueue.isEmpty()) cancelJob()// 没有数据时取消任务
+        if (notDrawDataQueue.isEmpty()) cancelJob("没有数据")// 没有数据时取消任务
 //        drawBg(canvas)
         drawText(canvas)
         drawData(canvas)
@@ -310,12 +308,10 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
     override fun surfaceDestroyed(holder: SurfaceHolder) {
         Log.w(TAG, "surfaceDestroyed")
         isCreated = false
-        cancelJob()
+        cancelJob("surfaceDestroyed")
     }
 
-    override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
-        Log.w(TAG, "surfaceChanged")
-    }
+    override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {}
 
     // activity onResume时调用
     override fun surfaceCreated(holder: SurfaceHolder) {
@@ -326,16 +322,16 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
 
     protected fun startJob() {
         if (job != null) return
-        Log.w(TAG, "startCircleDrawJob")
+        Log.w(TAG, "startJob")
         job = findViewTreeLifecycleOwner()?.lifecycleScope?.launch(Dispatchers.IO) {
             var canvas: Canvas? = null
             // 阻塞等待period值
-            var period = getPeriod()
-            while (isActive && period <= 0L) {
-                delay(100)
-                period = getPeriod()
+            val period = getPeriod()// 当第一次回调surfaceCreated()时，有可能没有此值。但是添加数据后会再次启动任务，所以这里不用使用阻塞。
+            if (period <= 0L) {
+                cancelJob("period=$period")
+                return@launch
             }
-            Log.w(TAG, "开始循环绘制 period=$period")
+            Log.w(TAG, "开始循环绘制任务 period=$period")
             scheduleFlow(0, period).collect {
                 try {
                     // 用了两个画布，一个进行临时的绘图，一个进行最终的绘图，这样就叫做双缓冲
@@ -361,7 +357,8 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
         }
     }
 
-    protected fun cancelJob() {
+    protected fun cancelJob(cause: String) {
+        Log.w(TAG, "cancelJob $cause")
         job?.cancel()
         job = null
     }
