@@ -26,6 +26,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.util.LinkedList
 import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.math.ceil
 
 /*
@@ -92,16 +93,19 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     private val notDrawDataQueue = ConcurrentLinkedQueue<Float>()// 未绘制的数据集合
     private val drawDataList = LinkedList<Float>()// 需要绘制的数据集合
     private val path = Path()
+    private val isInitialized = AtomicBoolean(false)
 
     /**
      * @param sampleRate    采样率，为了让动画看起来没有延迟，即每秒钟绘制的数据基本达到采样率。
      * @param gridSize      一个小格子对应的像素，默认为设备实际1mm对应的像素。
      */
     fun init(sampleRate: Int, gridSize: Int = (context.resources.displayMetrics.densityDpi / 25.4f).toInt()) {
-        Log.w(TAG, "init")
-        this.sampleRate = sampleRate
-        this.gridSize = gridSize
-        calcParams(gridSize, sampleRate, width, height)
+        if (isInitialized.compareAndSet(false, true)) {
+            Log.w(TAG, "init")
+            this.sampleRate = sampleRate
+            this.gridSize = gridSize
+            calcParams(gridSize, sampleRate, width, height)
+        }
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -151,17 +155,20 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
      * 添加数据，数据的单位是 mV。
      */
     fun addData(data: List<Float>) {
-        if (data.isEmpty()) return
+        // 在surface创建后，即可以绘制的时候，才允许添加数据，以免造成数据堆积。
+        if (data.isEmpty() || !isCreated) return
         data.forEach {
             // 把uV电压值转换成y轴坐标值
             val mm = it * MM_PER_MV// mV转mm
             val px = mm * gridSize// mm转px
             notDrawDataQueue.offer(px)// 入队成功返回true，失败返回false
         }
+        startJob()
     }
 
     override fun onCircleDraw(canvas: Canvas) {
         Log.v(TAG, "onCircleDraw")
+        if (notDrawDataQueue.isEmpty()) cancelJob()
 //        drawBg(canvas)
         drawText(canvas)
         drawData(canvas)
@@ -181,7 +188,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
 
     // 画心电数据
     private fun drawData(canvas: Canvas) {
-        calcCirclePath()
+        calcScrollPath()
         canvas.drawPath(path, dataPaint)
     }
 
@@ -287,6 +294,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
 abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : SurfaceView(context, attrs), SurfaceHolder.Callback {
     // 循环绘制任务
     private var job: Job? = null
+    protected var isCreated = false
 
     init {
         holder.addCallback(this)
@@ -301,6 +309,7 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
     // activity onPause时调用
     override fun surfaceDestroyed(holder: SurfaceHolder) {
         Log.w(TAG, "surfaceDestroyed")
+        isCreated = false
         cancelJob()
     }
 
@@ -311,10 +320,11 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
     // activity onResume时调用
     override fun surfaceCreated(holder: SurfaceHolder) {
         Log.w(TAG, "surfaceCreated")
+        isCreated = true
         startJob()
     }
 
-    private fun startJob() {
+    protected fun startJob() {
         if (job != null) return
         Log.w(TAG, "startCircleDrawJob")
         job = findViewTreeLifecycleOwner()?.lifecycleScope?.launch(Dispatchers.IO) {
@@ -351,7 +361,7 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
         }
     }
 
-    private fun cancelJob() {
+    protected fun cancelJob() {
         job?.cancel()
         job = null
     }
