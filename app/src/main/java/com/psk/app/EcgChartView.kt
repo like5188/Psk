@@ -156,6 +156,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     }
 
     override fun onCircleDraw(canvas: Canvas) {
+        Log.v(TAG, "onCircleDraw")
 //        drawBg(canvas)
         drawText(canvas)
         drawData(canvas)
@@ -326,9 +327,13 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
         circleDrawJob = null
     }
 
-    override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {}
+    override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
+        Log.w(TAG, "surfaceChanged")
+    }
 
-    override fun surfaceCreated(holder: SurfaceHolder) {}
+    override fun surfaceCreated(holder: SurfaceHolder) {
+        Log.w(TAG, "surfaceCreated")
+    }
 
     /**
      * 循环绘制

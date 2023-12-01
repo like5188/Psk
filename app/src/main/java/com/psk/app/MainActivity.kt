@@ -116,4 +116,9 @@ class MainActivity : AppCompatActivity() {
         mBinding.glEcgChartView.onPause()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        println("MainActivity onDestroy")
+    }
+
 }
