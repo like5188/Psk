@@ -163,6 +163,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
             val px = mm * gridSize// mm转px
             notDrawDataQueue.offer(px)// 入队成功返回true，失败返回false
         }
+        hasData(notDrawDataQueue.isNotEmpty())
     }
 
     override fun onCircleDraw(canvas: Canvas) {
@@ -186,6 +187,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
 
     // 画心电数据
     private fun drawData(canvas: Canvas) {
+        hasData(notDrawDataQueue.isNotEmpty())
         calcCirclePath()
         canvas.drawPath(path, dataPaint)
     }
@@ -291,7 +293,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
 
 abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : SurfaceView(context, attrs), SurfaceHolder.Callback {
     // 循环绘制任务
-    private var circleDrawJob: Job? = null
+    private var job: Job? = null
 
     init {
         holder.addCallback(this)
@@ -306,8 +308,7 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
     // activity onPause时调用
     override fun surfaceDestroyed(holder: SurfaceHolder) {
         Log.w(TAG, "surfaceDestroyed")
-        circleDrawJob?.cancel()
-        circleDrawJob = null
+        cancelJob()
     }
 
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
@@ -317,13 +318,13 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
     // activity onResume时调用
     override fun surfaceCreated(holder: SurfaceHolder) {
         Log.w(TAG, "surfaceCreated")
-        startCircleDrawJob()
+        startJob()
     }
 
-    private fun startCircleDrawJob() {
-        if (circleDrawJob != null) return
+    private fun startJob() {
+        if (job != null) return
         Log.w(TAG, "startCircleDrawJob")
-        circleDrawJob = findViewTreeLifecycleOwner()?.lifecycleScope?.launch(Dispatchers.IO) {
+        job = findViewTreeLifecycleOwner()?.lifecycleScope?.launch(Dispatchers.IO) {
             var canvas: Canvas? = null
             val period = waitPeriod()// 阻塞等待值
             Log.w(TAG, "开始循环绘制")
@@ -349,6 +350,22 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
                     }
                 }
             }
+        }
+    }
+
+    private fun cancelJob() {
+        job?.cancel()
+        job = null
+    }
+
+    /**
+     * 保证没有数据时会停止循环任务，有数据时重新启动任务。
+     */
+    protected fun hasData(has: Boolean) {
+        if (has) {
+            startJob()
+        } else {
+            cancelJob()
         }
     }
 
