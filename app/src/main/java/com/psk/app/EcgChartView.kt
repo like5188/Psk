@@ -22,8 +22,10 @@ import com.psk.common.util.scheduleFlow
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.LinkedList
 import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.concurrent.CountDownLatch
 import kotlin.math.ceil
 
 /*
@@ -79,6 +81,8 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     private var sampleRate = 0// 采样率
     private var gridSize = 0// 一个小格子对应的像素
 
+    private var period = 0L// 循环绘制周期间隔
+
     // 每次绘制的数据量。避免数据太多，1秒钟绘制不完，造成界面延迟严重。
     // 因为 scheduleFlow 循环任务在间隔时间太短或者处理业务耗时太长时会造成误差太多。
     // 经测试，大概16毫秒以上循环误差就比较小了，建议使用30毫秒以上，这样绘制效果较好。
@@ -90,6 +94,8 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     private val notDrawDataQueue = ConcurrentLinkedQueue<Float>()// 未绘制的数据集合
     private val drawDataList = LinkedList<Float>()// 需要绘制的数据集合
     private val path = Path()
+
+    private val waitPeriod = CountDownLatch(1)
 
     /**
      * @param sampleRate    采样率，为了让动画看起来没有延迟，即每秒钟绘制的数据基本达到采样率。
@@ -118,7 +124,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         val interval = 1000 / sampleRate// 绘制每个数据的间隔时间
         val recommendInterval = 30.0// 建议循环间隔时间
         drawDataCountEachTime = if (interval < recommendInterval) ceil(recommendInterval / interval).toInt() else interval// Math.ceil()向上取整
-        val period = 1000L / sampleRate * drawDataCountEachTime// 循环绘制周期间隔
+        period = 1000L / sampleRate * drawDataCountEachTime// 循环绘制周期间隔
         Log.i(TAG, "gridSize=$gridSize sampleRate=$sampleRate stepX=$stepX drawDataCountEachTime=$drawDataCountEachTime period=$period")
 
         // 根据视图宽高计算
@@ -138,8 +144,12 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
             TAG,
             "w=$w h=$h hLineCount=$hLineCount vLineCount=$vLineCount axisXCount=$axisXCount yOffset=$yOffset maxDataCount=$maxDataCount"
         )
-        // 启动循环绘制任务
-        startCircleDrawJob(period)
+        waitPeriod.countDown()
+    }
+
+    override suspend fun waitPeriod(): Long = withContext(Dispatchers.IO) {
+        waitPeriod.await()
+        period
     }
 
     /**
@@ -290,11 +300,33 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
         holder.setFormat(PixelFormat.TRANSLUCENT)
     }
 
-    fun startCircleDrawJob(period: Long) {
-        if (circleDrawJob != null || period <= 0) return
-        Log.w(TAG, "startCircleDrawJob period=$period")
+    /*
+     下面的三个函数是 实现 SurfaceHolder.Callback 接口方法
+     */
+    // activity onPause时调用
+    override fun surfaceDestroyed(holder: SurfaceHolder) {
+        Log.w(TAG, "surfaceDestroyed")
+        circleDrawJob?.cancel()
+        circleDrawJob = null
+    }
+
+    override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
+        Log.w(TAG, "surfaceChanged")
+    }
+
+    // activity onResume时调用
+    override fun surfaceCreated(holder: SurfaceHolder) {
+        Log.w(TAG, "surfaceCreated")
+        startCircleDrawJob()
+    }
+
+    private fun startCircleDrawJob() {
+        if (circleDrawJob != null) return
+        Log.w(TAG, "startCircleDrawJob")
         circleDrawJob = findViewTreeLifecycleOwner()?.lifecycleScope?.launch(Dispatchers.IO) {
             var canvas: Canvas? = null
+            val period = waitPeriod()// 阻塞等待值
+            Log.w(TAG, "开始循环绘制")
             scheduleFlow(0, period).collect {
                 try {
                     // 用了两个画布，一个进行临时的绘图，一个进行最终的绘图，这样就叫做双缓冲
@@ -308,38 +340,23 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
                         onCircleDraw(it)
                     }
                 } finally {
-                    // 使用 backCanvas 替换 frontCanvas 作为新的 frontCanvas，原来的 frontCanvas 将切换到后台作为 backCanvas。
-                    try {
-                        holder.unlockCanvasAndPost(canvas)
-                    } catch (e: Exception) {
+                    canvas?.let {
+                        // 使用 backCanvas 替换 frontCanvas 作为新的 frontCanvas，原来的 frontCanvas 将切换到后台作为 backCanvas。
+                        try {
+                            holder.unlockCanvasAndPost(it)
+                        } catch (e: Exception) {
+                        }
                     }
                 }
             }
         }
     }
 
-    /*
-     下面的三个函数是 实现 SurfaceHolder.Callback 接口方法
-     */
-    override fun surfaceDestroyed(holder: SurfaceHolder) {
-        Log.w(TAG, "surfaceDestroyed")
-        circleDrawJob?.cancel()
-        circleDrawJob = null
-    }
-
-    override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
-        Log.w(TAG, "surfaceChanged")
-    }
-
-    override fun surfaceCreated(holder: SurfaceHolder) {
-        Log.w(TAG, "surfaceCreated")
-    }
-
     /**
      * 循环绘制
      */
     abstract fun onCircleDraw(canvas: Canvas)
-
+    abstract suspend fun waitPeriod(): Long
 }
 
 private const val TAG = "EcgChartViewTAG"
