@@ -3,6 +3,7 @@ package com.psk.shangxiazhi.measure
 import android.content.DialogInterface
 import android.os.Bundle
 import android.view.Gravity
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -104,9 +105,6 @@ class MeasureBloodPressureDialogFragment private constructor() : BaseDialogFragm
     override fun onDestroy() {
         super.onDestroy()
         repository.close()
-        if (bloodPressure == null) {
-            onCanceled?.invoke()
-        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -136,6 +134,13 @@ class MeasureBloodPressureDialogFragment private constructor() : BaseDialogFragm
             }
             onSelected?.invoke(bloodPressure!!)
             dismiss()
+        }
+        dialog?.setOnKeyListener { dialog, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
+                // 返回键
+                onCanceled?.invoke()
+            }
+            false
         }
         return mBinding.root
     }
