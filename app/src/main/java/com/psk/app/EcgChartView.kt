@@ -164,7 +164,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         startJob()// 有数据时启动任务
     }
 
-    override fun onCircleDraw(canvas: Canvas) {
+    override fun onDrawFrame(canvas: Canvas) {
         Log.v(TAG, "onCircleDraw")
         if (notDrawDataQueue.isEmpty()) {
             cancelJob("没有数据")// 没有数据时取消任务
@@ -345,7 +345,7 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
                     // 获取到的 Canvas 对象还是继续上次的 Canvas 对象，而不是一个新的 Canvas 对象。因此，之前的绘图操作都会被保留。
                     // 所以，在绘制前，需要通过 drawColor() 方法来进行清屏操作。
                     canvas?.let {
-                        onCircleDraw(it)
+                        onDrawFrame(it)
                     }
                 } finally {
                     canvas?.let {
@@ -367,9 +367,9 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
     }
 
     /**
-     * 循环绘制
+     * 绘制一帧
      */
-    abstract fun onCircleDraw(canvas: Canvas)
+    abstract fun onDrawFrame(canvas: Canvas)
 
     /**
      * 获取循环绘制周期间隔
