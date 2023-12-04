@@ -95,12 +95,12 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         if (sampleRate <= 0) return 0L
         val interval = 1000 / sampleRate// 绘制每个数据的间隔时间
         val recommendInterval = 30// 建议循环间隔时间
-        val countEachDraw = if (interval < recommendInterval) {
+        val numbersOfEachDraw = if (interval < recommendInterval) {
             ceil(recommendInterval / interval.toFloat()).toInt()// Math.ceil()向上取整
         } else {
             interval
         }
-        return 1000L / sampleRate * countEachDraw
+        return 1000L / sampleRate * numbersOfEachDraw
     }
 
     /**
@@ -180,8 +180,12 @@ class PathPainter(private val pathEffect: IPathEffect) {
         // 根据采样率计算
         stepX = gridSize * MM_PER_S / sampleRate.toFloat()
         val interval = 1000 / sampleRate// 绘制每个数据的间隔时间
-        val recommendInterval = 30.0// 建议循环间隔时间
-        numbersOfEachDraw = if (interval < recommendInterval) ceil(recommendInterval / interval).toInt() else interval// Math.ceil()向上取整
+        val recommendInterval = 30// 建议循环间隔时间
+        numbersOfEachDraw = if (interval < recommendInterval) {
+            ceil(recommendInterval / interval.toFloat()).toInt()// Math.ceil()向上取整
+        } else {
+            interval
+        }
         // 根据视图宽高计算
         val hLineCount = h / gridSize// 水平线的数量
         val axisXCount = (hLineCount - hLineCount % 5) / 2// x坐标轴需要偏移的格数
