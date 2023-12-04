@@ -108,13 +108,11 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         println("MainActivity onResume")
-        mBinding.glEcgChartView.onResume()
     }
 
     override fun onPause() {
         super.onPause()
         println("MainActivity onPause")
-        mBinding.glEcgChartView.onPause()
     }
 
     override fun onDestroy() {
@@ -126,6 +124,12 @@ class MainActivity : AppCompatActivity() {
         super.onBackPressed()
         println("MainActivity onBackPressed")
         SocketServerService.stop(this)
+        job?.cancel()
+        job = null
+        try {
+            repository.close()
+        } catch (e: Exception) {
+        }
         finish()
     }
 
