@@ -710,7 +710,14 @@ class A0_HeartRateDataSource : BaseHeartRateDataSource() {
                     (0..124).map { 0f }.toFloatArray()
                 } else {
                     list.map {
-                        // setScale 四舍五入，2.35变成2.3，如果是5则向下舍
+                        /*
+                        BigDecimal.setScale()方法用于格式化小数点
+                        setScale(1)表示保留一位小数，默认用四舍五入方式
+                        setScale(1,BigDecimal.ROUND_DOWN)直接删除多余的小数位，如2.35会变成2.3
+                        setScale(1,BigDecimal.ROUND_UP)进位处理，2.35变成2.4
+                        setScale(1,BigDecimal.ROUND_HALF_UP)四舍五入，2.35变成2.4
+                        setScale(1,BigDecimal.ROUND_HALF_DOWN)四舍五入，2.35变成2.3，如果是5则向下舍
+                         */
                         BigDecimal.valueOf(it.value.toDouble()).setScale(5, BigDecimal.ROUND_HALF_DOWN).toFloat() / 150f
                     }.toFloatArray()
                 }
