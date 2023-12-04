@@ -161,10 +161,10 @@ class PathPainter(private val pathEffect: IPathEffect) {
     // 每次绘制的数据量。避免数据太多，1秒钟绘制不完，造成界面延迟严重。
     // 因为 scheduleFlow 循环任务在间隔时间太短或者处理业务耗时太长时会造成误差太多。
     // 经测试，大概16毫秒以上循环误差就比较小了，建议使用30毫秒以上，这样绘制效果较好。
-    private var countEachDraw = 0
+    private var numbersOfEachDraw = 0
     private var yOffset = 0f// y轴偏移。因为原始的x轴在视图顶部。所以需要把x轴移动到视图垂直中心位置
     private var stepX = 0f// x方向的步进，两个数据在x轴方向的距离。px
-    private var maxDataCount = 0// 能显示的最大数据量
+    private var maxShowNumbers = 0// 能显示的最大数据量
 
     fun init(
         MM_PER_S: Int,
@@ -177,22 +177,22 @@ class PathPainter(private val pathEffect: IPathEffect) {
         stepX = gridSize * MM_PER_S / sampleRate.toFloat()
         val interval = 1000 / sampleRate// 绘制每个数据的间隔时间
         val recommendInterval = 30.0// 建议循环间隔时间
-        countEachDraw = if (interval < recommendInterval) ceil(recommendInterval / interval).toInt() else interval// Math.ceil()向上取整
+        numbersOfEachDraw = if (interval < recommendInterval) ceil(recommendInterval / interval).toInt() else interval// Math.ceil()向上取整
         // 根据视图宽高计算
         val hLineCount = h / gridSize// 水平线的数量
         val axisXCount = (hLineCount - hLineCount % 5) / 2// x坐标轴需要偏移的格数
         yOffset = axisXCount * gridSize.toFloat()
-        maxDataCount = (w / stepX).toInt()
-        Log.i(TAG, "stepX=$stepX countEachDraw=$countEachDraw yOffset=$yOffset maxDataCount=$maxDataCount")
+        maxShowNumbers = (w / stepX).toInt()
+        Log.i(TAG, "stepX=$stepX numbersOfEachDraw=$numbersOfEachDraw yOffset=$yOffset maxShowNumbers=$maxShowNumbers")
     }
 
     fun draw(canvas: Canvas, notDrawDataQueue: ConcurrentLinkedQueue<Float>) {
         if (notDrawDataQueue.isEmpty()) return
         // 总共需要取出 drawDataCountEachTime 个数据
-        repeat(countEachDraw) {
+        repeat(numbersOfEachDraw) {
             // 出队，空时返回null
             notDrawDataQueue.poll()?.let {
-                pathEffect.handleData(it, drawDataList, maxDataCount)
+                pathEffect.handleData(it, drawDataList, maxShowNumbers)
             }
         }
         // 设置path
