@@ -58,15 +58,6 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         }
     }
 
-    // 画网格的画笔
-    private val gridPaint by lazy {
-        Paint().apply {
-            color = Color.parseColor("#00a7ff")
-            strokeWidth = 1f
-            isAntiAlias = true
-        }
-    }
-
     // 画心电数据曲线的画笔
     private val dataPaint by lazy {
         Paint().apply {
@@ -87,11 +78,13 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     private var yOffset = 0f// y轴偏移。因为原始的x轴在视图顶部。所以需要把x轴移动到视图垂直中心位置
     private var stepX = 0f// x方向的步进，两个数据在x轴方向的距离。px
     private var maxDataCount = 0// 能显示的最大数据量
-    private var bgBitmap: Bitmap? = null// 背景图片
     private val notDrawDataQueue = ConcurrentLinkedQueue<Float>()// 未绘制的数据集合
     private val drawDataList = LinkedList<Float>()// 需要绘制的数据集合
     private val path = Path()
     private val isInitialized = AtomicBoolean(false)
+    private val bgPainter by lazy {
+        BgPainter()
+    }
 
     /**
      * @param sampleRate    采样率，为了让动画看起来没有延迟，即每秒钟绘制的数据基本达到采样率。
@@ -131,12 +124,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         yOffset = axisXCount * gridSize.toFloat()
         maxDataCount = (w / stepX).toInt()
         // 绘制背景到bitmap中
-        bgBitmap?.recycle()
-        bgBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888).apply {
-            val canvas = Canvas(this)
-            drawHLine(canvas, hLineCount, w)
-            drawVLine(canvas, vLineCount, h)
-        }
+        bgPainter.init(w, h, gridSize)
         Log.i(
             TAG,
             "w=$w h=$h hLineCount=$hLineCount vLineCount=$vLineCount axisXCount=$axisXCount yOffset=$yOffset maxDataCount=$maxDataCount"
@@ -171,16 +159,9 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
             return
         }
         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
-//        drawBg(canvas)
+        bgPainter.draw(canvas)
         drawText(canvas)
         drawData(canvas)
-    }
-
-    // 画背景图片
-    private fun drawBg(canvas: Canvas) {
-        if (bgBitmap?.isRecycled == false) {
-            canvas.drawBitmap(bgBitmap!!, 0f, 0f, null)
-        }
     }
 
     // 画文字
@@ -255,9 +236,45 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         path.offset(0f, yOffset)
     }
 
+}
+
+class BgPainter {
+    // 画网格的画笔
+    private val gridPaint by lazy {
+        Paint().apply {
+            color = Color.parseColor("#00a7ff")
+            strokeWidth = 1f
+            isAntiAlias = true
+        }
+    }
+    private var bgBitmap: Bitmap? = null// 背景图片
+    private val dashPathEffect = DashPathEffect(floatArrayOf(1f, 1f), 0f)// 虚线
+
+    /**
+     * 创建背景图片
+     */
+    fun init(w: Int, h: Int, gridSize: Int) {
+        val hLineCount = h / gridSize// 水平线的数量
+        val vLineCount = w / gridSize// 垂直线的数量
+        bgBitmap?.recycle()
+        bgBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888).apply {
+            val canvas = Canvas(this)
+            drawHLine(canvas, hLineCount, w, gridSize)
+            drawVLine(canvas, vLineCount, h, gridSize)
+        }
+    }
+
+    /**
+     * 画背景图片
+     */
+    fun draw(canvas: Canvas) {
+        if (bgBitmap?.isRecycled == false) {
+            canvas.drawBitmap(bgBitmap!!, 0f, 0f, null)
+        }
+    }
+
     // 画水平线
-    private fun drawHLine(canvas: Canvas, count: Int, w: Int) {
-        val dashPathEffect = DashPathEffect(floatArrayOf(1f, 1f), 0f)// 虚线
+    private fun drawHLine(canvas: Canvas, count: Int, w: Int, gridSize: Int) {
         val startX = 0f
         val stopX = w.toFloat()
         (0..count).forEach {
@@ -274,8 +291,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     }
 
     // 画垂直线
-    private fun drawVLine(canvas: Canvas, count: Int, h: Int) {
-        val dashPathEffect = DashPathEffect(floatArrayOf(1f, 1f), 0f)// 虚线
+    private fun drawVLine(canvas: Canvas, count: Int, h: Int, gridSize: Int) {
         val startY = 0f
         val stopY = h.toFloat()
         (0..count).forEach {
@@ -290,7 +306,6 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
             canvas.drawLine(x, startY, x, stopY, gridPaint)
         }
     }
-
 }
 
 abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : SurfaceView(context, attrs), SurfaceHolder.Callback {
