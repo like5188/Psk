@@ -45,29 +45,12 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     companion object {
         private const val MM_PER_S = 25// 走速（速度）。默认为标准值：25mm/s
         private const val MM_PER_MV = 10// 增益（灵敏度）。默认为1倍：10mm/mV
-        private const val DRAW_TEXT = "${MM_PER_S}mm/s  ${MM_PER_MV}mm/mV"
-    }
-
-    // 画文字的画笔
-    private val textPaint by lazy {
-        TextPaint().apply {
-            color = Color.parseColor("#88ffffff")
-            textSize = 12f.sp
-            strokeWidth = 1f
-            isAntiAlias = true
-        }
     }
 
     private var sampleRate = 0// 采样率
     private var gridSize = 0// 一个小格子对应的像素
+    private var period = 0L// 循环绘制周期间隔
 
-    // 每次绘制的数据量。避免数据太多，1秒钟绘制不完，造成界面延迟严重。
-    // 因为 scheduleFlow 循环任务在间隔时间太短或者处理业务耗时太长时会造成误差太多。
-    // 经测试，大概16毫秒以上循环误差就比较小了，建议使用30毫秒以上，这样绘制效果较好。
-    private var drawDataCountEachTime = 0
-    private var yOffset = 0f// y轴偏移。因为原始的x轴在视图顶部。所以需要把x轴移动到视图垂直中心位置
-    private var stepX = 0f// x方向的步进，两个数据在x轴方向的距离。px
-    private var maxDataCount = 0// 能显示的最大数据量
     private val notDrawDataQueue = ConcurrentLinkedQueue<Float>()// 未绘制的数据集合
     private val isInitialized = AtomicBoolean(false)
     private val bgPainter by lazy {
@@ -75,6 +58,9 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     }
     private val pathPainter by lazy {
         PathPainter(PathPainter.ScrollPathEffect())
+    }
+    private val textPainter by lazy {
+        TextPainter()
     }
 
     /**
@@ -102,18 +88,20 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
             return
         }
         // 根据采样率计算
-        stepX = gridSize * MM_PER_S / sampleRate.toFloat()
+        val stepX = gridSize * MM_PER_S / sampleRate.toFloat()
         val interval = 1000 / sampleRate// 绘制每个数据的间隔时间
         val recommendInterval = 30.0// 建议循环间隔时间
-        drawDataCountEachTime = if (interval < recommendInterval) ceil(recommendInterval / interval).toInt() else interval// Math.ceil()向上取整
+        val drawDataCountEachTime =
+            if (interval < recommendInterval) ceil(recommendInterval / interval).toInt() else interval// Math.ceil()向上取整
+        period = 1000L / sampleRate * drawDataCountEachTime
         Log.i(TAG, "gridSize=$gridSize sampleRate=$sampleRate stepX=$stepX drawDataCountEachTime=$drawDataCountEachTime")
 
         // 根据视图宽高计算
         val hLineCount = h / gridSize// 水平线的数量
         val vLineCount = w / gridSize// 垂直线的数量
         val axisXCount = (hLineCount - hLineCount % 5) / 2// x坐标轴需要偏移的格数
-        yOffset = axisXCount * gridSize.toFloat()
-        maxDataCount = (w / stepX).toInt()
+        val yOffset = axisXCount * gridSize.toFloat()
+        val maxDataCount = (w / stepX).toInt()
         pathPainter.init(drawDataCountEachTime, maxDataCount, stepX, yOffset)
         // 绘制背景到bitmap中
         bgPainter.init(w, h, gridSize)
@@ -123,11 +111,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         )
     }
 
-    override fun getPeriod(): Long = if (sampleRate > 0 && drawDataCountEachTime > 0) {
-        1000L / sampleRate * drawDataCountEachTime
-    } else {
-        0L
-    }
+    override fun getPeriod(): Long = period
 
     /**
      * 添加数据，数据的单位是 mV。
@@ -152,13 +136,26 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         }
         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
         bgPainter.draw(canvas)
-        drawText(canvas)
+        textPainter.draw(canvas, 20f.dp, height.toFloat() - 10.dp, "${MM_PER_S}mm/s  ${MM_PER_MV}mm/mV")
         pathPainter.draw(canvas, notDrawDataQueue)
     }
 
-    // 画文字
-    private fun drawText(canvas: Canvas) {
-        canvas.drawText(DRAW_TEXT, 20f.dp, height.toFloat() - 10.dp, textPaint)
+}
+
+class TextPainter {
+
+    // 画文字的画笔
+    private val textPaint by lazy {
+        TextPaint().apply {
+            color = Color.parseColor("#88000000")
+            textSize = 12f.sp
+            strokeWidth = 1f
+            isAntiAlias = true
+        }
+    }
+
+    fun draw(canvas: Canvas, x: Float, y: Float, text: String) {
+        canvas.drawText(text, x, y, textPaint)
     }
 
 }
