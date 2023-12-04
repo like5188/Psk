@@ -115,7 +115,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     }
 
     override fun onDrawFrame(canvas: Canvas) {
-        Log.v(TAG, "onCircleDraw")
+        Log.v(TAG, "onDrawFrame")
         if (notDrawDataQueue.isEmpty()) {
             cancelJob("没有数据")// 没有数据时取消任务
             return
