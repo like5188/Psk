@@ -94,8 +94,12 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     override fun getPeriod(): Long {
         if (sampleRate <= 0) return 0L
         val interval = 1000 / sampleRate// 绘制每个数据的间隔时间
-        val recommendInterval = 30.0// 建议循环间隔时间
-        val countEachDraw = if (interval < recommendInterval) ceil(recommendInterval / interval).toInt() else interval// Math.ceil()向上取整
+        val recommendInterval = 30// 建议循环间隔时间
+        val countEachDraw = if (interval < recommendInterval) {
+            ceil(recommendInterval / interval.toFloat()).toInt()// Math.ceil()向上取整
+        } else {
+            interval
+        }
         return 1000L / sampleRate * countEachDraw
     }
 
