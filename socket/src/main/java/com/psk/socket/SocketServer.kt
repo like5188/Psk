@@ -7,30 +7,30 @@ import java.net.InetSocketAddress
 import java.nio.ByteBuffer
 
 class SocketServer(address: InetSocketAddress, private val listener: SocketListener? = null) : WebSocketServer(address) {
-    override fun onOpen(conn: WebSocket, handshake: ClientHandshake) {
-        conn.send("Welcome to the server!") //This method sends a message to the new client
+    override fun onOpen(conn: WebSocket?, handshake: ClientHandshake) {
+        conn?.send("Welcome to the server!") //This method sends a message to the new client
         broadcast("new connection: " + handshake.resourceDescriptor) //This method sends a message to all clients connected
-        println("new connection to " + conn.remoteSocketAddress)
-        listener?.onOpen(conn.remoteSocketAddress.address.hostAddress)
+        println("new connection to " + conn?.remoteSocketAddress)
+        listener?.onOpen(conn?.remoteSocketAddress?.address?.hostAddress)
     }
 
-    override fun onClose(conn: WebSocket, code: Int, reason: String, remote: Boolean) {
-        println("closed " + conn.remoteSocketAddress + " with exit code " + code + " additional info: " + reason)
+    override fun onClose(conn: WebSocket?, code: Int, reason: String, remote: Boolean) {
+        println("closed " + conn?.remoteSocketAddress + " with exit code " + code + " additional info: " + reason)
         listener?.onClose(code, reason)
     }
 
-    override fun onMessage(conn: WebSocket, message: String) {
-        println("received message from " + conn.remoteSocketAddress + ": " + message)
+    override fun onMessage(conn: WebSocket?, message: String) {
+        println("received message from " + conn?.remoteSocketAddress + ": " + message)
     }
 
-    override fun onMessage(conn: WebSocket, message: ByteBuffer?) {
-        println("received ByteBuffer from " + conn.remoteSocketAddress)
+    override fun onMessage(conn: WebSocket?, message: ByteBuffer?) {
+        println("received ByteBuffer from " + conn?.remoteSocketAddress)
         message ?: return
         listener?.onMessage(message)
     }
 
-    override fun onError(conn: WebSocket, ex: Exception) {
-        System.err.println("an error occurred on connection " + conn.remoteSocketAddress + ":" + ex)
+    override fun onError(conn: WebSocket?, ex: Exception) {
+        System.err.println("an error occurred on connection " + conn?.remoteSocketAddress + ":" + ex)
         listener?.onError(ex)
     }
 

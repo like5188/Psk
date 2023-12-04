@@ -25,6 +25,7 @@ class SocketServerService : IntentService(TAG) {
             val port = intent.getIntExtra(KEY_SOCKET_PORT, -1)
             if (port != -1) {
                 server = SocketServer(InetSocketAddress(port), listener)
+                server.isReuseAddr = true// 解决异常：java.net.BindException: Address already in use
                 try {
                     server.run()// 阻塞
                 } catch (e: Exception) {
