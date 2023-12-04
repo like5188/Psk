@@ -49,7 +49,7 @@ class C0_HeartRateDataSource : BaseHeartRateDataSource() {
         "00000002-0000-1000-8000-00805f9b34fb",
     )
 
-    override fun fetch(orderId: Long): Flow<HeartRate> = channelFlow<HeartRate> {
+    override fun fetch(orderId: Long): Flow<HeartRate> = channelFlow {
         // 把二进制数据构建成数据包
         val packBuilder = Pack.Builder()
 
@@ -74,12 +74,21 @@ class C0_HeartRateDataSource : BaseHeartRateDataSource() {
             .collect {
                 when (it) {
                     is EcgPack -> {
+                        // ecgsList中只有一个IntArray，所以这里取first()
+                        val coorYValues = it.ecgsList.first().map {
+                            if (it == 32767) {// 当没有佩戴设备时，传递过来的数据为32767，此时就让心电图画y坐标为0的横线
+                                0f
+                            } else {
+                                it / 1000f
+                            }
+                        }.toFloatArray()
+                        trySend(HeartRate(value = it.heartRate, coorYValues = coorYValues, orderId = orderId))
                     }
                 }
             }
     }.flowOn(Dispatchers.IO)
 
     override fun getSampleRate(): Int {
-        return 125
+        return 250
     }
 }
