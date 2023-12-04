@@ -58,16 +58,6 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         }
     }
 
-    // 画心电数据曲线的画笔
-    private val dataPaint by lazy {
-        Paint().apply {
-            color = Color.parseColor("#44C71E")
-            strokeWidth = 3f
-            style = Paint.Style.STROKE
-            isAntiAlias = true
-        }
-    }
-
     private var sampleRate = 0// 采样率
     private var gridSize = 0// 一个小格子对应的像素
 
@@ -79,11 +69,12 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     private var stepX = 0f// x方向的步进，两个数据在x轴方向的距离。px
     private var maxDataCount = 0// 能显示的最大数据量
     private val notDrawDataQueue = ConcurrentLinkedQueue<Float>()// 未绘制的数据集合
-    private val drawDataList = LinkedList<Float>()// 需要绘制的数据集合
-    private val path = Path()
     private val isInitialized = AtomicBoolean(false)
     private val bgPainter by lazy {
         BgPainter()
+    }
+    private val pathPainter by lazy {
+        PathPainter(PathPainter.ScrollPathEffect())
     }
 
     /**
@@ -123,6 +114,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         val axisXCount = (hLineCount - hLineCount % 5) / 2// x坐标轴需要偏移的格数
         yOffset = axisXCount * gridSize.toFloat()
         maxDataCount = (w / stepX).toInt()
+        pathPainter.init(drawDataCountEachTime, maxDataCount, stepX, yOffset)
         // 绘制背景到bitmap中
         bgPainter.init(w, h, gridSize)
         Log.i(
@@ -161,7 +153,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
         bgPainter.draw(canvas)
         drawText(canvas)
-        drawData(canvas)
+        pathPainter.draw(canvas, notDrawDataQueue)
     }
 
     // 画文字
@@ -169,78 +161,123 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         canvas.drawText(DRAW_TEXT, 20f.dp, height.toFloat() - 10.dp, textPaint)
     }
 
-    // 画心电数据
-    private fun drawData(canvas: Canvas) {
-        calcScrollPath()
-        canvas.drawPath(path, dataPaint)
+}
+
+class PathPainter(private val pathEffect: IPathEffect) {
+    private val paint by lazy {
+        Paint().apply {
+            color = Color.parseColor("#44C71E")
+            strokeWidth = 3f
+            style = Paint.Style.STROKE
+            isAntiAlias = true
+        }
+    }
+    private val path = Path()
+    private val drawDataList = LinkedList<Float>()// 需要绘制的数据集合
+
+    // 每次绘制的数据量。避免数据太多，1秒钟绘制不完，造成界面延迟严重。
+    // 因为 scheduleFlow 循环任务在间隔时间太短或者处理业务耗时太长时会造成误差太多。
+    // 经测试，大概16毫秒以上循环误差就比较小了，建议使用30毫秒以上，这样绘制效果较好。
+    private var drawDataCountEachTime = 0
+    private var yOffset = 0f// y轴偏移。因为原始的x轴在视图顶部。所以需要把x轴移动到视图垂直中心位置
+    private var stepX = 0f// x方向的步进，两个数据在x轴方向的距离。px
+    private var maxDataCount = 0// 能显示的最大数据量
+
+    fun init(
+        drawDataCountEachTime: Int,
+        maxDataCount: Int,
+        stepX: Float,
+        yOffset: Float
+    ) {
+        this.drawDataCountEachTime = drawDataCountEachTime
+        this.maxDataCount = maxDataCount
+        this.stepX = stepX
+        this.yOffset = yOffset
     }
 
-    // 循环效果时，不需要画线的数据的index。即视图中看起来是空白的部分。
-    private var spaceIndex = 0
-
-    /**
-     * 循环效果
-     */
-    private fun calcCirclePath() {
+    fun draw(canvas: Canvas, notDrawDataQueue: ConcurrentLinkedQueue<Float>) {
         if (notDrawDataQueue.isEmpty()) return
         // 总共需要取出 drawDataCountEachTime 个数据
         repeat(drawDataCountEachTime) {
             // 出队，空时返回null
             notDrawDataQueue.poll()?.let {
-                // 最多只绘制 maxDataCount 个数据
-                if (drawDataList.size == maxDataCount) {
-                    drawDataList.removeAt(spaceIndex)
-                    drawDataList.add(spaceIndex, it)
-                    spaceIndex++
-                    if (spaceIndex == maxDataCount) {
-                        spaceIndex = 0
-                    }
-                } else {
-                    drawDataList.addLast(it)
-                }
+                pathEffect.handleData(it, drawDataList, maxDataCount)
             }
         }
         // 设置path
         path.reset()
         drawDataList.forEachIndexed { index, fl ->
-            if (index == spaceIndex) {
-                path.moveTo(index * stepX, fl)// 达到空白效果
-            } else {
-                path.lineTo(index * stepX, fl)
-            }
+            pathEffect.handlePath(path, stepX, index, fl)
         }
         path.offset(0f, yOffset)
+        canvas.drawPath(path, paint)
+    }
+
+    interface IPathEffect {
+        fun handleData(
+            data: Float,
+            drawDataList: LinkedList<Float>,
+            maxDataCount: Int,
+        )
+
+        fun handlePath(
+            path: Path,
+            stepX: Float,
+            index: Int,
+            data: Float
+        )
     }
 
     /**
      * 滚动效果
      */
-    private fun calcScrollPath() {
-        if (notDrawDataQueue.isEmpty()) return
-        // 总共需要取出 drawDataCountEachTime 个数据
-        repeat(drawDataCountEachTime) {
-            // 出队，空时返回null
-            notDrawDataQueue.poll()?.let {
-                // 最多只绘制 maxDataCount 个数据
-                if (drawDataList.size == maxDataCount) {
-                    drawDataList.removeFirst()
-                }
-                drawDataList.addLast(it)
+    class ScrollPathEffect : IPathEffect {
+        override fun handleData(data: Float, drawDataList: LinkedList<Float>, maxDataCount: Int) {
+            // 最多只绘制 maxDataCount 个数据
+            if (drawDataList.size == maxDataCount) {
+                drawDataList.removeFirst()
             }
+            drawDataList.addLast(data)
         }
-        // 设置path
-        path.reset()
-        drawDataList.forEachIndexed { index, fl ->
-            path.lineTo(index * stepX, fl)
+
+        override fun handlePath(path: Path, stepX: Float, index: Int, data: Float) {
+            path.lineTo(index * stepX, data)
         }
-        path.offset(0f, yOffset)
     }
 
+    /**
+     * 循环效果
+     */
+    class CirclePathEffect : IPathEffect {
+        // 循环效果时，不需要画线的数据的index。即视图中看起来是空白的部分。
+        private var spaceIndex = 0
+        override fun handleData(data: Float, drawDataList: LinkedList<Float>, maxDataCount: Int) {
+            // 最多只绘制 maxDataCount 个数据
+            if (drawDataList.size == maxDataCount) {
+                drawDataList.removeAt(spaceIndex)
+                drawDataList.add(spaceIndex, data)
+                spaceIndex++
+                if (spaceIndex == maxDataCount) {
+                    spaceIndex = 0
+                }
+            } else {
+                drawDataList.addLast(data)
+            }
+        }
+
+        override fun handlePath(path: Path, stepX: Float, index: Int, data: Float) {
+            if (index == spaceIndex) {
+                path.moveTo(index * stepX, data)// 达到空白效果
+            } else {
+                path.lineTo(index * stepX, data)
+            }
+        }
+
+    }
 }
 
 class BgPainter {
-    // 画网格的画笔
-    private val gridPaint by lazy {
+    private val paint by lazy {
         Paint().apply {
             color = Color.parseColor("#00a7ff")
             strokeWidth = 1f
@@ -279,14 +316,14 @@ class BgPainter {
         val stopX = w.toFloat()
         (0..count).forEach {
             if (it % 5 == 0) {
-                gridPaint.pathEffect = null
-                gridPaint.alpha = 255
+                paint.pathEffect = null
+                paint.alpha = 255
             } else {
-                gridPaint.pathEffect = dashPathEffect
-                gridPaint.alpha = 100
+                paint.pathEffect = dashPathEffect
+                paint.alpha = 100
             }
             val y = it * gridSize.toFloat()
-            canvas.drawLine(startX, y, stopX, y, gridPaint)
+            canvas.drawLine(startX, y, stopX, y, paint)
         }
     }
 
@@ -296,14 +333,14 @@ class BgPainter {
         val stopY = h.toFloat()
         (0..count).forEach {
             if (it % 5 == 0) {
-                gridPaint.pathEffect = null
-                gridPaint.alpha = 255
+                paint.pathEffect = null
+                paint.alpha = 255
             } else {
-                gridPaint.pathEffect = dashPathEffect
-                gridPaint.alpha = 100
+                paint.pathEffect = dashPathEffect
+                paint.alpha = 100
             }
             val x = it * gridSize.toFloat()
-            canvas.drawLine(x, startY, x, stopY, gridPaint)
+            canvas.drawLine(x, startY, x, stopY, paint)
         }
     }
 }
