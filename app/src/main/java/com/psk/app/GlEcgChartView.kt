@@ -237,6 +237,7 @@ class EcgRenderer : GLSurfaceView.Renderer {
         gridSizeY = 2f / (height / gridSizePx)
         vLineCount = width / gridSizePx + 1
         hLineCount = height / gridSizePx + 1
+        // 像素转相对坐标
         dashPathIntervalsX[0] = 2f / (width / dashPathIntervalsPx[0])
         dashPathIntervalsX[1] = 2f / (width / dashPathIntervalsPx[1])
         dashPathIntervalsY[0] = 2f / (height / dashPathIntervalsPx[0])
