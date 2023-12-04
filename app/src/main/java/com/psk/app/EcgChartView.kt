@@ -86,7 +86,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         if (gridSize <= 0 || sampleRate <= 0 || w <= 0 || h <= 0) {
             return
         }
-        Log.i(TAG, "gridSize=$gridSize sampleRate=$sampleRate w=$w h=$h")
+        Log.i(TAG, "gridSize=$gridSize sampleRate=$sampleRate w=$w h=$h MM_PER_S=$MM_PER_S MM_PER_MV=$MM_PER_MV")
         pathPainter.init(MM_PER_S, gridSize, sampleRate, w, h)
         bgPainter.init(w, h, gridSize)
     }
