@@ -231,7 +231,7 @@ class EcgRenderer : GLSurfaceView.Renderer {
         /*
         opengl会把屏幕映射到【-1，1】的范围内
         整个视图的宽高都为2f，视图中心为原点
-        像素转相对坐标
+        像素转OpenGL坐标
         */
         gridSizeX = 2f / (width / gridSizePx)
         gridSizeY = 2f / (height / gridSizePx)
