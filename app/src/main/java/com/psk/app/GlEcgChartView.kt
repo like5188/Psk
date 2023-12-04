@@ -136,10 +136,6 @@ class EcgRenderer : GLSurfaceView.Renderer {
 
     /*
     在代码中这些顶点会用浮点数数组来表示，因为是二维坐标，所以每个顶点要用俩个浮点数来记录，一个标记x轴位置，一个标记y轴位置，这个数组通常被称为属性（attribute）数组
-    这个数组表示俩个三角形，每个三角形都以逆时针表示，一共四个顶点，俩个三角形共用俩个顶点，这样就形成了一个矩形。
-    定义好顶点了，但是我们的java代码是运行在虚拟机上，而opengl是运行在本地的硬件上的，那么如何才能把java数据可以让opengl使用呢？
-    ByteBuffer 可以分配本地的内存块，并且把java数据复制到本地内存
-    opengl会把屏幕映射到【-1，1】的范围内
      */
     // 水平线顶点数据缓存
     private val hVerticesData: FloatBuffer by lazy {
@@ -232,7 +228,11 @@ class EcgRenderer : GLSurfaceView.Renderer {
         println("onSurfaceChanged")
         // 设置视口大小，告诉opengl需要渲染的surface尺寸大小
         GLES20.glViewport(0, 0, width, height)
-        // 整个视图的宽高都为2f，视图中心为原点
+        /*
+        opengl会把屏幕映射到【-1，1】的范围内
+        整个视图的宽高都为2f，视图中心为原点
+        像素转相对坐标
+        */
         gridSizeX = 2f / (width / gridSizePx)
         gridSizeY = 2f / (height / gridSizePx)
         vLineCount = width / gridSizePx + 1
@@ -288,8 +288,12 @@ class EcgRenderer : GLSurfaceView.Renderer {
 
 object RenderHelper {
 
-    // allocateDirect 分配一块本地内存，分配大小由外部传入
-    // 每个浮点数有32位精度，而每个byte有8位精度，所以每个浮点数都占4个字节
+    /*
+    定义好顶点了，但是我们的java代码是运行在虚拟机上，而opengl是运行在本地的硬件上的，那么如何才能把java数据可以让opengl使用呢？
+    ByteBuffer 可以分配本地的内存块，并且把java数据复制到本地内存
+    allocateDirect 分配一块本地内存，分配大小由外部传入
+    每个浮点数有32位精度，而每个byte有8位精度，所以每个浮点数都占4个字节
+     */
     fun FloatArray.toFloatBuffer(): FloatBuffer = ByteBuffer.allocateDirect(size * 4)
         .order(ByteOrder.nativeOrder())// 告诉缓冲区，按照本地字节序组织内容
         .asFloatBuffer()
