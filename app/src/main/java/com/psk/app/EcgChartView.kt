@@ -49,7 +49,6 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
 
     private var sampleRate = 0// 采样率
     private var gridSize = 0// 一个小格子对应的像素
-    private var period = 0L// 循环绘制周期间隔
 
     private val notDrawDataQueue = ConcurrentLinkedQueue<Float>()// 未绘制的数据集合
     private val isInitialized = AtomicBoolean(false)
@@ -87,30 +86,18 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         if (gridSize <= 0 || sampleRate <= 0 || w <= 0 || h <= 0) {
             return
         }
-        // 根据采样率计算
-        val stepX = gridSize * MM_PER_S / sampleRate.toFloat()
+        Log.i(TAG, "gridSize=$gridSize sampleRate=$sampleRate w=$w h=$h")
+        pathPainter.init(MM_PER_S, gridSize, sampleRate, w, h)
+        bgPainter.init(w, h, gridSize)
+    }
+
+    override fun getPeriod(): Long {
+        if (sampleRate <= 0) return 0L
         val interval = 1000 / sampleRate// 绘制每个数据的间隔时间
         val recommendInterval = 30.0// 建议循环间隔时间
         val countEachDraw = if (interval < recommendInterval) ceil(recommendInterval / interval).toInt() else interval// Math.ceil()向上取整
-        period = 1000L / sampleRate * countEachDraw
-        Log.i(TAG, "gridSize=$gridSize sampleRate=$sampleRate stepX=$stepX drawDataCountEachTime=$countEachDraw")
-
-        // 根据视图宽高计算
-        val hLineCount = h / gridSize// 水平线的数量
-        val vLineCount = w / gridSize// 垂直线的数量
-        val axisXCount = (hLineCount - hLineCount % 5) / 2// x坐标轴需要偏移的格数
-        val yOffset = axisXCount * gridSize.toFloat()
-        val maxDataCount = (w / stepX).toInt()
-        pathPainter.init(countEachDraw, maxDataCount, stepX, yOffset)
-        // 绘制背景到bitmap中
-        bgPainter.init(w, h, gridSize)
-        Log.i(
-            TAG,
-            "w=$w h=$h hLineCount=$hLineCount vLineCount=$vLineCount axisXCount=$axisXCount yOffset=$yOffset maxDataCount=$maxDataCount"
-        )
+        return 1000L / sampleRate * countEachDraw
     }
-
-    override fun getPeriod(): Long = period
 
     /**
      * 添加数据，数据的单位是 mV。
@@ -180,15 +167,23 @@ class PathPainter(private val pathEffect: IPathEffect) {
     private var maxDataCount = 0// 能显示的最大数据量
 
     fun init(
-        countEachDraw: Int,
-        maxDataCount: Int,
-        stepX: Float,
-        yOffset: Float
+        MM_PER_S: Int,
+        gridSize: Int,
+        sampleRate: Int,
+        w: Int,
+        h: Int
     ) {
-        this.countEachDraw = countEachDraw
-        this.maxDataCount = maxDataCount
-        this.stepX = stepX
-        this.yOffset = yOffset
+        // 根据采样率计算
+        stepX = gridSize * MM_PER_S / sampleRate.toFloat()
+        val interval = 1000 / sampleRate// 绘制每个数据的间隔时间
+        val recommendInterval = 30.0// 建议循环间隔时间
+        countEachDraw = if (interval < recommendInterval) ceil(recommendInterval / interval).toInt() else interval// Math.ceil()向上取整
+        // 根据视图宽高计算
+        val hLineCount = h / gridSize// 水平线的数量
+        val axisXCount = (hLineCount - hLineCount % 5) / 2// x坐标轴需要偏移的格数
+        yOffset = axisXCount * gridSize.toFloat()
+        maxDataCount = (w / stepX).toInt()
+        Log.i(TAG, "stepX=$stepX countEachDraw=$countEachDraw yOffset=$yOffset maxDataCount=$maxDataCount")
     }
 
     fun draw(canvas: Canvas, notDrawDataQueue: ConcurrentLinkedQueue<Float>) {
@@ -289,6 +284,7 @@ class BgPainter {
     fun init(w: Int, h: Int, gridSize: Int) {
         val hLineCount = h / gridSize// 水平线的数量
         val vLineCount = w / gridSize// 垂直线的数量
+        Log.i(TAG, "hLineCount=$hLineCount vLineCount=$vLineCount")
         bgBitmap?.recycle()
         bgBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888).apply {
             val canvas = Canvas(this)
