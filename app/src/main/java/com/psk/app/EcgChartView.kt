@@ -50,7 +50,6 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     private var sampleRate = 0// 采样率
     private var gridSize = 0// 一个小格子对应的像素
 
-    private val notDrawDataQueue = ConcurrentLinkedQueue<Float>()// 未绘制的数据集合
     private val isInitialized = AtomicBoolean(false)
     private val bgPainter by lazy {
         BgPainter()
@@ -109,25 +108,20 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     fun addData(data: List<Float>) {
         // 在surface创建后，即可以绘制的时候，才允许添加数据，在surface销毁后禁止添加数据，以免造成数据堆积。
         if (data.isEmpty() || !isCreated) return
-        data.forEach {
-            // 把uV电压值转换成y轴坐标值
-            val mm = it * MM_PER_MV// mV转mm
-            val px = mm * gridSize// mm转px
-            notDrawDataQueue.offer(px)// 入队成功返回true，失败返回false
-        }
+        pathPainter.addData(data, gridSize, MM_PER_MV)
         startJob()// 有数据时启动任务
     }
 
     override fun onDrawFrame(canvas: Canvas) {
         Log.v(TAG, "onDrawFrame")
-        if (notDrawDataQueue.isEmpty()) {
+        if (!pathPainter.hasData()) {
             cancelJob("没有数据")// 没有数据时取消任务
             return
         }
         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
         bgPainter.draw(canvas)
         textPainter.draw(canvas, 20f.dp, height.toFloat() - 10.dp, "${MM_PER_S}mm/s  ${MM_PER_MV}mm/mV")
-        pathPainter.draw(canvas, notDrawDataQueue)
+        pathPainter.draw(canvas)
     }
 
 }
@@ -151,6 +145,7 @@ class TextPainter {
 }
 
 class PathPainter(private val pathEffect: IPathEffect) {
+
     private val paint by lazy {
         Paint().apply {
             color = Color.parseColor("#44C71E")
@@ -160,6 +155,7 @@ class PathPainter(private val pathEffect: IPathEffect) {
         }
     }
     private val path = Path()
+    private val notDrawDataQueue = ConcurrentLinkedQueue<Float>()// 未绘制的数据集合
     private val drawDataList = LinkedList<Float>()// 需要绘制的数据集合
 
     // 每次绘制的数据量。避免数据太多，1秒钟绘制不完，造成界面延迟严重。
@@ -169,6 +165,20 @@ class PathPainter(private val pathEffect: IPathEffect) {
     private var yOffset = 0f// y轴偏移。因为原始的x轴在视图顶部。所以需要把x轴移动到视图垂直中心位置
     private var stepX = 0f// x方向的步进，两个数据在x轴方向的距离。px
     private var maxShowNumbers = 0// 能显示的最大数据量
+
+    /**
+     * 添加数据，数据的单位是 mV。
+     */
+    fun addData(data: List<Float>, gridSize: Int, MM_PER_MV: Int) {
+        data.forEach {
+            // 把uV电压值转换成y轴坐标值
+            val mm = it * MM_PER_MV// mV转mm
+            val px = mm * gridSize// mm转px
+            notDrawDataQueue.offer(px)// 入队成功返回true，失败返回false
+        }
+    }
+
+    fun hasData(): Boolean = notDrawDataQueue.isNotEmpty()
 
     fun init(
         MM_PER_S: Int,
@@ -194,7 +204,7 @@ class PathPainter(private val pathEffect: IPathEffect) {
         Log.i(TAG, "stepX=$stepX numbersOfEachDraw=$numbersOfEachDraw yOffset=$yOffset maxShowNumbers=$maxShowNumbers")
     }
 
-    fun draw(canvas: Canvas, notDrawDataQueue: ConcurrentLinkedQueue<Float>) {
+    fun draw(canvas: Canvas) {
         if (notDrawDataQueue.isEmpty()) return
         // 总共需要取出 drawDataCountEachTime 个数据
         repeat(numbersOfEachDraw) {
