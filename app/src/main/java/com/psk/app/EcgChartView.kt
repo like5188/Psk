@@ -25,7 +25,7 @@ import kotlinx.coroutines.launch
 import java.util.LinkedList
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.atomic.AtomicBoolean
-import kotlin.math.ceil
+import kotlin.math.max
 
 /*
     SurfaceView 是一个可以在子线程中更新 UI 的 View，且不会影响到主线程。它为自己创建了一个窗口（window），就好像在视图层次（View Hierarchy）上穿了个“洞”，让绘图层（Surface）直接显示出来。但是，和常规视图（view）不同，它没有动画或者变形特效，一些 View 的特性也无法使用。
@@ -86,20 +86,16 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
             return
         }
         Log.i(TAG, "gridSize=$gridSize sampleRate=$sampleRate w=$w h=$h MM_PER_S=$MM_PER_S MM_PER_MV=$MM_PER_MV")
-        pathPainter.init(MM_PER_S, gridSize, sampleRate, w, h)
+        pathPainter.init(MM_PER_S, getPeriod(), gridSize, sampleRate, w, h)
         bgPainter.init(w, h, gridSize)
     }
 
     override fun getPeriod(): Long {
         if (sampleRate <= 0) return 0L
-        val interval = 1000 / sampleRate// 绘制每个数据的间隔时间
-        val recommendInterval = 30// 建议循环间隔时间
-        val numbersOfEachDraw = if (interval < recommendInterval) {
-            ceil(recommendInterval / interval.toFloat()).toInt()// Math.ceil()向上取整
-        } else {
-            interval
-        }
-        return 1000L / sampleRate * numbersOfEachDraw
+        val interval = 1000L / sampleRate// 绘制每个数据的间隔时间
+        // 因为 scheduleFlow 循环任务在间隔时间太短或者处理业务耗时太长时会造成误差太多。
+        // 经测试，大概16毫秒以上循环误差就比较小了，建议使用25毫秒以上，这样绘制效果较好。
+        return max(interval, 25)
     }
 
     /**
@@ -145,7 +141,6 @@ class TextPainter {
 }
 
 class PathPainter(private val pathEffect: IPathEffect) {
-
     private val paint by lazy {
         Paint().apply {
             color = Color.parseColor("#44C71E")
@@ -157,14 +152,10 @@ class PathPainter(private val pathEffect: IPathEffect) {
     private val path = Path()
     private val notDrawDataQueue = ConcurrentLinkedQueue<Float>()// 未绘制的数据集合
     private val drawDataList = LinkedList<Float>()// 需要绘制的数据集合
-
-    // 每次绘制的数据量。避免数据太多，1秒钟绘制不完，造成界面延迟严重。
-    // 因为 scheduleFlow 循环任务在间隔时间太短或者处理业务耗时太长时会造成误差太多。
-    // 经测试，大概16毫秒以上循环误差就比较小了，建议使用30毫秒以上，这样绘制效果较好。
-    private var numbersOfEachDraw = 0
     private var yOffset = 0f// y轴偏移。因为原始的x轴在视图顶部。所以需要把x轴移动到视图垂直中心位置
     private var stepX = 0f// x方向的步进，两个数据在x轴方向的距离。px
     private var maxShowNumbers = 0// 能显示的最大数据量
+    private var circleTimesPerSecond = 0// 每秒绘制次数
 
     /**
      * 添加数据，数据的单位是 mV。
@@ -182,6 +173,7 @@ class PathPainter(private val pathEffect: IPathEffect) {
 
     fun init(
         MM_PER_S: Int,
+        period: Long,
         gridSize: Int,
         sampleRate: Int,
         w: Int,
@@ -189,25 +181,19 @@ class PathPainter(private val pathEffect: IPathEffect) {
     ) {
         // 根据采样率计算
         stepX = gridSize * MM_PER_S / sampleRate.toFloat()
-        val interval = 1000 / sampleRate// 绘制每个数据的间隔时间
-        val recommendInterval = 30// 建议循环间隔时间
-        numbersOfEachDraw = if (interval < recommendInterval) {
-            ceil(recommendInterval / interval.toFloat()).toInt()// Math.ceil()向上取整
-        } else {
-            interval
-        }
         // 根据视图宽高计算
         val hLineCount = h / gridSize// 水平线的数量
         val axisXCount = (hLineCount - hLineCount % 5) / 2// x坐标轴需要偏移的格数
         yOffset = axisXCount * gridSize.toFloat()
         maxShowNumbers = (w / stepX).toInt()
-        Log.i(TAG, "stepX=$stepX numbersOfEachDraw=$numbersOfEachDraw yOffset=$yOffset maxShowNumbers=$maxShowNumbers")
+        circleTimesPerSecond = 1000 / period.toInt()
+        Log.i(TAG, "stepX=$stepX yOffset=$yOffset maxShowNumbers=$maxShowNumbers circleTimes=$circleTimesPerSecond")
     }
 
     fun draw(canvas: Canvas) {
         if (notDrawDataQueue.isEmpty()) return
-        // 总共需要取出 drawDataCountEachTime 个数据
-        repeat(numbersOfEachDraw) {
+        // 每次都绘制所有剩下的数据。避免数据堆积造成暂停时延迟。
+        repeat(notDrawDataQueue.size / circleTimesPerSecond) {
             // 出队，空时返回null
             notDrawDataQueue.poll()?.let {
                 pathEffect.handleData(it, drawDataList, maxShowNumbers)
