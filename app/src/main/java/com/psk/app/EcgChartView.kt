@@ -160,6 +160,7 @@ class PathPainter(private val pathEffect: IPathEffect) {
     // 因为 scheduleFlow 循环任务在间隔时间太短或者处理业务耗时太长时会造成误差太多。
     // 经测试，大概16毫秒以上循环误差就比较小了，建议使用25毫秒以上，这样绘制效果较好。
     private var numbersOfEachDraw = 0
+    private var sampleRate = 0
 
     /**
      * 添加数据，数据的单位是 mV。
@@ -183,6 +184,7 @@ class PathPainter(private val pathEffect: IPathEffect) {
         w: Int,
         h: Int
     ) {
+        this.sampleRate = sampleRate
         // 根据采样率计算
         stepX = gridSize * MM_PER_S / sampleRate.toFloat()
         // 根据视图宽高计算
@@ -190,15 +192,22 @@ class PathPainter(private val pathEffect: IPathEffect) {
         val axisXCount = (hLineCount - hLineCount % 5) / 2// x坐标轴需要偏移的格数
         yOffset = axisXCount * gridSize.toFloat()
         maxShowNumbers = (w / stepX).toInt()
-        val circleTimesPerSecond = 1000 / period// 每秒绘制次数
-        numbersOfEachDraw = (sampleRate / circleTimesPerSecond).toInt()
+        val circleTimesPerSecond = (1000 / period).toInt()// 每秒绘制次数
+        numbersOfEachDraw = sampleRate / circleTimesPerSecond
         Log.i(TAG, "stepX=$stepX yOffset=$yOffset maxShowNumbers=$maxShowNumbers numbersOfEachDraw=$numbersOfEachDraw")
     }
 
     fun draw(canvas: Canvas) {
         if (notDrawDataQueue.isEmpty()) return
-        Log.i(TAG, "numbersOfEachDraw=$numbersOfEachDraw notDrawDataQueue=${notDrawDataQueue.size} drawDataList=${drawDataList.size}")
-        repeat(numbersOfEachDraw) {
+        Log.i(TAG, "notDrawDataQueue=${notDrawDataQueue.size} drawDataList=${drawDataList.size}")
+        repeat(
+            // 如果剩余的数据量超过了 sampleRate，那么就每次多取1个数据，避免剩余数据量无限增长，造成暂停操作的延迟。
+            if (notDrawDataQueue.size > sampleRate) {
+                numbersOfEachDraw + 1
+            } else {
+                numbersOfEachDraw
+            }
+        ) {
             // 出队，空时返回null
             notDrawDataQueue.poll()?.let {
                 pathEffect.handleData(it, drawDataList, maxShowNumbers)
