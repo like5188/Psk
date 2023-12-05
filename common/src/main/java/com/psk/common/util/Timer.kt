@@ -10,14 +10,15 @@ import kotlinx.coroutines.flow.transform
 
 /**
  * 延时准确的循环回调flow
- * @param delay     第一次执行时延迟多久，毫秒
- * @param period    循环执行周期，毫秒
+ * @param delay         第一次执行时延迟多久，毫秒
+ * @param period        循环执行周期，毫秒
+ * @param count         循环次数。默认0。小于等于0表示不限制，无限循环
  */
-fun scheduleFlow(delay: Long, period: Long): Flow<Long> =
+fun scheduleFlow(delay: Long, period: Long, count: Int = 0): Flow<Long> =
     flow {
         val startTime = System.currentTimeMillis() + delay
         var i = 0
-        while (true) {
+        while (count <= 0 || i < count) {
             emit(startTime + period * i++)
         }
     }
