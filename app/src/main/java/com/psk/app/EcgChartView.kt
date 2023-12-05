@@ -25,7 +25,6 @@ import kotlinx.coroutines.launch
 import java.util.LinkedList
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.atomic.AtomicBoolean
-import kotlin.math.ceil
 import kotlin.math.max
 
 /*
@@ -93,10 +92,10 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
 
     override fun getPeriod(): Long {
         if (sampleRate <= 0) return 0L
-        val interval = ceil(1000.0 / sampleRate).toLong()// 绘制每个数据的间隔时间。ceil向上取整
+        val interval = 1000 / sampleRate// 绘制每个数据的间隔时间。ceil向上取整
         // 因为 scheduleFlow 循环任务在间隔时间太短或者处理业务耗时太长时会造成误差太多。
         // 经测试，大概16毫秒以上循环误差就比较小了，建议使用25毫秒以上，这样绘制效果较好。
-        return max(interval, 25L)
+        return max(interval, 25).toLong()
     }
 
     /**
