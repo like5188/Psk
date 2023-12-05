@@ -25,9 +25,10 @@ class SocketServerService : IntentService(TAG) {
             val port = intent.getIntExtra(KEY_SOCKET_PORT, -1)
             if (port != -1) {
                 server = SocketServer(InetSocketAddress(port), listener)
+                server.connectionLostTimeout = 0// onClose code=1006 reason=The connection was closed because the other endpoint did not respond with a pong in time.
                 server.isReuseAddr = true// 解决异常：java.net.BindException: Address already in use
                 try {
-                    server.run()// 阻塞
+                    server.start()// 阻塞
                 } catch (e: Exception) {
                     Log.e(TAG, e.message ?: "")
                 }
