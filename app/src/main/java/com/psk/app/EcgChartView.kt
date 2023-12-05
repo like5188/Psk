@@ -25,6 +25,7 @@ import kotlinx.coroutines.launch
 import java.util.LinkedList
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.math.ceil
 import kotlin.math.max
 
 /*
@@ -92,10 +93,10 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
 
     override fun getPeriod(): Long {
         if (sampleRate <= 0) return 0L
-        val interval = 1000L / sampleRate// 绘制每个数据的间隔时间
+        val interval = ceil(1000.0 / sampleRate).toLong()// 绘制每个数据的间隔时间。ceil向上取整
         // 因为 scheduleFlow 循环任务在间隔时间太短或者处理业务耗时太长时会造成误差太多。
         // 经测试，大概16毫秒以上循环误差就比较小了，建议使用25毫秒以上，这样绘制效果较好。
-        return max(interval, 25)
+        return max(interval, 25L)
     }
 
     /**
@@ -155,7 +156,11 @@ class PathPainter(private val pathEffect: IPathEffect) {
     private var yOffset = 0f// y轴偏移。因为原始的x轴在视图顶部。所以需要把x轴移动到视图垂直中心位置
     private var stepX = 0f// x方向的步进，两个数据在x轴方向的距离。px
     private var maxShowNumbers = 0// 能显示的最大数据量
-    private var circleTimesPerSecond = 0// 每秒绘制次数
+
+    // 每次绘制的数据量。避免数据太多，1秒钟绘制不完，造成界面延迟严重。
+    // 因为 scheduleFlow 循环任务在间隔时间太短或者处理业务耗时太长时会造成误差太多。
+    // 经测试，大概16毫秒以上循环误差就比较小了，建议使用25毫秒以上，这样绘制效果较好。
+    private var numbersOfEachDraw = 0
 
     /**
      * 添加数据，数据的单位是 mV。
@@ -186,14 +191,15 @@ class PathPainter(private val pathEffect: IPathEffect) {
         val axisXCount = (hLineCount - hLineCount % 5) / 2// x坐标轴需要偏移的格数
         yOffset = axisXCount * gridSize.toFloat()
         maxShowNumbers = (w / stepX).toInt()
-        circleTimesPerSecond = 1000 / period.toInt()
-        Log.i(TAG, "stepX=$stepX yOffset=$yOffset maxShowNumbers=$maxShowNumbers circleTimes=$circleTimesPerSecond")
+        val circleTimesPerSecond = 1000 / period// 每秒绘制次数
+        numbersOfEachDraw = (sampleRate / circleTimesPerSecond).toInt()
+        Log.i(TAG, "stepX=$stepX yOffset=$yOffset maxShowNumbers=$maxShowNumbers numbersOfEachDraw=$numbersOfEachDraw")
     }
 
     fun draw(canvas: Canvas) {
         if (notDrawDataQueue.isEmpty()) return
-        // 每次都绘制所有剩下的数据。避免数据堆积造成暂停时延迟。
-        repeat(notDrawDataQueue.size / circleTimesPerSecond) {
+        Log.i(TAG, "numbersOfEachDraw=$numbersOfEachDraw notDrawDataQueue=${notDrawDataQueue.size} drawDataList=${drawDataList.size}")
+        repeat(numbersOfEachDraw) {
             // 出队，空时返回null
             notDrawDataQueue.poll()?.let {
                 pathEffect.handleData(it, drawDataList, maxShowNumbers)
