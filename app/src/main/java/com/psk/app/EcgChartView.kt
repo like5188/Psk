@@ -177,12 +177,7 @@ class PathPainter(private val pathEffect: IPathEffect) {
     fun hasData(): Boolean = notDrawDataQueue.isNotEmpty()
 
     fun init(
-        MM_PER_S: Int,
-        period: Long,
-        gridSize: Int,
-        sampleRate: Int,
-        w: Int,
-        h: Int
+        MM_PER_S: Int, period: Long, gridSize: Int, sampleRate: Int, w: Int, h: Int
     ) {
         this.sampleRate = sampleRate
         // 根据采样率计算
@@ -197,9 +192,11 @@ class PathPainter(private val pathEffect: IPathEffect) {
         Log.i(TAG, "stepX=$stepX yOffset=$yOffset maxShowNumbers=$maxShowNumbers numbersOfEachDraw=$numbersOfEachDraw")
     }
 
+    private var max = 0// 辅助查看当前最大的未绘制数据量
     fun draw(canvas: Canvas) {
         if (notDrawDataQueue.isEmpty()) return
-        Log.i(TAG, "notDrawDataQueue=${notDrawDataQueue.size} drawDataList=${drawDataList.size}")
+        max = max(max, notDrawDataQueue.size)
+        Log.i(TAG, "max=$max notDrawDataQueue=${notDrawDataQueue.size} drawDataList=${drawDataList.size}")
         repeat(
             // 如果剩余的数据量超过了 sampleRate，那么就每次多取1个数据，避免剩余数据量无限增长，造成暂停操作的延迟。
             if (notDrawDataQueue.size > sampleRate) {
@@ -230,10 +227,7 @@ class PathPainter(private val pathEffect: IPathEffect) {
         )
 
         fun handlePath(
-            path: Path,
-            stepX: Float,
-            index: Int,
-            data: Float
+            path: Path, stepX: Float, index: Int, data: Float
         )
     }
 
