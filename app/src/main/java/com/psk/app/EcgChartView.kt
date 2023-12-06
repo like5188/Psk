@@ -86,8 +86,9 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
             return
         }
         Log.i(TAG, "gridSize=$gridSize sampleRate=$sampleRate w=$w h=$h MM_PER_S=$MM_PER_S MM_PER_MV=$MM_PER_MV")
-        pathPainter.init(MM_PER_S, MM_PER_MV, getPeriod(), gridSize, sampleRate, w, h)
         bgPainter.init(w, h, gridSize)
+        pathPainter.init(MM_PER_S, MM_PER_MV, getPeriod(), gridSize, sampleRate, w, h)
+        textPainter.init(MM_PER_S, MM_PER_MV, w, h)
     }
 
     override fun getPeriod(): Long {
@@ -117,7 +118,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         }
         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
         bgPainter.draw(canvas)
-        textPainter.draw(canvas, 20f.dp, height.toFloat() - 10.dp, "${MM_PER_S}mm/s  ${MM_PER_MV}mm/mV")
+        textPainter.draw(canvas)
         pathPainter.draw(canvas)
     }
 
@@ -134,8 +135,17 @@ class TextPainter {
             isAntiAlias = true
         }
     }
+    private var text = ""
+    private var x = 0f
+    private var y = 0f
 
-    fun draw(canvas: Canvas, x: Float, y: Float, text: String) {
+    fun init(MM_PER_S: Int, MM_PER_MV: Int, w: Int, h: Int) {
+        text = "${MM_PER_S}mm/s  ${MM_PER_MV}mm/mV"
+        x = 20f.dp
+        y = h.toFloat() - 10.dp
+    }
+
+    fun draw(canvas: Canvas) {
         canvas.drawText(text, x, y, textPaint)
     }
 
