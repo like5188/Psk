@@ -50,7 +50,6 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     private var sampleRate = 0// 采样率
     private var gridSize = 0// 一个小格子对应的像素
 
-    private val isInitialized = AtomicBoolean(false)
     private val bgPainter by lazy {
         BgPainter()
     }
@@ -60,6 +59,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     private val textPainter by lazy {
         TextPainter()
     }
+    private val isInitialized = AtomicBoolean(false)
 
     /**
      * @param sampleRate    采样率，为了让动画看起来没有延迟，即每秒钟绘制的数据基本达到采样率。
@@ -86,7 +86,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
             return
         }
         Log.i(TAG, "gridSize=$gridSize sampleRate=$sampleRate w=$w h=$h MM_PER_S=$MM_PER_S MM_PER_MV=$MM_PER_MV")
-        pathPainter.init(MM_PER_S, getPeriod(), gridSize, sampleRate, w, h)
+        pathPainter.init(MM_PER_S, MM_PER_MV, getPeriod(), gridSize, sampleRate, w, h)
         bgPainter.init(w, h, gridSize)
     }
 
@@ -99,18 +99,19 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     }
 
     /**
-     * 添加数据，数据的单位是 mV。
+     * 添加数据，
+     * @param data  需要添加的数据。mV。
      */
     fun addData(data: List<Float>) {
         // 在surface创建后，即可以绘制的时候，才允许添加数据，在surface销毁后禁止添加数据，以免造成数据堆积。
-        if (data.isEmpty() || !isCreated) return
-        pathPainter.addData(data, gridSize, MM_PER_MV)
+        if (data.isEmpty() || !isSurfaceCreated) return
+        pathPainter.addData(data)
         startJob()// 有数据时启动任务
     }
 
     override fun onDrawFrame(canvas: Canvas) {
         Log.v(TAG, "onDrawFrame")
-        if (!pathPainter.hasData()) {
+        if (!pathPainter.hasNotDrawData()) {
             cancelJob("没有数据")// 没有数据时取消任务
             return
         }
@@ -153,19 +154,18 @@ class PathPainter(private val pathEffect: IPathEffect) {
     private val notDrawDataQueue = ConcurrentLinkedQueue<Float>()// 未绘制的数据集合
     private val drawDataList = LinkedList<Float>()// 需要绘制的数据集合
     private var yOffset = 0f// y轴偏移。因为原始的x轴在视图顶部。所以需要把x轴移动到视图垂直中心位置
-    private var stepX = 0f// x方向的步进，两个数据在x轴方向的距离。px
-    private var maxShowNumbers = 0// 能显示的最大数据量
+    private var stepX = 0f// x方向的步进，两个数据点在x轴方向的距离。px
+    private var maxShowNumbers = 0// 整个视图能显示的最大数据量
 
-    // 每次绘制的数据量。避免数据太多，1秒钟绘制不完，造成界面延迟严重。
+    // 每次绘制的数据量。避免数据太多，1秒钟绘制不完，所以每次多绘制几个，不让数据堆积造成界面延迟。
     // 因为 scheduleFlow 循环任务在间隔时间太短或者处理业务耗时太长时会造成误差太多。
     // 经测试，大概16毫秒以上循环误差就比较小了，建议使用25毫秒以上，这样绘制效果较好。
     private var numbersOfEachDraw = 0
     private var sampleRate = 0
+    private var gridSize = 0
+    private var MM_PER_MV = 0
 
-    /**
-     * 添加数据，数据的单位是 mV。
-     */
-    fun addData(data: List<Float>, gridSize: Int, MM_PER_MV: Int) {
+    fun addData(data: List<Float>) {
         data.forEach {
             // 把uV电压值转换成y轴坐标值
             val mm = it * MM_PER_MV// mV转mm
@@ -174,12 +174,14 @@ class PathPainter(private val pathEffect: IPathEffect) {
         }
     }
 
-    fun hasData(): Boolean = notDrawDataQueue.isNotEmpty()
+    fun hasNotDrawData(): Boolean = notDrawDataQueue.isNotEmpty()
 
     fun init(
-        MM_PER_S: Int, period: Long, gridSize: Int, sampleRate: Int, w: Int, h: Int
+        MM_PER_S: Int, MM_PER_MV: Int, period: Long, gridSize: Int, sampleRate: Int, w: Int, h: Int
     ) {
         this.sampleRate = sampleRate
+        this.gridSize = gridSize
+        this.MM_PER_MV = MM_PER_MV
         // 根据采样率计算
         stepX = gridSize * MM_PER_S / sampleRate.toFloat()
         // 根据视图宽高计算
@@ -195,8 +197,11 @@ class PathPainter(private val pathEffect: IPathEffect) {
     private var max = 0// 辅助查看当前最大的未绘制数据量
     fun draw(canvas: Canvas) {
         if (notDrawDataQueue.isEmpty()) return
-        max = max(max, notDrawDataQueue.size)
-        Log.i(TAG, "max=$max notDrawDataQueue=${notDrawDataQueue.size} drawDataList=${drawDataList.size}")
+        if (notDrawDataQueue.size > max) {
+            max = notDrawDataQueue.size
+            Log.w(TAG, "maxNotDrawDataSize=$max")
+        }
+        Log.i(TAG, "notDrawDataQueue=${notDrawDataQueue.size} drawDataList=${drawDataList.size}")
         repeat(
             // 如果剩余的数据量超过了 sampleRate，那么就每次多取1个数据，避免剩余数据量无限增长，造成暂停操作的延迟。
             if (notDrawDataQueue.size > sampleRate) {
@@ -309,8 +314,10 @@ class BgPainter {
      * 画背景图片
      */
     fun draw(canvas: Canvas) {
-        if (bgBitmap?.isRecycled == false) {
-            canvas.drawBitmap(bgBitmap!!, 0f, 0f, null)
+        bgBitmap?.let {
+            if (!it.isRecycled) {
+                canvas.drawBitmap(it, 0f, 0f, null)
+            }
         }
     }
 
@@ -352,7 +359,7 @@ class BgPainter {
 abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : SurfaceView(context, attrs), SurfaceHolder.Callback {
     // 循环绘制任务
     private var job: Job? = null
-    protected var isCreated = false
+    protected var isSurfaceCreated = false
 
     init {
         holder.addCallback(this)
@@ -367,7 +374,7 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
     // activity onPause时调用
     override fun surfaceDestroyed(holder: SurfaceHolder) {
         Log.w(TAG, "surfaceDestroyed")
-        isCreated = false
+        isSurfaceCreated = false
         cancelJob("surfaceDestroyed")// 其实这里可以不必调用，因为没有数据时会调用
     }
 
@@ -376,7 +383,7 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
     // activity onResume时调用
     override fun surfaceCreated(holder: SurfaceHolder) {
         Log.w(TAG, "surfaceCreated")
-        isCreated = true
+        isSurfaceCreated = true
         startJob()// 其实这里可以不必调用，因为有数据时会调用
     }
 
