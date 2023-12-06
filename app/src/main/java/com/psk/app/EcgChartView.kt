@@ -24,7 +24,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.util.LinkedList
 import java.util.concurrent.ConcurrentLinkedQueue
-import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.math.max
 
 /*
@@ -47,9 +46,6 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         private const val MM_PER_MV = 10// 增益（灵敏度）。默认为1倍：10mm/mV
     }
 
-    private var sampleRate = 0// 采样率
-    private var gridSize = 0// 一个小格子对应的像素
-
     private val bgPainter by lazy {
         BgPainter()
     }
@@ -59,19 +55,19 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     private val textPainter by lazy {
         TextPainter()
     }
-    private val isInitialized = AtomicBoolean(false)
+
+    private var sampleRate = 0// 采样率
+    private var gridSize = 0// 一个小格子对应的像素
 
     /**
      * @param sampleRate    采样率，为了让动画看起来没有延迟，即每秒钟绘制的数据基本达到采样率。
      * @param gridSize      一个小格子对应的像素，默认为设备实际1mm对应的像素。
      */
     fun init(sampleRate: Int, gridSize: Int = (context.resources.displayMetrics.densityDpi / 25.4f).toInt()) {
-        if (isInitialized.compareAndSet(false, true)) {
-            Log.w(TAG, "init")
-            this.sampleRate = sampleRate
-            this.gridSize = gridSize
-            calcParams(gridSize, sampleRate, width, height)
-        }
+        Log.w(TAG, "init")
+        this.sampleRate = sampleRate
+        this.gridSize = gridSize
+        calcParams(gridSize, sampleRate, width, height)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -129,7 +125,7 @@ class TextPainter {
     // 画文字的画笔
     private val textPaint by lazy {
         TextPaint().apply {
-            color = Color.parseColor("#88000000")
+            color = Color.parseColor("#888888")
             textSize = 12f.sp
             strokeWidth = 1f
             isAntiAlias = true
