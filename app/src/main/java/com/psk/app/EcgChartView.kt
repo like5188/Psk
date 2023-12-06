@@ -54,7 +54,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         BgPainter()
     }
     private val pathPainter by lazy {
-        PathPainter(PathPainter.ScrollPathEffect())
+        PathPainter(PathPainter.CirclePathEffect())
     }
     private val textPainter by lazy {
         TextPainter()
