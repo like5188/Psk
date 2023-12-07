@@ -17,7 +17,7 @@ import kotlin.experimental.inv
 
 /**
  * 乐普单导联动态心电记录仪数据源
- * 经测试，采样率最大为128，数据量不是固定的，所以显示效果不好，断断续续的。所以不建议使用此设备
+ * 经测试，采样率为128，但是需要自己主动去获取数据，如果获取数据的时间间隔不足够1秒的话，获取到的数据量就达不到128
  */
 class ER1_HeartRateDataSource : BaseHeartRateDataSource() {
     override val protocol = Protocol(
@@ -33,9 +33,9 @@ class ER1_HeartRateDataSource : BaseHeartRateDataSource() {
                     val rtData = BtResponse.RtData(bleResponse.content)
                     // 心率值
                     val heartRate = rtData.param.hr
-                    // 心电图数据(这里经过测试数据量是不固定的，最大为128个)
+                    // 心电图数据(最大为128个)
                     val fs = rtData.wave.wFs
-                    println("heartRate=$heartRate size=${fs?.size} fs=${fs.contentToString()}")
+                    println("heartRate=$heartRate size=${fs?.size}")
                     val coorYValues = if (fs == null || fs.isEmpty()) {
                         // 如果没有数据，就让心电图画y坐标为0的横线
                         (0..127).map { 0f }.toFloatArray()
@@ -47,17 +47,11 @@ class ER1_HeartRateDataSource : BaseHeartRateDataSource() {
             }
         })
         launch {
-            // 延迟等待 setNotifyCallback 执行完成
-            delay(100)
             while (isActive) {
-                // 每1秒发送一次命令来获取心电相关的数据
-                val start = System.currentTimeMillis()
+                // 这里延迟太短会造成心电设备异常停止。延迟太长会造成每秒时长误差太大。
+                // 第一次延迟是为了等待 setNotifyCallback 执行完成
+                delay(1000)
                 write(getRtData())
-                val cost = System.currentTimeMillis() - start
-                val remain = 1000 - cost
-                if (remain > 0) {
-                    delay(remain)
-                }
             }
         }
         Logger.i("ER1_HeartRateDataSource setNotifyCallback")
