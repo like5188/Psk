@@ -26,8 +26,9 @@ fun scheduleFlow(delay: Long, period: Long, count: Int = 0): Flow<Long> =
         .transform {
             // 这里没有使用 delay(it - System.currentTimeMillis())，因为误差比较大。
             while (true) {
-                if (System.currentTimeMillis() >= it) {
-                    emit(it)
+                val time = System.currentTimeMillis()
+                if (time >= it) {
+                    emit(time)
                     break
                 }
             }

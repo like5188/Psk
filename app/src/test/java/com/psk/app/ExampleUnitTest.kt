@@ -1,5 +1,8 @@
 package com.psk.app
 
+import com.psk.common.util.scheduleFlow
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
 
 /**
@@ -10,5 +13,12 @@ import org.junit.Test
 class ExampleUnitTest {
     @Test
     fun addition_isCorrect() {
+        runBlocking {
+            scheduleFlow(0, 1000).collect {
+                println("1 collect $it")
+                delay(2000)
+                println("2 collect $it")
+            }
+        }
     }
 }
