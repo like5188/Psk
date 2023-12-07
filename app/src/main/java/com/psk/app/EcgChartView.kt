@@ -90,8 +90,9 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     override fun getPeriod(): Long {
         if (sampleRate <= 0) return 0L
         val interval = 1000 / sampleRate// 绘制每个数据的间隔时间。ceil向上取整
-        // 因为 scheduleFlow 循环任务在间隔时间太短或者处理业务耗时太长时会造成误差太多。
-        // 经测试，大概16毫秒以上循环误差就比较小了，建议使用25毫秒以上，这样绘制效果较好。
+        // 因为 scheduleFlow 循环任务在间隔时间太短会造成误差太多，
+        // 在处理业务耗时太长时会造成丢帧（循环任务使用了conflate()操作符），如果丢帧造成数据堆积，会在PathPainter.draw()方法中处理。
+        // 经测试，绘制能在30毫秒以内完成，这样绘制效果较好。为了能让它能被1000整除，这里选择25
         return max(interval, 25).toLong()
     }
 

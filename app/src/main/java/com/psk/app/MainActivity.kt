@@ -76,9 +76,12 @@ class MainActivity : AppCompatActivity() {
             SocketServerService.stop(this)
         }
         mBinding.btnConnect.setOnClickListener {
-            mBinding.ecgChartView.init(128, 10.dp)
+//            mBinding.ecgChartView.init(125, 10.dp)
 //            repository.init(this, "A00219000219", "A0:02:19:00:02:19")
-            repository.init(this, "ER1 0514", "CB:5D:19:C4:C3:A5")
+//            mBinding.ecgChartView.init(128, 10.dp)
+//            repository.init(this, "ER1 0514", "CB:5D:19:C4:C3:A5")
+            mBinding.ecgChartView.init(250, 10.dp)
+            repository.init(this, "C00228000695", "C0:02:28:00:06:95")
             repository.connect(lifecycleScope, 0L, {
                 showToast("心电仪连接成功，开始测量")
                 job = lifecycleScope.launch {
