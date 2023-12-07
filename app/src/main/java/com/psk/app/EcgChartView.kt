@@ -164,9 +164,7 @@ class PathPainter(private val pathEffect: IPathEffect) {
     private var stepX = 0f// x方向的步进，两个数据点在x轴方向的距离。px
     private var maxShowNumbers = 0// 整个视图能显示的最大数据量
 
-    // 每次绘制的数据量。避免数据太多，1秒钟绘制不完，所以每次多绘制几个，不让数据堆积造成界面延迟。
-    // 因为 scheduleFlow 循环任务在间隔时间太短或者处理业务耗时太长时会造成误差太多。
-    // 经测试，大概16毫秒以上循环误差就比较小了，建议使用25毫秒以上，这样绘制效果较好。
+    // 每次绘制的数据量。避免数据太多，1秒钟绘制不完，所以每次多绘制几个，不让数据堆积太多造成界面延迟严重。
     private var numbersOfEachDraw = 0
     private var sampleRate = 0
     private var gridSize = 0
