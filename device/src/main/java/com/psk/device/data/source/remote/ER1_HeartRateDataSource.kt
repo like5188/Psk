@@ -47,11 +47,12 @@ class ER1_HeartRateDataSource : BaseHeartRateDataSource() {
             }
         })
         launch {
+            // 等待 setNotifyCallback 执行完成
+            delay(100)
             while (isActive) {
-                // 这里延迟太短会造成心电设备异常停止。延迟太长会造成每秒时长误差太大。
-                // 第一次延迟是为了等待 setNotifyCallback 执行完成
-                delay(1000)
                 write(getRtData())
+                // 这里延迟太短会造成心电设备异常停止。延迟太长会造成每秒时长误差太大。
+                delay(1000)
             }
         }
         Logger.i("ER1_HeartRateDataSource setNotifyCallback")
