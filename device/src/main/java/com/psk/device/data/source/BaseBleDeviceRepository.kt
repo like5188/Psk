@@ -29,12 +29,6 @@ abstract class BaseBleDeviceRepository<BleDeviceDataSource : BaseBleDeviceDataSo
         return bleDeviceDataSource.isConnected()
     }
 
-    suspend fun waitUnlock() {
-        bleDeviceDataSource.waitUnlock()
-    }
-
-    fun isLocked() = bleDeviceDataSource.isLocked()
-
     fun close() {
         bleDeviceDataSource.close()
     }

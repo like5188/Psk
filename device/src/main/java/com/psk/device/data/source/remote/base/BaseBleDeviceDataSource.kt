@@ -32,12 +32,6 @@ abstract class BaseBleDeviceDataSource {
         }
     }
 
-    suspend fun waitUnlock() {
-        connectExecutor.waitUnlock()
-    }
-
-    fun isLocked() = connectExecutor.isLocked()
-
     @SuppressLint("MissingPermission")
     fun connect(
         scope: CoroutineScope, autoConnectInterval: Long, onConnected: () -> Unit, onDisconnected: () -> Unit
