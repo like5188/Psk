@@ -38,8 +38,8 @@ dependencies {
     kapt 'androidx.room:room-compiler:2.4.3'
 
     implementation 'com.github.like5188:Common:7.1.0'
-    api 'com.github.like5188.Ble:core:2.4.1'
-    api 'com.github.like5188.Ble:central:2.4.1'
+    api 'com.github.like5188.Ble:core:2.4.2'
+    api 'com.github.like5188.Ble:central:2.4.2'
 
     // 深圳星康医疗科技有限公司 SCI-311W 数据解析包。还要两外添加 libECGMonitor.so。
     implementation(name: 'stardata-release', ext: 'aar')
