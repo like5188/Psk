@@ -1,7 +1,6 @@
 package com.psk.device
 
-import androidx.activity.ComponentActivity
-import com.like.ble.util.PermissionUtils
+import android.content.Context
 import com.psk.device.DeviceRepositoryManager.createBleDeviceRepository
 import com.psk.device.DeviceRepositoryManager.init
 import com.psk.device.data.db.DeviceDatabaseManager
@@ -13,16 +12,18 @@ import kotlin.collections.set
 /**
  * 仓库管理工具类。
  * 1、调用[init]进行初始化
- * 2、使用[createBleDeviceRepository]创建的设备仓库。
+ * 2、使用[createBleDeviceRepository]创建设备仓库。
+ * 3、使用设备仓库中的方法。
+ * 注意：调用[BaseBleDeviceRepository.connect]进行连接之前必须请求连接环境[com.like.ble.central.util.PermissionUtils.requestConnectEnvironment]，
+ * 但是如果已经请求了扫描环境[com.like.ble.central.util.PermissionUtils.requestScanEnvironment]，那么这里就不需要请求连接环境了，因为扫描环境包含了连接环境。
  */
 object DeviceRepositoryManager {
     private val bleDeviceRepositories = mutableMapOf<DeviceType, BaseBleDeviceRepository<*>>()
 
-    suspend fun init(activity: ComponentActivity) {
-        PermissionUtils.requestConnectEnvironment(activity)
-        DeviceDatabaseManager.init(activity.applicationContext)
+    suspend fun init(context: Context) {
+        DeviceDatabaseManager.init(context.applicationContext)
         // [BleDataSourceFactory]必须放在扫描之前初始化，否则扫描时，如果要用到[DeviceType.containsDevice]方法就没效果。
-        BleDataSourceFactory.init(activity.applicationContext)
+        BleDataSourceFactory.init(context.applicationContext)
     }
 
     /**

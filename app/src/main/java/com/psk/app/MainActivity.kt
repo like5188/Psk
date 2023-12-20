@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
+import com.like.ble.central.util.PermissionUtils
 import com.like.common.util.dp
 import com.like.common.util.showToast
 import com.psk.app.databinding.ActivityMainBinding
@@ -82,21 +83,24 @@ class MainActivity : AppCompatActivity() {
 //            repository.init(this, "ER1 0514", "CB:5D:19:C4:C3:A5")
             mBinding.ecgChartView.init(250, 10.dp)
             repository.init(this, "C00228000695", "C0:02:28:00:06:95")
-            repository.connect(lifecycleScope, 0L, {
-                showToast("心电仪连接成功，开始测量")
-                job = lifecycleScope.launch {
-                    repository.fetch().filterNotNull().map {
-                        it.coorYValues
-                    }.buffer(Int.MAX_VALUE).collect {
-                        mBinding.ecgChartView.addData(it.map {
-                            -it// 取反，因为如果不处理，画出的波形图是反的
-                        })
+            lifecycleScope.launch {
+                PermissionUtils.requestConnectEnvironment(this@MainActivity)
+                repository.connect(lifecycleScope, 0L, {
+                    showToast("心电仪连接成功，开始测量")
+                    job = lifecycleScope.launch {
+                        repository.fetch().filterNotNull().map {
+                            it.coorYValues
+                        }.buffer(Int.MAX_VALUE).collect {
+                            mBinding.ecgChartView.addData(it.map {
+                                -it// 取反，因为如果不处理，画出的波形图是反的
+                            })
+                        }
                     }
+                }) {
+                    showToast("心电仪连接失败，无法进行测量")
+                    job?.cancel()
+                    job = null
                 }
-            }) {
-                showToast("心电仪连接失败，无法进行测量")
-                job?.cancel()
-                job = null
             }
         }
         mBinding.btnDisconnect.setOnClickListener {
