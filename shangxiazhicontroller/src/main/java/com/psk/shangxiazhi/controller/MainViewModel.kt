@@ -3,7 +3,10 @@ package com.psk.shangxiazhi.controller
 import android.content.Context
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
+import com.like.ble.central.util.PermissionUtils
+import com.like.common.util.showToast
 import com.psk.device.DeviceRepositoryManager
 import com.psk.device.ScanManager
 import com.psk.device.data.model.DeviceType
@@ -32,14 +35,20 @@ class MainViewModel : ViewModel() {
     }
 
     fun scan(activity: FragmentActivity) {
-        ScanDeviceDialogFragment.newInstance(DeviceType.ShangXiaZhi).apply {
-            onSelected = { bleScanInfo ->
-                _uiState.update {
-                    it.copy(name = bleScanInfo.name)
-                }
-                connect(activity, bleScanInfo.name, bleScanInfo.address)
+        activity.lifecycleScope.launch {
+            if (PermissionUtils.requestScanEnvironment(activity)) {
+                ScanDeviceDialogFragment.newInstance(DeviceType.ShangXiaZhi).apply {
+                    onSelected = { bleScanInfo ->
+                        _uiState.update {
+                            it.copy(name = bleScanInfo.name)
+                        }
+                        connect(activity, bleScanInfo.name, bleScanInfo.address)
+                    }
+                }.show(activity)
+            } else {
+                activity.showToast("无法选择设备！缺少扫描蓝牙设备需要的权限：位置信息、查找连接附近设备")
             }
-        }.show(activity)
+        }
     }
 
     private fun connect(context: Context, name: String, address: String) {
