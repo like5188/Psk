@@ -1,7 +1,6 @@
 package com.psk.shangxiazhi.controller
 
 import android.content.Context
-import androidx.activity.ComponentActivity
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -25,10 +24,10 @@ class MainViewModel : ViewModel() {
     private var isRunningInPassiveMode = false// 被动模式时，上下肢是否运行
     private var isRunningInActiveMode = false// 主动模式时，上下肢是否运行
 
-    fun init(activity: ComponentActivity) {
+    fun init(context: Context) {
         viewModelScope.launch {
-            ScanManager.init(activity)
-            DeviceRepositoryManager.init(activity)
+            ScanManager.init(context)
+            DeviceRepositoryManager.init(context)
         }
     }
 

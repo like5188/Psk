@@ -1,7 +1,6 @@
 package com.psk.shangxiazhi.main
 
 import android.content.Context
-import androidx.activity.ComponentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.psk.common.util.scheduleFlow
@@ -39,10 +38,10 @@ class MainViewModel(
         }
     }
 
-    fun init(activity: ComponentActivity) {
+    fun init(context: Context) {
         viewModelScope.launch {
-            ScanManager.init(activity)
-            DeviceRepositoryManager.init(activity)
+            ScanManager.init(context)
+            DeviceRepositoryManager.init(context)
         }
     }
 
