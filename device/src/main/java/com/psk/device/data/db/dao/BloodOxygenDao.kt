@@ -2,6 +2,7 @@ package com.psk.device.data.db.dao
 
 import androidx.room.Dao
 import androidx.room.Query
+import com.psk.common.db.BaseDao
 import com.psk.device.data.model.BloodOxygen
 import kotlinx.coroutines.flow.Flow
 

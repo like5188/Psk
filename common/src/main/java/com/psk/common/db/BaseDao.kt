@@ -1,4 +1,4 @@
-package com.psk.device.data.db.dao
+package com.psk.common.db
 
 import androidx.room.Delete
 import androidx.room.Insert

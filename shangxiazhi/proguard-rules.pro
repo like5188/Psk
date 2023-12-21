@@ -19,5 +19,8 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
--keep class com.psk.shangxiazhi.data.**{*;}
--keep class com.psk.shangxiazhi.game.**{*;}
+-keep public class * extends com.psk.shangxiazhi.game.business.BaseBusinessManager{
+  	# 不混淆构造方法，需要反射创建实例
+    <init>(kotlinx.coroutines.CoroutineScope,long,java.lang.String,java.lang.String);
+}
+-keep public class com.psk.shangxiazhi.data.model.**{*;}
