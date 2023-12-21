@@ -22,7 +22,6 @@ import com.psk.shangxiazhi.databinding.DialogFragmentMeasureTargetHeartRateBindi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -79,10 +78,10 @@ class MeasureTargetHeartRateDialogFragment private constructor() : BaseDialogFra
             heartRates.clear()
             repository.fetch().filterNotNull().map {
                 it.value
-            }.filter {
-                it > 0
             }.onEach {
-                heartRates.add(it)
+                if (it > 0) {
+                    heartRates.add(it)
+                }
             }.distinctUntilChanged().flowOn(Dispatchers.IO).collect {
                 println("心率：$it")
                 mBinding.tvHeartRate.text = it.toString()
