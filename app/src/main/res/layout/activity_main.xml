@@ -32,9 +32,39 @@
             android:text="断开蓝牙连接" />
 
         <com.psk.app.EcgChartView
-            android:id="@+id/ecgChartView"
+            android:id="@+id/ecgChartView1"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="10dp" />
+
+        <com.psk.app.EcgChartView
+            android:id="@+id/ecgChartView2"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginTop="10dp" />
+
+        <com.psk.app.EcgChartView
+            android:id="@+id/ecgChartView3"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginTop="10dp" />
+
+        <com.psk.app.EcgChartView
+            android:id="@+id/ecgChartViewAvr"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginTop="10dp" />
+
+        <com.psk.app.EcgChartView
+            android:id="@+id/ecgChartViewAvl"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginTop="10dp" />
+
+        <com.psk.app.EcgChartView
+            android:id="@+id/ecgChartViewAvf"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
             android:layout_marginTop="10dp" />
 
     </LinearLayout>
