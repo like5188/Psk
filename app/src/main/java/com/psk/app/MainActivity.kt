@@ -30,12 +30,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mBinding.btnStart.setOnClickListener {
-            mBinding.ecgChartView1.init(250)
-            mBinding.ecgChartView2.init(250)
-            mBinding.ecgChartView3.init(250)
-            mBinding.ecgChartViewAvr.init(250)
-            mBinding.ecgChartViewAvl.init(250)
-            mBinding.ecgChartViewAvf.init(250)
+            mBinding.ecgChartView.init(250, leadsCount = 12, drawStandardPath = true, effect = PathPainter.ScrollPathEffect())
             // E/SocketServerService: Parameter specified as non-null is null: method kotlin.jvm.internal.Intrinsics.checkNotNullParameter, parameter conn
             SocketServerService.start(this, 7777, object : SocketListener {
                 override fun onOpen(address: String?) {
@@ -61,7 +56,7 @@ class MainActivity : AppCompatActivity() {
                     print("包序号(时间) ${message.int}, ")
                     print("增益(float) ${message.float}, ")
                     val ecgData = (0 until 120).map {
-                        message.short
+                        message.short / -1000f
                     }
                     print("12导心电数据 ${ecgData}, ")
                     print("心率 ${message.short}, ")
@@ -70,25 +65,24 @@ class MainActivity : AppCompatActivity() {
                     print("功率 ${message.short}, ")
                     print("血氧 ${message.get()}, ")
 
-                    val list = ecgData.chunked(12)
-                    mBinding.ecgChartView1.addData(
-                        list.map { it.first() / -1000f }// 这里的数据单位是 uV，需要 /1000f 转换成 mV
+                    val datas = listOf(
+                        mutableListOf<Float>(),
+                        mutableListOf(),
+                        mutableListOf(),
+                        mutableListOf(),
+                        mutableListOf(),
+                        mutableListOf(),
+                        mutableListOf(),
+                        mutableListOf(),
+                        mutableListOf(),
+                        mutableListOf(),
+                        mutableListOf(),
+                        mutableListOf(),
                     )
-                    mBinding.ecgChartView2.addData(
-                        list.map { it[1] / -1000f }
-                    )
-                    mBinding.ecgChartView3.addData(
-                        list.map { it[2] / -1000f }
-                    )
-                    mBinding.ecgChartViewAvr.addData(
-                        list.map { it[3] / -1000f }
-                    )
-                    mBinding.ecgChartViewAvl.addData(
-                        list.map { it[4] / -1000f }
-                    )
-                    mBinding.ecgChartViewAvf.addData(
-                        list.map { it[5] / -1000f }
-                    )
+                    ecgData.forEachIndexed { index, data ->
+                        datas[index % 12].add(data)
+                    }
+                    mBinding.ecgChartView.addData(datas)
                     println()
                 }
             })
@@ -101,7 +95,7 @@ class MainActivity : AppCompatActivity() {
 //            repository.init(this, "A00219000219", "A0:02:19:00:02:19")
 //            mBinding.ecgChartView.init(128, 10.dp)
 //            repository.init(this, "ER1 0514", "CB:5D:19:C4:C3:A5")
-            mBinding.ecgChartView1.init(250, 10.dp)
+            mBinding.ecgChartView.init(250, 10.dp)
             repository.init(this, "C00228000695", "C0:02:28:00:06:95")
             lifecycleScope.launch {
                 PermissionUtils.requestConnectEnvironment(this@MainActivity)
@@ -111,9 +105,7 @@ class MainActivity : AppCompatActivity() {
                         repository.fetch().filterNotNull().map {
                             it.coorYValues
                         }.buffer(Int.MAX_VALUE).collect {
-                            mBinding.ecgChartView1.addData(it.map {
-                                -it// 取反，因为如果不处理，画出的波形图是反的
-                            })
+                            mBinding.ecgChartView.addData(listOf(it.map { -it }))// 取反，因为如果不处理，画出的波形图是反的
                         }
                     }
                 }) {
