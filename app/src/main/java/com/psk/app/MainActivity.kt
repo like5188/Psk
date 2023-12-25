@@ -29,6 +29,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        mBinding.tv.text = "25 mm/s    10mm/mV"
         mBinding.btnStart.setOnClickListener {
             mBinding.ecgChartView.init(250, leadsCount = 12, drawStandardPath = true, effect = PathPainter.ScrollPathEffect())
             // E/SocketServerService: Parameter specified as non-null is null: method kotlin.jvm.internal.Intrinsics.checkNotNullParameter, parameter conn
