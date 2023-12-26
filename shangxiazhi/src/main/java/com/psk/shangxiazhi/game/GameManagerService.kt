@@ -24,6 +24,7 @@ import org.koin.android.ext.android.inject
 
 /**
  * 游戏管理服务，如果需要和游戏app进行交互，就使用此服务。
+ * 注意：必须开启电池管理中的运行后台运行，防止被杀死。
  */
 class GameManagerService : Service() {
     companion object {
