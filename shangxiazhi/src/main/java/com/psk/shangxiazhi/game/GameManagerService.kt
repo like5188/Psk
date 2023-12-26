@@ -18,6 +18,7 @@ import com.twsz.twsystempre.GameController
 import com.twsz.twsystempre.TrainScene
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
@@ -33,6 +34,7 @@ class GameManagerService : Service() {
     private val multiBusinessManager: MultiBusinessManager by lazy {
         MultiBusinessManager()
     }
+    private var gameJob: Job? = null
 
     fun start(
         scope: CoroutineScope,
@@ -72,7 +74,8 @@ class GameManagerService : Service() {
                 }
             }
         }
-        scope.launch(Dispatchers.IO) {
+        gameJob?.cancel()
+        gameJob = scope.launch(Dispatchers.IO) {
             // todo 如果增加蓝牙设备系列，需要在这里结合游戏app做处理。
             gameController.initGame(
                 devices.containsKey(DeviceType.HeartRate),
@@ -94,6 +97,8 @@ class GameManagerService : Service() {
         super.onDestroy()
         Log.d(TAG, "GameManagerService onDestroy")
         stopForeground()
+        gameJob?.cancel()
+        gameJob = null
     }
 
     override fun onBind(intent: Intent?): IBinder {
