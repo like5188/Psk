@@ -46,11 +46,11 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     private var mm_per_mv = 0
     private var gridSize = 0
     private var leadsCount = 0
-    private var drawStandardPath = false
+    private var standardPaint: Paint? = null
     private var pathPaint: Paint? = null
     private var linePaint: Paint? = null
     private var dashPaint: Paint? = null
-    private var effect: PathPainter.IPathEffect? = null
+    private var effect = 0
 
     /**
      * @param sampleRate        采样率
@@ -58,11 +58,11 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
      * @param mm_per_mv         增益（灵敏度）。默认为1倍：10mm/mV
      * @param gridSize          一个小格子对应的像素。默认为设备实际1mm对应的像素。
      * @param leadsCount        导联数量。默认为1。
-     * @param drawStandardPath  是否绘制标准方波。默认为false。
+     * @param standardPaint     标准方波画笔。如果为 null，表示不绘制标准方波。
      * @param linePaint         背景实线画笔。
      * @param dashPaint         背景虚线画笔。
      * @param pathPaint         数据画笔。
-     * @param effect            数据绘制效果，库中实现了两种效果：[PathPainter.CirclePathEffect]、[PathPainter.ScrollPathEffect]。默认为[PathPainter.CirclePathEffect]
+     * @param effect            数据绘制效果。0：循环效果；1：滚动效果。默认为 0。
      */
     fun init(
         sampleRate: Int,
@@ -70,7 +70,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         mm_per_mv: Int = 10,
         gridSize: Int = (context.resources.displayMetrics.densityDpi / 25.4f).toInt(),
         leadsCount: Int = 1,
-        drawStandardPath: Boolean = false,
+        standardPaint: Paint? = null,
         linePaint: Paint = Paint().apply {
             color = Color.parseColor("#00a7ff")
             strokeWidth = 1f
@@ -90,7 +90,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
             style = Paint.Style.STROKE
             isAntiAlias = true
         },
-        effect: PathPainter.IPathEffect = PathPainter.CirclePathEffect()
+        effect: Int = 0
     ) {
         Log.w(TAG, "init")
         this.sampleRate = sampleRate
@@ -98,7 +98,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         this.mm_per_mv = mm_per_mv
         this.gridSize = gridSize
         this.leadsCount = leadsCount
-        this.drawStandardPath = drawStandardPath
+        this.standardPaint = standardPaint
         this.pathPaint = pathPaint
         this.linePaint = linePaint
         this.dashPaint = dashPaint
@@ -117,21 +117,22 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         val pathPaint = pathPaint ?: return
         val linePaint = linePaint ?: return
         val dashPaint = dashPaint ?: return
-        val effect = effect ?: return
-        if (sampleRate <= 0 || mm_per_s <= 0 || mm_per_mv <= 0 || gridSize <= 0 || leadsCount <= 0 || width <= 0 || height <= 0) {
+        if (sampleRate <= 0 || mm_per_s <= 0 || mm_per_mv <= 0 || gridSize <= 0 || leadsCount <= 0 || width <= 0 || height <= 0 || effect < 0 || effect > 1) {
             return
         }
         Log.i(
             TAG,
             "sampleRate=$sampleRate mm_per_s=$mm_per_s mm_per_mv=$mm_per_mv gridSize=$gridSize leadsCount=$leadsCount width=$width height=$height"
         )
-        bgPainter = BgPainter(linePaint, dashPaint)
-        bgPainter.init(width, height, gridSize)
+        bgPainter = BgPainter(linePaint, dashPaint, standardPaint)
+        bgPainter.init(width, height, gridSize, leadsCount)
 
         pathPainters.clear()
         repeat(leadsCount) {
-            pathPainters.add(PathPainter(effect, pathPaint).apply {
-                init(mm_per_s, mm_per_mv, getPeriod(), gridSize, sampleRate, width, height / leadsCount, it, drawStandardPath)
+            pathPainters.add(PathPainter(
+                if (effect == 0) PathPainter.CirclePathEffect() else PathPainter.ScrollPathEffect(), pathPaint
+            ).apply {
+                init(mm_per_s, mm_per_mv, getPeriod(), sampleRate, width, height, gridSize, leadsCount, it, standardPaint != null)
             })
         }
     }
@@ -166,11 +167,11 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     }
 
     override fun onDrawFrame(canvas: Canvas) {
-        Log.v(TAG, "onDrawFrame")
-        if (pathPainters.firstOrNull()?.hasNotDrawData() != true) {
+        if (pathPainters.all { !it.hasNotDrawData() }) {
             cancelJob("没有数据")// 没有数据时取消任务
             return
         }
+        Log.v(TAG, "onDrawFrame")
         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
         bgPainter.draw(canvas)
         pathPainters.forEach {
@@ -182,7 +183,6 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
 
 class PathPainter(private val pathEffect: IPathEffect, private val paint: Paint) {
     private val path = Path()
-    private val standardPath = Path()// 标准方波，高度为10 mm，宽度为0.2 s（5 mm）
     private val notDrawDataQueue = ConcurrentLinkedQueue<Float>()// 未绘制的数据集合
     private val drawDataList = LinkedList<Float>()// 需要绘制的数据集合
     private var yOffset = 0f// y轴偏移。因为原始的x轴在视图顶部。所以需要把x轴移动到视图垂直中心位置
@@ -195,7 +195,6 @@ class PathPainter(private val pathEffect: IPathEffect, private val paint: Paint)
     private var sampleRate = 0
     private var gridSize = 0
     private var mm_per_mv = 0
-    private var drawStandardPath = true
 
     fun addData(data: List<Float>) {
         data.forEach {
@@ -216,36 +215,29 @@ class PathPainter(private val pathEffect: IPathEffect, private val paint: Paint)
         mm_per_s: Int,
         mm_per_mv: Int,
         period: Long,
-        gridSize: Int,
         sampleRate: Int,
         w: Int,
         h: Int,
+        gridSize: Int,
+        leadsCount: Int,
         leadsIndex: Int,
         drawStandardPath: Boolean
     ) {
         this.sampleRate = sampleRate
         this.gridSize = gridSize
         this.mm_per_mv = mm_per_mv
-        this.drawStandardPath = drawStandardPath
         // 根据采样率计算
         stepX = gridSize * mm_per_s / sampleRate.toFloat()
         // 根据视图宽高计算
-        yOffset = h / 2f + leadsIndex * h// x坐标轴移动到中间
+        val leadsH = h / leadsCount
+        yOffset = leadsH / 2f + leadsIndex * leadsH// x坐标轴移动到中间
+        if (drawStandardPath) {
+            xOffset = gridSize * 15f// 3个大格
+        }
+        maxShowNumbers = ((w - xOffset) / stepX).toInt()
         // 为了让动画看起来没有延迟，即每秒钟绘制的数据基本达到采样率。
         val circleTimesPerSecond = (1000 / period).toInt()// 每秒绘制次数
         numbersOfEachDraw = sampleRate / circleTimesPerSecond
-        if (drawStandardPath) {
-            xOffset = gridSize * 15f// 3个大格
-            // 计算标准方波
-            standardPath.reset()
-            standardPath.moveTo(0f, yOffset)
-            standardPath.lineTo(gridSize * 5f, yOffset)
-            standardPath.lineTo(gridSize * 5f, yOffset - gridSize * 10f)
-            standardPath.lineTo(gridSize * 10f, yOffset - gridSize * 10f)
-            standardPath.lineTo(gridSize * 10f, yOffset)
-            standardPath.lineTo(xOffset, yOffset)
-        }
-        maxShowNumbers = ((w - xOffset) / stepX).toInt()
         Log.i(TAG, "stepX=$stepX yOffset=$yOffset maxShowNumbers=$maxShowNumbers numbersOfEachDraw=$numbersOfEachDraw")
     }
 
@@ -276,9 +268,6 @@ class PathPainter(private val pathEffect: IPathEffect, private val paint: Paint)
             pathEffect.handlePath(path, stepX, index, fl)
         }
         path.offset(xOffset, yOffset)
-        if (drawStandardPath) {
-            canvas.drawPath(standardPath, paint)
-        }
         canvas.drawPath(path, paint)
     }
 
@@ -346,21 +335,19 @@ class PathPainter(private val pathEffect: IPathEffect, private val paint: Paint)
     }
 }
 
-class BgPainter(private val linePaint: Paint, private val dashPaint: Paint) {
+class BgPainter(private val linePaint: Paint, private val dashPaint: Paint, private val standardPaint: Paint?) {
     private var bgBitmap: Bitmap? = null// 背景图片
 
     /**
      * 创建背景图片
      */
-    fun init(w: Int, h: Int, gridSize: Int) {
-        val hLineCount = h / gridSize// 水平线的数量
-        val vLineCount = w / gridSize// 垂直线的数量
-        Log.i(TAG, "hLineCount=$hLineCount vLineCount=$vLineCount")
+    fun init(w: Int, h: Int, gridSize: Int, leadsCount: Int) {
         bgBitmap?.recycle()
         bgBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888).apply {
             val canvas = Canvas(this)
-            drawHLine(canvas, hLineCount, w, gridSize)
-            drawVLine(canvas, vLineCount, h, gridSize)
+            drawHLine(canvas, h / gridSize, w, gridSize)
+            drawVLine(canvas, w / gridSize, h, gridSize)
+            drawStandard(canvas, h, leadsCount, gridSize)
         }
     }
 
@@ -400,6 +387,26 @@ class BgPainter(private val linePaint: Paint, private val dashPaint: Paint) {
             } else {
                 canvas.drawLine(x, startY, x, stopY, dashPaint)
             }
+        }
+    }
+
+    // 画标准方波。高度为10 mm，宽度为0.2 s（5 mm）
+    private fun drawStandard(canvas: Canvas, h: Int, leadsCount: Int, gridSize: Int) {
+        val paint = standardPaint ?: return
+        val path = Path()
+        // 根据视图宽高计算
+        val leadsH = h / leadsCount
+        repeat(leadsCount) {
+            // 计算标准方波
+            val yOffset = leadsH / 2f + it * leadsH// x坐标轴移动到中间
+            path.reset()
+            path.moveTo(0f, yOffset)
+            path.lineTo(gridSize * 5f, yOffset)
+            path.lineTo(gridSize * 5f, yOffset - gridSize * 10f)
+            path.lineTo(gridSize * 10f, yOffset - gridSize * 10f)
+            path.lineTo(gridSize * 10f, yOffset)
+            path.lineTo(gridSize * 15f, yOffset)
+            canvas.drawPath(path, paint)
         }
     }
 }

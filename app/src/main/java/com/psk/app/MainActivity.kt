@@ -1,5 +1,7 @@
 package com.psk.app
 
+import android.graphics.Color
+import android.graphics.Paint
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -31,7 +33,18 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         mBinding.tv.text = "25 mm/s    10mm/mV"
         mBinding.btnStart.setOnClickListener {
-            mBinding.ecgChartView.init(250, leadsCount = 12, drawStandardPath = true, effect = PathPainter.ScrollPathEffect())
+            mBinding.ecgChartView.init(
+                sampleRate = 250,
+                leadsCount = 12,
+                standardPaint = Paint().apply {
+                    color = Color.parseColor("#ffffff")
+                    strokeWidth = 3f
+                    style = Paint.Style.STROKE
+                    isAntiAlias = true
+                    alpha = 125
+                },
+                effect = 0
+            )
             // E/SocketServerService: Parameter specified as non-null is null: method kotlin.jvm.internal.Intrinsics.checkNotNullParameter, parameter conn
             SocketServerService.start(this, 7777, object : SocketListener {
                 override fun onOpen(address: String?) {
