@@ -281,12 +281,14 @@ class DataPainter(
         // 为了让动画看起来没有延迟，即每秒钟绘制的数据基本达到采样率。
         val circleTimesPerSecond = (1000 / period).toInt()// 每秒绘制次数
         numbersOfEachDraw = sampleRate / circleTimesPerSecond
-        Log.i(TAG, "stepX=$stepX yOffset=$yOffset maxShowNumbers=$maxShowNumbers numbersOfEachDraw=$numbersOfEachDraw")
-    }
+        Log.i(
+            TAG,
+            "第 ${leadsIndex + 1} 导联：stepX=$stepX yOffset=$yOffset maxShowNumbers=$maxShowNumbers numbersOfEachDraw=$numbersOfEachDraw"
+        )    }
 
     override fun draw(canvas: Canvas) {
         if (notDrawDataQueue.isEmpty()) return
-        Log.i(TAG, "notDrawDataQueue=${notDrawDataQueue.size} drawDataList=${drawDataList.size}")
+        Log.v(TAG, "notDrawDataQueue=${notDrawDataQueue.size} drawDataList=${drawDataList.size}")
         repeat(
             // 如果剩余的数据量超过了 sampleRate，那么就每次多取1个数据，避免剩余数据量无限增长，造成暂停操作的延迟。
             if (notDrawDataQueue.size > sampleRate) {
@@ -496,16 +498,13 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
 
     protected fun startJob() {
         if (job != null) return
-        Log.w(TAG, "startJob")
+        val period = getPeriod()// 当第一次回调surfaceCreated()时，有可能没有此值。但是添加数据后会再次启动任务，所以这里不用使用阻塞。
+        if (period <= 0L) {
+            return
+        }
+        Log.w(TAG, "startJob period=$period")
         job = findViewTreeLifecycleOwner()?.lifecycleScope?.launch(Dispatchers.IO) {
             var canvas: Canvas? = null
-            // 阻塞等待period值
-            val period = getPeriod()// 当第一次回调surfaceCreated()时，有可能没有此值。但是添加数据后会再次启动任务，所以这里不用使用阻塞。
-            if (period <= 0L) {
-                cancelJob("period=$period")
-                return@launch
-            }
-            Log.w(TAG, "开始循环绘制任务 period=$period")
             scheduleFlow(0, period).collect {
                 try {
                     // 用了两个画布，一个进行临时的绘图，一个进行最终的绘图，这样就叫做双缓冲
