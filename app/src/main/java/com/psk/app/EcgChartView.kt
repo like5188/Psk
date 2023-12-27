@@ -115,9 +115,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
 
     // 计算相关参数
     private fun calcParams() {
-        if (!::bgPainter.isInitialized) return
-        if (!::dataPainters.isInitialized) return
-        if (sampleRate <= 0 || mm_per_s <= 0 || mm_per_mv <= 0 || gridSize <= 0 || leadsCount <= 0 || width <= 0 || height <= 0) {
+        if (sampleRate <= 0 || mm_per_s <= 0 || mm_per_mv <= 0 || gridSize <= 0 || leadsCount <= 0 || width <= 0 || height <= 0 || !::bgPainter.isInitialized || !::dataPainters.isInitialized) {
             return
         }
         Log.i(
@@ -155,6 +153,10 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
             Log.e(TAG, "添加数据失败，isSurfaceCreated is false")
             return
         }
+        if (!::dataPainters.isInitialized) {
+            Log.e(TAG, "添加数据失败，请先调用 init 方法进行初始化")
+            return
+        }
         dataPainters.forEachIndexed { index, dataPainter ->
             dataPainter.addData(list[index])
         }
@@ -163,7 +165,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
 
     override fun onDrawFrame(canvas: Canvas) {
         if (dataPainters.all { !it.hasNotDrawData() }) {
-            doDraw(canvas)// 这里绘制一次最近的数据，避免前后台切换后由于没有数据不进行绘制。
+            doDraw(canvas)// 这里绘制一次最近的数据，避免前后台切换后由于没有数据传递过来而不进行绘制，造成界面空白。
             cancelJob("没有数据")// 没有数据时取消任务
             return
         }
@@ -513,22 +515,28 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
         job = findViewTreeLifecycleOwner()?.lifecycleScope?.launch(Dispatchers.IO) {
             var canvas: Canvas? = null
             scheduleFlow(0, period).collect {
-                try {
-                    // 用了两个画布，一个进行临时的绘图，一个进行最终的绘图，这样就叫做双缓冲
-                    // frontCanvas：实际显示的canvas。
-                    // backCanvas：存储的是上一次更改前的canvas。
-                    canvas = holder.lockCanvas() // 获取 backCanvas
-                    // 获取到的 Canvas 对象还是继续上次的 Canvas 对象，而不是一个新的 Canvas 对象。因此，之前的绘图操作都会被保留。
-                    // 所以，在绘制前，需要通过 drawColor() 方法来进行清屏操作。
-                    canvas?.let {
-                        onDrawFrame(it)
-                    }
-                } finally {
-                    canvas?.let {
-                        // 使用 backCanvas 替换 frontCanvas 作为新的 frontCanvas，原来的 frontCanvas 将切换到后台作为 backCanvas。
-                        try {
-                            holder.unlockCanvasAndPost(it)
-                        } catch (e: Exception) {
+                // 这里和cancelJob方法都要加锁，避免前台切换到后台时，当一直有数据添加，
+                // 那么 cancelJob 的时机有可能在 holder.lockCanvas 和 holder.unlockCanvasAndPost 方法之间，从而造成：
+                // 1、java.lang.IllegalStateException: Surface has already been released.
+                // 2、java.lang.IllegalArgumentException: Surface was already locked
+                synchronized(this@AbstractSurfaceView) {
+                    try {
+                        // 用了两个画布，一个进行临时的绘图，一个进行最终的绘图，这样就叫做双缓冲
+                        // frontCanvas：实际显示的canvas。
+                        // backCanvas：存储的是上一次更改前的canvas。
+                        canvas = holder.lockCanvas() // 获取 backCanvas
+                        // 获取到的 Canvas 对象还是继续上次的 Canvas 对象，而不是一个新的 Canvas 对象。因此，之前的绘图操作都会被保留。
+                        // 所以，在绘制前，需要通过 drawColor() 方法来进行清屏操作。
+                        canvas?.let {
+                            onDrawFrame(it)
+                        }
+                    } finally {
+                        canvas?.let {
+                            // 使用 backCanvas 替换 frontCanvas 作为新的 frontCanvas，原来的 frontCanvas 将切换到后台作为 backCanvas。
+                            try {
+                                holder.unlockCanvasAndPost(it)
+                            } catch (e: Exception) {
+                            }
                         }
                     }
                 }
@@ -537,9 +545,11 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
     }
 
     protected fun cancelJob(cause: String) {
-        Log.w(TAG, "cancelJob $cause")
-        job?.cancel()
-        job = null
+        synchronized(this@AbstractSurfaceView) {
+            Log.w(TAG, "cancelJob $cause")
+            job?.cancel()
+            job = null
+        }
     }
 
     /**
