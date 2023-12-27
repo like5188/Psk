@@ -38,31 +38,30 @@ import kotlin.math.max
     注意：如果采用非1倍电压，在计算结果时需要还原。
  */
 class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView(context, attrs) {
-    private lateinit var bgPainter: BgPainter
-    private val dataPainters = mutableListOf<DataPainter>()
-
     private var sampleRate = 0
     private var mm_per_s = 0
     private var mm_per_mv = 0
     private var gridSize = 0
     private var leadsCount = 0
-    private var standardSquareWavePaint: Paint? = null
-    private var solidLinePaint: Paint? = null
-    private var dashLinePaint: Paint? = null
-    private var dataPaint: Paint? = null
-    private var effect = 0
+    private lateinit var bgPainter: IBgPainter
+    private lateinit var dataPainters: List<IDataPainter>
+
+    init {
+        // 画布透明处理
+        setZOrderOnTop(true)
+        holder.setFormat(PixelFormat.TRANSLUCENT)
+    }
 
     /**
-     * @param sampleRate                采样率
-     * @param mm_per_s                  走速（速度）。默认为标准值：25mm/s
-     * @param mm_per_mv                 增益（灵敏度）。默认为1倍：10mm/mV
-     * @param gridSize                  一个小格子对应的像素。默认为设备实际1mm对应的像素。
-     * @param leadsCount                导联数量。默认为1。
-     * @param standardSquareWavePaint   标准方波画笔。如果为 null，表示不绘制标准方波。
-     * @param solidLinePaint            背景实线画笔。
-     * @param dashLinePaint             背景虚线画笔。
-     * @param dataPaint                 数据画笔。
-     * @param effect                    数据绘制效果。0：循环效果；1：滚动效果。默认为 0。
+     * @param sampleRate        采样率
+     * @param mm_per_s          走速（速度）。默认为标准值：25mm/s
+     * @param mm_per_mv         增益（灵敏度）。默认为 1倍：10mm/mV
+     * @param gridSize          一个小格子对应的像素。默认为设备实际 1mm对应的像素。
+     * @param leadsCount        导联数量。默认为 1。
+     * @param bgPainter         背景绘制者。默认为[BgPainter]。
+     * 可以自己实现[IBgPainter]接口，或者自己创建[BgPainter]实例。
+     * @param dataPainters      数据绘制者集合，有几个导联就需要几个绘制者。默认为包括[leadsCount]个[DataPainter]的集合.
+     * 可以自己实现[IDataPainter]接口，或者自己创建[DataPainter]实例。
      */
     fun init(
         sampleRate: Int,
@@ -70,27 +69,32 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         mm_per_mv: Int = 10,
         gridSize: Int = (context.resources.displayMetrics.densityDpi / 25.4f).toInt(),
         leadsCount: Int = 1,
-        standardSquareWavePaint: Paint? = null,
-        solidLinePaint: Paint = Paint().apply {
+        bgPainter: IBgPainter = BgPainter(Paint().apply {
             color = Color.parseColor("#00a7ff")
             strokeWidth = 1f
             isAntiAlias = true
             alpha = 120
-        },
-        dashLinePaint: Paint = Paint().apply {
+        }, Paint().apply {
             color = Color.parseColor("#00a7ff")
             strokeWidth = 1f
             isAntiAlias = true
             pathEffect = DashPathEffect(floatArrayOf(1f, 1f), 0f)
             alpha = 90
-        },
-        dataPaint: Paint = Paint().apply {
-            color = Color.parseColor("#44C71E")
+        }, Paint().apply {
+            color = Color.parseColor("#ffffff")
             strokeWidth = 3f
             style = Paint.Style.STROKE
             isAntiAlias = true
-        },
-        effect: Int = 0
+            alpha = 125
+        }),
+        dataPainters: List<IDataPainter> = (0 until leadsCount).map {
+            DataPainter(CirclePathEffect(), Paint().apply {
+                color = Color.parseColor("#44C71E")
+                strokeWidth = 3f
+                style = Paint.Style.STROKE
+                isAntiAlias = true
+            })
+        }
     ) {
         Log.w(TAG, "init")
         this.sampleRate = sampleRate
@@ -98,11 +102,8 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         this.mm_per_mv = mm_per_mv
         this.gridSize = gridSize
         this.leadsCount = leadsCount
-        this.standardSquareWavePaint = standardSquareWavePaint
-        this.dataPaint = dataPaint
-        this.solidLinePaint = solidLinePaint
-        this.dashLinePaint = dashLinePaint
-        this.effect = effect
+        this.bgPainter = bgPainter
+        this.dataPainters = dataPainters
         calcParams()
     }
 
@@ -114,37 +115,20 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
 
     // 计算相关参数
     private fun calcParams() {
-        val dataPaint = dataPaint ?: return
-        val solidLinePaint = solidLinePaint ?: return
-        val dashLinePaint = dashLinePaint ?: return
-        if (sampleRate <= 0 || mm_per_s <= 0 || mm_per_mv <= 0 || gridSize <= 0 || leadsCount <= 0 || width <= 0 || height <= 0 || effect < 0 || effect > 1) {
+        if (!::bgPainter.isInitialized) return
+        if (!::dataPainters.isInitialized) return
+        if (sampleRate <= 0 || mm_per_s <= 0 || mm_per_mv <= 0 || gridSize <= 0 || leadsCount <= 0 || width <= 0 || height <= 0) {
             return
         }
         Log.i(
             TAG,
             "sampleRate=$sampleRate mm_per_s=$mm_per_s mm_per_mv=$mm_per_mv gridSize=$gridSize leadsCount=$leadsCount width=$width height=$height"
         )
-        bgPainter = BgPainter(solidLinePaint, dashLinePaint, standardSquareWavePaint)
         bgPainter.init(width, height, gridSize, leadsCount)
-
-        dataPainters.clear()
-        repeat(leadsCount) {
-            dataPainters.add(DataPainter(
-                if (effect == 0) DataPainter.CirclePathEffect() else DataPainter.ScrollPathEffect(), dataPaint
-            ).apply {
-                init(
-                    mm_per_s,
-                    mm_per_mv,
-                    getPeriod(),
-                    sampleRate,
-                    width,
-                    height,
-                    gridSize,
-                    leadsCount,
-                    it,
-                    standardSquareWavePaint != null
-                )
-            })
+        dataPainters.forEachIndexed { index, dataPainter ->
+            dataPainter.init(
+                mm_per_s, mm_per_mv, getPeriod(), sampleRate, width, height, gridSize, leadsCount, index, bgPainter.hasStandardSquareWave()
+            )
         }
     }
 
@@ -171,8 +155,8 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
             Log.e(TAG, "添加数据失败，isSurfaceCreated is false")
             return
         }
-        dataPainters.forEachIndexed { index, pathPainter ->
-            pathPainter.addData(list[index])
+        dataPainters.forEachIndexed { index, dataPainter ->
+            dataPainter.addData(list[index])
         }
         startJob()// 有数据时启动任务
     }
@@ -192,10 +176,59 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
 
 }
 
+interface IPainter {
+    fun draw(canvas: Canvas)
+}
+
 /**
- * 数据绘制者
+ * 数据绘制者接口
  */
-class DataPainter(private val pathEffect: IPathEffect, private val paint: Paint) {
+interface IDataPainter : IPainter {
+    /**
+     * @param leadsIndex                导联索引，从0开始。
+     * @param hasStandardSquareWave     是否绘制标准方波。
+     */
+    fun init(
+        mm_per_s: Int,
+        mm_per_mv: Int,
+        period: Long,
+        sampleRate: Int,
+        w: Int,
+        h: Int,
+        gridSize: Int,
+        leadsCount: Int,
+        leadsIndex: Int,
+        hasStandardSquareWave: Boolean
+    )
+
+    fun addData(data: List<Float>)
+
+    /**
+     * 是否有未绘制的数据
+     */
+    fun hasNotDrawData(): Boolean
+}
+
+/**
+ * 背景绘制者接口（包括标准方波的绘制）
+ */
+interface IBgPainter : IPainter {
+    fun init(w: Int, h: Int, gridSize: Int, leadsCount: Int)
+
+    /**
+     * 是否绘制标准方波
+     */
+    fun hasStandardSquareWave(): Boolean
+}
+
+/**
+ * @param pathEffect    数据绘制效果。
+ * 库中默认实现了两种：[CirclePathEffect]、[ScrollPathEffect]。你也可以自己实现[IPathEffect]接口。
+ * @param paint         数据画笔。
+ */
+class DataPainter(
+    private val pathEffect: IPathEffect, private val paint: Paint
+) : IDataPainter {
     private val path = Path()
     private val notDrawDataQueue = ConcurrentLinkedQueue<Float>()// 未绘制的数据集合
     private val drawDataList = LinkedList<Float>()// 需要绘制的数据集合
@@ -210,7 +243,7 @@ class DataPainter(private val pathEffect: IPathEffect, private val paint: Paint)
     private var gridSize = 0
     private var mm_per_mv = 0
 
-    fun addData(data: List<Float>) {
+    override fun addData(data: List<Float>) {
         data.forEach {
             // 把uV电压值转换成y轴坐标值
             val mm = it * mm_per_mv// mV转mm
@@ -219,16 +252,9 @@ class DataPainter(private val pathEffect: IPathEffect, private val paint: Paint)
         }
     }
 
-    /**
-     * 是否有未绘制的数据
-     */
-    fun hasNotDrawData(): Boolean = notDrawDataQueue.isNotEmpty()
+    override fun hasNotDrawData(): Boolean = notDrawDataQueue.isNotEmpty()
 
-    /**
-     * @param leadsIndex        导联索引，从0开始。
-     * @param drawStandardPath  是否绘制标准方波。
-     */
-    fun init(
+    override fun init(
         mm_per_s: Int,
         mm_per_mv: Int,
         period: Long,
@@ -238,7 +264,7 @@ class DataPainter(private val pathEffect: IPathEffect, private val paint: Paint)
         gridSize: Int,
         leadsCount: Int,
         leadsIndex: Int,
-        drawStandardPath: Boolean
+        hasStandardSquareWave: Boolean
     ) {
         this.sampleRate = sampleRate
         this.gridSize = gridSize
@@ -248,7 +274,7 @@ class DataPainter(private val pathEffect: IPathEffect, private val paint: Paint)
         // 根据视图宽高计算
         val leadsH = h / leadsCount
         yOffset = leadsH / 2f + leadsIndex * leadsH// x坐标轴移动到中间
-        if (drawStandardPath) {
+        if (hasStandardSquareWave) {
             xOffset = gridSize * 15f// 3个大格
         }
         maxShowNumbers = ((w - xOffset) / stepX).toInt()
@@ -258,7 +284,7 @@ class DataPainter(private val pathEffect: IPathEffect, private val paint: Paint)
         Log.i(TAG, "stepX=$stepX yOffset=$yOffset maxShowNumbers=$maxShowNumbers numbersOfEachDraw=$numbersOfEachDraw")
     }
 
-    fun draw(canvas: Canvas) {
+    override fun draw(canvas: Canvas) {
         if (notDrawDataQueue.isEmpty()) return
         Log.i(TAG, "notDrawDataQueue=${notDrawDataQueue.size} drawDataList=${drawDataList.size}")
         repeat(
@@ -283,80 +309,88 @@ class DataPainter(private val pathEffect: IPathEffect, private val paint: Paint)
         canvas.drawPath(path, paint)
     }
 
-    interface IPathEffect {
-        fun handleData(
-            data: Float,
-            drawDataList: LinkedList<Float>,
-            maxDataCount: Int,
-        )
+}
 
-        fun handlePath(
-            path: Path, stepX: Float, index: Int, data: Float
-        )
+/**
+ * 数据绘制效果
+ */
+interface IPathEffect {
+    fun handleData(
+        data: Float,
+        drawDataList: LinkedList<Float>,
+        maxDataCount: Int,
+    )
+
+    fun handlePath(
+        path: Path, stepX: Float, index: Int, data: Float
+    )
+}
+
+/**
+ * 滚动效果
+ */
+class ScrollPathEffect : IPathEffect {
+    override fun handleData(data: Float, drawDataList: LinkedList<Float>, maxDataCount: Int) {
+        // 最多只绘制 maxDataCount 个数据
+        if (drawDataList.size == maxDataCount) {
+            drawDataList.removeFirst()
+        }
+        drawDataList.addLast(data)
     }
 
-    /**
-     * 滚动效果
-     */
-    class ScrollPathEffect : IPathEffect {
-        override fun handleData(data: Float, drawDataList: LinkedList<Float>, maxDataCount: Int) {
-            // 最多只绘制 maxDataCount 个数据
-            if (drawDataList.size == maxDataCount) {
-                drawDataList.removeFirst()
-            }
-            drawDataList.addLast(data)
+    override fun handlePath(path: Path, stepX: Float, index: Int, data: Float) {
+        if (index == 0) {// == 0 使用moveTo是为了在绘制标准方波时，不让方波终点和路径起点连接起来
+            path.moveTo(0f, data)
+        } else {
+            path.lineTo(index * stepX, data)
         }
-
-        override fun handlePath(path: Path, stepX: Float, index: Int, data: Float) {
-            if (index == 0) {// == 0 使用moveTo是为了在绘制标准方波时，不让方波终点和路径起点连接起来
-                path.moveTo(0f, data)
-            } else {
-                path.lineTo(index * stepX, data)
-            }
-        }
-    }
-
-    /**
-     * 循环效果
-     */
-    class CirclePathEffect : IPathEffect {
-        // 循环效果时，不需要画线的数据的index。即视图中看起来是空白的部分。
-        private var spaceIndex = 0
-        override fun handleData(data: Float, drawDataList: LinkedList<Float>, maxDataCount: Int) {
-            // 最多只绘制 maxDataCount 个数据
-            if (drawDataList.size == maxDataCount) {
-                drawDataList.removeAt(spaceIndex)
-                drawDataList.add(spaceIndex, data)
-                spaceIndex++
-                if (spaceIndex == maxDataCount) {
-                    spaceIndex = 0
-                }
-            } else {
-                drawDataList.addLast(data)
-            }
-        }
-
-        override fun handlePath(path: Path, stepX: Float, index: Int, data: Float) {
-            if (index == spaceIndex || index == 0) {// == 0 使用moveTo是为了在绘制标准方波时，不让方波终点和路径起点连接起来
-                path.moveTo(index * stepX, data)// 达到空白效果
-            } else {
-                path.lineTo(index * stepX, data)
-            }
-        }
-
     }
 }
 
 /**
- * 背景绘制者（包括标准方波）
+ * 循环效果
  */
-class BgPainter(private val solidLinePaint: Paint, private val dashLinePaint: Paint, private val standardSquareWavePaint: Paint?) {
+class CirclePathEffect : IPathEffect {
+    // 循环效果时，不需要画线的数据的index。即视图中看起来是空白的部分。
+    private var spaceIndex = 0
+    override fun handleData(data: Float, drawDataList: LinkedList<Float>, maxDataCount: Int) {
+        // 最多只绘制 maxDataCount 个数据
+        if (drawDataList.size == maxDataCount) {
+            drawDataList.removeAt(spaceIndex)
+            drawDataList.add(spaceIndex, data)
+            spaceIndex++
+            if (spaceIndex == maxDataCount) {
+                spaceIndex = 0
+            }
+        } else {
+            drawDataList.addLast(data)
+        }
+    }
+
+    override fun handlePath(path: Path, stepX: Float, index: Int, data: Float) {
+        if (index == spaceIndex || index == 0) {// == 0 使用moveTo是为了在绘制标准方波时，不让方波终点和路径起点连接起来
+            path.moveTo(index * stepX, data)// 达到空白效果
+        } else {
+            path.lineTo(index * stepX, data)
+        }
+    }
+
+}
+
+/**
+ * @param solidLinePaint            背景实线画笔。
+ * @param dashLinePaint             背景虚线画笔。
+ * @param standardSquareWavePaint   标准方波画笔。如果为 null，表示不绘制标准方波。
+ */
+class BgPainter(
+    private val solidLinePaint: Paint, private val dashLinePaint: Paint, private val standardSquareWavePaint: Paint?
+) : IBgPainter {
     private var bgBitmap: Bitmap? = null// 背景图片
 
     /**
      * 创建背景图片
      */
-    fun init(w: Int, h: Int, gridSize: Int, leadsCount: Int) {
+    override fun init(w: Int, h: Int, gridSize: Int, leadsCount: Int) {
         bgBitmap?.recycle()
         bgBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888).apply {
             val canvas = Canvas(this)
@@ -369,12 +403,16 @@ class BgPainter(private val solidLinePaint: Paint, private val dashLinePaint: Pa
     /**
      * 画背景图片
      */
-    fun draw(canvas: Canvas) {
+    override fun draw(canvas: Canvas) {
         bgBitmap?.let {
             if (!it.isRecycled) {
                 canvas.drawBitmap(it, 0f, 0f, null)
             }
         }
+    }
+
+    override fun hasStandardSquareWave(): Boolean {
+        return standardSquareWavePaint != null
     }
 
     // 画水平线
@@ -433,9 +471,6 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
 
     init {
         holder.addCallback(this)
-        // 画布透明处理
-        setZOrderOnTop(true)
-        holder.setFormat(PixelFormat.TRANSLUCENT)
     }
 
     /*
