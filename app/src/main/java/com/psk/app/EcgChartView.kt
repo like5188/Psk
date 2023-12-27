@@ -43,7 +43,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     private var mm_per_mv = 0
     private var gridSize = 0
     private var leadsCount = 0
-    private lateinit var bgPainter: IBgPainter
+    private var bgPainter: IBgPainter? = null
     private lateinit var dataPainters: List<IDataPainter>
 
     init {
@@ -69,7 +69,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         mm_per_mv: Int = 10,
         gridSize: Int = (context.resources.displayMetrics.densityDpi / 25.4f).toInt(),
         leadsCount: Int = 1,
-        bgPainter: IBgPainter = BgPainter(Paint().apply {
+        bgPainter: IBgPainter? = BgPainter(Paint().apply {
             color = Color.parseColor("#00a7ff")
             strokeWidth = 1f
             isAntiAlias = true
@@ -115,17 +115,26 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
 
     // 计算相关参数
     private fun calcParams() {
-        if (sampleRate <= 0 || mm_per_s <= 0 || mm_per_mv <= 0 || gridSize <= 0 || leadsCount <= 0 || width <= 0 || height <= 0 || !::bgPainter.isInitialized || !::dataPainters.isInitialized) {
+        if (sampleRate <= 0 || mm_per_s <= 0 || mm_per_mv <= 0 || gridSize <= 0 || leadsCount <= 0 || width <= 0 || height <= 0 || !::dataPainters.isInitialized) {
             return
         }
         Log.i(
             TAG,
             "sampleRate=$sampleRate mm_per_s=$mm_per_s mm_per_mv=$mm_per_mv gridSize=$gridSize leadsCount=$leadsCount width=$width height=$height"
         )
-        bgPainter.init(width, height, gridSize, leadsCount)
+        bgPainter?.init(width, height, gridSize, leadsCount)
         dataPainters.forEachIndexed { index, dataPainter ->
             dataPainter.init(
-                mm_per_s, mm_per_mv, getPeriod(), sampleRate, width, height, gridSize, leadsCount, index, bgPainter.hasStandardSquareWave()
+                mm_per_s,
+                mm_per_mv,
+                getPeriod(),
+                sampleRate,
+                width,
+                height,
+                gridSize,
+                leadsCount,
+                index,
+                bgPainter?.hasStandardSquareWave() == true
             )
         }
     }
@@ -175,7 +184,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     private fun doDraw(canvas: Canvas) {
         Log.v(TAG, "doDraw")
         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
-        bgPainter.draw(canvas)
+        bgPainter?.draw(canvas)
         dataPainters.forEach {
             it.draw(canvas)
         }
