@@ -483,7 +483,9 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
         cancelJob("surfaceDestroyed")// 其实这里可以不必调用，因为没有数据时会调用
     }
 
-    override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {}
+    override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
+        Log.w(TAG, "surfaceChanged")
+    }
 
     // activity onResume时调用
     override fun surfaceCreated(holder: SurfaceHolder) {
