@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
             mBinding.ecgChartView.init(
                 sampleRate = 250,
                 leadsCount = 12,
-                standardPaint = Paint().apply {
+                standardSquareWavePaint = Paint().apply {
                     color = Color.parseColor("#ffffff")
                     strokeWidth = 3f
                     style = Paint.Style.STROKE
