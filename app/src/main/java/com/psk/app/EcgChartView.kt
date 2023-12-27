@@ -163,10 +163,15 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
 
     override fun onDrawFrame(canvas: Canvas) {
         if (dataPainters.all { !it.hasNotDrawData() }) {
+            doDraw(canvas)// 这里绘制一次最近的数据，避免前后台切换后由于没有数据不进行绘制。
             cancelJob("没有数据")// 没有数据时取消任务
             return
         }
-        Log.v(TAG, "onDrawFrame")
+        doDraw(canvas)
+    }
+
+    private fun doDraw(canvas: Canvas) {
+        Log.v(TAG, "doDraw")
         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
         bgPainter.draw(canvas)
         dataPainters.forEach {
@@ -284,22 +289,24 @@ class DataPainter(
         Log.i(
             TAG,
             "第 ${leadsIndex + 1} 导联：stepX=$stepX yOffset=$yOffset maxShowNumbers=$maxShowNumbers numbersOfEachDraw=$numbersOfEachDraw"
-        )    }
+        )
+    }
 
     override fun draw(canvas: Canvas) {
-        if (notDrawDataQueue.isEmpty()) return
         Log.v(TAG, "notDrawDataQueue=${notDrawDataQueue.size} drawDataList=${drawDataList.size}")
-        repeat(
-            // 如果剩余的数据量超过了 sampleRate，那么就每次多取1个数据，避免剩余数据量无限增长，造成暂停操作的延迟。
-            if (notDrawDataQueue.size > sampleRate) {
-                numbersOfEachDraw + 1
-            } else {
-                numbersOfEachDraw
-            }
-        ) {
-            // 出队，空时返回null
-            notDrawDataQueue.poll()?.let {
-                pathEffect.handleData(it, drawDataList, maxShowNumbers)
+        if (notDrawDataQueue.isNotEmpty()) {
+            repeat(
+                // 如果剩余的数据量超过了 sampleRate，那么就每次多取1个数据，避免剩余数据量无限增长，造成暂停操作的延迟。
+                if (notDrawDataQueue.size > sampleRate) {
+                    numbersOfEachDraw + 1
+                } else {
+                    numbersOfEachDraw
+                }
+            ) {
+                // 出队，空时返回null
+                notDrawDataQueue.poll()?.let {
+                    pathEffect.handleData(it, drawDataList, maxShowNumbers)
+                }
             }
         }
         // 设置path
