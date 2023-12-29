@@ -3,7 +3,7 @@ package com.psk.device.data.source
 import com.psk.device.data.db.DeviceDatabaseManager
 import com.psk.device.data.model.DeviceType
 import com.psk.device.data.model.HeartRate
-import com.psk.device.data.source.local.db.HeartRateDbDataSource
+import com.psk.device.data.source.local.HeartRateDbDataSource
 import com.psk.device.data.source.remote.base.BaseHeartRateDataSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

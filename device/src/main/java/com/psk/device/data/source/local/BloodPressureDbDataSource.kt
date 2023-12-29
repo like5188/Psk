@@ -1,4 +1,4 @@
-package com.psk.device.data.source.local.db
+package com.psk.device.data.source.local
 
 import com.psk.device.data.db.dao.BloodPressureDao
 import com.psk.device.data.model.BloodPressure
