@@ -57,18 +57,8 @@ class TrainActivity : AppCompatActivity() {
                 R.id.autoRb -> bloodPressureMeasureType = 1
             }
         }
-        mBinding.weightCardView.setOnFocusChangeListener { v, hasFocus ->
-            if (hasFocus) {
-                mBinding.etWeight.requestFocus()
-            }
-        }
         mBinding.etWeight.doAfterTextChanged {
             mViewModel.setWeight(it?.toString()?.toIntOrNull() ?: 0)
-        }
-        mBinding.ageCardView.setOnFocusChangeListener { v, hasFocus ->
-            if (hasFocus) {
-                mBinding.etAge.requestFocus()
-            }
         }
         mBinding.etAge.doAfterTextChanged {
             mViewModel.setAge(it?.toString()?.toIntOrNull() ?: 0)
