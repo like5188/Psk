@@ -21,7 +21,8 @@
         <item name="materialButtonToggleGroupStyle">@style/AppToggleGroup</item>
         <!-- Card widget style attribute -->
         <item name="materialCardViewStyle">@style/AppCardView</item>
-
+        <!-- 必须添加 windowFullscreen，否则状态栏不能去掉 -->
+        <item name="android:windowFullscreen">true</item>
         <item name="android:windowBackground">@drawable/main_bg</item>
     </style>
 
