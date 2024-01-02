@@ -13,6 +13,15 @@
         android:roundIcon="@mipmap/psk_ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.App">
+
+        <!--autosize 配置：TV 720P-->
+        <meta-data
+            android:name="design_width_in_dp"
+            android:value="962" />
+        <meta-data
+            android:name="design_height_in_dp"
+            android:value="541" />
+
         <activity
             android:name=".main.MainActivity"
             android:exported="true"

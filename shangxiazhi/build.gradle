@@ -72,7 +72,9 @@ dependencies {
 
     implementation(name: 'aidl-release', ext: 'aar')
     implementation(name: 'Pad1601Pwd-debug', ext: 'aar')
-    
+
+    implementation 'me.jessyan:autosize:1.2.1'
+
     implementation project(':common')
     implementation project(':device')
 }
