@@ -42,19 +42,13 @@ class ReportActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         injectForIntentExtras()
-        mBinding.toggleGroup.addOnButtonCheckedListener { group, checkedId, isChecked ->
-            if (!isChecked) {
-                return@addOnButtonCheckedListener
-            }
-            when (checkedId) {
-                R.id.btnTrain -> {
-                    showFragment(shangXiaZhiFragment)
-                }
-
-                R.id.btnDevices -> {
-                    showFragment(otherDevicesFragment)
-                }
-            }
+        // 这里不能使用 mBinding.toggleGroup.addOnButtonCheckedListener 方法，不知道为什么，它在有些机顶盒上无法点击。
+        // 所以只能分别使用 setOnClickListener。
+        mBinding.btnTrain.setOnClickListener {
+            showFragment(shangXiaZhiFragment)
+        }
+        mBinding.btnDevices.setOnClickListener {
+            showFragment(otherDevicesFragment)
         }
         if (orderId == null) {
             showToast("获取报告失败")
@@ -71,7 +65,7 @@ class ReportActivity : AppCompatActivity() {
                 it !is ShangXiaZhiReport
             })
             addFragments(R.id.flContainer, -1, shangXiaZhiFragment, otherDevicesFragment)
-            mBinding.toggleGroup.check(R.id.btnTrain)
+            mBinding.btnTrain.performClick()// 这样才会有按钮的选中效果
         }
     }
 
