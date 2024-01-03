@@ -63,6 +63,18 @@ class TrainActivity : AppCompatActivity() {
         mBinding.etAge.doAfterTextChanged {
             mViewModel.setAge(it?.toString()?.toIntOrNull() ?: 0)
         }
+        // 必须在 xml 中为 weightCardView 添加 android:focusable="true"，并且在这里用代码处理 etWeight 的焦点，
+        // 否则由于 etWeight 外面包裹了一层 weightCardView 造成 etWeight 得不到焦点。
+        mBinding.weightCardView.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                mBinding.etWeight.requestFocus()
+            }
+        }
+        mBinding.ageCardView.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                mBinding.etAge.requestFocus()
+            }
+        }
         collectUiState()
     }
 
