@@ -1,4 +1,4 @@
-package com.psk.shangxiazhi.train
+package com.psk.shangxiazhi.util
 
 import android.content.Context
 import android.text.Selection
