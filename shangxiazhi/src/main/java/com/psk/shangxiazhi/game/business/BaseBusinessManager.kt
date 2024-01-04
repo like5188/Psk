@@ -54,6 +54,7 @@ abstract class BaseBusinessManager<Repository : BaseBleDeviceRepository<*>>(
         Logger.w("${this::class.java.simpleName} startJob isConnected=${bleDeviceRepository.isConnected()}")
         if (bleDeviceRepository.isConnected()) {
             job = lifecycleScope.launch(Dispatchers.IO) {
+                delay(100)// 延迟一下，避免刚连接成功就发送蓝牙命令，此时有可能失败。
                 run()
             }
         } else {
