@@ -40,16 +40,16 @@ class OtherDevicesFragment : BaseLazyFragment() {
     override fun onLazyLoadData() {
         arguments?.getParcelable<HealthInfo>(KEY_HEALTH_INFO)?.apply {
             mBinding.tvTargetHeartRate.text = "$minTargetHeartRate~$maxTargetHeartRate"
-            mBinding.tvMet.text = met.maximumFractionDigits(4)
+            mBinding.tvMet.text = met.maximumFractionDigits(2)
             mBinding.tvBloodPressureBefore.text = if (bloodPressureBefore == null) {
                 ""
             } else {
-                "${bloodPressureBefore!!.sbp}/${bloodPressureBefore!!.dbp}"
+                "${bloodPressureBefore.sbp}/${bloodPressureBefore.dbp}"
             }
             mBinding.tvBloodPressureAfter.text = if (bloodPressureAfter == null) {
                 ""
             } else {
-                "${bloodPressureAfter!!.sbp}/${bloodPressureAfter!!.dbp}"
+                "${bloodPressureAfter.sbp}/${bloodPressureAfter.dbp}"
             }
         }
         (arguments?.getSerializable(KEY_REPORTS) as? List<IReport>)?.forEach {

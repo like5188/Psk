@@ -268,8 +268,8 @@ class TrainViewModel(
             val activeDuration = shangXiaZhiReport.activeDuration
             val weight = healthInfo.weight
             if (activeDuration > 0 && weight > 0) {
-                // mets=卡路里/主动模式运动时间(分钟)/体重(kg)/0.0167
-                met = cal / activeDuration / 60 / weight / 0.0167f
+                // mets=卡路里(千卡)/主动模式运动时间(分钟)/体重(kg)/0.0167+1(正常人的代谢)
+                met = cal / (activeDuration / 60f) / weight / 0.0167f + 1f
             }
         }
         if (met > 0f) {

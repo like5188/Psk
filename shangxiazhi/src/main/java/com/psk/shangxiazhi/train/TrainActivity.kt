@@ -75,6 +75,7 @@ class TrainActivity : AppCompatActivity() {
                 mBinding.etAge.requestFocus()
             }
         }
+        mBinding.deviceCardView.requestFocus()// 避免 NestedScrollView 抢焦点
         collectUiState()
     }
 

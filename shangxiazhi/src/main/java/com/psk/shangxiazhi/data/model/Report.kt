@@ -109,8 +109,8 @@ class ShangXiaZhiReport : IReport {
                     if (gameData.model == 1) {// 被动模式
                         // 运行时间
                         report.passiveDuration++// 这里因为上下肢发送数据频率是1秒1条，所以直接以数据量替代时间
-                        // 里程
-                        report.passiveMil += shangXiaZhi.speed * 0.5f * 1000 / 3600
+                        // 里程 0.102f 是半径
+                        report.passiveMil += (shangXiaZhi.speed / 60f * (2f * Math.PI * 0.102f)).toFloat()
                         // 功率，被动模式下没有功率，这里添加功率是为了在折线图中显示主动被动的区域
                         report.powerList.add(0)
                         // 偏差值：范围0~30 左偏：0~14；中：15；右偏：16~30；
@@ -142,10 +142,8 @@ class ShangXiaZhiReport : IReport {
                     } else {// 主动模式
                         // 运行时间
                         report.activeDuration++
-                        // 里程
-                        report.activeMil += shangXiaZhi.speed * 0.5f * 1000 / 3600
-                        // 卡路里
-                        report.activeCal += shangXiaZhi.speed * 0.2f * (shangXiaZhi.resistance * 1.00f / 3.0f) / 60
+                        // 里程 0.102f 是半径
+                        report.activeMil += (shangXiaZhi.speed / 60f * (2f * Math.PI * 0.102f)).toFloat()
                         gameData.cal = report.activeCal.maximumFractionDigits(2)
                         // 阻力
                         report.resistanceList.add(shangXiaZhi.resistance)
@@ -159,8 +157,8 @@ class ShangXiaZhiReport : IReport {
                             }
                         }
                         report.resistanceMax = max(report.resistanceMax, shangXiaZhi.resistance)
-                        // 功率
-                        val power = ((shangXiaZhi.resistance + 3) * shangXiaZhi.speed * 0.134).toInt()
+                        // 功率 扭矩*转速*0.134 扭矩=阻力等级+3
+                        val power = ((shangXiaZhi.resistance + 3) * shangXiaZhi.speed * 0.134f).toInt()
                         report.powerList.add(power)
                         report.powerTotal += power
                         report.powerArv = report.powerTotal / report.powerList.size
@@ -172,6 +170,8 @@ class ShangXiaZhiReport : IReport {
                             }
                         }
                         report.powerMax = max(report.powerMax, power)
+                        // 卡路里 功率/时间（焦耳）  1焦耳=0.239卡
+                        report.activeCal += (power * 0.239f / 1000f)
                         // 偏差值：范围0~30 左偏：0~14；中：15；右偏：16~30；
                         val shangXiaZhiOffset = shangXiaZhi.offset.coerceAtLeast(0).coerceAtMost(30)
                         gameData.offset = shangXiaZhiOffset - 15// 转换成游戏需要的 负数：左；0：不偏移；正数：右；
