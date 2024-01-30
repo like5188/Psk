@@ -190,6 +190,14 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         }
     }
 
+    /**
+     * 获取当前绘制的位图。用于保存图片。
+     * 因为 SurfaceView 不能像普通 view 那样使用 view.draw(canvas) 来获取内容。
+     */
+    fun getBitmap(): Bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888).apply {
+        doDraw(Canvas(this))
+    }
+
 }
 
 interface IPainter {
