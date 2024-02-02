@@ -2,6 +2,8 @@ package com.psk.ecg.painter
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.DashPathEffect
 import android.graphics.Paint
 import android.graphics.Path
 
@@ -90,4 +92,26 @@ class BgPainter(
             canvas.drawPath(path, paint)
         }
     }
+
+    companion object {
+        val defaultBgPainter: BgPainter = BgPainter(Paint().apply {
+            color = Color.parseColor("#00a7ff")
+            strokeWidth = 1f
+            isAntiAlias = true
+            alpha = 120
+        }, Paint().apply {
+            color = Color.parseColor("#00a7ff")
+            strokeWidth = 1f
+            isAntiAlias = true
+            pathEffect = DashPathEffect(floatArrayOf(1f, 1f), 0f)
+            alpha = 90
+        }, Paint().apply {
+            color = Color.parseColor("#ffffff")
+            strokeWidth = 3f
+            style = Paint.Style.STROKE
+            isAntiAlias = true
+            alpha = 125
+        })
+    }
+
 }

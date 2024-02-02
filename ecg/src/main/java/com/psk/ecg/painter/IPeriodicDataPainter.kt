@@ -1,0 +1,24 @@
+package com.psk.ecg.painter
+
+/**
+ * 周期性绘制的绘制者接口
+ */
+interface IPeriodicDataPainter : IPainter {
+    fun init(
+        period: Long,
+        mm_per_mv: Int,
+        sampleRate: Int,
+        gridSize: Int,
+        stepX: Float,
+        xOffset: Float,
+        yOffset: Float,
+        maxShowNumbers: Int
+    )
+
+    fun addData(data: List<Float>)
+
+    /**
+     * 是否有未绘制的数据
+     */
+    fun hasNotDrawData(): Boolean
+}

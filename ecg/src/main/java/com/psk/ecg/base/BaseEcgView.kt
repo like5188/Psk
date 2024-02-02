@@ -4,17 +4,12 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.DashPathEffect
-import android.graphics.Paint
 import android.graphics.PixelFormat
 import android.graphics.PorterDuff
 import android.util.AttributeSet
 import android.util.Log
-import com.psk.ecg.effect.CirclePathEffect
 import com.psk.ecg.painter.BgPainter
-import com.psk.ecg.painter.DataPainter
 import com.psk.ecg.painter.IBgPainter
-import com.psk.ecg.painter.IDataPainter
 import com.psk.ecg.util.TAG
 
 /*
@@ -40,8 +35,6 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
         private set
     protected var leadsCount = 0
         private set
-    protected lateinit var dataPainters: List<IDataPainter>
-        private set
 
     init {
         // 画布透明处理
@@ -57,41 +50,14 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
      * @param leadsCount        导联数量。默认为 1。
      * @param bgPainter         背景绘制者。默认为[BgPainter]。
      * 可以自己实现[IBgPainter]接口，或者自己创建[BgPainter]实例。
-     * @param dataPainters      数据绘制者集合，有几个导联就需要几个绘制者。默认为包括[leadsCount]个[DataPainter]的集合.
-     * 可以自己实现[IDataPainter]接口，或者自己创建[DataPainter]实例。
      */
-    fun init(
+    internal fun init(
         sampleRate: Int,
-        mm_per_s: Int = 25,
-        mm_per_mv: Int = 10,
-        gridSize: Int = (context.resources.displayMetrics.densityDpi / 25.4f).toInt(),
-        leadsCount: Int = 1,
-        bgPainter: IBgPainter? = BgPainter(Paint().apply {
-            color = Color.parseColor("#00a7ff")
-            strokeWidth = 1f
-            isAntiAlias = true
-            alpha = 120
-        }, Paint().apply {
-            color = Color.parseColor("#00a7ff")
-            strokeWidth = 1f
-            isAntiAlias = true
-            pathEffect = DashPathEffect(floatArrayOf(1f, 1f), 0f)
-            alpha = 90
-        }, Paint().apply {
-            color = Color.parseColor("#ffffff")
-            strokeWidth = 3f
-            style = Paint.Style.STROKE
-            isAntiAlias = true
-            alpha = 125
-        }),
-        dataPainters: List<IDataPainter> = (0 until leadsCount).map {
-            DataPainter(CirclePathEffect(), Paint().apply {
-                color = Color.parseColor("#44C71E")
-                strokeWidth = 3f
-                style = Paint.Style.STROKE
-                isAntiAlias = true
-            })
-        }
+        mm_per_s: Int,
+        mm_per_mv: Int,
+        gridSize: Int,
+        leadsCount: Int,
+        bgPainter: IBgPainter?
     ) {
         Log.w(TAG, "init")
         this.sampleRate = sampleRate
@@ -100,7 +66,6 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
         this.gridSize = gridSize
         this.leadsCount = leadsCount
         this.bgPainter = bgPainter
-        this.dataPainters = dataPainters
         calcParams()
     }
 
@@ -110,13 +75,9 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
         calcParams()
     }
 
-    protected fun initialized(): Boolean {
-        return ::dataPainters.isInitialized
-    }
-
     // 计算相关参数
     private fun calcParams() {
-        if (sampleRate <= 0 || mm_per_s <= 0 || mm_per_mv <= 0 || gridSize <= 0 || leadsCount <= 0 || width <= 0 || height <= 0 || !::dataPainters.isInitialized) {
+        if (sampleRate <= 0 || mm_per_s <= 0 || mm_per_mv <= 0 || gridSize <= 0 || leadsCount <= 0 || width <= 0 || height <= 0) {
             return
         }
         Log.i(
@@ -124,33 +85,28 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
             "calcParams sampleRate=$sampleRate mm_per_s=$mm_per_s mm_per_mv=$mm_per_mv gridSize=$gridSize leadsCount=$leadsCount width=$width height=$height"
         )
         bgPainter?.init(width, height, gridSize, leadsCount)
-        dataPainters.forEachIndexed { index, dataPainter ->
-            dataPainter.init(
-                mm_per_s,
-                mm_per_mv,
-                getPeriod(),
-                sampleRate,
-                width,
-                height,
-                gridSize,
-                leadsCount,
-                index,
-                bgPainter?.hasStandardSquareWave() == true
-            )
+        repeat(leadsCount) { leadsIndex ->
+            // 根据采样率计算
+            val stepX = gridSize * mm_per_s / sampleRate.toFloat()
+            // 根据视图宽高计算
+            val leadsH = height / leadsCount
+            val yOffset = leadsH / 2f + leadsIndex * leadsH// x坐标轴移动到中间
+            val xOffset = if (bgPainter?.hasStandardSquareWave() == true) {// 是否绘制标准方波
+                gridSize * 15f// 3个大格
+            } else {
+                0f
+            }
+            val maxShowNumbers = ((width - xOffset) / stepX).toInt()
+            Log.i(TAG, "第 ${leadsIndex + 1} 导联：stepX=$stepX xOffset=$xOffset yOffset=$yOffset maxShowNumbers=$maxShowNumbers")
+            onInitData(leadsIndex, mm_per_mv, sampleRate, gridSize, stepX, xOffset, yOffset, maxShowNumbers)
         }
     }
 
     protected fun doDraw(canvas: Canvas) {
-        if (!initialized()) {
-            Log.e(TAG, "setData 失败，请先调用 init 方法进行初始化")
-            return
-        }
         Log.v(TAG, "doDraw")
         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
         bgPainter?.draw(canvas)
-        dataPainters.forEach {
-            it.draw(canvas)
-        }
+        onDrawData(canvas)
     }
 
     /**
@@ -162,11 +118,20 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
     }
 
     /**
-     * 获取循环绘制周期间隔
-     * @return
-     * ==0：表示只绘制一次。此时只绘制不超过屏幕的所有数据。
-     * <0：不进行绘制。
-     * >0：按照此周期间隔循环绘制无限次。
+     * 初始化导联数据
+     * @param leadsIndex                导联索引，从0开始。
      */
-    protected abstract fun getPeriod(): Long
+    abstract fun onInitData(
+        leadsIndex: Int,
+        mm_per_mv: Int,
+        sampleRate: Int,
+        gridSize: Int,
+        stepX: Float,
+        xOffset: Float,
+        yOffset: Float,
+        maxShowNumbers: Int
+    )
+
+    abstract fun onDrawData(canvas: Canvas)
+
 }
