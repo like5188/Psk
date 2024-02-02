@@ -1,5 +1,6 @@
 package com.psk.app
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -8,6 +9,7 @@ import com.like.ble.central.util.PermissionUtils
 import com.like.common.util.dp
 import com.like.common.util.showToast
 import com.psk.app.databinding.ActivityMainBinding
+import com.psk.app.pdf.PdfActivity
 import com.psk.device.DeviceRepositoryManager
 import com.psk.device.data.model.DeviceType
 import com.psk.device.data.source.HeartRateRepository
@@ -30,6 +32,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mBinding.tv.text = "25 mm/s    10mm/mV"
+        mBinding.btnPdf.setOnClickListener {
+            startActivity(Intent(this, PdfActivity::class.java))
+        }
         mBinding.btnStart.setOnClickListener {
             mBinding.ecgChartView.init(
                 sampleRate = 250,

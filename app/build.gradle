@@ -55,4 +55,6 @@ dependencies {
     implementation project(':common')
     implementation project(':socket')
     implementation project(':device')
+    implementation project(':pdf')
+    implementation project(':ecg')
 }

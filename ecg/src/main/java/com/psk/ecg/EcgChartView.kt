@@ -1,4 +1,4 @@
-package com.psk.app
+package com.psk.ecg
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -13,11 +13,16 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.SurfaceHolder
 import android.view.SurfaceView
-import androidx.lifecycle.findViewTreeLifecycleOwner
+import androidx.lifecycle.ViewTreeLifecycleOwner
 import androidx.lifecycle.lifecycleScope
-import com.psk.common.util.scheduleFlow
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.buffer
+import kotlinx.coroutines.flow.conflate
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
 import java.util.LinkedList
 import java.util.concurrent.ConcurrentLinkedQueue
@@ -181,6 +186,14 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         doDraw(canvas)
     }
 
+    /**
+     * 获取当前绘制的位图。用于保存图片。
+     * 因为 SurfaceView 不能像普通 view 那样使用 view.draw(canvas) 来获取内容。
+     */
+    fun getBitmap(): Bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888).apply {
+        doDraw(Canvas(this))
+    }
+
     private fun doDraw(canvas: Canvas) {
         Log.v(TAG, "doDraw")
         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
@@ -188,14 +201,6 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         dataPainters.forEach {
             it.draw(canvas)
         }
-    }
-
-    /**
-     * 获取当前绘制的位图。用于保存图片。
-     * 因为 SurfaceView 不能像普通 view 那样使用 view.draw(canvas) 来获取内容。
-     */
-    fun getBitmap(): Bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888).apply {
-        doDraw(Canvas(this))
     }
 
 }
@@ -529,7 +534,7 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
             return
         }
         Log.w(TAG, "startJob period=$period")
-        job = findViewTreeLifecycleOwner()?.lifecycleScope?.launch(Dispatchers.IO) {
+        job = ViewTreeLifecycleOwner.get(this)?.lifecycleScope?.launch(Dispatchers.IO) {
             var canvas: Canvas? = null
             scheduleFlow(0, period).collect {
                 // 这里和cancelJob方法都要加锁，避免前台切换到后台时，当一直有数据添加，
@@ -581,3 +586,31 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
 }
 
 private const val TAG = "EcgChartViewTAG"
+
+/**
+ * 延时准确的循环回调flow
+ * @param delay         第一次执行时延迟多久，毫秒
+ * @param period        循环执行周期，毫秒
+ * @param count         循环次数。默认0。小于等于0表示不限制，无限循环
+ */
+fun scheduleFlow(delay: Long, period: Long, count: Int = 0): Flow<Long> =
+    flow {
+        val startTime = System.currentTimeMillis() + delay
+        var i = 0
+        while (count <= 0 || i < count) {
+            emit(startTime + period * i++)
+        }
+    }
+        .buffer()// 使用buffer操作符建立一个有64个位置的缓冲区,如果发送时发现缓冲区满了,就会挂起等待缓冲区有可用位置后再发送
+        .transform {
+            // 这里没有使用 delay(it - System.currentTimeMillis())，因为误差比较大。
+            while (true) {
+                val time = System.currentTimeMillis()
+                if (time >= it) {
+                    emit(time)
+                    break
+                }
+            }
+        }
+        .conflate()
+        .flowOn(Dispatchers.Default)

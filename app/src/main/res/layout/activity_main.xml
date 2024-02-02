@@ -8,6 +8,12 @@
         android:orientation="vertical">
 
         <Button
+            android:id="@+id/btnPdf"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="测试pdf" />
+
+        <Button
             android:id="@+id/btnStart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -36,7 +42,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <com.psk.app.EcgChartView
+        <com.psk.ecg.EcgChartView
             android:id="@+id/ecgChartView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
