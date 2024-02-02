@@ -52,8 +52,9 @@ class PdfActivity : AppCompatActivity() {
 
         mBinding.ecgChartView.apply {
             lifecycleScope.launch(Dispatchers.IO) {
-                init(100, drawOnce = true)
-                addData(listOf(getEcgData(1000)))
+                init(100)
+                setData(listOf(getEcgData(500)))
+                setData(listOf(getEcgData(500)))
             }
         }
 

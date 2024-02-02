@@ -32,12 +32,18 @@ class DataPainter(
     private var drawOnce = false
 
     override fun setData(data: List<Float>) {
+        drawOnce = true
         notDrawDataQueue.clear()
         drawDataList.clear()
-        addData(data)
+        doAddData(data)
     }
 
     override fun addData(data: List<Float>) {
+        drawOnce = false
+        doAddData(data)
+    }
+
+    private fun doAddData(data: List<Float>) {
         data.forEach {
             // 把uV电压值转换成y轴坐标值
             val mm = it * mm_per_mv// mV转mm
@@ -58,8 +64,7 @@ class DataPainter(
         gridSize: Int,
         leadsCount: Int,
         leadsIndex: Int,
-        hasStandardSquareWave: Boolean,
-        drawOnce: Boolean
+        hasStandardSquareWave: Boolean
     ) {
         this.sampleRate = sampleRate
         this.gridSize = gridSize
@@ -78,7 +83,6 @@ class DataPainter(
             val circleTimesPerSecond = (1000 / period).toInt()// 每秒绘制次数
             numbersOfEachDraw = sampleRate / circleTimesPerSecond
         }
-        this.drawOnce = drawOnce
         Log.i(
             "EcgChartView",
             "第 ${leadsIndex + 1} 导联：stepX=$stepX yOffset=$yOffset maxShowNumbers=$maxShowNumbers numbersOfEachDraw=$numbersOfEachDraw"
@@ -86,7 +90,7 @@ class DataPainter(
     }
 
     override fun draw(canvas: Canvas) {
-        Log.v("EcgChartView", "notDrawDataQueue=${notDrawDataQueue.size} drawDataList=${drawDataList.size}")
+        Log.v("EcgChartView", "notDrawDataQueue=${notDrawDataQueue.size} drawDataList=${drawDataList.size} drawOnce=$drawOnce")
         if (notDrawDataQueue.isNotEmpty()) {
             repeat(
                 if (drawOnce) {// 表示只绘制一次。此时只绘制不超过屏幕的所有数据。

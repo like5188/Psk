@@ -40,7 +40,6 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     private var leadsCount = 0
     private var bgPainter: IBgPainter? = null
     private lateinit var dataPainters: List<IDataPainter>
-
     private var drawOnce = false
 
     init {
@@ -55,7 +54,6 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
      * @param mm_per_mv         增益（灵敏度）。默认为 1倍：10mm/mV
      * @param gridSize          一个小格子对应的像素。默认为设备实际 1mm对应的像素。
      * @param leadsCount        导联数量。默认为 1。
-     * @param drawOnce          是否只绘制一次，此时只绘制最多不超过屏幕的数据量。默认为false。
      * @param bgPainter         背景绘制者。默认为[BgPainter]。
      * 可以自己实现[IBgPainter]接口，或者自己创建[BgPainter]实例。
      * @param dataPainters      数据绘制者集合，有几个导联就需要几个绘制者。默认为包括[leadsCount]个[DataPainter]的集合.
@@ -67,7 +65,6 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         mm_per_mv: Int = 10,
         gridSize: Int = (context.resources.displayMetrics.densityDpi / 25.4f).toInt(),
         leadsCount: Int = 1,
-        drawOnce: Boolean = false,
         bgPainter: IBgPainter? = BgPainter(Paint().apply {
             color = Color.parseColor("#00a7ff")
             strokeWidth = 1f
@@ -101,7 +98,6 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         this.mm_per_mv = mm_per_mv
         this.gridSize = gridSize
         this.leadsCount = leadsCount
-        this.drawOnce = drawOnce
         this.bgPainter = bgPainter
         this.dataPainters = dataPainters
         calcParams()
@@ -120,7 +116,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         }
         Log.i(
             "EcgChartView",
-            "calcParams sampleRate=$sampleRate mm_per_s=$mm_per_s mm_per_mv=$mm_per_mv gridSize=$gridSize leadsCount=$leadsCount width=$width height=$height drawOnce=$drawOnce"
+            "calcParams sampleRate=$sampleRate mm_per_s=$mm_per_s mm_per_mv=$mm_per_mv gridSize=$gridSize leadsCount=$leadsCount width=$width height=$height"
         )
         bgPainter?.init(width, height, gridSize, leadsCount)
         dataPainters.forEachIndexed { index, dataPainter ->
@@ -134,8 +130,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
                 gridSize,
                 leadsCount,
                 index,
-                bgPainter?.hasStandardSquareWave() == true,
-                drawOnce
+                bgPainter?.hasStandardSquareWave() == true
             )
         }
     }
@@ -146,6 +141,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
      * @param list  需要添加的数据，每个导联数据都是List。mV。
      */
     fun addData(list: List<List<Float>>) {
+        drawOnce = false
         if (!::dataPainters.isInitialized) {
             Log.e("EcgChartView", "addData 失败，请先调用 init 方法进行初始化")
             return
@@ -172,6 +168,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
      * @param list  需要添加的数据，每个导联数据都是List。mV。
      */
     suspend fun setData(list: List<List<Float>>) {
+        drawOnce = true
         if (!::dataPainters.isInitialized) {
             Log.e("EcgChartView", "setData 失败，请先调用 init 方法进行初始化")
             return
