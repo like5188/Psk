@@ -52,11 +52,30 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
         if (!isSurfaceCreated) return
         if (job != null) return
         val period = getPeriod()// 当第一次回调surfaceCreated()时，有可能没有此值。但是添加数据后会再次启动任务，所以这里不用使用阻塞。
-        val count = if (period == 0L) 1 else if (period > 0L) 0 else return
-        Log.w("EcgChartView", "startJob period=$period count=$count")
+        if (period < 0L) {
+            return
+        }
+        Log.w("EcgChartView", "startJob period=$period")
+        if (period == 0L) {// 只绘制一次
+            var canvas: Canvas? = null
+            try {
+                canvas = holder.lockCanvas()
+                canvas?.let {
+                    onDrawFrame(it)
+                }
+            } finally {
+                canvas?.let {
+                    try {
+                        holder.unlockCanvasAndPost(it)
+                    } catch (e: Exception) {
+                    }
+                }
+            }
+            return
+        }
         job = ViewTreeLifecycleOwner.get(this)?.lifecycleScope?.launch(Dispatchers.IO) {
             var canvas: Canvas? = null
-            scheduleFlow(0, period, count).collect {
+            scheduleFlow(0, period).collect {
                 // 这里和cancelJob方法都要加锁，避免前台切换到后台时，当一直有数据添加，
                 // 那么 cancelJob 的时机有可能在 holder.lockCanvas 和 holder.unlockCanvasAndPost 方法之间，从而造成：
                 // 1、java.lang.IllegalStateException: Surface has already been released.
