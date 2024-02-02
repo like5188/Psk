@@ -15,6 +15,7 @@ import com.psk.ecg.painter.BgPainter
 import com.psk.ecg.painter.DataPainter
 import com.psk.ecg.painter.IBgPainter
 import com.psk.ecg.painter.IDataPainter
+import kotlinx.coroutines.delay
 import kotlin.math.max
 
 /*
@@ -119,7 +120,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         }
         Log.i(
             "EcgChartView",
-            "sampleRate=$sampleRate mm_per_s=$mm_per_s mm_per_mv=$mm_per_mv gridSize=$gridSize leadsCount=$leadsCount width=$width height=$height drawOnce=$drawOnce"
+            "calcParams sampleRate=$sampleRate mm_per_s=$mm_per_s mm_per_mv=$mm_per_mv gridSize=$gridSize leadsCount=$leadsCount width=$width height=$height drawOnce=$drawOnce"
         )
         bgPainter?.init(width, height, gridSize, leadsCount)
         dataPainters.forEachIndexed { index, dataPainter ->
@@ -140,6 +141,38 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     }
 
     /**
+     * 添加数据，
+     * @param list  需要添加的数据，每个导联数据都是List。mV。
+     */
+    suspend fun addData(list: List<List<Float>>) {
+        if (!::dataPainters.isInitialized) {
+            Log.e("EcgChartView", "添加数据失败，请先调用 init 方法进行初始化")
+            return
+        }
+        if (list.size != leadsCount) {
+            Log.e("EcgChartView", "添加数据失败，和初始化时传入的导联数不一致！")
+            return
+        }
+        if (drawOnce) {// 绘制一次
+            // 等待surface创建完成，实际上是等待calcParams()执行完成后再添加数据。
+            while (!isSurfaceCreated) {
+                delay(10)
+            }
+        } else {// 循环绘制
+            // 在surface创建后，即可以绘制的时候，才允许添加数据，在surface销毁后禁止添加数据，以免造成数据堆积。
+            if (!isSurfaceCreated) {
+                Log.e("EcgChartView", "添加数据失败，isSurfaceCreated is false")
+                return
+            }
+        }
+        dataPainters.forEachIndexed { index, dataPainter ->
+            Log.i("EcgChartView", "添加数据 第 ${index + 1} 导联：${list[index].size}个数据")
+            dataPainter.addData(list[index])
+        }
+        startJob()// 有数据时启动任务
+    }
+
+    /**
      * 获取循环绘制周期间隔
      * @return
      * ==0：表示只绘制一次。此时只绘制不超过屏幕的所有数据。
@@ -156,31 +189,6 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
             val interval = 1000 / sampleRate// 绘制每个数据的间隔时间。
             max(interval, 25).toLong()
         }
-    }
-
-    /**
-     * 添加数据，
-     * @param list  需要添加的数据，每个导联数据都是List。mV。
-     */
-    fun addData(list: List<List<Float>>) {
-        if (list.size != leadsCount) {
-            Log.e("EcgChartView", "添加数据失败，和初始化时传入的导联数不一致！")
-            return
-        }
-        if (!::dataPainters.isInitialized) {
-            Log.e("EcgChartView", "添加数据失败，请先调用 init 方法进行初始化")
-            return
-        }
-        // 循环绘制时，在surface创建后，即可以绘制的时候，才允许添加数据，在surface销毁后禁止添加数据，以免造成数据堆积。
-        if (!drawOnce && !isSurfaceCreated) {
-            Log.e("EcgChartView", "添加数据失败，isSurfaceCreated is false")
-            return
-        }
-        dataPainters.forEachIndexed { index, dataPainter ->
-            Log.i("EcgChartView", "addData 第 ${index + 1} 导联：${list[index].size}个数据")
-            dataPainter.addData(list[index])
-        }
-        startJob()// 有数据时启动任务
     }
 
     override fun onDrawFrame(canvas: Canvas) {
