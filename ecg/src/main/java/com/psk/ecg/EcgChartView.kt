@@ -177,6 +177,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
             return
         }
         dataPainters.forEachIndexed { index, dataPainter ->
+            Log.i("EcgChartView", "addData 第 ${index + 1} 导联：${list[index].size}个数据")
             dataPainter.addData(list[index])
         }
         startJob()// 有数据时启动任务
