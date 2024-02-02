@@ -38,14 +38,14 @@ class PeriodicDataPainter(private val pathEffect: IPathEffect, private val paint
     override fun hasNotDrawData(): Boolean = notDrawDataQueue.isNotEmpty()
 
     override fun init(
-        period: Long,
         mm_per_mv: Int,
         sampleRate: Int,
         gridSize: Int,
         stepX: Float,
         xOffset: Float,
         yOffset: Float,
-        maxShowNumbers: Int
+        maxShowNumbers: Int,
+        period: Long,
     ) {
         this.mm_per_mv = mm_per_mv
         this.sampleRate = sampleRate

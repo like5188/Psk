@@ -5,14 +5,14 @@ package com.psk.ecg.painter
  */
 interface IPeriodicDataPainter : IDataPainter {
     fun init(
-        period: Long,
         mm_per_mv: Int,
         sampleRate: Int,
         gridSize: Int,
         stepX: Float,
         xOffset: Float,
         yOffset: Float,
-        maxShowNumbers: Int
+        maxShowNumbers: Int,
+        period: Long,
     )
 
     fun addData(data: List<Float>)

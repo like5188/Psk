@@ -152,14 +152,14 @@ class PeriodicEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(cont
         maxShowNumbers: Int
     ) {
         (dataPainters[leadsIndex] as IPeriodicDataPainter).init(
-            getPeriod(),
             mm_per_mv,
             sampleRate,
             gridSize,
             stepX,
             xOffset,
             yOffset,
-            maxShowNumbers
+            maxShowNumbers,
+            getPeriod(),
         )
     }
 
