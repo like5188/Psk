@@ -37,6 +37,9 @@ class DefaultSplit(
         if (noSplitViewGroupList.contains(viewGroup)) {
             return listOf(top + viewGroup.bottom)
         }
+        if (viewGroup.childCount == 0) {
+            return listOf(top + viewGroup.bottom)
+        }
         val list = mutableListOf<Int>()
         for (child in viewGroup.children) {
             if (child.visibility == View.GONE) {
