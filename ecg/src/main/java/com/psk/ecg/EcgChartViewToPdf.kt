@@ -30,6 +30,7 @@ suspend fun View.replaceEcgChartView(): View = withContext(Dispatchers.IO) {
 
 private fun EcgChartView.toImageView(): ImageView = ImageView(this.context).also {
     it.layoutParams = this.layoutParams
+    it.background = this.background
     it.setImageBitmap(this.getBitmap())
 }
 
