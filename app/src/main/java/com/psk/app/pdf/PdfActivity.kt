@@ -11,7 +11,6 @@ import com.psk.ecg.replaceEcgChartView
 import com.psk.pdf.DefaultSplit
 import com.psk.pdf.Pdf
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
 
@@ -52,9 +51,8 @@ class PdfActivity : AppCompatActivity() {
         }
 
         mBinding.ecgChartView.apply {
-            init(100, drawOnce = true)
             lifecycleScope.launch(Dispatchers.IO) {
-//                delay(5000)
+                init(100, drawOnce = true)
                 addData(listOf(getEcgData(1000)))
             }
         }
