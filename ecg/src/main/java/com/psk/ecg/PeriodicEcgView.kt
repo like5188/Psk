@@ -2,9 +2,6 @@ package com.psk.ecg
 
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.DashPathEffect
-import android.graphics.Paint
 import android.util.AttributeSet
 import android.util.Log
 import android.view.SurfaceHolder
@@ -52,24 +49,7 @@ class PeriodicEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(cont
         mm_per_mv: Int = 10,
         gridSize: Int = (context.resources.displayMetrics.densityDpi / 25.4f).toInt(),
         leadsCount: Int = 1,
-        bgPainter: IBgPainter? = BgPainter(Paint().apply {
-            color = Color.parseColor("#00a7ff")
-            strokeWidth = 1f
-            isAntiAlias = true
-            alpha = 120
-        }, Paint().apply {
-            color = Color.parseColor("#00a7ff")
-            strokeWidth = 1f
-            isAntiAlias = true
-            pathEffect = DashPathEffect(floatArrayOf(1f, 1f), 0f)
-            alpha = 90
-        }, Paint().apply {
-            color = Color.parseColor("#ffffff")
-            strokeWidth = 3f
-            style = Paint.Style.STROKE
-            isAntiAlias = true
-            alpha = 125
-        }),
+        bgPainter: IBgPainter? = BgPainter.defaultBgPainter,
         dataPainters: List<IPeriodicDataPainter> = (0 until leadsCount).map {
             PeriodicDataPainter.defaultDataPainter
         }
