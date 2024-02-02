@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentLinkedQueue
 
 /**
  * @param pathEffect    数据绘制效果。
- * 库中默认实现了两种：[CirclePathEffect]、[ScrollPathEffect]。你也可以自己实现[IPathEffect]接口。
+ * 库中默认实现了两种：[com.psk.ecg.effect.CirclePathEffect]、[com.psk.ecg.effect.ScrollPathEffect]。你也可以自己实现[IPathEffect]接口。
  * @param paint         数据画笔。
  */
 class DataPainter(
