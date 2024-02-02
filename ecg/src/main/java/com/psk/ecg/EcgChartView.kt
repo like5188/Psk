@@ -167,13 +167,13 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
             Log.e("EcgChartView", "添加数据失败，和初始化时传入的导联数不一致！")
             return
         }
-        // 在surface创建后，即可以绘制的时候，才允许添加数据，在surface销毁后禁止添加数据，以免造成数据堆积。
-        if (!isSurfaceCreated) {
-            Log.e("EcgChartView", "添加数据失败，isSurfaceCreated is false")
-            return
-        }
         if (!::dataPainters.isInitialized) {
             Log.e("EcgChartView", "添加数据失败，请先调用 init 方法进行初始化")
+            return
+        }
+        // 循环绘制时，在surface创建后，即可以绘制的时候，才允许添加数据，在surface销毁后禁止添加数据，以免造成数据堆积。
+        if (!drawOnce && !isSurfaceCreated) {
+            Log.e("EcgChartView", "添加数据失败，isSurfaceCreated is false")
             return
         }
         dataPainters.forEachIndexed { index, dataPainter ->

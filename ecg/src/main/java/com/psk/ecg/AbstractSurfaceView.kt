@@ -49,6 +49,7 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
     }
 
     protected fun startJob() {
+        if (!isSurfaceCreated) return
         if (job != null) return
         val period = getPeriod()// 当第一次回调surfaceCreated()时，有可能没有此值。但是添加数据后会再次启动任务，所以这里不用使用阻塞。
         val count = if (period == 0L) 1 else if (period > 0L) 0 else return

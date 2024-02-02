@@ -62,7 +62,7 @@ class PdfActivity : AppCompatActivity() {
     }
 
     private fun getEcgData(count: Int): List<Float> {
-        return (0..count).map { kotlin.random.Random.nextFloat() - 0.5f }
+        return (0 until count).map { kotlin.random.Random.nextFloat() - 0.5f }
     }
 
 }
