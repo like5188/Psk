@@ -7,7 +7,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.psk.app.R
 import com.psk.app.databinding.ActivityPdfBinding
-import com.psk.ecg.replaceEcgChartView
+import com.psk.ecg.util.replaceEcgChartView
 import com.psk.pdf.DefaultSplit
 import com.psk.pdf.Pdf
 import kotlinx.coroutines.Dispatchers

@@ -5,9 +5,10 @@ import android.graphics.Canvas
 import android.util.AttributeSet
 import android.util.Log
 import android.view.SurfaceHolder
-import android.view.SurfaceView
 import androidx.lifecycle.ViewTreeLifecycleOwner
 import androidx.lifecycle.lifecycleScope
+import com.psk.ecg.base.BaseParamsSurfaceView
+import com.psk.ecg.util.TAG
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
@@ -17,62 +18,46 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
+import kotlin.math.max
 
-abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : SurfaceView(context, attrs), SurfaceHolder.Callback {
+class PeriodSurfaceView(context: Context, attrs: AttributeSet?) : BaseParamsSurfaceView(context, attrs) {
     // 循环绘制任务
     private var job: Job? = null
-    protected var isSurfaceCreated = false
 
-    init {
-        holder.addCallback(this)
-    }
-
-    /*
-     下面的三个函数是 实现 SurfaceHolder.Callback 接口方法
+    /**
+     * 添加数据，用于循环绘制。
+     * 当 surface 未创建时，不会添加数据。
+     * @param list  需要添加的数据，每个导联数据都是List。mV。
      */
-    // activity onPause时调用
-    override fun surfaceDestroyed(holder: SurfaceHolder) {
-        Log.w("EcgChartView", "surfaceDestroyed")
-        isSurfaceCreated = false
-        cancelJob("surfaceDestroyed")// 其实这里可以不必调用，因为没有数据时会调用
+    fun addData(list: List<List<Float>>) {
+        if (!initialized()) {
+            Log.e(TAG, "addData 失败，请先调用 init 方法进行初始化")
+            return
+        }
+        if (list.size != leadsCount) {
+            Log.e(TAG, "addData 失败，和初始化时传入的导联数不一致！")
+            return
+        }
+        // 在surface创建后，即可以绘制的时候，才允许添加数据，在surface销毁后禁止添加数据，以免造成数据堆积。
+        if (!isSurfaceCreated) {
+            Log.e(TAG, "addData 失败，isSurfaceCreated is false")
+            return
+        }
+        dataPainters.forEachIndexed { index, dataPainter ->
+            Log.i(TAG, "addData 第 ${index + 1} 导联：${list[index].size}个数据")
+            dataPainter.addData(list[index])
+        }
+        startJob()// 有数据时启动任务
     }
 
-    override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
-        Log.w("EcgChartView", "surfaceChanged")
-    }
-
-    // activity onResume时调用
-    override fun surfaceCreated(holder: SurfaceHolder) {
-        Log.w("EcgChartView", "surfaceCreated")
-        isSurfaceCreated = true
-    }
-
-    protected fun startJob() {
+    private fun startJob() {
         if (!isSurfaceCreated) return
         if (job != null) return
         val period = getPeriod()// 当第一次回调surfaceCreated()时，有可能没有此值。但是添加数据后会再次启动任务，所以这里不用使用阻塞。
-        if (period < 0L) {
+        if (period <= 0L) {
             return
         }
-        if (period == 0L) {// 只绘制一次
-            Log.w("EcgChartView", "startJob 只绘制一次")
-            var canvas: Canvas? = null
-            try {
-                canvas = holder.lockCanvas()
-                canvas?.let {
-                    onDrawFrame(it)
-                }
-            } finally {
-                canvas?.let {
-                    try {
-                        holder.unlockCanvasAndPost(it)
-                    } catch (e: Exception) {
-                    }
-                }
-            }
-            return
-        }
-        Log.w("EcgChartView", "startJob 循环绘制 period=$period")
+        Log.w(TAG, "startDraw period=$period")
         job = ViewTreeLifecycleOwner.get(this)?.lifecycleScope?.launch(Dispatchers.IO) {
             var canvas: Canvas? = null
             scheduleFlow(0, period).collect {
@@ -80,7 +65,7 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
                 // 那么 cancelJob 的时机有可能在 holder.lockCanvas 和 holder.unlockCanvasAndPost 方法之间，从而造成：
                 // 1、java.lang.IllegalStateException: Surface has already been released.
                 // 2、java.lang.IllegalArgumentException: Surface was already locked
-                synchronized(this@AbstractSurfaceView) {
+                synchronized(this@PeriodSurfaceView) {
                     try {
                         // 用了两个画布，一个进行临时的绘图，一个进行最终的绘图，这样就叫做双缓冲
                         // frontCanvas：实际显示的canvas。
@@ -105,12 +90,29 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
         }
     }
 
-    protected fun cancelJob(cause: String) {
-        synchronized(this@AbstractSurfaceView) {
-            Log.w("EcgChartView", "cancelJob $cause")
+    private fun onDrawFrame(canvas: Canvas) {
+        if (!initialized()) {
+            return
+        }
+        if (dataPainters.all { !it.hasNotDrawData() }) {
+            doDraw(canvas)// 这里绘制一次最近的数据，避免前后台切换后由于没有数据传递过来而不进行绘制，造成界面空白。
+            cancelJob("没有数据")// 没有数据时取消任务
+            return
+        }
+        doDraw(canvas)
+    }
+
+    private fun cancelJob(cause: String) {
+        synchronized(this@PeriodSurfaceView) {
+            Log.w(TAG, "cancelJob $cause")
             job?.cancel()
             job = null
         }
+    }
+
+    override fun surfaceDestroyed(holder: SurfaceHolder) {
+        super.surfaceDestroyed(holder)
+        cancelJob("surfaceDestroyed")// 其实这里可以不必调用，因为没有数据时会调用
     }
 
     /**
@@ -141,19 +143,16 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
             .conflate()
             .flowOn(Dispatchers.Default)
 
-    /**
-     * 绘制一帧
-     */
-    abstract fun onDrawFrame(canvas: Canvas)
-
-    /**
-     * 获取循环绘制周期间隔
-     * @return
-     * ==0：表示只绘制一次。此时只绘制不超过屏幕的所有数据。
-     * <0：不进行绘制。
-     * >0：按照此周期间隔循环绘制无限次。
-     */
-    abstract fun getPeriod(): Long
+    override fun getPeriod(): Long = when {
+        sampleRate <= 0 -> -1L
+        else -> {
+            // 因为 scheduleFlow 循环任务在间隔时间太短会造成误差太多，
+            // 在处理业务耗时太长时会造成丢帧（循环任务使用了conflate()操作符），如果丢帧造成数据堆积，会在PathPainter.draw()方法中处理。
+            // 经测试，绘制能在30毫秒以内完成，这样绘制效果较好。为了能让它能被1000整除，这里选择25
+            val interval = 1000 / sampleRate// 绘制每个数据的间隔时间。
+            max(interval, 25).toLong()
+        }
+    }
 
 }
 

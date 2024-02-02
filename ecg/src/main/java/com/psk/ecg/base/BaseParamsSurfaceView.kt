@@ -1,4 +1,4 @@
-package com.psk.ecg
+package com.psk.ecg.base
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -15,8 +15,7 @@ import com.psk.ecg.painter.BgPainter
 import com.psk.ecg.painter.DataPainter
 import com.psk.ecg.painter.IBgPainter
 import com.psk.ecg.painter.IDataPainter
-import kotlinx.coroutines.delay
-import kotlin.math.max
+import com.psk.ecg.util.TAG
 
 /*
     SurfaceView 是一个可以在子线程中更新 UI 的 View，且不会影响到主线程。它为自己创建了一个窗口（window），就好像在视图层次（View Hierarchy）上穿了个“洞”，让绘图层（Surface）直接显示出来。但是，和常规视图（view）不同，它没有动画或者变形特效，一些 View 的特性也无法使用。
@@ -32,19 +31,21 @@ import kotlin.math.max
     1倍电压：1uV=10mm；1/2电压：1uV=5mm；2倍电压：1uV=20mm
     注意：如果采用非1倍电压，在计算结果时需要还原。
  */
-class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView(context, attrs) {
-    private var sampleRate = 0
+abstract class BaseParamsSurfaceView(context: Context, attrs: AttributeSet?) : BaseSurfaceView(context, attrs) {
     private var mm_per_s = 0
     private var mm_per_mv = 0
     private var gridSize = 0
-    private var leadsCount = 0
     private var bgPainter: IBgPainter? = null
-    private lateinit var dataPainters: List<IDataPainter>
-    private var drawOnce = false
+    protected var sampleRate = 0
+        private set
+    protected var leadsCount = 0
+        private set
+    protected lateinit var dataPainters: List<IDataPainter>
+        private set
 
     init {
         // 画布透明处理
-        setZOrderOnTop(true)
+        this.setZOrderOnTop(true)
         holder.setFormat(PixelFormat.TRANSLUCENT)
     }
 
@@ -92,7 +93,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
             })
         }
     ) {
-        Log.w("EcgChartView", "init")
+        Log.w(TAG, "init")
         this.sampleRate = sampleRate
         this.mm_per_s = mm_per_s
         this.mm_per_mv = mm_per_mv
@@ -105,8 +106,12 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        Log.w("EcgChartView", "onSizeChanged")
+        Log.w(TAG, "onSizeChanged")
         calcParams()
+    }
+
+    protected fun initialized(): Boolean {
+        return ::dataPainters.isInitialized
     }
 
     // 计算相关参数
@@ -115,7 +120,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
             return
         }
         Log.i(
-            "EcgChartView",
+            TAG,
             "calcParams sampleRate=$sampleRate mm_per_s=$mm_per_s mm_per_mv=$mm_per_mv gridSize=$gridSize leadsCount=$leadsCount width=$width height=$height"
         )
         bgPainter?.init(width, height, gridSize, leadsCount)
@@ -135,69 +140,17 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         }
     }
 
-    /**
-     * 添加数据，用于循环绘制。
-     * 当 surface 未创建时，不会添加数据。
-     * @param list  需要添加的数据，每个导联数据都是List。mV。
-     */
-    fun addData(list: List<List<Float>>) {
-        drawOnce = false
-        if (!::dataPainters.isInitialized) {
-            Log.e("EcgChartView", "addData 失败，请先调用 init 方法进行初始化")
+    protected fun doDraw(canvas: Canvas) {
+        if (!initialized()) {
+            Log.e(TAG, "setData 失败，请先调用 init 方法进行初始化")
             return
         }
-        if (list.size != leadsCount) {
-            Log.e("EcgChartView", "addData 失败，和初始化时传入的导联数不一致！")
-            return
+        Log.v(TAG, "doDraw")
+        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
+        bgPainter?.draw(canvas)
+        dataPainters.forEach {
+            it.draw(canvas)
         }
-        // 在surface创建后，即可以绘制的时候，才允许添加数据，在surface销毁后禁止添加数据，以免造成数据堆积。
-        if (!isSurfaceCreated) {
-            Log.e("EcgChartView", "addData 失败，isSurfaceCreated is false")
-            return
-        }
-        dataPainters.forEachIndexed { index, dataPainter ->
-            Log.i("EcgChartView", "addData 第 ${index + 1} 导联：${list[index].size}个数据")
-            dataPainter.addData(list[index])
-        }
-        startJob()// 有数据时启动任务
-    }
-
-    /**
-     * 设置数据，只绘制一次，并且最多绘制不超过屏幕的数据量。
-     * 注意：设置数据后，会阻塞等待 surface 创建完成，才开始绘制。
-     * @param list  需要添加的数据，每个导联数据都是List。mV。
-     */
-    suspend fun setData(list: List<List<Float>>) {
-        drawOnce = true
-        if (!::dataPainters.isInitialized) {
-            Log.e("EcgChartView", "setData 失败，请先调用 init 方法进行初始化")
-            return
-        }
-        if (list.size != leadsCount) {
-            Log.e("EcgChartView", "setData 失败，和初始化时传入的导联数不一致！")
-            return
-        }
-        // 等待surface创建完成，实际上是等待calcParams()执行完成后再添加数据。
-        while (!isSurfaceCreated) {
-            delay(10)
-        }
-        dataPainters.forEachIndexed { index, dataPainter ->
-            Log.i("EcgChartView", "setData 第 ${index + 1} 导联：${list[index].size}个数据")
-            dataPainter.setData(list[index])
-        }
-        startJob()
-    }
-
-    override fun onDrawFrame(canvas: Canvas) {
-        if (!::dataPainters.isInitialized) {
-            return
-        }
-        if (dataPainters.all { !it.hasNotDrawData() }) {
-            doDraw(canvas)// 这里绘制一次最近的数据，避免前后台切换后由于没有数据传递过来而不进行绘制，造成界面空白。
-            cancelJob("没有数据")// 没有数据时取消任务
-            return
-        }
-        doDraw(canvas)
     }
 
     /**
@@ -208,18 +161,6 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         doDraw(Canvas(this))
     }
 
-    private fun doDraw(canvas: Canvas) {
-        if (!::dataPainters.isInitialized) {
-            return
-        }
-        Log.v("EcgChartView", "doDraw")
-        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
-        bgPainter?.draw(canvas)
-        dataPainters.forEach {
-            it.draw(canvas)
-        }
-    }
-
     /**
      * 获取循环绘制周期间隔
      * @return
@@ -227,16 +168,5 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
      * <0：不进行绘制。
      * >0：按照此周期间隔循环绘制无限次。
      */
-    override fun getPeriod(): Long = when {
-        drawOnce -> 0L
-        sampleRate <= 0 -> -1L
-        else -> {
-            // 因为 scheduleFlow 循环任务在间隔时间太短会造成误差太多，
-            // 在处理业务耗时太长时会造成丢帧（循环任务使用了conflate()操作符），如果丢帧造成数据堆积，会在PathPainter.draw()方法中处理。
-            // 经测试，绘制能在30毫秒以内完成，这样绘制效果较好。为了能让它能被1000整除，这里选择25
-            val interval = 1000 / sampleRate// 绘制每个数据的间隔时间。
-            max(interval, 25).toLong()
-        }
-    }
-
+    protected abstract fun getPeriod(): Long
 }
