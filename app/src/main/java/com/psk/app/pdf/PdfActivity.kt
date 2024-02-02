@@ -53,14 +53,14 @@ class PdfActivity : AppCompatActivity() {
         mBinding.ecgChartView.apply {
             lifecycleScope.launch(Dispatchers.IO) {
                 init(100)
-                setData(listOf(getEcgData(500)))
-                setData(listOf(getEcgData(500)))
+                setData(listOf(createEcgData(300)))
+                setData(listOf(createEcgData(500)))
             }
         }
 
     }
 
-    private fun getEcgData(count: Int): List<Float> {
+    private fun createEcgData(count: Int): List<Float> {
         return (0 until count).map { kotlin.random.Random.nextFloat() - 0.5f }
     }
 
