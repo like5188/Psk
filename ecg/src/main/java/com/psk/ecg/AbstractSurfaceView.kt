@@ -32,18 +32,18 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
      */
     // activity onPause时调用
     override fun surfaceDestroyed(holder: SurfaceHolder) {
-        Log.w(TAG, "surfaceDestroyed")
+        Log.w("EcgChartView", "surfaceDestroyed")
         isSurfaceCreated = false
         cancelJob("surfaceDestroyed")// 其实这里可以不必调用，因为没有数据时会调用
     }
 
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
-        Log.w(TAG, "surfaceChanged")
+        Log.w("EcgChartView", "surfaceChanged")
     }
 
     // activity onResume时调用
     override fun surfaceCreated(holder: SurfaceHolder) {
-        Log.w(TAG, "surfaceCreated")
+        Log.w("EcgChartView", "surfaceCreated")
         isSurfaceCreated = true
         startJob()// 其实这里可以不必调用，因为有数据时会调用
     }
@@ -51,13 +51,11 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
     protected fun startJob() {
         if (job != null) return
         val period = getPeriod()// 当第一次回调surfaceCreated()时，有可能没有此值。但是添加数据后会再次启动任务，所以这里不用使用阻塞。
-        if (period <= 0L) {
-            return
-        }
-        Log.w(TAG, "startJob period=$period")
+        val count = if (period == 0L) 1 else if (period > 0L) 0 else return
+        Log.w("EcgChartView", "startJob period=$period count=$count")
         job = ViewTreeLifecycleOwner.get(this)?.lifecycleScope?.launch(Dispatchers.IO) {
             var canvas: Canvas? = null
-            scheduleFlow(0, period).collect {
+            scheduleFlow(0, period, count).collect {
                 // 这里和cancelJob方法都要加锁，避免前台切换到后台时，当一直有数据添加，
                 // 那么 cancelJob 的时机有可能在 holder.lockCanvas 和 holder.unlockCanvasAndPost 方法之间，从而造成：
                 // 1、java.lang.IllegalStateException: Surface has already been released.
@@ -89,7 +87,7 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
 
     protected fun cancelJob(cause: String) {
         synchronized(this@AbstractSurfaceView) {
-            Log.w(TAG, "cancelJob $cause")
+            Log.w("EcgChartView", "cancelJob $cause")
             job?.cancel()
             job = null
         }
@@ -130,11 +128,12 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
 
     /**
      * 获取循环绘制周期间隔
+     * @return
+     * ==0：表示只绘制一次。此时只绘制不超过屏幕的所有数据。
+     * <0：不进行绘制。
+     * >0：按照此周期间隔循环绘制无限次。
      */
     abstract fun getPeriod(): Long
 
-    companion object {
-        private val TAG = AbstractSurfaceView::class.java.simpleName
-    }
 }
 

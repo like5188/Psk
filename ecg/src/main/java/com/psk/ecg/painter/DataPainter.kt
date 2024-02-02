@@ -29,6 +29,7 @@ class DataPainter(
     private var sampleRate = 0
     private var gridSize = 0
     private var mm_per_mv = 0
+    private var drawOnce = false
 
     override fun addData(data: List<Float>) {
         data.forEach {
@@ -51,7 +52,8 @@ class DataPainter(
         gridSize: Int,
         leadsCount: Int,
         leadsIndex: Int,
-        hasStandardSquareWave: Boolean
+        hasStandardSquareWave: Boolean,
+        drawOnce: Boolean
     ) {
         this.sampleRate = sampleRate
         this.gridSize = gridSize
@@ -65,24 +67,31 @@ class DataPainter(
             xOffset = gridSize * 15f// 3个大格
         }
         maxShowNumbers = ((w - xOffset) / stepX).toInt()
-        // 为了让动画看起来没有延迟，即每秒钟绘制的数据基本达到采样率。
-        val circleTimesPerSecond = (1000 / period).toInt()// 每秒绘制次数
-        numbersOfEachDraw = sampleRate / circleTimesPerSecond
+        if (period > 0) {// 周期有可能为0
+            // 为了让动画看起来没有延迟，即每秒钟绘制的数据基本达到采样率。
+            val circleTimesPerSecond = (1000 / period).toInt()// 每秒绘制次数
+            numbersOfEachDraw = sampleRate / circleTimesPerSecond
+        }
+        this.drawOnce = drawOnce
         Log.i(
-            TAG,
+            "EcgChartView",
             "第 ${leadsIndex + 1} 导联：stepX=$stepX yOffset=$yOffset maxShowNumbers=$maxShowNumbers numbersOfEachDraw=$numbersOfEachDraw"
         )
     }
 
     override fun draw(canvas: Canvas) {
-        Log.v(TAG, "notDrawDataQueue=${notDrawDataQueue.size} drawDataList=${drawDataList.size}")
+        Log.v("EcgChartView", "notDrawDataQueue=${notDrawDataQueue.size} drawDataList=${drawDataList.size}")
         if (notDrawDataQueue.isNotEmpty()) {
             repeat(
-                // 如果剩余的数据量超过了 sampleRate，那么就每次多取1个数据，避免剩余数据量无限增长，造成暂停操作的延迟。
-                if (notDrawDataQueue.size > sampleRate) {
-                    numbersOfEachDraw + 1
+                if (drawOnce) {// 表示只绘制一次。此时只绘制不超过屏幕的所有数据。
+                    maxShowNumbers
                 } else {
-                    numbersOfEachDraw
+                    // 如果剩余的数据量超过了 sampleRate，那么就每次多取1个数据，避免剩余数据量无限增长，造成暂停操作的延迟。
+                    if (notDrawDataQueue.size > sampleRate) {
+                        numbersOfEachDraw + 1
+                    } else {
+                        numbersOfEachDraw
+                    }
                 }
             ) {
                 // 出队，空时返回null
@@ -100,7 +109,4 @@ class DataPainter(
         canvas.drawPath(path, paint)
     }
 
-    companion object {
-        private val TAG = DataPainter::class.java.simpleName
-    }
 }

@@ -40,6 +40,8 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     private var bgPainter: IBgPainter? = null
     private lateinit var dataPainters: List<IDataPainter>
 
+    private var drawOnce = false
+
     init {
         // 画布透明处理
         setZOrderOnTop(true)
@@ -47,11 +49,12 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     }
 
     /**
-     * @param sampleRate        采样率
+     * @param sampleRate        采样率。
      * @param mm_per_s          走速（速度）。默认为标准值：25mm/s
      * @param mm_per_mv         增益（灵敏度）。默认为 1倍：10mm/mV
      * @param gridSize          一个小格子对应的像素。默认为设备实际 1mm对应的像素。
      * @param leadsCount        导联数量。默认为 1。
+     * @param drawOnce          是否只绘制一次，此时只绘制最多不超过屏幕的数据量。默认为false。
      * @param bgPainter         背景绘制者。默认为[BgPainter]。
      * 可以自己实现[IBgPainter]接口，或者自己创建[BgPainter]实例。
      * @param dataPainters      数据绘制者集合，有几个导联就需要几个绘制者。默认为包括[leadsCount]个[DataPainter]的集合.
@@ -63,6 +66,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         mm_per_mv: Int = 10,
         gridSize: Int = (context.resources.displayMetrics.densityDpi / 25.4f).toInt(),
         leadsCount: Int = 1,
+        drawOnce: Boolean = false,
         bgPainter: IBgPainter? = BgPainter(Paint().apply {
             color = Color.parseColor("#00a7ff")
             strokeWidth = 1f
@@ -90,12 +94,13 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
             })
         }
     ) {
-        Log.w(TAG, "init")
+        Log.w("EcgChartView", "init")
         this.sampleRate = sampleRate
         this.mm_per_s = mm_per_s
         this.mm_per_mv = mm_per_mv
         this.gridSize = gridSize
         this.leadsCount = leadsCount
+        this.drawOnce = drawOnce
         this.bgPainter = bgPainter
         this.dataPainters = dataPainters
         calcParams()
@@ -103,7 +108,7 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        Log.w(TAG, "onSizeChanged")
+        Log.w("EcgChartView", "onSizeChanged")
         calcParams()
     }
 
@@ -113,8 +118,8 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
             return
         }
         Log.i(
-            TAG,
-            "sampleRate=$sampleRate mm_per_s=$mm_per_s mm_per_mv=$mm_per_mv gridSize=$gridSize leadsCount=$leadsCount width=$width height=$height"
+            "EcgChartView",
+            "sampleRate=$sampleRate mm_per_s=$mm_per_s mm_per_mv=$mm_per_mv gridSize=$gridSize leadsCount=$leadsCount width=$width height=$height drawOnce=$drawOnce"
         )
         bgPainter?.init(width, height, gridSize, leadsCount)
         dataPainters.forEachIndexed { index, dataPainter ->
@@ -128,18 +133,29 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
                 gridSize,
                 leadsCount,
                 index,
-                bgPainter?.hasStandardSquareWave() == true
+                bgPainter?.hasStandardSquareWave() == true,
+                drawOnce
             )
         }
     }
 
-    override fun getPeriod(): Long {
-        if (sampleRate <= 0) return 0L
-        val interval = 1000 / sampleRate// 绘制每个数据的间隔时间。ceil向上取整
-        // 因为 scheduleFlow 循环任务在间隔时间太短会造成误差太多，
-        // 在处理业务耗时太长时会造成丢帧（循环任务使用了conflate()操作符），如果丢帧造成数据堆积，会在PathPainter.draw()方法中处理。
-        // 经测试，绘制能在30毫秒以内完成，这样绘制效果较好。为了能让它能被1000整除，这里选择25
-        return max(interval, 25).toLong()
+    /**
+     * 获取循环绘制周期间隔
+     * @return
+     * ==0：表示只绘制一次。此时只绘制不超过屏幕的所有数据。
+     * <0：不进行绘制。
+     * >0：按照此周期间隔循环绘制无限次。
+     */
+    override fun getPeriod(): Long = when {
+        drawOnce -> 0L
+        sampleRate <= 0 -> -1L
+        else -> {
+            // 因为 scheduleFlow 循环任务在间隔时间太短会造成误差太多，
+            // 在处理业务耗时太长时会造成丢帧（循环任务使用了conflate()操作符），如果丢帧造成数据堆积，会在PathPainter.draw()方法中处理。
+            // 经测试，绘制能在30毫秒以内完成，这样绘制效果较好。为了能让它能被1000整除，这里选择25
+            val interval = 1000 / sampleRate// 绘制每个数据的间隔时间。
+            max(interval, 25).toLong()
+        }
     }
 
     /**
@@ -148,16 +164,16 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
      */
     fun addData(list: List<List<Float>>) {
         if (list.size != leadsCount) {
-            Log.e(TAG, "添加数据失败，和初始化时传入的导联数不一致！")
+            Log.e("EcgChartView", "添加数据失败，和初始化时传入的导联数不一致！")
             return
         }
         // 在surface创建后，即可以绘制的时候，才允许添加数据，在surface销毁后禁止添加数据，以免造成数据堆积。
         if (!isSurfaceCreated) {
-            Log.e(TAG, "添加数据失败，isSurfaceCreated is false")
+            Log.e("EcgChartView", "添加数据失败，isSurfaceCreated is false")
             return
         }
         if (!::dataPainters.isInitialized) {
-            Log.e(TAG, "添加数据失败，请先调用 init 方法进行初始化")
+            Log.e("EcgChartView", "添加数据失败，请先调用 init 方法进行初始化")
             return
         }
         dataPainters.forEachIndexed { index, dataPainter ->
@@ -167,6 +183,9 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     }
 
     override fun onDrawFrame(canvas: Canvas) {
+        if (!::dataPainters.isInitialized) {
+            return
+        }
         if (dataPainters.all { !it.hasNotDrawData() }) {
             doDraw(canvas)// 这里绘制一次最近的数据，避免前后台切换后由于没有数据传递过来而不进行绘制，造成界面空白。
             cancelJob("没有数据")// 没有数据时取消任务
@@ -184,7 +203,10 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     }
 
     private fun doDraw(canvas: Canvas) {
-        Log.v(TAG, "doDraw")
+        if (!::dataPainters.isInitialized) {
+            return
+        }
+        Log.v("EcgChartView", "doDraw")
         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
         bgPainter?.draw(canvas)
         dataPainters.forEach {
@@ -192,7 +214,4 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
         }
     }
 
-    companion object {
-        private val TAG = EcgChartView::class.java.simpleName
-    }
 }
