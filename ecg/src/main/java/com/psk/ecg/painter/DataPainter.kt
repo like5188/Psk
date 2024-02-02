@@ -31,6 +31,12 @@ class DataPainter(
     private var mm_per_mv = 0
     private var drawOnce = false
 
+    override fun setData(data: List<Float>) {
+        notDrawDataQueue.clear()
+        drawDataList.clear()
+        addData(data)
+    }
+
     override fun addData(data: List<Float>) {
         data.forEach {
             // 把uV电压值转换成y轴坐标值

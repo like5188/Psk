@@ -141,35 +141,54 @@ class EcgChartView(context: Context, attrs: AttributeSet?) : AbstractSurfaceView
     }
 
     /**
-     * 添加数据，
+     * 添加数据，用于循环绘制。
+     * 当 surface 未创建时，不会添加数据。
      * @param list  需要添加的数据，每个导联数据都是List。mV。
      */
-    suspend fun addData(list: List<List<Float>>) {
+    fun addData(list: List<List<Float>>) {
         if (!::dataPainters.isInitialized) {
-            Log.e("EcgChartView", "添加数据失败，请先调用 init 方法进行初始化")
+            Log.e("EcgChartView", "addData 失败，请先调用 init 方法进行初始化")
             return
         }
         if (list.size != leadsCount) {
-            Log.e("EcgChartView", "添加数据失败，和初始化时传入的导联数不一致！")
+            Log.e("EcgChartView", "addData 失败，和初始化时传入的导联数不一致！")
             return
         }
-        if (drawOnce) {// 绘制一次
-            // 等待surface创建完成，实际上是等待calcParams()执行完成后再添加数据。
-            while (!isSurfaceCreated) {
-                delay(10)
-            }
-        } else {// 循环绘制
-            // 在surface创建后，即可以绘制的时候，才允许添加数据，在surface销毁后禁止添加数据，以免造成数据堆积。
-            if (!isSurfaceCreated) {
-                Log.e("EcgChartView", "添加数据失败，isSurfaceCreated is false")
-                return
-            }
+        // 在surface创建后，即可以绘制的时候，才允许添加数据，在surface销毁后禁止添加数据，以免造成数据堆积。
+        if (!isSurfaceCreated) {
+            Log.e("EcgChartView", "addData 失败，isSurfaceCreated is false")
+            return
         }
         dataPainters.forEachIndexed { index, dataPainter ->
-            Log.i("EcgChartView", "添加数据 第 ${index + 1} 导联：${list[index].size}个数据")
+            Log.i("EcgChartView", "addData 第 ${index + 1} 导联：${list[index].size}个数据")
             dataPainter.addData(list[index])
         }
         startJob()// 有数据时启动任务
+    }
+
+    /**
+     * 设置数据，只绘制一次，并且最多绘制不超过屏幕的数据量。
+     * 注意：设置数据后，会阻塞等待 surface 创建完成，才开始绘制。
+     * @param list  需要添加的数据，每个导联数据都是List。mV。
+     */
+    suspend fun setData(list: List<List<Float>>) {
+        if (!::dataPainters.isInitialized) {
+            Log.e("EcgChartView", "setData 失败，请先调用 init 方法进行初始化")
+            return
+        }
+        if (list.size != leadsCount) {
+            Log.e("EcgChartView", "setData 失败，和初始化时传入的导联数不一致！")
+            return
+        }
+        // 等待surface创建完成，实际上是等待calcParams()执行完成后再添加数据。
+        while (!isSurfaceCreated) {
+            delay(10)
+        }
+        dataPainters.forEachIndexed { index, dataPainter ->
+            Log.i("EcgChartView", "setData 第 ${index + 1} 导联：${list[index].size}个数据")
+            dataPainter.setData(list[index])
+        }
+        startJob()
     }
 
     override fun onDrawFrame(canvas: Canvas) {

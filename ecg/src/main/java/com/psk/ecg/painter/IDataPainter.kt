@@ -23,6 +23,8 @@ interface IDataPainter : IPainter {
         drawOnce: Boolean
     )
 
+    fun setData(data: List<Float>)
+
     fun addData(data: List<Float>)
 
     /**
