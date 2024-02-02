@@ -45,7 +45,6 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
     override fun surfaceCreated(holder: SurfaceHolder) {
         Log.w("EcgChartView", "surfaceCreated")
         isSurfaceCreated = true
-        startJob()// 其实这里可以不必调用，因为有数据时会调用
     }
 
     protected fun startJob() {
@@ -55,8 +54,8 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
         if (period < 0L) {
             return
         }
-        Log.w("EcgChartView", "startJob period=$period")
         if (period == 0L) {// 只绘制一次
+            Log.w("EcgChartView", "startJob 只绘制一次")
             var canvas: Canvas? = null
             try {
                 canvas = holder.lockCanvas()
@@ -73,6 +72,7 @@ abstract class AbstractSurfaceView(context: Context, attrs: AttributeSet?) : Sur
             }
             return
         }
+        Log.w("EcgChartView", "startJob 循环绘制 period=$period")
         job = ViewTreeLifecycleOwner.get(this)?.lifecycleScope?.launch(Dispatchers.IO) {
             var canvas: Canvas? = null
             scheduleFlow(0, period).collect {
