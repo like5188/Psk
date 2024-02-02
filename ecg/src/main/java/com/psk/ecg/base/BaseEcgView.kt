@@ -31,7 +31,7 @@ import com.psk.ecg.util.TAG
     1倍电压：1uV=10mm；1/2电压：1uV=5mm；2倍电压：1uV=20mm
     注意：如果采用非1倍电压，在计算结果时需要还原。
  */
-abstract class BaseParamsSurfaceView(context: Context, attrs: AttributeSet?) : BaseSurfaceView(context, attrs) {
+abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurfaceView(context, attrs) {
     private var mm_per_s = 0
     private var mm_per_mv = 0
     private var gridSize = 0

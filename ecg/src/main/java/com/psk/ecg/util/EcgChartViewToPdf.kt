@@ -3,17 +3,17 @@ package com.psk.ecg.util
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import com.psk.ecg.base.BaseParamsSurfaceView
+import com.psk.ecg.base.BaseEcgView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 suspend fun View.replaceEcgChartView(): View = withContext(Dispatchers.IO) {
     when (val view = this@replaceEcgChartView) {
-        is BaseParamsSurfaceView -> view.toImageView()
+        is BaseEcgView -> view.toImageView()
 
         is ViewGroup -> {
             traverseViews(view) {
-                if (it is BaseParamsSurfaceView) {
+                if (it is BaseEcgView) {
                     val parent = it.parent as ViewGroup
                     val index = parent.indexOfChild(it)
                     withContext(Dispatchers.Main) {
@@ -29,7 +29,7 @@ suspend fun View.replaceEcgChartView(): View = withContext(Dispatchers.IO) {
     }
 }
 
-private fun BaseParamsSurfaceView.toImageView(): ImageView = ImageView(this.context).also {
+private fun BaseEcgView.toImageView(): ImageView = ImageView(this.context).also {
     it.layoutParams = this.layoutParams
     it.background = this.background
     it.setImageBitmap(this.getBitmap())

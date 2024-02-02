@@ -4,11 +4,14 @@ import android.content.Context
 import android.graphics.Canvas
 import android.util.AttributeSet
 import android.util.Log
-import com.psk.ecg.base.BaseParamsSurfaceView
+import com.psk.ecg.base.BaseEcgView
 import com.psk.ecg.util.TAG
 import kotlinx.coroutines.delay
 
-class OnceSurfaceView(context: Context, attrs: AttributeSet?) : BaseParamsSurfaceView(context, attrs) {
+/**
+ * 一次性绘制所有数据。
+ */
+class OnceEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(context, attrs) {
     /**
      * 设置数据，只绘制一次，并且最多绘制不超过屏幕的数据量。
      * 注意：设置数据后，会阻塞等待 surface 创建完成，才开始绘制。

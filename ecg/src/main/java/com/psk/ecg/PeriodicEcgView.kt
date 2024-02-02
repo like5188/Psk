@@ -7,7 +7,7 @@ import android.util.Log
 import android.view.SurfaceHolder
 import androidx.lifecycle.ViewTreeLifecycleOwner
 import androidx.lifecycle.lifecycleScope
-import com.psk.ecg.base.BaseParamsSurfaceView
+import com.psk.ecg.base.BaseEcgView
 import com.psk.ecg.util.TAG
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -20,7 +20,10 @@ import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
 import kotlin.math.max
 
-class PeriodSurfaceView(context: Context, attrs: AttributeSet?) : BaseParamsSurfaceView(context, attrs) {
+/**
+ * 周期性绘制
+ */
+class PeriodicEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(context, attrs) {
     // 循环绘制任务
     private var job: Job? = null
 
@@ -65,7 +68,7 @@ class PeriodSurfaceView(context: Context, attrs: AttributeSet?) : BaseParamsSurf
                 // 那么 cancelJob 的时机有可能在 holder.lockCanvas 和 holder.unlockCanvasAndPost 方法之间，从而造成：
                 // 1、java.lang.IllegalStateException: Surface has already been released.
                 // 2、java.lang.IllegalArgumentException: Surface was already locked
-                synchronized(this@PeriodSurfaceView) {
+                synchronized(this@PeriodicEcgView) {
                     try {
                         // 用了两个画布，一个进行临时的绘图，一个进行最终的绘图，这样就叫做双缓冲
                         // frontCanvas：实际显示的canvas。
@@ -103,7 +106,7 @@ class PeriodSurfaceView(context: Context, attrs: AttributeSet?) : BaseParamsSurf
     }
 
     private fun cancelJob(cause: String) {
-        synchronized(this@PeriodSurfaceView) {
+        synchronized(this@PeriodicEcgView) {
             Log.w(TAG, "cancelJob $cause")
             job?.cancel()
             job = null

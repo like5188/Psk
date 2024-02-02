@@ -42,7 +42,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <com.psk.ecg.PeriodSurfaceView
+        <com.psk.ecg.PeriodicEcgView
             android:id="@+id/ecgChartView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

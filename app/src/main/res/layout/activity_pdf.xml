@@ -22,7 +22,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <com.psk.ecg.OnceSurfaceView
+                <com.psk.ecg.OnceEcgView
                     android:id="@+id/ecgChartView"
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
