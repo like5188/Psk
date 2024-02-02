@@ -100,8 +100,6 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
 
     protected fun initialized() = ::dataPainters.isInitialized
 
-    abstract fun getDefaultDataPainter(): IDataPainter
-
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         Log.w(TAG, "onSizeChanged")
@@ -170,4 +168,5 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
         maxShowNumbers: Int
     )
 
+    abstract fun getDefaultDataPainter(): IDataPainter
 }
