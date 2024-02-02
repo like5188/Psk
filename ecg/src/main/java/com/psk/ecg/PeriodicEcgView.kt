@@ -2,14 +2,16 @@ package com.psk.ecg
 
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
 import android.util.AttributeSet
 import android.util.Log
 import android.view.SurfaceHolder
 import androidx.lifecycle.ViewTreeLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.psk.ecg.base.BaseEcgView
-import com.psk.ecg.painter.BgPainter
-import com.psk.ecg.painter.IBgPainter
+import com.psk.ecg.effect.CirclePathEffect
+import com.psk.ecg.painter.IDataPainter
 import com.psk.ecg.painter.IPeriodicDataPainter
 import com.psk.ecg.painter.PeriodicDataPainter
 import com.psk.ecg.util.TAG
@@ -30,33 +32,6 @@ import kotlin.math.max
 class PeriodicEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(context, attrs) {
     // 循环绘制任务
     private var job: Job? = null
-    private lateinit var dataPainters: List<IPeriodicDataPainter>
-
-    /**
-     * @param sampleRate        采样率。
-     * @param mm_per_s          走速（速度）。默认为标准值：25mm/s
-     * @param mm_per_mv         增益（灵敏度）。默认为 1倍：10mm/mV
-     * @param gridSize          一个小格子对应的像素。默认为设备实际 1mm对应的像素。
-     * @param leadsCount        导联数量。默认为 1。
-     * @param bgPainter         背景绘制者。默认为[BgPainter]。
-     * 可以自己实现[IBgPainter]接口，或者自己创建[BgPainter]实例。
-     * @param dataPainters      数据绘制者集合，有几个导联就需要几个绘制者。默认为包括[leadsCount]个[PeriodicDataPainter]的集合.
-     * 可以自己实现[IPeriodicDataPainter]接口，或者自己创建[PeriodicDataPainter]实例。
-     */
-    fun init(
-        sampleRate: Int,
-        mm_per_s: Int = 25,
-        mm_per_mv: Int = 10,
-        gridSize: Int = (context.resources.displayMetrics.densityDpi / 25.4f).toInt(),
-        leadsCount: Int = 1,
-        bgPainter: IBgPainter? = BgPainter.defaultBgPainter,
-        dataPainters: List<IPeriodicDataPainter> = (0 until leadsCount).map {
-            PeriodicDataPainter.defaultDataPainter
-        }
-    ) {
-        super.init(sampleRate, mm_per_s, mm_per_mv, gridSize, leadsCount, bgPainter)
-        this.dataPainters = dataPainters
-    }
 
     /**
      * 添加数据，用于循环绘制。
@@ -64,7 +39,7 @@ class PeriodicEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(cont
      * @param list  需要添加的数据，每个导联数据都是List。mV。
      */
     fun addData(list: List<List<Float>>) {
-        if (!::dataPainters.isInitialized) {
+        if (!initialized()) {
             Log.e(TAG, "addData 失败，请先调用 init 方法进行初始化")
             return
         }
@@ -79,7 +54,7 @@ class PeriodicEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(cont
         }
         dataPainters.forEachIndexed { index, dataPainter ->
             Log.i(TAG, "addData 第 ${index + 1} 导联：${list[index].size}个数据")
-            dataPainter.addData(list[index])
+            (dataPainter as IPeriodicDataPainter).addData(list[index])
         }
         startJob()// 有数据时启动任务
     }
@@ -125,10 +100,10 @@ class PeriodicEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(cont
     }
 
     private fun onDrawFrame(canvas: Canvas) {
-        if (!::dataPainters.isInitialized) {
+        if (!initialized()) {
             return
         }
-        if (dataPainters.all { !it.hasNotDrawData() }) {
+        if (dataPainters.all { !(it as IPeriodicDataPainter).hasNotDrawData() }) {
             doDraw(canvas)// 这里绘制一次最近的数据，避免前后台切换后由于没有数据传递过来而不进行绘制，造成界面空白。
             cancelJob("没有数据")// 没有数据时取消任务
             return
@@ -147,6 +122,54 @@ class PeriodicEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(cont
     override fun surfaceDestroyed(holder: SurfaceHolder) {
         super.surfaceDestroyed(holder)
         cancelJob("surfaceDestroyed")// 其实这里可以不必调用，因为没有数据时会调用
+    }
+
+    /**
+     * 获取循环绘制周期间隔
+     * @return
+     * <=0：不进行绘制。
+     * >0：按照此周期间隔循环绘制无限次。
+     */
+    private fun getPeriod(): Long = when {
+        sampleRate <= 0 -> sampleRate.toLong()
+        else -> {
+            // 因为 scheduleFlow 循环任务在间隔时间太短会造成误差太多，
+            // 在处理业务耗时太长时会造成丢帧（循环任务使用了conflate()操作符），如果丢帧造成数据堆积，会在PathPainter.draw()方法中处理。
+            // 经测试，绘制能在30毫秒以内完成，这样绘制效果较好。为了能让它能被1000整除，这里选择25
+            val interval = 1000 / sampleRate// 绘制每个数据的间隔时间。
+            max(interval, 25).toLong()
+        }
+    }
+
+    override fun onInitData(
+        leadsIndex: Int,
+        mm_per_mv: Int,
+        sampleRate: Int,
+        gridSize: Int,
+        stepX: Float,
+        xOffset: Float,
+        yOffset: Float,
+        maxShowNumbers: Int
+    ) {
+        (dataPainters[leadsIndex] as IPeriodicDataPainter).init(
+            getPeriod(),
+            mm_per_mv,
+            sampleRate,
+            gridSize,
+            stepX,
+            xOffset,
+            yOffset,
+            maxShowNumbers
+        )
+    }
+
+    override fun getDefaultDataPainter(): IDataPainter {
+        return PeriodicDataPainter(CirclePathEffect(), Paint().apply {
+            color = Color.parseColor("#44C71E")
+            strokeWidth = 3f
+            style = Paint.Style.STROKE
+            isAntiAlias = true
+        })
     }
 
     /**
@@ -177,43 +200,5 @@ class PeriodicEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(cont
             .conflate()
             .flowOn(Dispatchers.Default)
 
-    /**
-     * 获取循环绘制周期间隔
-     * @return
-     * <=0：不进行绘制。
-     * >0：按照此周期间隔循环绘制无限次。
-     */
-    private fun getPeriod(): Long = when {
-        sampleRate <= 0 -> sampleRate.toLong()
-        else -> {
-            // 因为 scheduleFlow 循环任务在间隔时间太短会造成误差太多，
-            // 在处理业务耗时太长时会造成丢帧（循环任务使用了conflate()操作符），如果丢帧造成数据堆积，会在PathPainter.draw()方法中处理。
-            // 经测试，绘制能在30毫秒以内完成，这样绘制效果较好。为了能让它能被1000整除，这里选择25
-            val interval = 1000 / sampleRate// 绘制每个数据的间隔时间。
-            max(interval, 25).toLong()
-        }
-    }
-
-    override fun onInitData(
-        leadsIndex: Int,
-        mm_per_mv: Int,
-        sampleRate: Int,
-        gridSize: Int,
-        stepX: Float,
-        xOffset: Float,
-        yOffset: Float,
-        maxShowNumbers: Int
-    ) {
-        if (!::dataPainters.isInitialized) {
-            return
-        }
-        dataPainters[leadsIndex].init(getPeriod(), mm_per_mv, sampleRate, gridSize, stepX, xOffset, yOffset, maxShowNumbers)
-    }
-
-    override fun onDrawData(canvas: Canvas) {
-        dataPainters.forEach {
-            it.draw(canvas)
-        }
-    }
 }
 

@@ -3,7 +3,7 @@ package com.psk.ecg.painter
 /**
  * 周期性绘制的绘制者接口
  */
-interface IPeriodicDataPainter : IPainter {
+interface IPeriodicDataPainter : IDataPainter {
     fun init(
         period: Long,
         mm_per_mv: Int,

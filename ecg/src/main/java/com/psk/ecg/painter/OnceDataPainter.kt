@@ -1,7 +1,6 @@
 package com.psk.ecg.painter
 
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
 import android.util.Log
@@ -25,9 +24,7 @@ class OnceDataPainter(private val paint: Paint) : IOnceDataPainter {
     override fun setData(data: List<Float>) {
         drawDataList.clear()
         data.mapTo(drawDataList) {
-            // 把mV电压值转换成y轴坐标值px
-            val mm = it * mm_per_mv// mV转mm
-            mm * gridSize// mm转px
+            mVToPx(it, mm_per_mv, gridSize)
         }
     }
 
@@ -64,12 +61,4 @@ class OnceDataPainter(private val paint: Paint) : IOnceDataPainter {
         canvas.drawPath(path, paint)
     }
 
-    companion object {
-        val defaultDataPainter: OnceDataPainter = OnceDataPainter(Paint().apply {
-            color = Color.parseColor("#44C71E")
-            strokeWidth = 3f
-            style = Paint.Style.STROKE
-            isAntiAlias = true
-        })
-    }
 }

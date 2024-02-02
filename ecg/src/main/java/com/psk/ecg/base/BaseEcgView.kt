@@ -4,12 +4,16 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.DashPathEffect
+import android.graphics.Paint
 import android.graphics.PixelFormat
 import android.graphics.PorterDuff
 import android.util.AttributeSet
 import android.util.Log
 import com.psk.ecg.painter.BgPainter
 import com.psk.ecg.painter.IBgPainter
+import com.psk.ecg.painter.IDataPainter
+import com.psk.ecg.painter.IPeriodicDataPainter
 import com.psk.ecg.util.TAG
 
 /*
@@ -35,6 +39,8 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
         private set
     protected var leadsCount = 0
         private set
+    protected lateinit var dataPainters: List<IDataPainter>
+        private set
 
     init {
         // 画布透明处理
@@ -50,14 +56,36 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
      * @param leadsCount        导联数量。默认为 1。
      * @param bgPainter         背景绘制者。默认为[BgPainter]。
      * 可以自己实现[IBgPainter]接口，或者自己创建[BgPainter]实例。
+     * @param dataPainters      数据绘制者集合，有几个导联就需要几个绘制者。默认为包括[leadsCount]个[IDataPainter]的集合.
+     * 可以自己实现[IPeriodicDataPainter]或者[IOnceDataPainter]接口，或者自己创建[PeriodicDataPainter]或者[OnceDataPainter]实例。
      */
-    internal fun init(
+    fun init(
         sampleRate: Int,
-        mm_per_s: Int,
-        mm_per_mv: Int,
-        gridSize: Int,
-        leadsCount: Int,
-        bgPainter: IBgPainter?
+        mm_per_s: Int = 25,
+        mm_per_mv: Int = 10,
+        gridSize: Int = (context.resources.displayMetrics.densityDpi / 25.4f).toInt(),
+        leadsCount: Int = 1,
+        bgPainter: IBgPainter? = BgPainter(Paint().apply {
+            color = Color.parseColor("#00a7ff")
+            strokeWidth = 1f
+            isAntiAlias = true
+            alpha = 120
+        }, Paint().apply {
+            color = Color.parseColor("#00a7ff")
+            strokeWidth = 1f
+            isAntiAlias = true
+            pathEffect = DashPathEffect(floatArrayOf(1f, 1f), 0f)
+            alpha = 90
+        }, Paint().apply {
+            color = Color.parseColor("#ffffff")
+            strokeWidth = 3f
+            style = Paint.Style.STROKE
+            isAntiAlias = true
+            alpha = 125
+        }),
+        dataPainters: List<IDataPainter> = (0 until leadsCount).map {
+            getDefaultDataPainter()
+        }
     ) {
         Log.w(TAG, "init")
         this.sampleRate = sampleRate
@@ -66,8 +94,13 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
         this.gridSize = gridSize
         this.leadsCount = leadsCount
         this.bgPainter = bgPainter
+        this.dataPainters = dataPainters
         calcParams()
     }
+
+    protected fun initialized() = ::dataPainters.isInitialized
+
+    abstract fun getDefaultDataPainter(): IDataPainter
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
@@ -103,10 +136,15 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
     }
 
     protected fun doDraw(canvas: Canvas) {
+        if (!initialized()) {
+            return
+        }
         Log.v(TAG, "doDraw")
         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
         bgPainter?.draw(canvas)
-        onDrawData(canvas)
+        dataPainters.forEach {
+            it.draw(canvas)
+        }
     }
 
     /**
@@ -131,7 +169,5 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
         yOffset: Float,
         maxShowNumbers: Int
     )
-
-    abstract fun onDrawData(canvas: Canvas)
 
 }

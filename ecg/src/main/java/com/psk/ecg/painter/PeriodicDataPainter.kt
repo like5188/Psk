@@ -1,11 +1,9 @@
 package com.psk.ecg.painter
 
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
 import android.util.Log
-import com.psk.ecg.effect.CirclePathEffect
 import com.psk.ecg.effect.IPathEffect
 import com.psk.ecg.util.TAG
 import java.util.LinkedList
@@ -33,10 +31,7 @@ class PeriodicDataPainter(private val pathEffect: IPathEffect, private val paint
 
     override fun addData(data: List<Float>) {
         data.forEach {
-            // 把mV电压值转换成y轴坐标值px
-            val mm = it * mm_per_mv// mV转mm
-            val px = mm * gridSize// mm转px
-            notDrawDataQueue.offer(px)// 入队成功返回true，失败返回false
+            notDrawDataQueue.offer(mVToPx(it, mm_per_mv, gridSize))// 入队成功返回true，失败返回false
         }
     }
 
@@ -92,12 +87,4 @@ class PeriodicDataPainter(private val pathEffect: IPathEffect, private val paint
         canvas.drawPath(path, paint)
     }
 
-    companion object {
-        val defaultDataPainter: PeriodicDataPainter = PeriodicDataPainter(CirclePathEffect(), Paint().apply {
-            color = Color.parseColor("#44C71E")
-            strokeWidth = 3f
-            style = Paint.Style.STROKE
-            isAntiAlias = true
-        })
-    }
 }

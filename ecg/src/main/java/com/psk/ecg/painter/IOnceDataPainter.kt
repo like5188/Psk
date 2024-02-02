@@ -3,7 +3,7 @@ package com.psk.ecg.painter
 /**
  * 只绘制一次的绘制者接口
  */
-interface IOnceDataPainter : IPainter {
+interface IOnceDataPainter : IDataPainter {
     fun init(
         mm_per_mv: Int,
         sampleRate: Int,
