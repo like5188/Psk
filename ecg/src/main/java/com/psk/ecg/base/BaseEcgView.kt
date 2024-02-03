@@ -59,6 +59,7 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
      * @param dataPainters      数据绘制者集合，有几个导联就需要几个绘制者。默认为包括[leadsCount]个[IDataPainter]的集合.
      * 可以自己实现[IDynamicDataPainter]或者[IOnceDataPainter]接口，或者自己创建[PeriodicDataPainter]或者[OnceDataPainter]实例。
      */
+    @JvmOverloads
     fun init(
         sampleRate: Int,
         mm_per_s: Int = 25,
