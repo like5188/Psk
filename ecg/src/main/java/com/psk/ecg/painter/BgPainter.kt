@@ -82,11 +82,11 @@ class BgPainter(
             val yOffset = leadsH / 2 + it * leadsH// x坐标轴移动到中间
             path.reset()
             path.moveTo(0f, yOffset)
-            path.lineTo(gridSize * 5, yOffset)
-            path.lineTo(gridSize * 5, yOffset - gridSize * 10)
-            path.lineTo(gridSize * 10, yOffset - gridSize * 10)
+            path.lineTo(gridSize * 2, yOffset)
+            path.lineTo(gridSize * 2, yOffset - gridSize * 10)
+            path.lineTo(gridSize * 7, yOffset - gridSize * 10)
+            path.lineTo(gridSize * 7, yOffset)
             path.lineTo(gridSize * 10, yOffset)
-            path.lineTo(gridSize * 15, yOffset)
             canvas.drawPath(path, paint)
         }
     }

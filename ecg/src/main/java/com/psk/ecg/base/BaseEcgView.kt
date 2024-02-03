@@ -102,7 +102,7 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
             val leadsH = height.toFloat() / leadsCount
             val yOffset = leadsH / 2 + leadsIndex * leadsH// x坐标轴移动到中间
             val xOffset = if (bgPainter?.hasStandardSquareWave() == true) {// 是否绘制标准方波
-                gridSize * 15// 3个大格
+                gridSize * 10// 2个大格
             } else {
                 0f
             }
