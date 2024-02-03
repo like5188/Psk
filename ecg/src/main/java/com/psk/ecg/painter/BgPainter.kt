@@ -75,11 +75,11 @@ class BgPainter(
     private fun drawStandard(canvas: Canvas, h: Int, leadsCount: Int, gridSize: Float) {
         val paint = standardSquareWavePaint ?: return
         val path = Path()
-        // 根据视图宽高计算
-        val leadsH = h / leadsCount
+        // 每个导联的高度
+        val leadsH = h.toFloat() / leadsCount
         repeat(leadsCount) {
             // 计算标准方波
-            val yOffset = leadsH / 2f + it * leadsH// x坐标轴移动到中间
+            val yOffset = leadsH / 2 + it * leadsH// x坐标轴移动到中间
             path.reset()
             path.moveTo(0f, yOffset)
             path.lineTo(gridSize * 5, yOffset)
