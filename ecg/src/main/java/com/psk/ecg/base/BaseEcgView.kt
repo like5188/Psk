@@ -8,6 +8,7 @@ import android.graphics.PixelFormat
 import android.graphics.PorterDuff
 import android.util.AttributeSet
 import android.util.Log
+import android.util.TypedValue
 import com.psk.ecg.painter.BgPainter
 import com.psk.ecg.painter.IBgPainter
 import com.psk.ecg.painter.IDataPainter
@@ -48,30 +49,30 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
 
     /**
      * @param sampleRate        采样率。
-     * @param mm_per_s          走速（速度）。默认为标准值：25mm/s
-     * @param mm_per_mv         增益（灵敏度）。默认为 1倍：10mm/mV
-     * @param gridSize          一个小格子对应的像素值。默认为设备实际 1mm对应的像素。
      * @param bgPainter         背景绘制者。库中默认实现为[BgPainter]。[BgPainter]。
      * 可以自己实现[IBgPainter]接口，或者自己创建[BgPainter]实例。
      * @param dataPainters      数据绘制者集合，有几个导联就需要几个绘制者。库中默认实现为[PeriodicDataPainter]、[OnceDataPainter]
      * 可以自己实现[IDynamicDataPainter]或者[IOnceDataPainter]接口，或者自己创建[PeriodicDataPainter]或者[OnceDataPainter]实例。
+     * @param mm_per_s          走速（速度）。默认为标准值：25mm/s
+     * @param mm_per_mv         增益（灵敏度）。默认为 1倍：10mm/mV
+     * @param gridSize          一个小格子对应的像素值。默认为设备屏幕上1mm对应的像素，即一个小格子为1mm。
      */
     @JvmOverloads
     fun init(
         sampleRate: Int,
+        bgPainter: IBgPainter?,
+        dataPainters: List<IDataPainter>,
         mm_per_s: Int = 25,
         mm_per_mv: Int = 10,
-        gridSize: Float = context.resources.displayMetrics.densityDpi / 25.4f,
-        bgPainter: IBgPainter?,
-        dataPainters: List<IDataPainter>
+        gridSize: Float = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_MM, 1f, context.resources.displayMetrics)
     ) {
         Log.w(TAG, "init")
         this.sampleRate = sampleRate
+        this.bgPainter = bgPainter
+        this.dataPainters = dataPainters
         this.mm_per_s = mm_per_s
         this.mm_per_mv = mm_per_mv
         this.gridSize = gridSize
-        this.bgPainter = bgPainter
-        this.dataPainters = dataPainters
         this.leadsCount = dataPainters.size
         calcParams()
     }
