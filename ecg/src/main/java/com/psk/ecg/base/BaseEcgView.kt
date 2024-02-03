@@ -147,5 +147,4 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
         maxShowNumbers: Int
     )
 
-    protected abstract fun getDefaultDataPainter(): IDataPainter
 }

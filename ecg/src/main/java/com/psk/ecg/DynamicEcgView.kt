@@ -2,17 +2,12 @@ package com.psk.ecg
 
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
 import android.util.AttributeSet
 import android.util.Log
 import android.view.SurfaceHolder
 import androidx.lifecycle.ViewTreeLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.psk.ecg.base.BaseEcgView
-import com.psk.ecg.effect.CirclePathEffect
-import com.psk.ecg.painter.DynamicDataPainter
-import com.psk.ecg.painter.IDataPainter
 import com.psk.ecg.painter.IDynamicDataPainter
 import com.psk.ecg.util.TAG
 import kotlinx.coroutines.Dispatchers
@@ -161,15 +156,6 @@ class DynamicEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(conte
             maxShowNumbers,
             getPeriod(),
         )
-    }
-
-    override fun getDefaultDataPainter(): IDataPainter {
-        return DynamicDataPainter(CirclePathEffect(), Paint().apply {
-            color = Color.parseColor("#44C71E")
-            strokeWidth = 3f
-            style = Paint.Style.STROKE
-            isAntiAlias = true
-        })
     }
 
     /**
