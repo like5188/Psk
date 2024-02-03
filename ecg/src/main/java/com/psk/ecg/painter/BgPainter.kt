@@ -22,8 +22,8 @@ class BgPainter(
         bgBitmap?.recycle()
         bgBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888).apply {
             val canvas = Canvas(this)
-            drawHLine(canvas, (h / gridSize).toInt(), w, gridSize)
-            drawVLine(canvas, (w / gridSize).toInt(), h, gridSize)
+            drawHLine(canvas, (h / gridSize).toInt() + 1, w, gridSize)
+            drawVLine(canvas, (w / gridSize).toInt() + 1, h, gridSize)
             drawStandard(canvas, h, leadsCount, gridSize)
         }
     }
@@ -47,7 +47,7 @@ class BgPainter(
     private fun drawHLine(canvas: Canvas, count: Int, w: Int, gridSize: Float) {
         val startX = 0f
         val stopX = w.toFloat()
-        (0..count).forEach {
+        (0 until count).forEach {
             val y = it * gridSize
             if (it % 5 == 0) {
                 canvas.drawLine(startX, y, stopX, y, solidLinePaint)
@@ -61,7 +61,7 @@ class BgPainter(
     private fun drawVLine(canvas: Canvas, count: Int, h: Int, gridSize: Float) {
         val startY = 0f
         val stopY = h.toFloat()
-        (0..count).forEach {
+        (0 until count).forEach {
             val x = it * gridSize
             if (it % 5 == 0) {
                 canvas.drawLine(x, startY, x, stopY, solidLinePaint)
