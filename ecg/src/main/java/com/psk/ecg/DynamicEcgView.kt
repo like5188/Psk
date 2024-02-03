@@ -11,15 +11,14 @@ import androidx.lifecycle.ViewTreeLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.psk.ecg.base.BaseEcgView
 import com.psk.ecg.effect.CirclePathEffect
+import com.psk.ecg.painter.DynamicDataPainter
 import com.psk.ecg.painter.IDataPainter
 import com.psk.ecg.painter.IDynamicDataPainter
-import com.psk.ecg.painter.DynamicDataPainter
 import com.psk.ecg.util.TAG
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.buffer
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
@@ -54,7 +53,7 @@ class DynamicEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(conte
             return
         }
         dataPainters.forEachIndexed { index, dataPainter ->
-            Log.i(TAG, "addData 第 ${index + 1} 导联：${list[index].size}个数据")
+            Log.i(TAG, "addData 第 ${index + 1} 导联：${list[index].size}个数据 $list[index]")
             (dataPainter as IDynamicDataPainter).addData(list[index])
         }
         startJob()// 有数据时启动任务
