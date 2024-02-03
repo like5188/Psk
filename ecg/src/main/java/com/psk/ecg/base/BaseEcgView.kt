@@ -4,8 +4,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.DashPathEffect
-import android.graphics.Paint
 import android.graphics.PixelFormat
 import android.graphics.PorterDuff
 import android.util.AttributeSet
@@ -37,9 +35,9 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
     private var bgPainter: IBgPainter? = null
     protected var sampleRate = 0
         private set
-    protected var leadsCount = 0
-        private set
     protected lateinit var dataPainters: List<IDataPainter>
+        private set
+    protected var leadsCount = 0
         private set
 
     init {
@@ -53,10 +51,9 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
      * @param mm_per_s          走速（速度）。默认为标准值：25mm/s
      * @param mm_per_mv         增益（灵敏度）。默认为 1倍：10mm/mV
      * @param gridSize          一个小格子对应的像素。默认为设备实际 1mm对应的像素。
-     * @param leadsCount        导联数量。默认为 1。
-     * @param bgPainter         背景绘制者。默认为[BgPainter]。
+     * @param bgPainter         背景绘制者。库中默认实现为[BgPainter]。[BgPainter]。
      * 可以自己实现[IBgPainter]接口，或者自己创建[BgPainter]实例。
-     * @param dataPainters      数据绘制者集合，有几个导联就需要几个绘制者。默认为包括[leadsCount]个[IDataPainter]的集合.
+     * @param dataPainters      数据绘制者集合，有几个导联就需要几个绘制者。库中默认实现为[PeriodicDataPainter]、[OnceDataPainter]
      * 可以自己实现[IDynamicDataPainter]或者[IOnceDataPainter]接口，或者自己创建[PeriodicDataPainter]或者[OnceDataPainter]实例。
      */
     @JvmOverloads
@@ -65,37 +62,17 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
         mm_per_s: Int = 25,
         mm_per_mv: Int = 10,
         gridSize: Int = (context.resources.displayMetrics.densityDpi / 25.4f).toInt(),
-        leadsCount: Int = 1,
-        bgPainter: IBgPainter? = BgPainter(Paint().apply {
-            color = Color.parseColor("#00a7ff")
-            strokeWidth = 1f
-            isAntiAlias = true
-            alpha = 120
-        }, Paint().apply {
-            color = Color.parseColor("#00a7ff")
-            strokeWidth = 1f
-            isAntiAlias = true
-            pathEffect = DashPathEffect(floatArrayOf(1f, 1f), 0f)
-            alpha = 90
-        }, Paint().apply {
-            color = Color.parseColor("#ffffff")
-            strokeWidth = 3f
-            style = Paint.Style.STROKE
-            isAntiAlias = true
-            alpha = 125
-        }),
-        dataPainters: List<IDataPainter> = (0 until leadsCount).map {
-            getDefaultDataPainter()
-        }
+        bgPainter: IBgPainter?,
+        dataPainters: List<IDataPainter>
     ) {
         Log.w(TAG, "init")
         this.sampleRate = sampleRate
         this.mm_per_s = mm_per_s
         this.mm_per_mv = mm_per_mv
         this.gridSize = gridSize
-        this.leadsCount = leadsCount
         this.bgPainter = bgPainter
         this.dataPainters = dataPainters
+        this.leadsCount = dataPainters.size
         calcParams()
     }
 

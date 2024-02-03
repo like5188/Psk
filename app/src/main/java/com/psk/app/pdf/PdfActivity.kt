@@ -1,5 +1,8 @@
 package com.psk.app.pdf
 
+import android.graphics.Color
+import android.graphics.DashPathEffect
+import android.graphics.Paint
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -7,6 +10,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.psk.app.R
 import com.psk.app.databinding.ActivityPdfBinding
+import com.psk.ecg.painter.BgPainter
+import com.psk.ecg.painter.StaticDataPainter
 import com.psk.ecg.util.readyForPdfIfContainsEcgView
 import com.psk.pdf.DefaultSplit
 import com.psk.pdf.Pdf
@@ -52,7 +57,34 @@ class PdfActivity : AppCompatActivity() {
 
         mBinding.ecgChartView.apply {
             lifecycleScope.launch(Dispatchers.IO) {
-                init(100)
+                init(100,
+                    bgPainter = BgPainter(Paint().apply {
+                        color = Color.parseColor("#00a7ff")
+                        strokeWidth = 1f
+                        isAntiAlias = true
+                        alpha = 120
+                    }, Paint().apply {
+                        color = Color.parseColor("#00a7ff")
+                        strokeWidth = 1f
+                        isAntiAlias = true
+                        pathEffect = DashPathEffect(floatArrayOf(1f, 1f), 0f)
+                        alpha = 90
+                    }, Paint().apply {
+                        color = Color.parseColor("#ffffff")
+                        strokeWidth = 3f
+                        style = Paint.Style.STROKE
+                        isAntiAlias = true
+                        alpha = 125
+                    }),
+                    dataPainters = (0 until 1).map {
+                        StaticDataPainter(Paint().apply {
+                            color = Color.parseColor("#44C71E")
+                            strokeWidth = 3f
+                            style = Paint.Style.STROKE
+                            isAntiAlias = true
+                        })
+                    }
+                )
                 setData(listOf(createEcgData(300)))
                 setData(listOf(createEcgData(500)))
             }

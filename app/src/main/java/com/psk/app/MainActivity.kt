@@ -1,6 +1,9 @@
 package com.psk.app
 
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.DashPathEffect
+import android.graphics.Paint
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -13,6 +16,9 @@ import com.psk.app.pdf.PdfActivity
 import com.psk.device.DeviceRepositoryManager
 import com.psk.device.data.model.DeviceType
 import com.psk.device.data.source.HeartRateRepository
+import com.psk.ecg.effect.CirclePathEffect
+import com.psk.ecg.painter.BgPainter
+import com.psk.ecg.painter.DynamicDataPainter
 import com.psk.socket.SocketListener
 import com.psk.socket.SocketServerService
 import kotlinx.coroutines.Job
@@ -38,7 +44,32 @@ class MainActivity : AppCompatActivity() {
         mBinding.btnStart.setOnClickListener {
             mBinding.ecgChartView.init(
                 sampleRate = 250,
-                leadsCount = 12,
+                bgPainter = BgPainter(Paint().apply {
+                    color = Color.parseColor("#00a7ff")
+                    strokeWidth = 1f
+                    isAntiAlias = true
+                    alpha = 120
+                }, Paint().apply {
+                    color = Color.parseColor("#00a7ff")
+                    strokeWidth = 1f
+                    isAntiAlias = true
+                    pathEffect = DashPathEffect(floatArrayOf(1f, 1f), 0f)
+                    alpha = 90
+                }, Paint().apply {
+                    color = Color.parseColor("#ffffff")
+                    strokeWidth = 3f
+                    style = Paint.Style.STROKE
+                    isAntiAlias = true
+                    alpha = 125
+                }),
+                dataPainters = (0 until 12).map {
+                    DynamicDataPainter(CirclePathEffect(), Paint().apply {
+                        color = Color.parseColor("#44C71E")
+                        strokeWidth = 3f
+                        style = Paint.Style.STROKE
+                        isAntiAlias = true
+                    })
+                }
             )
             // E/SocketServerService: Parameter specified as non-null is null: method kotlin.jvm.internal.Intrinsics.checkNotNullParameter, parameter conn
             SocketServerService.start(this, 7777, object : SocketListener {
@@ -104,7 +135,34 @@ class MainActivity : AppCompatActivity() {
 //            repository.init(this, "A00219000219", "A0:02:19:00:02:19")
 //            mBinding.ecgChartView.init(128, 10.dp)
 //            repository.init(this, "ER1 0514", "CB:5D:19:C4:C3:A5")
-            mBinding.ecgChartView.init(250, 10.dp)
+            mBinding.ecgChartView.init(250, gridSize = 10.dp,
+                bgPainter = BgPainter(Paint().apply {
+                    color = Color.parseColor("#00a7ff")
+                    strokeWidth = 1f
+                    isAntiAlias = true
+                    alpha = 120
+                }, Paint().apply {
+                    color = Color.parseColor("#00a7ff")
+                    strokeWidth = 1f
+                    isAntiAlias = true
+                    pathEffect = DashPathEffect(floatArrayOf(1f, 1f), 0f)
+                    alpha = 90
+                }, Paint().apply {
+                    color = Color.parseColor("#ffffff")
+                    strokeWidth = 3f
+                    style = Paint.Style.STROKE
+                    isAntiAlias = true
+                    alpha = 125
+                }),
+                dataPainters = (0 until 12).map {
+                    DynamicDataPainter(CirclePathEffect(), Paint().apply {
+                        color = Color.parseColor("#44C71E")
+                        strokeWidth = 3f
+                        style = Paint.Style.STROKE
+                        isAntiAlias = true
+                    })
+                }
+            )
             repository.init(this, "C00228000695", "C0:02:28:00:06:95")
             lifecycleScope.launch {
                 PermissionUtils.requestConnectEnvironment(this@MainActivity)
