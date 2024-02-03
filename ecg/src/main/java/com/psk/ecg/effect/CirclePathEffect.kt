@@ -5,8 +5,9 @@ import java.util.LinkedList
 
 /**
  * 循环效果
+ * @param spaceDataCount    空白数据数量。数值越大，空白越长。
  */
-class CirclePathEffect : IPathEffect {
+class CirclePathEffect(private val spaceDataCount: Int = 10) : IPathEffect {
     private var spaceIndex = 0// 循环效果时，不需要画线的数据的index。即视图中看起来是空白的部分。
     private var isFull = false// 是否是满数据状态
 
@@ -26,7 +27,6 @@ class CirclePathEffect : IPathEffect {
     }
 
     override fun handlePath(path: Path, stepX: Float, index: Int, data: Float) {
-        val spaceDataCount = 10// 空白数据数量
         if (isFull) {// 满数据状态
             if (index == spaceIndex + spaceDataCount) {// 空白效果
                 path.moveTo(index * stepX, data)
