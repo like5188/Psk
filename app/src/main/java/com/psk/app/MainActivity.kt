@@ -46,18 +46,18 @@ class MainActivity : AppCompatActivity() {
                 sampleRate = 250,
                 bgPainter = BgPainter(Paint().apply {
                     color = Color.parseColor("#00a7ff")
-                    strokeWidth = 1f
+                    strokeWidth = 2f
                     isAntiAlias = true
                     alpha = 120
                 }, Paint().apply {
                     color = Color.parseColor("#00a7ff")
                     strokeWidth = 1f
                     isAntiAlias = true
-                    pathEffect = DashPathEffect(floatArrayOf(1f, 1f), 0f)
+                    pathEffect = DashPathEffect(floatArrayOf(5f, 5f), 0f)
                     alpha = 90
                 }, Paint().apply {
-                    color = Color.parseColor("#ffffff")
-                    strokeWidth = 3f
+                    color = Color.parseColor("#000000")
+                    strokeWidth = 2f
                     style = Paint.Style.STROKE
                     isAntiAlias = true
                     alpha = 125
@@ -138,18 +138,18 @@ class MainActivity : AppCompatActivity() {
             mBinding.ecgChartView.init(250, gridSize = 10f.dp,
                 bgPainter = BgPainter(Paint().apply {
                     color = Color.parseColor("#00a7ff")
-                    strokeWidth = 1f
+                    strokeWidth = 2f
                     isAntiAlias = true
                     alpha = 120
                 }, Paint().apply {
                     color = Color.parseColor("#00a7ff")
                     strokeWidth = 1f
                     isAntiAlias = true
-                    pathEffect = DashPathEffect(floatArrayOf(1f, 1f), 0f)
+                    pathEffect = DashPathEffect(floatArrayOf(5f, 5f), 0f)
                     alpha = 90
                 }, Paint().apply {
-                    color = Color.parseColor("#ffffff")
-                    strokeWidth = 3f
+                    color = Color.parseColor("#000000")
+                    strokeWidth = 2f
                     style = Paint.Style.STROKE
                     isAntiAlias = true
                     alpha = 125
