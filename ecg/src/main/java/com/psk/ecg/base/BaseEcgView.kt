@@ -159,7 +159,7 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
      * 初始化导联数据
      * @param leadsIndex                导联索引，从0开始。
      */
-    abstract fun onInitData(
+    protected abstract fun onInitData(
         leadsIndex: Int,
         mm_per_mv: Int,
         sampleRate: Int,
@@ -170,5 +170,5 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
         maxShowNumbers: Int
     )
 
-    abstract fun getDefaultDataPainter(): IDataPainter
+    protected abstract fun getDefaultDataPainter(): IDataPainter
 }
