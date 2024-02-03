@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 import kotlin.math.max
 
 /**
- * 动态心电图。周期性绘制。
+ * 动态心电图。周期性绘制。通常用于实时显示心电数据。
  */
 class DynamicEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(context, attrs) {
     // 循环绘制任务

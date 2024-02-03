@@ -140,8 +140,9 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
         Log.v(TAG, "doDraw")
         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
         bgPainter?.draw(canvas)
-        dataPainters.forEach {
-            it.draw(canvas)
+        dataPainters.forEachIndexed { index, dataPainter ->
+            Log.v(TAG, "第 ${index + 1} 导联：draw")
+            dataPainter.draw(canvas)
         }
     }
 

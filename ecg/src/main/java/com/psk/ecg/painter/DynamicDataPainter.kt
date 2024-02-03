@@ -28,6 +28,7 @@ class DynamicDataPainter(private val pathEffect: IPathEffect, private val paint:
 
     // 每次绘制的数据量。避免数据太多，1秒钟绘制不完，所以每次多绘制几个，不让数据堆积太多造成界面延迟严重。
     private var numbersOfEachDraw = 0
+    private var circleTimesPerSecond = 0// 每秒绘制次数
 
     override fun addData(data: List<Float>) {
         data.forEach {
@@ -56,8 +57,9 @@ class DynamicDataPainter(private val pathEffect: IPathEffect, private val paint:
         this.maxShowNumbers = maxShowNumbers
         if (period > 0) {// 周期有可能为0
             // 为了让动画看起来没有延迟，即每秒钟绘制的数据基本达到采样率。
-            val circleTimesPerSecond = (1000 / period).toInt()// 每秒绘制次数
+            circleTimesPerSecond = (1000 / period).toInt()// 每秒绘制次数
             numbersOfEachDraw = sampleRate / circleTimesPerSecond
+            Log.i(TAG, "period=$period circleTimesPerSecond=$circleTimesPerSecond numbersOfEachDraw=$numbersOfEachDraw")
         }
     }
 
@@ -65,9 +67,9 @@ class DynamicDataPainter(private val pathEffect: IPathEffect, private val paint:
         Log.v(TAG, "draw notDrawDataQueue=${notDrawDataQueue.size} drawDataList=${drawDataList.size}")
         if (notDrawDataQueue.isNotEmpty()) {
             repeat(
-                // 如果剩余的数据量超过了 sampleRate，那么就每次多取1个数据，避免剩余数据量无限增长，造成暂停操作的延迟。
+                // 如果剩余的数据量超过了 sampleRate，那么就每次多取点数据，避免剩余数据量无限增长，造成暂停操作的延迟。
                 if (notDrawDataQueue.size > sampleRate) {
-                    numbersOfEachDraw + 1
+                    numbersOfEachDraw + (notDrawDataQueue.size - sampleRate) / circleTimesPerSecond
                 } else {
                     numbersOfEachDraw
                 }

@@ -7,8 +7,12 @@ import com.psk.ecg.base.BaseEcgView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-suspend fun View.replaceEcgChartView(): View = withContext(Dispatchers.IO) {
-    when (val view = this@replaceEcgChartView) {
+/**
+ * 如果视图中包含[BaseEcgView]，则把视图转换成 Pdf 文件时，需要先调用此方法处理。
+ * 注意：此方法只需调用一次，会把[BaseEcgView]转换成[ImageView]。
+ */
+suspend fun View.readyForPdfIfContainsEcgView(): View = withContext(Dispatchers.IO) {
+    when (val view = this@readyForPdfIfContainsEcgView) {
         is BaseEcgView -> view.toImageView()
 
         is ViewGroup -> {

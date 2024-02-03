@@ -25,7 +25,7 @@
                 <com.psk.ecg.StaticEcgView
                     android:id="@+id/ecgChartView"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
+                    android:layout_height="200px"
                     android:background="@drawable/ecg_bg" />
 
                 <TextView
@@ -98,6 +98,11 @@
                     android:text="10"
                     android:textSize="30sp" />
 
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="100px"
+                    android:background="@color/common_text_red_0" />
+
                 <!--
                     ScrollView 嵌套 RecyclerView 时，RecyclerView 必须被 RelativeLayout 包裹（否则 RecyclerView 在界面上无法显示完全）
                     RecyclerView 设置 android:descendantFocusability="blocksDescendants" 属性，是为了避免界面一启动就滚动到了 RecyclerView 的位置。
@@ -112,6 +117,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
                 </RelativeLayout>
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="100px"
+                    android:background="@color/common_text_red_0" />
 
                 <LinearLayout
                     android:id="@+id/ll"
@@ -260,6 +270,10 @@
                         android:textSize="30sp" />
                 </LinearLayout>
 
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="100px"
+                    android:background="@color/common_text_red_0" />
             </LinearLayout>
         </ScrollView>
     </LinearLayout>

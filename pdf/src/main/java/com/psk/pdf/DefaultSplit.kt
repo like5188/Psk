@@ -15,7 +15,14 @@ class DefaultSplit(
 ) : ISplit {
 
     override fun getSplitLines(view: View): List<Int> {
+        if (view.visibility == View.GONE) {
+            return emptyList()
+        }
         if (view !is ViewGroup) {
+            return emptyList()
+        }
+        // ViewGroup
+        if (view.childCount == 0) {
             return emptyList()
         }
         if (view is ScrollView) {
@@ -31,15 +38,6 @@ class DefaultSplit(
      * 解析内部子视图，返回分割线集合。
      */
     private fun parseViewGroup(viewGroup: ViewGroup, top: Int): List<Int> {
-        if (viewGroup.visibility == View.GONE) {
-            return emptyList()
-        }
-        if (noSplitViewGroupList.contains(viewGroup)) {
-            return listOf(top + viewGroup.bottom)
-        }
-        if (viewGroup.childCount == 0) {
-            return listOf(top + viewGroup.bottom)
-        }
         val list = mutableListOf<Int>()
         for (child in viewGroup.children) {
             if (child.visibility == View.GONE) {
@@ -48,7 +46,13 @@ class DefaultSplit(
             if (noSplitViewList.contains(child)) {
                 continue
             }
+            // View
             if (child !is ViewGroup) {
+                list.add(top + child.bottom)
+                continue
+            }
+            // ViewGroup
+            if (noSplitViewGroupList.contains(child) || child.childCount == 0) {
                 list.add(top + child.bottom)
                 continue
             }

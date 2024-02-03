@@ -7,7 +7,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.psk.app.R
 import com.psk.app.databinding.ActivityPdfBinding
-import com.psk.ecg.util.replaceEcgChartView
+import com.psk.ecg.util.readyForPdfIfContainsEcgView
 import com.psk.pdf.DefaultSplit
 import com.psk.pdf.Pdf
 import kotlinx.coroutines.Dispatchers
@@ -39,7 +39,7 @@ class PdfActivity : AppCompatActivity() {
                 if (!file.exists()) {
                     file.createNewFile()
                 }
-                pdf.saveView(mBinding.sv.replaceEcgChartView(), file)
+                pdf.saveView(mBinding.sv.readyForPdfIfContainsEcgView(), file)
             }
         }
         mBinding.rv.layoutManager = LinearLayoutManager(this)
