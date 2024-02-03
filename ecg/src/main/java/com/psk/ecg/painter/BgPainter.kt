@@ -75,7 +75,7 @@ class BgPainter(
     private fun drawStandard(canvas: Canvas, h: Int, leadsCount: Int, gridSize: Float) {
         val paint = standardSquareWavePaint ?: return
         val path = Path()
-        // 每个导联的高度
+        // 一个导联的高度
         val leadsH = h.toFloat() / leadsCount
         repeat(leadsCount) {
             // 计算标准方波

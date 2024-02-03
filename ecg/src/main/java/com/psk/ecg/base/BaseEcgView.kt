@@ -97,9 +97,9 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
         repeat(leadsCount) { leadsIndex ->
             // 根据采样率计算
             val stepX = gridSize * mm_per_s / sampleRate
-            // 根据视图宽高计算
-            val leadsH = height / leadsCount
-            val yOffset = leadsH / 2f + leadsIndex * leadsH// x坐标轴移动到中间
+            // 一个导联的高度
+            val leadsH = height.toFloat() / leadsCount
+            val yOffset = leadsH / 2 + leadsIndex * leadsH// x坐标轴移动到中间
             val xOffset = if (bgPainter?.hasStandardSquareWave() == true) {// 是否绘制标准方波
                 gridSize * 15// 3个大格
             } else {
