@@ -25,8 +25,7 @@
                 <com.psk.ecg.StaticEcgView
                     android:id="@+id/ecgChartView"
                     android:layout_width="match_parent"
-                    android:layout_height="200px"
-                    android:background="@drawable/ecg_bg" />
+                    android:layout_height="200px" />
 
                 <TextView
                     android:id="@+id/tv1"
