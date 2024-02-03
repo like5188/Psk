@@ -12,8 +12,8 @@ import androidx.lifecycle.lifecycleScope
 import com.psk.ecg.base.BaseEcgView
 import com.psk.ecg.effect.CirclePathEffect
 import com.psk.ecg.painter.IDataPainter
-import com.psk.ecg.painter.IPeriodicDataPainter
-import com.psk.ecg.painter.PeriodicDataPainter
+import com.psk.ecg.painter.IDynamicDataPainter
+import com.psk.ecg.painter.DynamicDataPainter
 import com.psk.ecg.util.TAG
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -27,9 +27,9 @@ import kotlinx.coroutines.launch
 import kotlin.math.max
 
 /**
- * 周期性绘制
+ * 动态心电图。周期性绘制。
  */
-class PeriodicEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(context, attrs) {
+class DynamicEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(context, attrs) {
     // 循环绘制任务
     private var job: Job? = null
 
@@ -54,7 +54,7 @@ class PeriodicEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(cont
         }
         dataPainters.forEachIndexed { index, dataPainter ->
             Log.i(TAG, "addData 第 ${index + 1} 导联：${list[index].size}个数据")
-            (dataPainter as IPeriodicDataPainter).addData(list[index])
+            (dataPainter as IDynamicDataPainter).addData(list[index])
         }
         startJob()// 有数据时启动任务
     }
@@ -74,7 +74,7 @@ class PeriodicEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(cont
                 // 那么 cancelJob 的时机有可能在 holder.lockCanvas 和 holder.unlockCanvasAndPost 方法之间，从而造成：
                 // 1、java.lang.IllegalStateException: Surface has already been released.
                 // 2、java.lang.IllegalArgumentException: Surface was already locked
-                synchronized(this@PeriodicEcgView) {
+                synchronized(this@DynamicEcgView) {
                     try {
                         // 用了两个画布，一个进行临时的绘图，一个进行最终的绘图，这样就叫做双缓冲
                         // frontCanvas：实际显示的canvas。
@@ -103,7 +103,7 @@ class PeriodicEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(cont
         if (!initialized()) {
             return
         }
-        if (dataPainters.all { !(it as IPeriodicDataPainter).hasNotDrawData() }) {
+        if (dataPainters.all { !(it as IDynamicDataPainter).hasNotDrawData() }) {
             doDraw(canvas)// 这里绘制一次最近的数据，避免前后台切换后由于没有数据传递过来而不进行绘制，造成界面空白。
             cancelJob("没有数据")// 没有数据时取消任务
             return
@@ -112,7 +112,7 @@ class PeriodicEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(cont
     }
 
     private fun cancelJob(cause: String) {
-        synchronized(this@PeriodicEcgView) {
+        synchronized(this@DynamicEcgView) {
             Log.w(TAG, "cancelJob $cause")
             job?.cancel()
             job = null
@@ -151,7 +151,7 @@ class PeriodicEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(cont
         yOffset: Float,
         maxShowNumbers: Int
     ) {
-        (dataPainters[leadsIndex] as IPeriodicDataPainter).init(
+        (dataPainters[leadsIndex] as IDynamicDataPainter).init(
             mm_per_mv,
             sampleRate,
             gridSize,
@@ -164,7 +164,7 @@ class PeriodicEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(cont
     }
 
     override fun getDefaultDataPainter(): IDataPainter {
-        return PeriodicDataPainter(CirclePathEffect(), Paint().apply {
+        return DynamicDataPainter(CirclePathEffect(), Paint().apply {
             color = Color.parseColor("#44C71E")
             strokeWidth = 3f
             style = Paint.Style.STROKE

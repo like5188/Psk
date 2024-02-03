@@ -8,15 +8,15 @@ import android.util.AttributeSet
 import android.util.Log
 import com.psk.ecg.base.BaseEcgView
 import com.psk.ecg.painter.IDataPainter
-import com.psk.ecg.painter.IOnceDataPainter
-import com.psk.ecg.painter.OnceDataPainter
+import com.psk.ecg.painter.IStaticDataPainter
+import com.psk.ecg.painter.StaticDataPainter
 import com.psk.ecg.util.TAG
 import kotlinx.coroutines.delay
 
 /**
- * 一次性绘制所有数据。
+ * 静态心电图。一次性绘制所有数据。
  */
-class OnceEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(context, attrs) {
+class StaticEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(context, attrs) {
 
     /**
      * 设置数据，只绘制一次，并且最多绘制不超过屏幕的数据量。
@@ -38,7 +38,7 @@ class OnceEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(context,
         }
         dataPainters.forEachIndexed { index, dataPainter ->
             Log.i(TAG, "setData 第 ${index + 1} 导联：${list[index].size}个数据")
-            (dataPainter as IOnceDataPainter).setData(list[index])
+            (dataPainter as IStaticDataPainter).setData(list[index])
         }
         startDraw()
     }
@@ -71,11 +71,11 @@ class OnceEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(context,
         yOffset: Float,
         maxShowNumbers: Int
     ) {
-        (dataPainters[leadsIndex] as IOnceDataPainter).init(mm_per_mv, sampleRate, gridSize, stepX, xOffset, yOffset, maxShowNumbers)
+        (dataPainters[leadsIndex] as IStaticDataPainter).init(mm_per_mv, sampleRate, gridSize, stepX, xOffset, yOffset, maxShowNumbers)
     }
 
     override fun getDefaultDataPainter(): IDataPainter {
-        return OnceDataPainter(Paint().apply {
+        return StaticDataPainter(Paint().apply {
             color = Color.parseColor("#44C71E")
             strokeWidth = 3f
             style = Paint.Style.STROKE

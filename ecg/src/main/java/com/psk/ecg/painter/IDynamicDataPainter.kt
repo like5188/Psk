@@ -1,9 +1,9 @@
 package com.psk.ecg.painter
 
 /**
- * 周期性绘制的绘制者接口
+ * 动态心电图数据绘制接口
  */
-interface IPeriodicDataPainter : IDataPainter {
+interface IDynamicDataPainter : IDataPainter {
     fun init(
         mm_per_mv: Int,
         sampleRate: Int,

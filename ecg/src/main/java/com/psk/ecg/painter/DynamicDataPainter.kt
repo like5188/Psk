@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentLinkedQueue
  * 库中默认实现了两种：[com.psk.ecg.effect.CirclePathEffect]、[com.psk.ecg.effect.ScrollPathEffect]。你也可以自己实现[IPathEffect]接口。
  * @param paint         数据画笔。
  */
-class PeriodicDataPainter(private val pathEffect: IPathEffect, private val paint: Paint) : IPeriodicDataPainter {
+class DynamicDataPainter(private val pathEffect: IPathEffect, private val paint: Paint) : IDynamicDataPainter {
     private val path = Path()
     private val notDrawDataQueue = ConcurrentLinkedQueue<Float>()// 未绘制的数据集合
     private val drawDataList = LinkedList<Float>()// 需要绘制的数据集合

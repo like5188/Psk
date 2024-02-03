@@ -10,7 +10,7 @@ import java.util.LinkedList
 /**
  * @param paint         数据画笔。
  */
-class OnceDataPainter(private val paint: Paint) : IOnceDataPainter {
+class StaticDataPainter(private val paint: Paint) : IStaticDataPainter {
     private val path = Path()
     private val drawDataList = LinkedList<Float>()// 需要绘制的数据集合
     private var mm_per_mv = 0

@@ -13,7 +13,7 @@ import android.util.Log
 import com.psk.ecg.painter.BgPainter
 import com.psk.ecg.painter.IBgPainter
 import com.psk.ecg.painter.IDataPainter
-import com.psk.ecg.painter.IPeriodicDataPainter
+import com.psk.ecg.painter.IDynamicDataPainter
 import com.psk.ecg.util.TAG
 
 /*
@@ -57,7 +57,7 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
      * @param bgPainter         背景绘制者。默认为[BgPainter]。
      * 可以自己实现[IBgPainter]接口，或者自己创建[BgPainter]实例。
      * @param dataPainters      数据绘制者集合，有几个导联就需要几个绘制者。默认为包括[leadsCount]个[IDataPainter]的集合.
-     * 可以自己实现[IPeriodicDataPainter]或者[IOnceDataPainter]接口，或者自己创建[PeriodicDataPainter]或者[OnceDataPainter]实例。
+     * 可以自己实现[IDynamicDataPainter]或者[IOnceDataPainter]接口，或者自己创建[PeriodicDataPainter]或者[OnceDataPainter]实例。
      */
     fun init(
         sampleRate: Int,
