@@ -25,7 +25,7 @@ import com.psk.ecg.util.TAG
     实际心电图纸是由1mm*1mm的小方格组成，每1大格分为5小格
     横坐标代表时间，一般采用的走纸速度为25mm/s，每小格代表0.04s。
     纵坐标代表电压，一般采用的定标电压为1mV=10mm（10小格），每小格代表0.1mV。
-    1倍电压：1uV=10mm；1/2电压：1uV=5mm；2倍电压：1uV=20mm
+    1倍电压：1mV=10mm；1/2电压：1mV=5mm；2倍电压：1mV=20mm
     注意：如果采用非1倍电压，在计算结果时需要还原。
  */
 abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurfaceView(context, attrs) {
