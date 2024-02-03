@@ -10,6 +10,7 @@ import kotlinx.coroutines.withContext
 /**
  * 如果视图中包含[BaseEcgView]，则把视图转换成 Pdf 文件时，需要先调用此方法处理。
  * 注意：此方法只需调用一次，会把[BaseEcgView]转换成[ImageView]。
+ * @return  替换了所有[BaseEcgView]为[ImageView]后的视图
  */
 suspend fun View.readyForPdfIfContainsEcgView(): View = withContext(Dispatchers.IO) {
     when (val view = this@readyForPdfIfContainsEcgView) {
