@@ -70,7 +70,7 @@ class PdfActivity : AppCompatActivity() {
                         pathEffect = DashPathEffect(floatArrayOf(1f, 1f), 0f)
                         alpha = 90
                     }, Paint().apply {
-                        color = Color.parseColor("#ff0000")
+                        color = Color.parseColor("#000000")
                         strokeWidth = 3f
                         style = Paint.Style.STROKE
                         isAntiAlias = true
