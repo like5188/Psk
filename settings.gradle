@@ -1,4 +1,6 @@
 rootProject.name='Psk'
+include ':ecg'
+//todo Game游戏使用本ecg库时，需要注释下面的所有模块，避免影响。
 include ':device'
 include ':shangxiazhi'
 include ':common'
@@ -6,4 +8,3 @@ include ':socket'
 include ':shangxiazhicontroller'
 include ':app'
 include ':pdf'
-include ':ecg'
