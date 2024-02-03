@@ -135,7 +135,7 @@ class MainActivity : AppCompatActivity() {
 //            repository.init(this, "A00219000219", "A0:02:19:00:02:19")
 //            mBinding.ecgChartView.init(128, 10.dp)
 //            repository.init(this, "ER1 0514", "CB:5D:19:C4:C3:A5")
-            mBinding.ecgChartView.init(250, gridSize = 10.dp,
+            mBinding.ecgChartView.init(250, gridSize = 10f.dp,
                 bgPainter = BgPainter(Paint().apply {
                     color = Color.parseColor("#00a7ff")
                     strokeWidth = 1f

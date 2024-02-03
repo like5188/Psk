@@ -63,7 +63,7 @@ class StaticEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(contex
         leadsIndex: Int,
         mm_per_mv: Int,
         sampleRate: Int,
-        gridSize: Int,
+        gridSize: Float,
         stepX: Float,
         xOffset: Float,
         yOffset: Float,

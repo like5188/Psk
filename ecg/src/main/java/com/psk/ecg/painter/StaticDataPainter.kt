@@ -15,7 +15,7 @@ class StaticDataPainter(private val paint: Paint) : IStaticDataPainter {
     private val drawDataList = LinkedList<Float>()// 需要绘制的数据集合
     private var mm_per_mv = 0
     private var sampleRate = 0
-    private var gridSize = 0
+    private var gridSize = 0f
     private var stepX = 0f// x方向的步进，两个数据点在x轴方向的距离。px
     private var xOffset = 0f// x轴偏移。因为绘制标准方波需要偏移路径的起始点
     private var yOffset = 0f// y轴偏移。因为原始的x轴在视图顶部。所以需要把x轴移动到视图垂直中心位置
@@ -31,7 +31,7 @@ class StaticDataPainter(private val paint: Paint) : IStaticDataPainter {
     override fun init(
         mm_per_mv: Int,
         sampleRate: Int,
-        gridSize: Int,
+        gridSize: Float,
         stepX: Float,
         xOffset: Float,
         yOffset: Float,

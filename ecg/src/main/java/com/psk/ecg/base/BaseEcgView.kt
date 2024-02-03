@@ -31,7 +31,7 @@ import com.psk.ecg.util.TAG
 abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurfaceView(context, attrs) {
     private var mm_per_s = 0
     private var mm_per_mv = 0
-    private var gridSize = 0
+    private var gridSize = 0f
     private var bgPainter: IBgPainter? = null
     protected var sampleRate = 0
         private set
@@ -50,7 +50,7 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
      * @param sampleRate        采样率。
      * @param mm_per_s          走速（速度）。默认为标准值：25mm/s
      * @param mm_per_mv         增益（灵敏度）。默认为 1倍：10mm/mV
-     * @param gridSize          一个小格子对应的像素。默认为设备实际 1mm对应的像素。
+     * @param gridSize          一个小格子对应的像素值。默认为设备实际 1mm对应的像素。
      * @param bgPainter         背景绘制者。库中默认实现为[BgPainter]。[BgPainter]。
      * 可以自己实现[IBgPainter]接口，或者自己创建[BgPainter]实例。
      * @param dataPainters      数据绘制者集合，有几个导联就需要几个绘制者。库中默认实现为[PeriodicDataPainter]、[OnceDataPainter]
@@ -61,7 +61,7 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
         sampleRate: Int,
         mm_per_s: Int = 25,
         mm_per_mv: Int = 10,
-        gridSize: Int = (context.resources.displayMetrics.densityDpi / 25.4f).toInt(),
+        gridSize: Float = context.resources.displayMetrics.densityDpi / 25.4f,
         bgPainter: IBgPainter?,
         dataPainters: List<IDataPainter>
     ) {
@@ -86,7 +86,7 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
 
     // 计算相关参数
     private fun calcParams() {
-        if (sampleRate <= 0 || mm_per_s <= 0 || mm_per_mv <= 0 || gridSize <= 0 || leadsCount <= 0 || width <= 0 || height <= 0) {
+        if (sampleRate <= 0 || mm_per_s <= 0 || mm_per_mv <= 0 || gridSize <= 0f || leadsCount <= 0 || width <= 0 || height <= 0) {
             return
         }
         Log.i(
@@ -96,12 +96,12 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
         bgPainter?.init(width, height, gridSize, leadsCount)
         repeat(leadsCount) { leadsIndex ->
             // 根据采样率计算
-            val stepX = gridSize * mm_per_s / sampleRate.toFloat()
+            val stepX = gridSize * mm_per_s / sampleRate
             // 根据视图宽高计算
             val leadsH = height / leadsCount
             val yOffset = leadsH / 2f + leadsIndex * leadsH// x坐标轴移动到中间
             val xOffset = if (bgPainter?.hasStandardSquareWave() == true) {// 是否绘制标准方波
-                gridSize * 15f// 3个大格
+                gridSize * 15// 3个大格
             } else {
                 0f
             }
@@ -140,7 +140,7 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
         leadsIndex: Int,
         mm_per_mv: Int,
         sampleRate: Int,
-        gridSize: Int,
+        gridSize: Float,
         stepX: Float,
         xOffset: Float,
         yOffset: Float,

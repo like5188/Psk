@@ -7,7 +7,7 @@ interface IStaticDataPainter : IDataPainter {
     fun init(
         mm_per_mv: Int,
         sampleRate: Int,
-        gridSize: Int,
+        gridSize: Float,
         stepX: Float,
         xOffset: Float,
         yOffset: Float,
