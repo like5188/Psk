@@ -56,11 +56,11 @@ class PdfActivity : AppCompatActivity() {
             submitList(list)
         }
 
-        var mm_per_mv = 50
+        var mm_per_mv = 20
         mBinding.btn1.setOnClickListener {
-            mm_per_mv -= 10
+            mm_per_mv -= 5
             if (mm_per_mv <= 0) {
-                mm_per_mv = 10
+                mm_per_mv = 5
             }
             mBinding.ecgChartView.setMmPerMv(mm_per_mv)
         }
