@@ -93,8 +93,8 @@ class PdfActivity : AppCompatActivity() {
                     isAntiAlias = true
                 })
             })
+            setData(listOf(createEcgData(300)))
         }
-        mBinding.ecgChartView.setData(listOf(createEcgData(300)))
     }
 
     private fun createEcgData(count: Int): List<Float> {
