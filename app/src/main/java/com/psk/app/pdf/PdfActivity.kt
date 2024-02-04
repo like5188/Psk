@@ -91,11 +91,39 @@ class PdfActivity : AppCompatActivity() {
                         })
                     }
                 )
-                lifecycleScope.launch(Dispatchers.IO) {
-                    setData(listOf(createEcgData(300)))
-                    setData(listOf(createEcgData(500)))
-                }
             }
+        }
+        lifecycleScope.launch(Dispatchers.IO) {
+            mBinding.ecgChartView.init(100, mm_per_mv = mm_per_mv,
+                bgPainter = BgPainter(Paint().apply {
+                    color = Color.parseColor("#00a7ff")
+                    strokeWidth = 2f
+                    isAntiAlias = true
+                    alpha = 120
+                }, Paint().apply {
+                    color = Color.parseColor("#00a7ff")
+                    strokeWidth = 1f
+                    isAntiAlias = true
+                    pathEffect = DashPathEffect(floatArrayOf(5f, 5f), 0f)
+                    alpha = 90
+                }, Paint().apply {
+                    color = Color.parseColor("#000000")
+                    strokeWidth = 2f
+                    style = Paint.Style.STROKE
+                    isAntiAlias = true
+                    alpha = 125
+                }),
+                dataPainters = (0 until 1).map {
+                    StaticDataPainter(Paint().apply {
+                        color = Color.parseColor("#44C71E")
+                        strokeWidth = 3f
+                        style = Paint.Style.STROKE
+                        isAntiAlias = true
+                    })
+                }
+            )
+            mBinding.ecgChartView.setData(listOf(createEcgData(300)))
+            mBinding.ecgChartView.setData(listOf(createEcgData(500)))
         }
     }
 

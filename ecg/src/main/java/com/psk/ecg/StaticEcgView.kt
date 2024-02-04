@@ -56,6 +56,7 @@ class StaticEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(contex
         maxShowNumbers: Int
     ) {
         (dataPainters[leadsIndex] as IStaticDataPainter).init(mm_per_mv, sampleRate, gridSize, stepX, xOffset, yOffset, maxShowNumbers)
+        startDraw()
     }
 
 }

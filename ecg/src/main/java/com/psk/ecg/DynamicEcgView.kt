@@ -155,6 +155,7 @@ class DynamicEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(conte
             maxShowNumbers,
             getPeriod(),
         )
+        startJob()// 有数据时启动任务
     }
 
     /**

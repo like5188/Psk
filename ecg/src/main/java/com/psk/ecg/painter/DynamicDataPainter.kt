@@ -66,21 +66,21 @@ class DynamicDataPainter(private val pathEffect: IPathEffect, private val paint:
     override fun draw(canvas: Canvas) {
         Log.v(TAG, "draw notDrawDataQueue=${notDrawDataQueue.size} drawDataList=${drawDataList.size}")
         if (notDrawDataQueue.isNotEmpty()) {
-            repeat(
-                // 如果剩余的数据量超过了 sampleRate，那么就每次多取点数据，避免剩余数据量无限增长，造成暂停操作的延迟。
+            val count = // 如果剩余的数据量超过了 sampleRate，那么就每次多取点数据，避免剩余数据量无限增长，造成暂停操作的延迟。
                 if (notDrawDataQueue.size > sampleRate) {
                     numbersOfEachDraw + (notDrawDataQueue.size - sampleRate) / circleTimesPerSecond
                 } else {
                     numbersOfEachDraw
-                }.apply {
-                    Log.v(TAG, "draw 取出 $this 个数据")
                 }
-            ) {
+            Log.v(TAG, "draw 取出 $count 个数据")
+            for (index in 0 until count) {
                 // 出队，空时返回null
-                notDrawDataQueue.poll()?.let {
-                    pathEffect.handleData(it, drawDataList, maxShowNumbers)
-                }
+                val data = notDrawDataQueue.poll() ?: break
+                pathEffect.handleData(data, drawDataList, maxShowNumbers)
             }
+        }
+        if (drawDataList.isEmpty()) {
+            return
         }
         // 设置path
         path.reset()

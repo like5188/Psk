@@ -29,13 +29,7 @@ class StaticDataPainter(private val paint: Paint) : IStaticDataPainter {
     }
 
     override fun init(
-        mm_per_mv: Int,
-        sampleRate: Int,
-        gridSize: Float,
-        stepX: Float,
-        xOffset: Float,
-        yOffset: Float,
-        maxShowNumbers: Int
+        mm_per_mv: Int, sampleRate: Int, gridSize: Float, stepX: Float, xOffset: Float, yOffset: Float, maxShowNumbers: Int
     ) {
         this.mm_per_mv = mm_per_mv
         this.sampleRate = sampleRate
@@ -48,13 +42,17 @@ class StaticDataPainter(private val paint: Paint) : IStaticDataPainter {
 
     override fun draw(canvas: Canvas) {
         Log.v(TAG, "draw drawDataList=${drawDataList.size}")
+        if (drawDataList.isEmpty()) {
+            return
+        }
         // 设置path
         path.reset()
-        drawDataList.take(maxShowNumbers).forEachIndexed { index, fl ->
+        for (index in 0 until maxShowNumbers) {
+            val data = drawDataList.getOrNull(index) ?: break
             if (index == 0) {// == 0 使用moveTo是为了在绘制标准方波时，不让方波终点和路径起点连接起来
-                path.moveTo(0f, fl)
+                path.moveTo(index * stepX, data)
             } else {
-                path.lineTo(index * stepX, fl)
+                path.lineTo(index * stepX, data)
             }
         }
         path.offset(xOffset, yOffset)
