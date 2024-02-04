@@ -75,8 +75,7 @@ class DynamicDataPainter(private val pathEffect: IPathEffect, private val paint:
             Log.v(TAG, "draw 取出 $count 个数据")
             for (index in 0 until count) {
                 // 出队，空时返回null
-                var data = notDrawDataQueue.poll() ?: break
-                data = mVToPx(data, mm_per_mv, gridSize)
+                val data = notDrawDataQueue.poll() ?: break
                 pathEffect.handleData(data, drawDataList, maxShowNumbers)
             }
         }
@@ -86,7 +85,7 @@ class DynamicDataPainter(private val pathEffect: IPathEffect, private val paint:
         // 设置path
         path.reset()
         drawDataList.forEachIndexed { index, fl ->
-            pathEffect.handlePath(path, stepX, index, fl)
+            pathEffect.handlePath(path, stepX, index, mVToPx(fl, mm_per_mv, gridSize))
         }
         path.offset(xOffset, yOffset)
         canvas.drawPath(path, paint)
