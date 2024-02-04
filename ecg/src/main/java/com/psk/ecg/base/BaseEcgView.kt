@@ -50,7 +50,7 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
 
     /**
      * @param sampleRate        采样率。
-     * @param bgPainter         背景绘制者。库中默认实现为[BgPainter]。[BgPainter]。
+     * @param bgPainter         背景绘制者，如果为 null，表示不绘制背景。库中默认实现为[BgPainter]。[BgPainter]。
      * 可以自己实现[IBgPainter]接口，或者自己创建[BgPainter]实例。
      * @param dataPainters      数据绘制者集合，有几个导联就需要几个绘制者。库中默认实现为[PeriodicDataPainter]、[OnceDataPainter]
      * 可以自己实现[IDynamicDataPainter]或者[IOnceDataPainter]接口，或者自己创建[PeriodicDataPainter]或者[OnceDataPainter]实例。
@@ -88,7 +88,7 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
 
     // 计算相关参数
     private fun calcParams() {
-        if (sampleRate <= 0 || mm_per_s <= 0 || mm_per_mv <= 0 || gridSize <= 0f || leadsCount <= 0 || width <= 0 || height <= 0) {
+        if (sampleRate <= 0 || !::dataPainters.isInitialized || mm_per_s <= 0 || mm_per_mv <= 0 || gridSize <= 0f || leadsCount <= 0 || width <= 0 || height <= 0) {
             return
         }
         Log.i(

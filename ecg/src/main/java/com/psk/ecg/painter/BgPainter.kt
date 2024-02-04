@@ -27,13 +27,7 @@ class BgPainter(
             drawVLine(canvas, (w / gridSize).toInt() + 1, h, gridSize)
             drawStandard(canvas, h, leadsCount, gridSize, mm_per_s, mm_per_mv)
         }
-        // 标准方波宽度
-        val standardSquareWaveWidth = mm_per_s * 0.2f * gridSize
-        // 标准方波左边距
-        val standardSquareWaveLeft = gridSize * 2
-        // 标准方波右边距
-        val standardSquareWaveRight = gridSize * 2
-        xOffset = standardSquareWaveLeft + standardSquareWaveWidth + standardSquareWaveRight
+        xOffset = (2 + mm_per_s * 0.2f + 2) * gridSize
     }
 
     /**
