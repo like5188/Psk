@@ -35,8 +35,8 @@ class DynamicEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(conte
      * @param list  需要添加的数据，每个导联数据都是List。mV。
      */
     fun addData(list: List<List<Float>>) {
-        if (!initialized) {
-            Log.e(TAG, "addData 失败，请先调用 setXxx 方法进行初始化")
+        if (dataPainters.isNullOrEmpty()) {
+            Log.e(TAG, "addData 失败，请先调用 setDataPainters")
             return
         }
         if (list.size != leadsCount) {
