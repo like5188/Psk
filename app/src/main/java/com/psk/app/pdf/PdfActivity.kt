@@ -12,7 +12,6 @@ import com.psk.app.R
 import com.psk.app.databinding.ActivityPdfBinding
 import com.psk.ecg.painter.BgPainter
 import com.psk.ecg.painter.StaticDataPainter
-import com.psk.ecg.util.readyForPdfIfContainsEcgView
 import com.psk.pdf.DefaultSplit
 import com.psk.pdf.Pdf
 import kotlinx.coroutines.Dispatchers
@@ -23,11 +22,13 @@ class PdfActivity : AppCompatActivity() {
     private val mBinding: ActivityPdfBinding by lazy {
         DataBindingUtil.setContentView(this, R.layout.activity_pdf)
     }
-    private val pdf by lazy {
-        Pdf(
-            split = DefaultSplit(
-                listOf(mBinding.tv8, mBinding.rv.getChildAt(19)),
-                listOf(mBinding.ll)
+    private val pdfHelper by lazy {
+        PdfHelper(
+            Pdf(
+                split = DefaultSplit(
+                    listOf(mBinding.tv8, mBinding.rv.getChildAt(19)),
+                    listOf(mBinding.ll)
+                )
             )
         )
     }
@@ -44,7 +45,7 @@ class PdfActivity : AppCompatActivity() {
                 if (!file.exists()) {
                     file.createNewFile()
                 }
-                pdf.saveView(mBinding.sv.readyForPdfIfContainsEcgView(), file)
+                pdfHelper.save(mBinding.sv, file)
             }
         }
         mBinding.rv.layoutManager = LinearLayoutManager(this)
@@ -55,9 +56,14 @@ class PdfActivity : AppCompatActivity() {
             submitList(list)
         }
 
-        mBinding.ecgChartView.apply {
-            lifecycleScope.launch(Dispatchers.IO) {
-                init(100,
+        var mm_per_mv = 50
+        mBinding.btn1.setOnClickListener {
+            mm_per_mv -= 10
+            if (mm_per_mv <= 0) {
+                mm_per_mv = 10
+            }
+            mBinding.ecgChartView.apply {
+                init(100, mm_per_mv = mm_per_mv,
                     bgPainter = BgPainter(Paint().apply {
                         color = Color.parseColor("#00a7ff")
                         strokeWidth = 2f
@@ -85,11 +91,12 @@ class PdfActivity : AppCompatActivity() {
                         })
                     }
                 )
-                setData(listOf(createEcgData(300)))
-                setData(listOf(createEcgData(500)))
+                lifecycleScope.launch(Dispatchers.IO) {
+                    setData(listOf(createEcgData(300)))
+                    setData(listOf(createEcgData(500)))
+                }
             }
         }
-
     }
 
     private fun createEcgData(count: Int): List<Float> {
