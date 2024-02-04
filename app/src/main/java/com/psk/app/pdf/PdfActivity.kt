@@ -61,7 +61,6 @@ class PdfActivity : AppCompatActivity() {
         }
         mBinding.ecgChartView.apply {
             setSampleRate(250)
-            setMmPerMv(10)
             setBgPainter(BgPainter(Paint().apply {
                 color = Color.parseColor("#00a7ff")
                 strokeWidth = 2f
