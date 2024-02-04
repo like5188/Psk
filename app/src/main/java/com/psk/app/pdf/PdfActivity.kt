@@ -15,6 +15,7 @@ import com.psk.ecg.painter.StaticDataPainter
 import com.psk.pdf.DefaultSplit
 import com.psk.pdf.Pdf
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
 
@@ -96,6 +97,7 @@ class PdfActivity : AppCompatActivity() {
         }
         lifecycleScope.launch(Dispatchers.IO) {
             mBinding.ecgChartView.setData(listOf(createEcgData(300)))
+            delay(3000)
             mBinding.ecgChartView.setData(listOf(createEcgData(500)))
         }
     }
