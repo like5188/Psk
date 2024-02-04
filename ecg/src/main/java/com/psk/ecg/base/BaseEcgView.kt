@@ -9,6 +9,7 @@ import android.graphics.PorterDuff
 import android.util.AttributeSet
 import android.util.Log
 import android.util.TypedValue
+import android.view.SurfaceHolder
 import com.psk.ecg.painter.BgPainter
 import com.psk.ecg.painter.IBgPainter
 import com.psk.ecg.painter.IDataPainter
@@ -119,6 +120,28 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
             Log.v(TAG, "第 ${index + 1} 导联：draw")
             dataPainter.draw(canvas)
         }
+    }
+
+    protected fun doDraw() {
+        var canvas: Canvas? = null
+        try {
+            canvas = holder.lockCanvas()
+            canvas?.let {
+                doDraw(it)
+            }
+        } finally {
+            canvas?.let {
+                try {
+                    holder.unlockCanvasAndPost(it)
+                } catch (e: Exception) {
+                }
+            }
+        }
+    }
+
+    override fun surfaceCreated(holder: SurfaceHolder) {
+        super.surfaceCreated(holder)
+        doDraw()
     }
 
     /**

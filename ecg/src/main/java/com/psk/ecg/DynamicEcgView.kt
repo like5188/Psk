@@ -99,7 +99,6 @@ class DynamicEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(conte
             return
         }
         if (dataPainters.all { !(it as IDynamicDataPainter).hasNotDrawData() }) {
-            doDraw(canvas)// 这里绘制一次最近的数据，避免前后台切换后由于没有数据传递过来而不进行绘制，造成界面空白。
             cancelJob("没有数据")// 没有数据时取消任务
             return
         }

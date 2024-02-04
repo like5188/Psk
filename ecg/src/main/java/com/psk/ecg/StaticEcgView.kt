@@ -1,7 +1,6 @@
 package com.psk.ecg
 
 import android.content.Context
-import android.graphics.Canvas
 import android.util.AttributeSet
 import android.util.Log
 import com.psk.ecg.base.BaseEcgView
@@ -43,20 +42,7 @@ class StaticEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(contex
 
     private fun startDraw() {
         Log.w(TAG, "startDraw")
-        var canvas: Canvas? = null
-        try {
-            canvas = holder.lockCanvas()
-            canvas?.let {
-                doDraw(it)
-            }
-        } finally {
-            canvas?.let {
-                try {
-                    holder.unlockCanvasAndPost(it)
-                } catch (e: Exception) {
-                }
-            }
-        }
+        doDraw()
     }
 
     override fun onInitData(
