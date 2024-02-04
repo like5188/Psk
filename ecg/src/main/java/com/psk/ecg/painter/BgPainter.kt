@@ -71,7 +71,7 @@ class BgPainter(
         }
     }
 
-    // 画标准方波。高度为10 mm，宽度为0.2 s（5 mm）
+    // 画标准方波。高度为10 mm(1mV)，宽度为0.2 s（走纸速度为25mm/s）
     private fun drawStandard(canvas: Canvas, h: Int, leadsCount: Int, gridSize: Float) {
         val paint = standardSquareWavePaint ?: return
         val path = Path()
