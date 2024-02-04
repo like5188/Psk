@@ -44,13 +44,11 @@ class StaticDataPainter(private val paint: Paint) : IStaticDataPainter {
         if (drawDataList.isEmpty()) {
             return
         }
-        val list = drawDataList.map {
-            mVToPx(it, mm_per_mv, gridSize)
-        }
         // 设置path
         path.reset()
         for (index in 0 until maxShowNumbers) {
-            val data = list.getOrNull(index) ?: break
+            var data = drawDataList.getOrNull(index) ?: break
+            data = mVToPx(data, mm_per_mv, gridSize)
             if (index == 0) {// == 0 使用moveTo是为了在绘制标准方波时，不让方波终点和路径起点连接起来
                 path.moveTo(index * stepX, data)
             } else {
