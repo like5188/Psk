@@ -110,15 +110,7 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
 
     // 计算相关参数
     private fun calcParams() {
-        val checkParamsValid = sampleRate > 0 &&
-                !dataPainters.isNullOrEmpty() &&
-                mm_per_s > 0 &&
-                mm_per_mv > 0 &&
-                gridSize > 0f &&
-                leadsCount > 0 &&
-                width > 0 &&
-                height > 0
-        if (!checkParamsValid) {
+        if (sampleRate <= 0 || dataPainters.isNullOrEmpty() || mm_per_s <= 0 || mm_per_mv <= 0 || gridSize <= 0f || leadsCount <= 0 || width <= 0 || height <= 0) {
             this.initialized = false
             return
         }
