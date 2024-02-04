@@ -56,17 +56,12 @@ class PdfActivity : AppCompatActivity() {
             submitList(list)
         }
 
-        var mm_per_mv = 20
         mBinding.btn1.setOnClickListener {
-            mm_per_mv -= 5
-            if (mm_per_mv <= 0) {
-                mm_per_mv = 5
-            }
-            mBinding.ecgChartView.setMmPerMv(mm_per_mv)
+            mBinding.ecgChartView.setMmPerMv(5)
         }
         mBinding.ecgChartView.apply {
             setSampleRate(250)
-            setMmPerMv(mm_per_mv)
+            setMmPerMv(10)
             setBgPainter(BgPainter(Paint().apply {
                 color = Color.parseColor("#00a7ff")
                 strokeWidth = 2f
