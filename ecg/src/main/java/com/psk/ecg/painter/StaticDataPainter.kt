@@ -23,9 +23,8 @@ class StaticDataPainter(private val paint: Paint) : IStaticDataPainter {
 
     override fun setData(data: List<Float>) {
         drawDataList.clear()
-        data.mapTo(drawDataList) {
-            mVToPx(it, mm_per_mv, gridSize)
-        }
+        drawDataList.addAll(data)
+        // 不能在这里处理数据，否则参数改变后，无法改变数据值。
     }
 
     override fun init(
@@ -45,10 +44,13 @@ class StaticDataPainter(private val paint: Paint) : IStaticDataPainter {
         if (drawDataList.isEmpty()) {
             return
         }
+        val list = drawDataList.map {
+            mVToPx(it, mm_per_mv, gridSize)
+        }
         // 设置path
         path.reset()
         for (index in 0 until maxShowNumbers) {
-            val data = drawDataList.getOrNull(index) ?: break
+            val data = list.getOrNull(index) ?: break
             if (index == 0) {// == 0 使用moveTo是为了在绘制标准方波时，不让方波终点和路径起点连接起来
                 path.moveTo(index * stepX, data)
             } else {
