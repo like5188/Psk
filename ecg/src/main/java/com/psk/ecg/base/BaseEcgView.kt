@@ -94,18 +94,14 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
             TAG,
             "calcParams sampleRate=$sampleRate mm_per_s=$mm_per_s mm_per_mv=$mm_per_mv gridSize=$gridSize leadsCount=$leadsCount width=$width height=$height"
         )
-        bgPainter?.init(width, height, gridSize, leadsCount)
+        bgPainter?.init(width, height, gridSize, leadsCount, mm_per_s, mm_per_mv)
         repeat(leadsCount) { leadsIndex ->
             // 根据采样率计算
             val stepX = gridSize * mm_per_s / sampleRate
             // 一个导联的高度
             val leadsH = height.toFloat() / leadsCount
             val yOffset = leadsH / 2 + leadsIndex * leadsH// x坐标轴移动到中间
-            val xOffset = if (bgPainter?.hasStandardSquareWave() == true) {// 是否绘制标准方波
-                gridSize * 10// 2个大格
-            } else {
-                0f
-            }
+            val xOffset = bgPainter?.getXOffset() ?: 0f
             val maxShowNumbers = ((width - xOffset) / stepX).toInt()
             Log.i(TAG, "第 ${leadsIndex + 1} 导联：stepX=$stepX xOffset=$xOffset yOffset=$yOffset maxShowNumbers=$maxShowNumbers")
             onInitData(leadsIndex, mm_per_mv, sampleRate, gridSize, stepX, xOffset, yOffset, maxShowNumbers)
