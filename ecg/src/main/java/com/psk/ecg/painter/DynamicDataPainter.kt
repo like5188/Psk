@@ -32,7 +32,7 @@ class DynamicDataPainter(private val pathEffect: IPathEffect, private val paint:
 
     override fun addData(data: List<Float>) {
         data.forEach {
-            notDrawDataQueue.offer(mVToPx(it, mm_per_mv, gridSize))// 入队成功返回true，失败返回false
+            notDrawDataQueue.offer(it)// 入队成功返回true，失败返回false
         }
     }
 
@@ -75,7 +75,8 @@ class DynamicDataPainter(private val pathEffect: IPathEffect, private val paint:
             Log.v(TAG, "draw 取出 $count 个数据")
             for (index in 0 until count) {
                 // 出队，空时返回null
-                val data = notDrawDataQueue.poll() ?: break
+                var data = notDrawDataQueue.poll() ?: break
+                data = mVToPx(data, mm_per_mv, gridSize)
                 pathEffect.handleData(data, drawDataList, maxShowNumbers)
             }
         }
