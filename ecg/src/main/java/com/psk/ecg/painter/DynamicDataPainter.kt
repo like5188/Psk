@@ -72,6 +72,8 @@ class DynamicDataPainter(private val pathEffect: IPathEffect, private val paint:
                     numbersOfEachDraw + (notDrawDataQueue.size - sampleRate) / circleTimesPerSecond
                 } else {
                     numbersOfEachDraw
+                }.apply {
+                    Log.v(TAG, "draw 取出 $this 个数据")
                 }
             ) {
                 // 出队，空时返回null
