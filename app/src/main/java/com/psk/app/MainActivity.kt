@@ -41,6 +41,9 @@ class MainActivity : AppCompatActivity() {
         mBinding.btnPdf.setOnClickListener {
             startActivity(Intent(this, PdfActivity::class.java))
         }
+        mBinding.btn1.setOnClickListener {
+            mBinding.ecgChartView.setMmPerMv(1)
+        }
         mBinding.btnStart.setOnClickListener {
             // E/SocketServerService: Parameter specified as non-null is null: method kotlin.jvm.internal.Intrinsics.checkNotNullParameter, parameter conn
             SocketServerService.start(this, 7777, object : SocketListener {
@@ -155,7 +158,7 @@ class MainActivity : AppCompatActivity() {
                 isAntiAlias = true
                 alpha = 125
             }))
-            setDataPainters((0 until 1).map {
+            setDataPainters((0 until 12).map {
                 DynamicDataPainter(CirclePathEffect(), Paint().apply {
                     color = Color.parseColor("#44C71E")
                     strokeWidth = 3f
