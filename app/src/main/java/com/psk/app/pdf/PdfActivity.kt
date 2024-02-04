@@ -62,66 +62,39 @@ class PdfActivity : AppCompatActivity() {
             if (mm_per_mv <= 0) {
                 mm_per_mv = 10
             }
-            mBinding.ecgChartView.apply {
-                init(100, mm_per_mv = mm_per_mv,
-                    bgPainter = BgPainter(Paint().apply {
-                        color = Color.parseColor("#00a7ff")
-                        strokeWidth = 2f
-                        isAntiAlias = true
-                        alpha = 120
-                    }, Paint().apply {
-                        color = Color.parseColor("#00a7ff")
-                        strokeWidth = 1f
-                        isAntiAlias = true
-                        pathEffect = DashPathEffect(floatArrayOf(5f, 5f), 0f)
-                        alpha = 90
-                    }, Paint().apply {
-                        color = Color.parseColor("#000000")
-                        strokeWidth = 2f
-                        style = Paint.Style.STROKE
-                        isAntiAlias = true
-                        alpha = 125
-                    }),
-                    dataPainters = (0 until 1).map {
-                        StaticDataPainter(Paint().apply {
-                            color = Color.parseColor("#44C71E")
-                            strokeWidth = 3f
-                            style = Paint.Style.STROKE
-                            isAntiAlias = true
-                        })
-                    }
-                )
-            }
+            mBinding.ecgChartView.setMmPerMv(mm_per_mv)
         }
-        lifecycleScope.launch(Dispatchers.IO) {
-            mBinding.ecgChartView.init(100, mm_per_mv = mm_per_mv,
-                bgPainter = BgPainter(Paint().apply {
-                    color = Color.parseColor("#00a7ff")
-                    strokeWidth = 2f
-                    isAntiAlias = true
-                    alpha = 120
-                }, Paint().apply {
-                    color = Color.parseColor("#00a7ff")
-                    strokeWidth = 1f
-                    isAntiAlias = true
-                    pathEffect = DashPathEffect(floatArrayOf(5f, 5f), 0f)
-                    alpha = 90
-                }, Paint().apply {
-                    color = Color.parseColor("#000000")
-                    strokeWidth = 2f
+        mBinding.ecgChartView.apply {
+            setSampleRate(250)
+            setMmPerMv(mm_per_mv)
+            setBgPainter(BgPainter(Paint().apply {
+                color = Color.parseColor("#00a7ff")
+                strokeWidth = 2f
+                isAntiAlias = true
+                alpha = 120
+            }, Paint().apply {
+                color = Color.parseColor("#00a7ff")
+                strokeWidth = 1f
+                isAntiAlias = true
+                pathEffect = DashPathEffect(floatArrayOf(5f, 5f), 0f)
+                alpha = 90
+            }, Paint().apply {
+                color = Color.parseColor("#000000")
+                strokeWidth = 2f
+                style = Paint.Style.STROKE
+                isAntiAlias = true
+                alpha = 125
+            }))
+            setDataPainters((0 until 1).map {
+                StaticDataPainter(Paint().apply {
+                    color = Color.parseColor("#44C71E")
+                    strokeWidth = 3f
                     style = Paint.Style.STROKE
                     isAntiAlias = true
-                    alpha = 125
-                }),
-                dataPainters = (0 until 1).map {
-                    StaticDataPainter(Paint().apply {
-                        color = Color.parseColor("#44C71E")
-                        strokeWidth = 3f
-                        style = Paint.Style.STROKE
-                        isAntiAlias = true
-                    })
-                }
-            )
+                })
+            })
+        }
+        lifecycleScope.launch(Dispatchers.IO) {
             mBinding.ecgChartView.setData(listOf(createEcgData(300)))
             mBinding.ecgChartView.setData(listOf(createEcgData(500)))
         }

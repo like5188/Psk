@@ -8,6 +8,7 @@ import android.view.SurfaceHolder
 import androidx.lifecycle.ViewTreeLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.psk.ecg.base.BaseEcgView
+import com.psk.ecg.painter.IDataPainter
 import com.psk.ecg.painter.IDynamicDataPainter
 import com.psk.ecg.util.TAG
 import kotlinx.coroutines.Dispatchers
@@ -34,8 +35,8 @@ class DynamicEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(conte
      * @param list  需要添加的数据，每个导联数据都是List。mV。
      */
     fun addData(list: List<List<Float>>) {
-        if (!initialized()) {
-            Log.e(TAG, "addData 失败，请先调用 init 方法进行初始化")
+        if (!initialized) {
+            Log.e(TAG, "addData 失败，请先调用 setXxx 方法进行初始化")
             return
         }
         if (list.size != leadsCount) {
@@ -47,7 +48,7 @@ class DynamicEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(conte
             Log.e(TAG, "addData 失败，isSurfaceCreated is false")
             return
         }
-        dataPainters.forEachIndexed { index, dataPainter ->
+        dataPainters?.forEachIndexed { index, dataPainter ->
             Log.i(TAG, "addData 第 ${index + 1} 导联：${list[index].size}个数据 $list[index]")
             (dataPainter as IDynamicDataPainter).addData(list[index])
         }
@@ -55,6 +56,7 @@ class DynamicEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(conte
     }
 
     private fun startJob() {
+        if (!initialized) return
         if (!isSurfaceCreated) return
         if (job != null) return
         val period = getPeriod()// 当第一次回调surfaceCreated()时，有可能没有此值。但是添加数据后会再次启动任务，所以这里不用使用阻塞。
@@ -95,10 +97,7 @@ class DynamicEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(conte
     }
 
     private fun onDrawFrame(canvas: Canvas) {
-        if (!initialized()) {
-            return
-        }
-        if (dataPainters.all { !(it as IDynamicDataPainter).hasNotDrawData() }) {
+        if (dataPainters!!.all { !(it as IDynamicDataPainter).hasNotDrawData() }) {
             cancelJob("没有数据")// 没有数据时取消任务
             return
         }
@@ -136,7 +135,7 @@ class DynamicEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(conte
     }
 
     override fun onInitData(
-        leadsIndex: Int,
+        dataPainter: IDataPainter,
         mm_per_mv: Int,
         sampleRate: Int,
         gridSize: Float,
@@ -145,7 +144,7 @@ class DynamicEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(conte
         yOffset: Float,
         maxShowNumbers: Int
     ) {
-        (dataPainters[leadsIndex] as IDynamicDataPainter).init(
+        (dataPainter as IDynamicDataPainter).init(
             mm_per_mv,
             sampleRate,
             gridSize,

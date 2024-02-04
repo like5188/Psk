@@ -42,35 +42,6 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, PdfActivity::class.java))
         }
         mBinding.btnStart.setOnClickListener {
-            mBinding.ecgChartView.init(
-                sampleRate = 250,
-                bgPainter = BgPainter(Paint().apply {
-                    color = Color.parseColor("#00a7ff")
-                    strokeWidth = 2f
-                    isAntiAlias = true
-                    alpha = 120
-                }, Paint().apply {
-                    color = Color.parseColor("#00a7ff")
-                    strokeWidth = 1f
-                    isAntiAlias = true
-                    pathEffect = DashPathEffect(floatArrayOf(5f, 5f), 0f)
-                    alpha = 90
-                }, Paint().apply {
-                    color = Color.parseColor("#000000")
-                    strokeWidth = 2f
-                    style = Paint.Style.STROKE
-                    isAntiAlias = true
-                    alpha = 125
-                }),
-                dataPainters = (0 until 12).map {
-                    DynamicDataPainter(CirclePathEffect(), Paint().apply {
-                        color = Color.parseColor("#44C71E")
-                        strokeWidth = 3f
-                        style = Paint.Style.STROKE
-                        isAntiAlias = true
-                    })
-                }
-            )
             // E/SocketServerService: Parameter specified as non-null is null: method kotlin.jvm.internal.Intrinsics.checkNotNullParameter, parameter conn
             SocketServerService.start(this, 7777, object : SocketListener {
                 override fun onOpen(address: String?) {
@@ -135,34 +106,6 @@ class MainActivity : AppCompatActivity() {
 //            repository.init(this, "A00219000219", "A0:02:19:00:02:19")
 //            mBinding.ecgChartView.init(128, 10.dp)
 //            repository.init(this, "ER1 0514", "CB:5D:19:C4:C3:A5")
-            mBinding.ecgChartView.init(250, gridSize = 10f.dp,
-                bgPainter = BgPainter(Paint().apply {
-                    color = Color.parseColor("#00a7ff")
-                    strokeWidth = 2f
-                    isAntiAlias = true
-                    alpha = 120
-                }, Paint().apply {
-                    color = Color.parseColor("#00a7ff")
-                    strokeWidth = 1f
-                    isAntiAlias = true
-                    pathEffect = DashPathEffect(floatArrayOf(5f, 5f), 0f)
-                    alpha = 90
-                }, Paint().apply {
-                    color = Color.parseColor("#000000")
-                    strokeWidth = 2f
-                    style = Paint.Style.STROKE
-                    isAntiAlias = true
-                    alpha = 125
-                }),
-                dataPainters = (0 until 12).map {
-                    DynamicDataPainter(CirclePathEffect(), Paint().apply {
-                        color = Color.parseColor("#44C71E")
-                        strokeWidth = 3f
-                        style = Paint.Style.STROKE
-                        isAntiAlias = true
-                    })
-                }
-            )
             repository.init(this, "C00228000695", "C0:02:28:00:06:95")
             lifecycleScope.launch {
                 PermissionUtils.requestConnectEnvironment(this@MainActivity)
@@ -189,6 +132,37 @@ class MainActivity : AppCompatActivity() {
         }
         lifecycleScope.launch {
             DeviceRepositoryManager.init(this@MainActivity)
+        }
+
+        mBinding.ecgChartView.apply {
+            setSampleRate(250)
+            setGridSize(10f.dp)
+            setBgPainter(BgPainter(Paint().apply {
+                color = Color.parseColor("#00a7ff")
+                strokeWidth = 2f
+                isAntiAlias = true
+                alpha = 120
+            }, Paint().apply {
+                color = Color.parseColor("#00a7ff")
+                strokeWidth = 1f
+                isAntiAlias = true
+                pathEffect = DashPathEffect(floatArrayOf(5f, 5f), 0f)
+                alpha = 90
+            }, Paint().apply {
+                color = Color.parseColor("#000000")
+                strokeWidth = 2f
+                style = Paint.Style.STROKE
+                isAntiAlias = true
+                alpha = 125
+            }))
+            setDataPainters((0 until 1).map {
+                DynamicDataPainter(CirclePathEffect(), Paint().apply {
+                    color = Color.parseColor("#44C71E")
+                    strokeWidth = 3f
+                    style = Paint.Style.STROKE
+                    isAntiAlias = true
+                })
+            })
         }
     }
 

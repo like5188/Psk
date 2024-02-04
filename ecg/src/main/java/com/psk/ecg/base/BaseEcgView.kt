@@ -31,15 +31,18 @@ import com.psk.ecg.util.TAG
     注意：如果采用非1倍电压，在计算结果时需要还原。
  */
 abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurfaceView(context, attrs) {
-    private var mm_per_s = 0
-    private var mm_per_mv = 0
-    private var gridSize = 0f
+    private var mm_per_s = 25
+    private var mm_per_mv = 10
+    private var gridSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_MM, 1f, context.resources.displayMetrics)
     private var bgPainter: IBgPainter? = null
     protected var sampleRate = 0
         private set
-    protected lateinit var dataPainters: List<IDataPainter>
+    protected var dataPainters: List<IDataPainter>? = null
         private set
     protected var leadsCount = 0
+        private set
+
+    protected var initialized = false
         private set
 
     init {
@@ -50,35 +53,54 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
 
     /**
      * @param sampleRate        采样率。
+     */
+    fun setSampleRate(sampleRate: Int) {
+        this.sampleRate = sampleRate
+        calcParams()
+    }
+
+    /**
      * @param bgPainter         背景绘制者，如果为 null，表示不绘制背景。库中默认实现为[BgPainter]。[BgPainter]。
      * 可以自己实现[IBgPainter]接口，或者自己创建[BgPainter]实例。
+     */
+    fun setBgPainter(bgPainter: IBgPainter?) {
+        this.bgPainter = bgPainter
+        calcParams()
+    }
+
+    /**
      * @param dataPainters      数据绘制者集合，有几个导联就需要几个绘制者。库中默认实现为[PeriodicDataPainter]、[OnceDataPainter]
      * 可以自己实现[IDynamicDataPainter]或者[IOnceDataPainter]接口，或者自己创建[PeriodicDataPainter]或者[OnceDataPainter]实例。
-     * @param mm_per_s          走速（速度）。默认为标准值：25mm/s
-     * @param mm_per_mv         增益（灵敏度）。默认为 1倍：10mm/mV
-     * @param gridSize          一个小格子对应的像素值。默认为设备屏幕上1mm对应的像素，即一个小格子为1mm。
      */
-    @JvmOverloads
-    fun init(
-        sampleRate: Int,
-        bgPainter: IBgPainter?,
-        dataPainters: List<IDataPainter>,
-        mm_per_s: Int = 25,
-        mm_per_mv: Int = 10,
-        gridSize: Float = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_MM, 1f, context.resources.displayMetrics)
-    ) {
-        Log.w(TAG, "init")
-        this.sampleRate = sampleRate
-        this.bgPainter = bgPainter
+    fun setDataPainters(dataPainters: List<IDataPainter>) {
         this.dataPainters = dataPainters
-        this.mm_per_s = mm_per_s
-        this.mm_per_mv = mm_per_mv
-        this.gridSize = gridSize
         this.leadsCount = dataPainters.size
         calcParams()
     }
 
-    protected fun initialized() = ::dataPainters.isInitialized
+    /**
+     * @param mm_per_s          走速（速度）。默认为标准值：25mm/s
+     */
+    fun setMmPerS(mm_per_s: Int) {
+        this.mm_per_s = mm_per_s
+        calcParams()
+    }
+
+    /**
+     * @param mm_per_mv         增益（灵敏度）。默认为 1倍：10mm/mV
+     */
+    fun setMmPerMv(mm_per_mv: Int) {
+        this.mm_per_mv = mm_per_mv
+        calcParams()
+    }
+
+    /**
+     * @param gridSize          一个小格子对应的像素值。默认为设备屏幕上1mm对应的像素，即一个小格子为1mm。
+     */
+    fun setGridSize(gridSize: Float) {
+        this.gridSize = gridSize
+        calcParams()
+    }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
@@ -88,7 +110,16 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
 
     // 计算相关参数
     private fun calcParams() {
-        if (sampleRate <= 0 || !::dataPainters.isInitialized || mm_per_s <= 0 || mm_per_mv <= 0 || gridSize <= 0f || leadsCount <= 0 || width <= 0 || height <= 0) {
+        val checkParamsValid = sampleRate > 0 &&
+                !dataPainters.isNullOrEmpty() &&
+                mm_per_s > 0 &&
+                mm_per_mv > 0 &&
+                gridSize > 0f &&
+                leadsCount > 0 &&
+                width > 0 &&
+                height > 0
+        if (!checkParamsValid) {
+            this.initialized = false
             return
         }
         Log.i(
@@ -96,33 +127,37 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
             "calcParams sampleRate=$sampleRate mm_per_s=$mm_per_s mm_per_mv=$mm_per_mv gridSize=$gridSize leadsCount=$leadsCount width=$width height=$height"
         )
         bgPainter?.init(width, height, gridSize, leadsCount, mm_per_s, mm_per_mv)
-        repeat(leadsCount) { leadsIndex ->
+        dataPainters?.forEachIndexed { index, dataPainter ->
             // 根据采样率计算
             val stepX = gridSize * mm_per_s / sampleRate
             // 一个导联的高度
             val leadsH = height.toFloat() / leadsCount
-            val yOffset = leadsH / 2 + leadsIndex * leadsH// x坐标轴移动到中间
+            val yOffset = leadsH / 2 + index * leadsH// x坐标轴移动到中间
             val xOffset = bgPainter?.getXOffset() ?: 0f
             val maxShowNumbers = ((width - xOffset) / stepX).toInt()
-            Log.i(TAG, "第 ${leadsIndex + 1} 导联：stepX=$stepX xOffset=$xOffset yOffset=$yOffset maxShowNumbers=$maxShowNumbers")
-            onInitData(leadsIndex, mm_per_mv, sampleRate, gridSize, stepX, xOffset, yOffset, maxShowNumbers)
+            Log.i(TAG, "第 ${index + 1} 导联：stepX=$stepX xOffset=$xOffset yOffset=$yOffset maxShowNumbers=$maxShowNumbers")
+            onInitData(dataPainter, mm_per_mv, sampleRate, gridSize, stepX, xOffset, yOffset, maxShowNumbers)
         }
+        this.initialized = true
     }
 
     protected fun doDraw(canvas: Canvas) {
-        if (!initialized()) {
+        if (!initialized) {
             return
         }
         Log.v(TAG, "doDraw")
         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
         bgPainter?.draw(canvas)
-        dataPainters.forEachIndexed { index, dataPainter ->
+        dataPainters?.forEachIndexed { index, dataPainter ->
             Log.v(TAG, "第 ${index + 1} 导联：draw")
             dataPainter.draw(canvas)
         }
     }
 
     protected fun doDraw() {
+        if (!initialized) {
+            return
+        }
         var canvas: Canvas? = null
         try {
             canvas = holder.lockCanvas()
@@ -154,10 +189,9 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
 
     /**
      * 初始化导联数据
-     * @param leadsIndex                导联索引，从0开始。
      */
     protected abstract fun onInitData(
-        leadsIndex: Int,
+        dataPainter: IDataPainter,
         mm_per_mv: Int,
         sampleRate: Int,
         gridSize: Float,

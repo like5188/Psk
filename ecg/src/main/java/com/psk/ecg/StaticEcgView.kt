@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.util.Log
 import com.psk.ecg.base.BaseEcgView
+import com.psk.ecg.painter.IDataPainter
 import com.psk.ecg.painter.IStaticDataPainter
 import com.psk.ecg.util.TAG
 import kotlinx.coroutines.Dispatchers
@@ -21,8 +22,8 @@ class StaticEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(contex
      * @param list  需要添加的数据，每个导联数据都是List。mV。
      */
     suspend fun setData(list: List<List<Float>>) = withContext(Dispatchers.IO) {
-        if (!initialized()) {
-            Log.e(TAG, "setData 失败，请先调用 init 方法进行初始化")
+        if (!initialized) {
+            Log.e(TAG, "addData 失败，请先调用 setXxx 方法进行初始化")
             return@withContext
         }
         if (list.size != leadsCount) {
@@ -33,7 +34,7 @@ class StaticEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(contex
         while (!isSurfaceCreated) {
             delay(10)
         }
-        dataPainters.forEachIndexed { index, dataPainter ->
+        dataPainters?.forEachIndexed { index, dataPainter ->
             Log.i(TAG, "setData 第 ${index + 1} 导联：${list[index].size}个数据")
             (dataPainter as IStaticDataPainter).setData(list[index])
         }
@@ -41,12 +42,13 @@ class StaticEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(contex
     }
 
     private fun startDraw() {
+        if (!initialized) return
         Log.w(TAG, "startDraw")
         doDraw()
     }
 
     override fun onInitData(
-        leadsIndex: Int,
+        dataPainter: IDataPainter,
         mm_per_mv: Int,
         sampleRate: Int,
         gridSize: Float,
@@ -55,7 +57,7 @@ class StaticEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(contex
         yOffset: Float,
         maxShowNumbers: Int
     ) {
-        (dataPainters[leadsIndex] as IStaticDataPainter).init(mm_per_mv, sampleRate, gridSize, stepX, xOffset, yOffset, maxShowNumbers)
+        (dataPainter as IStaticDataPainter).init(mm_per_mv, sampleRate, gridSize, stepX, xOffset, yOffset, maxShowNumbers)
         startDraw()
     }
 
