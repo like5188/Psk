@@ -25,8 +25,7 @@ class PdfActivity : AppCompatActivity() {
     private val pdf: Pdf by lazy {
         Pdf(
             split = DefaultSplit(
-                listOf(mBinding.tv8, mBinding.rv.getChildAt(19)),
-                listOf(mBinding.ll)
+                listOf(mBinding.tv8, mBinding.rv.getChildAt(19)), listOf(mBinding.ll)
             )
         )
     }
@@ -76,6 +75,9 @@ class PdfActivity : AppCompatActivity() {
                 style = Paint.Style.STROKE
                 isAntiAlias = true
                 alpha = 125
+            }, Paint().apply {
+                textSize = 18f
+                color = Color.RED
             }))
             setDataPainters((0 until 1).map {
                 StaticDataPainter(Paint().apply {
@@ -85,6 +87,7 @@ class PdfActivity : AppCompatActivity() {
                     isAntiAlias = true
                 })
             })
+            setLeadsNames(listOf("I", "II", "III", "aVR", "aVL", "aVF", "V1", "V2", "V3", "V4", "V5", "V6"))
             setData(listOf(createEcgData(300)))
         }
     }

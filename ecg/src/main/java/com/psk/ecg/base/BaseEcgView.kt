@@ -40,6 +40,8 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
         private set
     protected var leadsCount = 0
         private set
+    protected var leadsNames: List<String>? = null
+        private set
 
     protected var initialized = false
         private set
@@ -101,6 +103,14 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
         calcParams()
     }
 
+    /**
+     * @param leadsNames        导联名字集合。
+     */
+    fun setLeadsNames(leadsNames: List<String>) {
+        this.leadsNames = leadsNames
+        calcParams()
+    }
+
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         Log.w(TAG, "onSizeChanged")
@@ -109,15 +119,15 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
 
     // 计算相关参数
     private fun calcParams() {
-        if (sampleRate <= 0 || dataPainters.isNullOrEmpty() || mm_per_s <= 0 || mm_per_mv <= 0 || gridSize <= 0f || leadsCount <= 0 || width <= 0 || height <= 0) {
+        if (sampleRate <= 0 || dataPainters.isNullOrEmpty() || mm_per_s <= 0 || mm_per_mv <= 0 || gridSize <= 0f || width <= 0 || height <= 0) {
             this.initialized = false
             return
         }
         Log.i(
             TAG,
-            "calcParams sampleRate=$sampleRate mm_per_s=$mm_per_s mm_per_mv=$mm_per_mv gridSize=$gridSize leadsCount=$leadsCount width=$width height=$height"
+            "calcParams sampleRate=$sampleRate mm_per_s=$mm_per_s mm_per_mv=$mm_per_mv gridSize=$gridSize leadsCount=$leadsCount width=$width height=$height leadsNames=$leadsNames"
         )
-        bgPainter?.init(width, height, gridSize, leadsCount, mm_per_s, mm_per_mv)
+        bgPainter?.init(width, height, gridSize, mm_per_s, mm_per_mv, leadsCount, leadsNames)
         dataPainters?.forEachIndexed { index, dataPainter ->
             // 根据采样率计算
             val stepX = gridSize * mm_per_s / sampleRate

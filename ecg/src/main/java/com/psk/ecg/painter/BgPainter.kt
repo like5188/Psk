@@ -4,14 +4,19 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Path
+import kotlin.math.min
 
 /**
  * @param solidLinePaint            背景实线画笔。
  * @param dashLinePaint             背景虚线画笔。
  * @param standardSquareWavePaint   标准方波画笔。如果为 null，表示不绘制标准方波。
+ * @param namePaint                 导联名字画笔。如果为 null，表示不绘制导联名字。
  */
 class BgPainter(
-    private val solidLinePaint: Paint, private val dashLinePaint: Paint, private val standardSquareWavePaint: Paint?
+    private val solidLinePaint: Paint,
+    private val dashLinePaint: Paint,
+    private val standardSquareWavePaint: Paint?,
+    private val namePaint: Paint?
 ) : IBgPainter {
     private var bgBitmap: Bitmap? = null// 背景图片
     private var xOffset: Float = 0f
@@ -19,13 +24,14 @@ class BgPainter(
     /**
      * 创建背景图片
      */
-    override fun init(w: Int, h: Int, gridSize: Float, leadsCount: Int, mm_per_s: Int, mm_per_mv: Int) {
+    override fun init(w: Int, h: Int, gridSize: Float, mm_per_s: Int, mm_per_mv: Int, leadsCount: Int, leadsNames: List<String>?) {
         bgBitmap?.recycle()
         bgBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888).apply {
             val canvas = Canvas(this)
             drawHLine(canvas, (h / gridSize).toInt() + 1, w, gridSize)
             drawVLine(canvas, (w / gridSize).toInt() + 1, h, gridSize)
             drawStandard(canvas, h, leadsCount, gridSize, mm_per_s, mm_per_mv)
+            drawLeadsName(canvas, h, leadsCount, leadsNames)
         }
         xOffset = if (standardSquareWavePaint != null) {
             (2 + mm_per_s * 0.2f + 2) * gridSize
@@ -98,6 +104,16 @@ class BgPainter(
             path.lineTo(standardSquareWaveLeft + standardSquareWaveWidth, yOffset)
             path.lineTo(standardSquareWaveLeft + standardSquareWaveWidth + standardSquareWaveRight, yOffset)
             canvas.drawPath(path, paint)
+        }
+    }
+
+    private fun drawLeadsName(canvas: Canvas, h: Int, leadsCount: Int, leadsNames: List<String>?) {
+        val paint = namePaint ?: return
+        if (leadsNames.isNullOrEmpty()) return
+        // 一个导联的高度
+        val leadsH = h.toFloat() / leadsCount
+        repeat(min(leadsCount, leadsNames.size)) {
+            canvas.drawText(leadsNames[it], 4f, leadsH / 2 + it * leadsH - 10f, paint)
         }
     }
 

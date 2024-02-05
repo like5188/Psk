@@ -152,12 +152,9 @@ class MainActivity : AppCompatActivity() {
                 isAntiAlias = true
                 pathEffect = DashPathEffect(floatArrayOf(5f, 5f), 0f)
                 alpha = 90
-            }, Paint().apply {
-                color = Color.parseColor("#000000")
-                strokeWidth = 2f
-                style = Paint.Style.STROKE
-                isAntiAlias = true
-                alpha = 125
+            }, null, Paint().apply {
+                textSize = 18f
+                color = Color.RED
             }))
             setDataPainters((0 until 12).map {
                 DynamicDataPainter(CirclePathEffect(), Paint().apply {
@@ -167,6 +164,7 @@ class MainActivity : AppCompatActivity() {
                     isAntiAlias = true
                 })
             })
+            setLeadsNames(listOf("I", "II", "III", "aVR", "aVL", "aVF", "V1", "V2", "V3", "V4", "V5", "V6"))
         }
     }
 
