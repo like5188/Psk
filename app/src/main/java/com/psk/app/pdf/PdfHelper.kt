@@ -26,11 +26,7 @@ class PdfHelper @JvmOverloads constructor(private val pdf: Pdf = Pdf()) {
     fun save(view: View, file: File) {
         cancel()
         job = ViewTreeLifecycleOwner.get(view)?.lifecycleScope?.launch(Dispatchers.Main) {
-            /*
-             * 如果视图中包含[BaseEcgView]，则把视图转换成 Pdf 文件时，需要先调用此方法处理。
-             * 注意：此方法只需调用一次，会把[BaseEcgView]转换成[ImageView]。
-             * @return  替换了所有[BaseEcgView]为[ImageView]后的视图
-             */
+            // 替换所有[BaseEcgView]为[ImageView]
             when (view) {
                 is BaseEcgView -> pdf.saveView(view.toImageView(), file)
 
