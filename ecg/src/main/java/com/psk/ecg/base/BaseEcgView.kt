@@ -138,6 +138,7 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
             val maxShowNumbers = ((width - xOffset) / stepX).toInt()
             Log.i(TAG, "第 ${index + 1} 导联：stepX=$stepX xOffset=$xOffset yOffset=$yOffset maxShowNumbers=$maxShowNumbers")
             onInitData(dataPainter, mm_per_mv, sampleRate, gridSize, stepX, xOffset, yOffset, maxShowNumbers)
+            startDraw()// 有数据时启动任务
         }
         this.initialized = true
     }
@@ -210,4 +211,5 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
         maxShowNumbers: Int
     )
 
+    protected abstract fun startDraw()
 }

@@ -52,10 +52,10 @@ class DynamicEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(conte
             Log.i(TAG, "addData 第 ${index + 1} 导联：${list[index].size}个数据 $list[index]")
             (dataPainter as IDynamicDataPainter).addData(list[index])
         }
-        startJob()// 有数据时启动任务
+        startDraw()// 有数据时启动任务
     }
 
-    private fun startJob() {
+    override fun startDraw() {
         if (!initialized) return
         if (!isSurfaceCreated) return
         if (job != null) return
@@ -154,7 +154,6 @@ class DynamicEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(conte
             maxShowNumbers,
             getPeriod(),
         )
-        startJob()// 有数据时启动任务
     }
 
     /**

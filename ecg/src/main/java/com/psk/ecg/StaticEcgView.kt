@@ -38,8 +38,9 @@ class StaticEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(contex
         startDraw()
     }
 
-    private fun startDraw() {
+    override fun startDraw() {
         if (!initialized) return
+        if (!isSurfaceCreated) return
         Log.w(TAG, "startDraw")
         ViewTreeLifecycleOwner.get(this)?.lifecycleScope?.launch(Dispatchers.IO) {
             doDraw()
@@ -57,7 +58,6 @@ class StaticEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(contex
         maxShowNumbers: Int
     ) {
         (dataPainter as IStaticDataPainter).init(mm_per_mv, sampleRate, gridSize, stepX, xOffset, yOffset, maxShowNumbers)
-        startDraw()
     }
 
 }
