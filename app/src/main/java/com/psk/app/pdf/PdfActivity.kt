@@ -22,13 +22,11 @@ class PdfActivity : AppCompatActivity() {
     private val mBinding: ActivityPdfBinding by lazy {
         DataBindingUtil.setContentView(this, R.layout.activity_pdf)
     }
-    private val pdfHelper by lazy {
-        PdfHelper(
-            Pdf(
-                split = DefaultSplit(
-                    listOf(mBinding.tv8, mBinding.rv.getChildAt(19)),
-                    listOf(mBinding.ll)
-                )
+    private val pdf: Pdf by lazy {
+        Pdf(
+            split = DefaultSplit(
+                listOf(mBinding.tv8, mBinding.rv.getChildAt(19)),
+                listOf(mBinding.ll)
             )
         )
     }
@@ -45,7 +43,7 @@ class PdfActivity : AppCompatActivity() {
                 if (!file.exists()) {
                     file.createNewFile()
                 }
-                pdfHelper.save(mBinding.sv, file)
+                pdf.saveView(mBinding.sv, file)
             }
         }
         mBinding.rv.layoutManager = LinearLayoutManager(this)
