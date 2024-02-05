@@ -27,7 +27,11 @@ class BgPainter(
             drawVLine(canvas, (w / gridSize).toInt() + 1, h, gridSize)
             drawStandard(canvas, h, leadsCount, gridSize, mm_per_s, mm_per_mv)
         }
-        xOffset = (2 + mm_per_s * 0.2f + 2) * gridSize
+        xOffset = if (standardSquareWavePaint != null) {
+            (2 + mm_per_s * 0.2f + 2) * gridSize
+        } else {
+            0f
+        }
     }
 
     /**
