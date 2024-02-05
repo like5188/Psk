@@ -1,6 +1,7 @@
 package com.psk.ecg
 
 import android.content.Context
+import android.graphics.Canvas
 import android.util.AttributeSet
 import android.util.Log
 import androidx.lifecycle.ViewTreeLifecycleOwner
@@ -43,7 +44,20 @@ class StaticEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(contex
         if (!isSurfaceCreated) return
         Log.w(TAG, "startDraw")
         ViewTreeLifecycleOwner.get(this)?.lifecycleScope?.launch(Dispatchers.IO) {
-            doDraw()
+            var canvas: Canvas? = null
+            try {
+                canvas = holder.lockCanvas()
+                canvas?.let {
+                    doDraw(it)
+                }
+            } finally {
+                canvas?.let {
+                    try {
+                        holder.unlockCanvasAndPost(it)
+                    } catch (e: Exception) {
+                    }
+                }
+            }
         }
     }
 

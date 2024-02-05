@@ -156,30 +156,10 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
         }
     }
 
-    protected fun doDraw() {
-        if (!initialized) {
-            return
-        }
-        var canvas: Canvas? = null
-        try {
-            canvas = holder.lockCanvas()
-            canvas?.let {
-                doDraw(it)
-            }
-        } finally {
-            canvas?.let {
-                try {
-                    holder.unlockCanvasAndPost(it)
-                } catch (e: Exception) {
-                }
-            }
-        }
-    }
-
     override fun surfaceCreated(holder: SurfaceHolder) {
         super.surfaceCreated(holder)
         // 处理 onResume
-        doDraw()
+        startDraw()
     }
 
     override fun dispatchDraw(canvas: Canvas?) {
@@ -188,7 +168,7 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
             /*
                 1、isHardwareAccelerated==true 表示通过正常视图加载进入这里。
                 2、isHardwareAccelerated==false 表示通过PdfDocument生成Pdf文件调用view.draw(canvas)进入这里。
-            其中 view.draw(canvas) 方法使用的 canvas 是 View 的，而不是SurfaceView的双缓冲 canvas。
+            其中 view.draw(canvas) 方法使用的 canvas 是 View 的，而不是SurfaceView的双缓冲 canvas。所以不能在子线程中进行。
             刚好 dispatchDraw() 方法返回的也是 View 的 canvas，所以我们再上面绘制就好。
             此时需要绘制一次界面，否则因为SurfaceView双缓冲的原因造成view.draw(canvas)方法绘制不出任何东西。
              */

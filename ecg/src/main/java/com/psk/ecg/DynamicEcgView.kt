@@ -98,6 +98,7 @@ class DynamicEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(conte
 
     private fun onDrawFrame(canvas: Canvas) {
         if (dataPainters!!.all { !(it as IDynamicDataPainter).hasNotDrawData() }) {
+            doDraw(canvas)// 需要绘制背景。
             cancelJob("没有数据")// 没有数据时取消任务
             return
         }
