@@ -1,7 +1,6 @@
 package com.psk.ecg.base
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.PixelFormat
@@ -58,6 +57,7 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
         this.sampleRate = sampleRate
         calcParams()
     }
+
     /**
      * @param bgPainter         背景绘制者，如果为 null，表示不绘制背景。库中默认实现为[BgPainter]。[BgPainter]。
      * 可以自己实现[IBgPainter]接口，或者自己创建[BgPainter]实例。
@@ -66,6 +66,7 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
         this.bgPainter = bgPainter
         calcParams()
     }
+
     /**
      * @param dataPainters      数据绘制者集合，有几个导联就需要几个绘制者。库中默认实现为[DynamicDataPainter]、[StaticDataPainter]
      * 可以自己实现[IDynamicDataPainter]或者[IStaticDataPainter]接口，或者自己创建[DynamicDataPainter]或者[StaticDataPainter]实例。
@@ -75,6 +76,7 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
         this.leadsCount = dataPainters.size
         calcParams()
     }
+
     /**
      * @param mm_per_s          走速（速度）。默认为标准值：25mm/s
      */
@@ -82,6 +84,7 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
         this.mm_per_s = mm_per_s
         calcParams()
     }
+
     /**
      * @param mm_per_mv         增益（灵敏度）。默认为 1倍：10mm/mV
      */
@@ -89,6 +92,7 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
         this.mm_per_mv = mm_per_mv
         calcParams()
     }
+
     /**
      * @param gridSize          一个小格子对应的像素值。默认为设备屏幕上1mm对应的像素，即一个小格子为1mm。
      */
@@ -166,12 +170,15 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
         doDraw()
     }
 
-    /**
-     * 获取当前绘制的位图。用于保存图片。
-     * 因为 SurfaceView 不能像普通 view 那样使用 view.draw(canvas) 来获取内容。
-     */
-    fun getBitmap(): Bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888).apply {
-        doDraw(Canvas(this))
+    override fun dispatchDraw(canvas: Canvas?) {
+        super.dispatchDraw(canvas)
+        canvas?.let {
+            // isHardwareAccelerated==true 表示通过正常视图加载进入这里。
+            // isHardwareAccelerated==false 表示通过PdfDocument生成Pdf文件调用view.draw(canvas)进入这里。此时需要绘制一次界面，否则因为SurfaceView双缓冲的原因造成view.draw(canvas)方法绘制不出任何东西。
+            if (!it.isHardwareAccelerated) {
+                doDraw(it)
+            }
+        }
     }
 
     /**
