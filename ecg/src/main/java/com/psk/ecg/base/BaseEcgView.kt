@@ -173,8 +173,13 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
     override fun dispatchDraw(canvas: Canvas?) {
         super.dispatchDraw(canvas)
         canvas?.let {
-            // isHardwareAccelerated==true 表示通过正常视图加载进入这里。
-            // isHardwareAccelerated==false 表示通过PdfDocument生成Pdf文件调用view.draw(canvas)进入这里。此时需要绘制一次界面，否则因为SurfaceView双缓冲的原因造成view.draw(canvas)方法绘制不出任何东西。
+            /*
+                1、isHardwareAccelerated==true 表示通过正常视图加载进入这里。
+                2、isHardwareAccelerated==false 表示通过PdfDocument生成Pdf文件调用view.draw(canvas)进入这里。
+            其中 view.draw(canvas) 方法使用的 canvas 是 View 的，而不是SurfaceView的双缓冲 canvas。
+            刚好 dispatchDraw() 方法返回的也是 View 的 canvas，所以我们再上面绘制就好。
+            此时需要绘制一次界面，否则因为SurfaceView双缓冲的原因造成view.draw(canvas)方法绘制不出任何东西。
+             */
             if (!it.isHardwareAccelerated) {
                 doDraw(it)
             }
