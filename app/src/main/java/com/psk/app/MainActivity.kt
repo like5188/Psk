@@ -150,7 +150,7 @@ class MainActivity : AppCompatActivity() {
                 color = Color.parseColor("#00a7ff")
                 strokeWidth = 1f
                 isAntiAlias = true
-                pathEffect = DashPathEffect(floatArrayOf(5f, 5f), 0f)
+                pathEffect = DashPathEffect(floatArrayOf(1f, 1f), 0f)
                 alpha = 90
             }, null, Paint().apply {
                 textSize = 18f
