@@ -37,12 +37,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mBinding.tv.text = "25 mm/s    10mm/mV"
         mBinding.btnPdf.setOnClickListener {
             startActivity(Intent(this, PdfActivity::class.java))
         }
         mBinding.btn1.setOnClickListener {
-            mBinding.ecgChartView.setMmPerMv(1)
+            mBinding.ecgChartView.setMmPerMv(5)
+            mBinding.tv.text = "25 mm/s    5mm/mV"
         }
         mBinding.btnStart.setOnClickListener {
             // E/SocketServerService: Parameter specified as non-null is null: method kotlin.jvm.internal.Intrinsics.checkNotNullParameter, parameter conn
@@ -137,6 +137,7 @@ class MainActivity : AppCompatActivity() {
             DeviceRepositoryManager.init(this@MainActivity)
         }
 
+        mBinding.tv.text = "25 mm/s    10mm/mV"
         mBinding.ecgChartView.apply {
             setSampleRate(250)
             setGridSize(10f.dp)
