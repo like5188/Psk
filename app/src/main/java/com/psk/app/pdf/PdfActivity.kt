@@ -17,6 +17,7 @@ import com.psk.pdf.Pdf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
+import kotlin.random.Random
 
 class PdfActivity : AppCompatActivity() {
     private val mBinding: ActivityPdfBinding by lazy {
@@ -54,7 +55,7 @@ class PdfActivity : AppCompatActivity() {
         }
 
         mBinding.btn1.setOnClickListener {
-            mBinding.ecgChartView.setMmPerMv(5)
+            mBinding.ecgChartView.setMmPerMv(Random.nextInt(5, 20))
         }
         mBinding.ecgChartView.apply {
             setSampleRate(250)
@@ -79,7 +80,7 @@ class PdfActivity : AppCompatActivity() {
                 textSize = 18f
                 color = Color.RED
             }))
-            setDataPainters((0 until 1).map {
+            setDataPainters((0 until 12).map {
                 StaticDataPainter(Paint().apply {
                     color = Color.parseColor("#44C71E")
                     strokeWidth = 3f
@@ -88,7 +89,8 @@ class PdfActivity : AppCompatActivity() {
                 })
             })
             setLeadsNames(listOf("I", "II", "III", "aVR", "aVL", "aVF", "V1", "V2", "V3", "V4", "V5", "V6"))
-            setData(listOf(createEcgData(300)))
+            val list = createEcgData(500)
+            setData((0 until 12).map { list })
         }
     }
 

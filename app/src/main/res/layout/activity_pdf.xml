@@ -21,7 +21,7 @@
         <ScrollView
             android:id="@+id/sv"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -31,7 +31,7 @@
                 <com.psk.ecg.StaticEcgView
                     android:id="@+id/ecgChartView"
                     android:layout_width="match_parent"
-                    android:layout_height="200px" />
+                    android:layout_height="2400px" />
 
                 <TextView
                     android:id="@+id/tv1"
