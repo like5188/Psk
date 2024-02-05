@@ -3,10 +3,14 @@ package com.psk.ecg
 import android.content.Context
 import android.util.AttributeSet
 import android.util.Log
+import androidx.lifecycle.ViewTreeLifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import com.psk.ecg.base.BaseEcgView
 import com.psk.ecg.painter.IDataPainter
 import com.psk.ecg.painter.IStaticDataPainter
 import com.psk.ecg.util.TAG
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  * 静态心电图。一次性绘制所有数据。通常用于报告页面显示。
@@ -37,7 +41,9 @@ class StaticEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(contex
     private fun startDraw() {
         if (!initialized) return
         Log.w(TAG, "startDraw")
-        doDraw()
+        ViewTreeLifecycleOwner.get(this)?.lifecycleScope?.launch(Dispatchers.IO) {
+            doDraw()
+        }
     }
 
     override fun onInitData(
