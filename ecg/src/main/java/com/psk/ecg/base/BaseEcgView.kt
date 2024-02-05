@@ -178,6 +178,7 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
 
     override fun surfaceCreated(holder: SurfaceHolder) {
         super.surfaceCreated(holder)
+        // 处理 onResume
         doDraw()
     }
 
