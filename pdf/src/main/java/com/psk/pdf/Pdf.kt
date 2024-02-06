@@ -82,7 +82,7 @@ class Pdf @JvmOverloads constructor(
 
     private suspend fun View.forEachPage(onPage: suspend (page: Int, pageWidth: Int, pageHeight: Int, viewStartY: Int, viewEndY: Int) -> Unit) =
         withContext(Dispatchers.Default) {
-            val pageWidth = measuredWidth
+            val pageWidth = width
             val pageHeight = (pageWidth * paperSize.height.toFloat() / paperSize.width.toFloat()).toInt()
             val splitLines = split.getSplitLines(this@forEachPage)
             if (splitLines.isEmpty()) {
