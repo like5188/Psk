@@ -47,6 +47,11 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    android.applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "康复机监控软件-${defaultConfig.versionName}.apk"
+        }
+    }
     repositories {
         flatDir {
             dirs 'libs', '../device/libs'

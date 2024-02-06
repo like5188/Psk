@@ -53,6 +53,12 @@ android {
         jvmTarget = '1.8'
     }
 
+    android.applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "康复机系统-${defaultConfig.versionName}.apk"
+        }
+    }
+
     repositories {
         flatDir {
             dirs 'libs', '../device/libs'
@@ -67,7 +73,7 @@ dependencies {
     // room
     kapt 'androidx.room:room-compiler:2.4.3'
 
-    implementation(name: 'aidl-release', ext: 'aar')
+    implementation(name: 'game-aidl-1.0.0', ext: 'aar')
     implementation(name: 'Pad1601Pwd-debug', ext: 'aar')
 
     implementation 'me.jessyan:autosize:1.2.1'
