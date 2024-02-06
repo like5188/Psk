@@ -113,7 +113,7 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        Log.w(TAG, "onSizeChanged")
+        Log.w(TAG, "onSizeChanged oldw=$oldw oldh=$oldh w=$w h=$h")
         calcParams()
     }
 

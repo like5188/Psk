@@ -25,7 +25,7 @@ abstract class BaseSurfaceView(context: Context, attrs: AttributeSet?) : Surface
     }
 
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
-        Log.w(TAG, "surfaceChanged")
+        Log.w(TAG, "surfaceChanged width=$width height=$height")
     }
 
     // activity onResume时调用
