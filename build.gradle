@@ -3,7 +3,7 @@
 buildscript {
 // todo Game游戏使用本ecg库时，需要修改
 //    ext.kotlin_version = '1.4.32'
-    ext.kotlin_version = '1.6.10'
+    ext.kotlin_version = '1.7.10'
     repositories {
         google()
         jcenter()

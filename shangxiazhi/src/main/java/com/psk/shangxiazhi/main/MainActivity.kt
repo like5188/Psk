@@ -1,103 +1,94 @@
 package com.psk.shangxiazhi.main
 
 import android.os.Bundle
-import android.view.ViewTreeObserver
-import androidx.appcompat.app.AppCompatActivity
-import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.lifecycleScope
-import com.like.common.util.mvi.propertyCollector
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import com.like.common.util.showToast
 import com.like.common.util.startActivity
 import com.psk.common.CommonApplication
-import com.psk.shangxiazhi.R
-import com.psk.shangxiazhi.databinding.ActivityMainBinding
 import com.psk.shangxiazhi.history.HistoryActivity
-import com.psk.shangxiazhi.login.LoginActivity
+import com.psk.shangxiazhi.login.LoginScreen
+import com.psk.shangxiazhi.login.LoginViewModel
 import com.psk.shangxiazhi.setting.SettingActivity
+import com.psk.shangxiazhi.theme.AppTheme
 import com.psk.shangxiazhi.train.TrainActivity
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * 主界面
  */
-class MainActivity : AppCompatActivity() {
+class MainActivity : ComponentActivity() {
     companion object {
         fun start() {
             CommonApplication.sInstance.startActivity<MainActivity>()
         }
     }
 
-    private val mBinding: ActivityMainBinding by lazy {
-        DataBindingUtil.setContentView(this, R.layout.activity_main)
-    }
-    private val mViewModel: MainViewModel by viewModel()
-
-    // 是否处于闪屏界面（主题中利于属性 windowBackground 达到闪屏界面效果）
-    private val isSplash = AtomicBoolean(true)
+    private val mainViewModel: MainViewModel by viewModel()
+    private val loginViewModel: LoginViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mViewModel.init(this)
-        mBinding.root.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
-            override fun onPreDraw(): Boolean {
-                return if (isSplash.get()) {
-                    // 不放行，不会进行绘制。
-                    false
-                } else {
-                    mBinding.root.viewTreeObserver.removeOnPreDrawListener(this)
-                    init()
-                    // 放行，准备绘制第一帧。
-                    true
+        mainViewModel.init(this)
+        setContent {
+            AppTheme {
+                val scope = rememberCoroutineScope()
+                val context = LocalContext.current
+                val mainUiState = mainViewModel.uiState.collectAsState().value
+                val loginUiState = loginViewModel.uiState.collectAsState().value
+                mainUiState.toastEvent?.getContentIfNotHandled()?.let {
+                    showToast(toastEvent = it)
+                }
+                loginUiState.toastEvent?.getContentIfNotHandled()?.let {
+                    showToast(toastEvent = it)
+                }
+                var time by remember {
+                    mutableStateOf("")
+                }
+                time = mainUiState.time
+                if (!mainUiState.isSplash || loginUiState.isLogin == true) {
+                    MainScreen(
+                        time = time,
+                        onAutonomyTrainingClick = {
+                            TrainActivity.start()
+                        },
+                        onTrainingRecordsClick = {
+                            HistoryActivity.start()
+                        },
+                        onSettingClick = {
+                            SettingActivity.start()
+                        }
+                    )
+                }
+                if (mainUiState.showLoginScreen) {
+                    LaunchedEffect(true) {
+                        loginViewModel.getSerialNumber(context)
+                    }
+                    LoginScreen(loginUiState.serialNumber, loginViewModel.code, { loginViewModel.updateCode(it) }) {
+                        scope.launch {
+                            loginViewModel.login(loginUiState.serialNumber, loginViewModel.code)
+                        }
+                    }
+                }
+                LaunchedEffect(true) {
+                    // 必须在主线程，否则在平板中没问题，但是在机顶盒中无法执行下面的代码。原因未知。
+                    mainViewModel.isLogin(this@MainActivity)
                 }
             }
-        })
-        lifecycleScope.launch(Dispatchers.Main) {
-            // 必须在主线程，否则在平板中没问题，但是在机顶盒中无法执行下面的代码。原因未知。
-            if (mViewModel.isLogin(this@MainActivity)) {
-                isSplash.set(false)
-            } else {
-                LoginActivity.start()
-                finish()
-            }
         }
     }
 
-    private fun init() {
-        mBinding.ivAutonomyTraining.setOnClickListener {
-            TrainActivity.start()
-        }
-        mBinding.ivTrainingRecords.setOnClickListener {
-            HistoryActivity.start()
-        }
-        mBinding.ivSetting.setOnClickListener {
-            SettingActivity.start()
-        }
-        collectUiState()
-    }
-
-    private fun collectUiState() {
-        mViewModel.uiState.propertyCollector(this) {
-            collectDistinctProperty(MainUiState::time) {
-                mBinding.tvTime.text = it
-            }
-            collectNotHandledEventProperty(MainUiState::toastEvent) {
-                showToast(toastEvent = it)
-            }
-        }
-    }
-
-    private var firstTime: Long = 0
     override fun onBackPressed() {
-        val secondTime = System.currentTimeMillis()
-        if (secondTime - firstTime > 2000) {
-            showToast("再按一次退出程序")
-            firstTime = secondTime
-        } else {
-            finish()
-        }
+        FinishApp().execute(this) { finish() }
     }
 
 }

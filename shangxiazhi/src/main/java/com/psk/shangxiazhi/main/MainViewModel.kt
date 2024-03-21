@@ -45,8 +45,20 @@ class MainViewModel(
         }
     }
 
-    fun isLogin(context: Context): Boolean {
-        return shangXiaZhiBusinessRepository.isLogin(context)
+    suspend fun isLogin(context: Context) {
+        if (shangXiaZhiBusinessRepository.isLogin(context)) {
+            _uiState.update {
+                it.copy(
+                    isSplash = false
+                )
+            }
+        } else {
+            _uiState.update {
+                it.copy(
+                    showLoginScreen = true
+                )
+            }
+        }
     }
 
 }
