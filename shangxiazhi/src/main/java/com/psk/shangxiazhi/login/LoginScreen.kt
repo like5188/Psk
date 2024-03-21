@@ -63,7 +63,6 @@ fun LoginScreen(
                     modifier = Modifier.fillMaxWidth(),
                     text = "软件激活",
                     style = MaterialTheme.typography.headlineLarge,
-                    color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center
                 )
                 Spacer(modifier = Modifier.height(20.dp))
@@ -73,13 +72,12 @@ fun LoginScreen(
                     Text(
                         text = "序列号：",
                         style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.onSurface,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Text(
                         modifier = Modifier.fillMaxWidth(),
                         text = serialNumber,
                         style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.onSurface,
                     )
                 }
                 Spacer(modifier = Modifier.height(50.dp))
@@ -87,7 +85,7 @@ fun LoginScreen(
                     Text(
                         text = "激活码：",
                         style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.onSurface,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     TextField(
                         modifier = Modifier.fillMaxWidth(),
