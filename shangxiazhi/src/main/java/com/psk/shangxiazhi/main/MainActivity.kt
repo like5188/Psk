@@ -38,24 +38,26 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mainViewModel.init(this)
         setContent {
+            val scope = rememberCoroutineScope()
+            val context = LocalContext.current
+            val mainUiState = mainViewModel.uiState.collectAsState().value
+            val loginUiState = loginViewModel.uiState.collectAsState().value
+            mainUiState.toastEvent?.getContentIfNotHandled()?.let {
+                showToast(toastEvent = it)
+            }
+            loginUiState.toastEvent?.getContentIfNotHandled()?.let {
+                showToast(toastEvent = it)
+            }
+            var time by remember {
+                mutableStateOf("")
+            }
+            time = mainUiState.time
             AppTheme {
-                val scope = rememberCoroutineScope()
-                val context = LocalContext.current
-                val mainUiState = mainViewModel.uiState.collectAsState().value
-                val loginUiState = loginViewModel.uiState.collectAsState().value
-                mainUiState.toastEvent?.getContentIfNotHandled()?.let {
-                    showToast(toastEvent = it)
-                }
-                loginUiState.toastEvent?.getContentIfNotHandled()?.let {
-                    showToast(toastEvent = it)
-                }
-                var time by remember {
-                    mutableStateOf("")
-                }
-                time = mainUiState.time
                 if (!mainUiState.isSplash || loginUiState.isLogin == true) {
+                    LaunchedEffect(true) {
+                        mainViewModel.init(context)
+                    }
                     MainScreen(
                         time = time,
                         onAutonomyTrainingClick = {
