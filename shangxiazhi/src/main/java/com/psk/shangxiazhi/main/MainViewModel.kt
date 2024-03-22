@@ -37,7 +37,7 @@ class MainViewModel(
     }
 
     suspend fun isLogin(context: Context) {
-        if (true) {
+        if (shangXiaZhiBusinessRepository.isLogin(context)) {
             _uiState.update {
                 it.copy(
                     isSplash = false
