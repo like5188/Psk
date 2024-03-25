@@ -56,6 +56,8 @@ private fun HistoryScreenPreview() {
 fun HistoryScreen(
     showTime: String = "",
     orderInfoList: List<OrderInfo>? = null,
+    onPreClick: () -> Unit = {},
+    onNextClick: () -> Unit = {}
 ) {
     Bg(contentAlignment = Alignment.Center) {
         Surface(
@@ -79,7 +81,7 @@ fun HistoryScreen(
                         modifier = Modifier
                             .width(100.dp)
                             .fillMaxHeight(),
-                        onClick = {}
+                        onClick = onPreClick
                     ) { isPressed, isFocused ->
                         Box(
                             modifier = Modifier
@@ -110,7 +112,7 @@ fun HistoryScreen(
                         modifier = Modifier
                             .width(100.dp)
                             .fillMaxHeight(),
-                        onClick = {}
+                        onClick = onNextClick
                     ) { isPressed, isFocused ->
                         Box(
                             modifier = Modifier
