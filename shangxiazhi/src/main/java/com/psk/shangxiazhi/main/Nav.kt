@@ -25,7 +25,6 @@ import kotlinx.coroutines.launch
  * 导航相关
  */
 sealed class Screen(val route: String) {
-    object Root : Screen("root")
     object Login : Screen("login_screen")
     object Main : Screen("main_screen")
 }
