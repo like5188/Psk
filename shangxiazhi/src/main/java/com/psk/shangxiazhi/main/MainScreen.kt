@@ -84,7 +84,7 @@ fun MainScreen(
                 Image(
                     modifier = Modifier.fillMaxSize(),
                     painter = painterResource(
-                        id = if (isPressed) R.drawable.home_game_choose else R.drawable.home_game_normal
+                        id = if (isPressed || isFocused) R.drawable.home_game_choose else R.drawable.home_game_normal
                     ),
                     contentScale = ContentScale.FillBounds,
                     contentDescription = null
@@ -108,7 +108,7 @@ fun MainScreen(
                 Image(
                     modifier = Modifier.fillMaxSize(),
                     painter = painterResource(
-                        id = if (isPressed) R.drawable.home_history_choose else R.drawable.home_history_normal
+                        id = if (isPressed || isFocused) R.drawable.home_history_choose else R.drawable.home_history_normal
                     ),
                     contentScale = ContentScale.FillBounds,
                     contentDescription = null
