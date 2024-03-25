@@ -34,11 +34,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".login.LoginActivity"
-            android:exported="false"
-            android:screenOrientation="landscape"
-            android:windowSoftInputMode="stateAlwaysHidden" />
-        <activity
             android:name=".scene.SceneActivity"
             android:exported="false"
             android:screenOrientation="landscape" />
