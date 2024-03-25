@@ -27,6 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.psk.shangxiazhi.R
+import com.psk.shangxiazhi.customui.Title
 
 @Preview(widthDp = 1920, heightDp = 1080)
 @Composable
@@ -56,15 +57,7 @@ fun SettingScreen(
                 .fillMaxHeight()
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Spacer(modifier = Modifier.height(20.dp))
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = "设置",
-                    style = MaterialTheme.typography.headlineLarge,
-                    textAlign = TextAlign.Center
-                )
-                Spacer(modifier = Modifier.height(20.dp))
-                Divider()
+                Title("设置")
                 Row(
                     modifier = Modifier
                         .clickable {}
