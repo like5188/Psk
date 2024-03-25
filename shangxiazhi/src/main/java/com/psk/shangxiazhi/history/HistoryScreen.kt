@@ -2,6 +2,7 @@ package com.psk.shangxiazhi.history
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -77,19 +78,21 @@ fun HistoryScreen(
                     BoxButton(
                         modifier = Modifier
                             .width(100.dp)
-                            .height(40.dp),
-                        contentAlignment = Alignment.BottomEnd,
+                            .fillMaxHeight(),
                         onClick = {}
                     ) { isPressed, isFocused ->
-                        Surface(
+                        Box(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .background(
-                                    if (isPressed || isFocused) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurfaceVariant
-                                )
+                                    if (isPressed || isFocused) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
+                                ),
+                            contentAlignment = Alignment.Center,
                         ) {
                             Icon(
-                                modifier = Modifier.fillMaxSize(),
+                                modifier = Modifier
+                                    .width(40.dp)
+                                    .height(40.dp),
                                 contentDescription = null,
                                 painter = painterResource(id = R.drawable.ic_left_arrow),
                                 tint = MaterialTheme.colorScheme.surface
@@ -103,14 +106,30 @@ fun HistoryScreen(
                         color = MaterialTheme.colorScheme.onPrimary,
                         style = MaterialTheme.typography.headlineSmall,
                     )
-                    Icon(
+                    BoxButton(
                         modifier = Modifier
                             .width(100.dp)
-                            .height(40.dp),
-                        contentDescription = null,
-                        painter = painterResource(id = R.drawable.ic_right_arrow),
-                        tint = MaterialTheme.colorScheme.surface
-                    )
+                            .fillMaxHeight(),
+                        onClick = {}
+                    ) { isPressed, isFocused ->
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(
+                                    if (isPressed || isFocused) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
+                                ),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Icon(
+                                modifier = Modifier
+                                    .width(40.dp)
+                                    .height(40.dp),
+                                contentDescription = null,
+                                painter = painterResource(id = R.drawable.ic_right_arrow),
+                                tint = MaterialTheme.colorScheme.surface
+                            )
+                        }
+                    }
                     Spacer(modifier = Modifier.width(40.dp))
                 }
                 List(orderInfoList)
