@@ -1,4 +1,4 @@
-package com.psk.shangxiazhi.main
+package com.psk.shangxiazhi.util
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
@@ -17,6 +17,9 @@ import com.like.common.util.showToast
 import com.psk.shangxiazhi.history.HistoryActivity
 import com.psk.shangxiazhi.login.LoginScreen
 import com.psk.shangxiazhi.login.LoginViewModel
+import com.psk.shangxiazhi.LocalNavController
+import com.psk.shangxiazhi.main.MainScreen
+import com.psk.shangxiazhi.main.MainViewModel
 import com.psk.shangxiazhi.setting.SettingActivity
 import com.psk.shangxiazhi.train.TrainActivity
 import kotlinx.coroutines.launch

@@ -1,4 +1,4 @@
-package com.psk.shangxiazhi.main
+package com.psk.shangxiazhi
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -8,7 +8,9 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.psk.shangxiazhi.login.LoginViewModel
+import com.psk.shangxiazhi.main.MainViewModel
 import com.psk.shangxiazhi.theme.AppTheme
+import com.psk.shangxiazhi.util.NavHost
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 val LocalNavController = staticCompositionLocalOf<NavHostController> {
