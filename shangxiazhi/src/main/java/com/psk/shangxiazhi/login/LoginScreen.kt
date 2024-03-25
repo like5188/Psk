@@ -35,6 +35,9 @@ private fun LoginScreenPreview() {
     LoginScreen("123")
 }
 
+/**
+ * 登录界面
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(

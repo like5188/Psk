@@ -30,6 +30,9 @@ private fun MainScreenPreview() {
     MainScreen(time = "2023-12-12 12:30:30")
 }
 
+/**
+ * 主界面
+ */
 @Composable
 fun MainScreen(
     time: String = "",

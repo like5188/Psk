@@ -17,9 +17,6 @@ val LocalNavController = staticCompositionLocalOf<NavHostController> {
     error("no NavController provided!")
 }
 
-/**
- * 主界面
- */
 class MainActivity : ComponentActivity() {
     private val mainViewModel: MainViewModel by viewModel()
     private val loginViewModel: LoginViewModel by viewModel()
