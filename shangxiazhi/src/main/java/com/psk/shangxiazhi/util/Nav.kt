@@ -14,13 +14,13 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.like.common.util.showToast
+import com.psk.shangxiazhi.LocalNavController
 import com.psk.shangxiazhi.history.HistoryActivity
 import com.psk.shangxiazhi.login.LoginScreen
 import com.psk.shangxiazhi.login.LoginViewModel
-import com.psk.shangxiazhi.LocalNavController
 import com.psk.shangxiazhi.main.MainScreen
 import com.psk.shangxiazhi.main.MainViewModel
-import com.psk.shangxiazhi.setting.SettingActivity
+import com.psk.shangxiazhi.setting.SettingScreen
 import com.psk.shangxiazhi.train.TrainActivity
 import kotlinx.coroutines.launch
 
@@ -30,6 +30,7 @@ import kotlinx.coroutines.launch
 sealed class Screen(val route: String) {
     object Login : Screen("login_screen")
     object Main : Screen("main_screen")
+    object Setting : Screen("setting_screen")
 }
 
 @Composable
@@ -54,6 +55,7 @@ fun NavHost(
         ) {
             mainGraph(mainViewModel)
             loginGraph(loginViewModel)
+            settingGraph()
         }
     }
     val context = LocalContext.current
@@ -65,6 +67,7 @@ fun NavHost(
 
 fun NavGraphBuilder.mainGraph(mainViewModel: MainViewModel) {
     composable(Screen.Main.route) {
+        val navController = LocalNavController.current
         val mainUiState = mainViewModel.uiState.collectAsState().value
         val context = LocalContext.current
         mainUiState.toastEvent?.getContentIfNotHandled()?.let {
@@ -86,7 +89,7 @@ fun NavGraphBuilder.mainGraph(mainViewModel: MainViewModel) {
                 HistoryActivity.start()
             },
             onSettingClick = {
-                SettingActivity.start()
+                navController.navigate(Screen.Setting.route)
             }
         )
         //点击两次返回才关闭app
@@ -115,6 +118,20 @@ fun NavGraphBuilder.loginGraph(loginViewModel: LoginViewModel) {
         //点击两次返回才关闭app
         BackHandler {
             FinishApp().execute(context)
+        }
+    }
+}
+
+fun NavGraphBuilder.settingGraph() {
+    composable(Screen.Login.route) {
+        val context = LocalContext.current
+        val navController = LocalNavController.current
+        val version by remember {
+            mutableStateOf(context.packageManager.getPackageInfo(context.packageName, 0).versionName)
+        }
+        SettingScreen(version)
+        BackHandler {
+            navController.navigateUp()
         }
     }
 }

@@ -38,10 +38,6 @@
             android:exported="false"
             android:screenOrientation="landscape" />
         <activity
-            android:name=".setting.SettingActivity"
-            android:exported="false"
-            android:screenOrientation="landscape" />
-        <activity
             android:name=".report.ReportActivity"
             android:exported="false"
             android:screenOrientation="landscape" />
