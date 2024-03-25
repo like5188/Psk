@@ -33,8 +33,7 @@ sealed class Screen(val route: String) {
 @Composable
 fun NavHost(
     mainViewModel: MainViewModel,
-    loginViewModel: LoginViewModel,
-    onFinish: () -> Unit
+    loginViewModel: LoginViewModel
 ) {
     val navController = LocalNavController.current
     val mainUiState = mainViewModel.uiState.collectAsState().value
@@ -51,8 +50,8 @@ fun NavHost(
             navController = navController,
             startDestination = startDestination
         ) {
-            mainGraph(mainViewModel, onFinish)
-            loginGraph(loginViewModel, onFinish)
+            mainGraph(mainViewModel)
+            loginGraph(loginViewModel)
         }
     }
     val context = LocalContext.current
@@ -62,7 +61,7 @@ fun NavHost(
     }
 }
 
-fun NavGraphBuilder.mainGraph(mainViewModel: MainViewModel, onFinish: () -> Unit) {
+fun NavGraphBuilder.mainGraph(mainViewModel: MainViewModel) {
     composable(Screen.Main.route) {
         val mainUiState = mainViewModel.uiState.collectAsState().value
         val context = LocalContext.current
@@ -90,12 +89,12 @@ fun NavGraphBuilder.mainGraph(mainViewModel: MainViewModel, onFinish: () -> Unit
         )
         //点击两次返回才关闭app
         BackHandler {
-            FinishApp().execute(context, onFinish)
+            FinishApp().execute(context)
         }
     }
 }
 
-fun NavGraphBuilder.loginGraph(loginViewModel: LoginViewModel, onFinish: () -> Unit) {
+fun NavGraphBuilder.loginGraph(loginViewModel: LoginViewModel) {
     composable(Screen.Login.route) {
         val scope = rememberCoroutineScope()
         val loginUiState = loginViewModel.uiState.collectAsState().value
@@ -113,7 +112,7 @@ fun NavGraphBuilder.loginGraph(loginViewModel: LoginViewModel, onFinish: () -> U
         }
         //点击两次返回才关闭app
         BackHandler {
-            FinishApp().execute(context, onFinish)
+            FinishApp().execute(context)
         }
     }
 }

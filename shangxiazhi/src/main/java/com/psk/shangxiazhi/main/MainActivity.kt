@@ -27,7 +27,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             AppTheme {
                 CompositionLocalProvider(LocalNavController provides rememberNavController()) {
-                    NavHost(mainViewModel = mainViewModel, loginViewModel = loginViewModel) { finish() }
+                    NavHost(mainViewModel = mainViewModel, loginViewModel = loginViewModel)
                 }
             }
         }

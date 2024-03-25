@@ -1,5 +1,6 @@
 package com.psk.shangxiazhi.main
 
+import android.app.Activity
 import android.content.Context
 import android.widget.Toast
 
@@ -9,7 +10,7 @@ class FinishApp {
         var mLastTime: Long = 0
     }
 
-    fun execute(context: Context, finish: () -> Unit) {
+    fun execute(context: Context) {
         when {
             /**
              * [INTERVAL] 间隔以内点击两次返回键退出程序
@@ -18,8 +19,9 @@ class FinishApp {
                 Toast.makeText(context, "再按一次退出程序", Toast.LENGTH_SHORT).show()
                 mLastTime = System.currentTimeMillis()
             }
+
             else -> {
-                finish()
+                (context as? Activity)?.finish()
             }
         }
     }
