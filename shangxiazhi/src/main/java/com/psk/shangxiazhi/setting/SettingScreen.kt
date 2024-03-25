@@ -65,11 +65,10 @@ fun SettingScreen(
                 )
                 Spacer(modifier = Modifier.height(20.dp))
                 Divider()
-                Spacer(modifier = Modifier.height(50.dp))
                 Row(
                     modifier = Modifier
-                        .padding(horizontal = 15.dp)
-                        .clickable {},
+                        .clickable {}
+                        .padding(horizontal = 15.dp, vertical = 30.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
@@ -80,6 +79,7 @@ fun SettingScreen(
                         painter = painterResource(id = R.drawable.ic_version),
                         tint = MaterialTheme.colorScheme.primary
                     )
+                    Spacer(modifier = Modifier.width(10.dp))
                     Text(
                         text = "当前版本：",
                         style = MaterialTheme.typography.headlineSmall,
