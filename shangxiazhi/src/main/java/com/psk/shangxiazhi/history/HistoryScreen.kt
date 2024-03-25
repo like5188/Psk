@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -29,6 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.customui.Bg
+import com.psk.shangxiazhi.customui.BoxButton
 import com.psk.shangxiazhi.customui.Title
 import com.psk.shangxiazhi.data.model.OrderInfo
 import java.text.SimpleDateFormat
@@ -72,14 +74,28 @@ fun HistoryScreen(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Spacer(modifier = Modifier.width(40.dp))
-                    Icon(
+                    BoxButton(
                         modifier = Modifier
                             .width(100.dp)
                             .height(40.dp),
-                        contentDescription = null,
-                        painter = painterResource(id = R.drawable.ic_left_arrow),
-                        tint = MaterialTheme.colorScheme.surface
-                    )
+                        contentAlignment = Alignment.BottomEnd,
+                        onClick = {}
+                    ) { isPressed, isFocused ->
+                        Surface(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(
+                                    if (isPressed || isFocused) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                        ) {
+                            Icon(
+                                modifier = Modifier.fillMaxSize(),
+                                contentDescription = null,
+                                painter = painterResource(id = R.drawable.ic_left_arrow),
+                                tint = MaterialTheme.colorScheme.surface
+                            )
+                        }
+                    }
                     Text(
                         modifier = Modifier.weight(1f),
                         text = showTime,
