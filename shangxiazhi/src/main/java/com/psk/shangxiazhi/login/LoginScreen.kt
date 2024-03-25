@@ -10,9 +10,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -97,10 +97,11 @@ fun LoginScreen(
                     )
                 }
                 Spacer(modifier = Modifier.height(100.dp))
-                FilledTonalButton(
+                Button(
                     modifier = Modifier
                         .width(500.dp)
-                        .height(60.dp), onClick = onActivation
+                        .height(60.dp),
+                    onClick = onActivation
                 ) {
                     Text(text = "激活", fontSize = 20.sp)
                 }
