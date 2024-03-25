@@ -64,7 +64,7 @@ fun MainScreen(
                         .height(80.dp),
                     contentDescription = null,
                     painter = painterResource(id = R.drawable.ic_set_up),
-                    tint = if (isPressed || isFocused) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimary
+                    tint = if (isPressed || isFocused) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.onPrimary
                 )
             }
         }
