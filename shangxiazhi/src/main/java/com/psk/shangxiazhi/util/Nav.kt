@@ -123,7 +123,7 @@ fun NavGraphBuilder.loginGraph(loginViewModel: LoginViewModel) {
 }
 
 fun NavGraphBuilder.settingGraph() {
-    composable(Screen.Login.route) {
+    composable(Screen.Setting.route) {
         val context = LocalContext.current
         val navController = LocalNavController.current
         val version by remember {
