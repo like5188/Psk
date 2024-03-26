@@ -23,7 +23,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -58,7 +57,6 @@ private fun SelectDeviceScreenPreview() {
 /**
  * 设置界面
  */
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SelectDeviceScreen(
     deviceTypes: Array<DeviceType>,
