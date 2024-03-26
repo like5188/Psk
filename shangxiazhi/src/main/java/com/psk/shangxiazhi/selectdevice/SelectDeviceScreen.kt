@@ -32,7 +32,6 @@ import androidx.compose.ui.unit.sp
 import androidx.fragment.app.FragmentActivity
 import com.like.common.util.showToast
 import com.psk.device.data.model.DeviceType
-import com.psk.shangxiazhi.LocalNavController
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.customui.BoxButton
 import com.psk.shangxiazhi.customui.Title
@@ -41,13 +40,15 @@ import com.psk.shangxiazhi.data.model.BleScanInfo
 @Preview(widthDp = 1920, heightDp = 1080)
 @Composable
 private fun SelectDeviceScreenPreview() {
-//    Item("上下肢", "aldshfksadjl")
     SelectDeviceScreen(
         deviceTypes = arrayOf(
             DeviceType.ShangXiaZhi,
             DeviceType.BloodOxygen,
             DeviceType.BloodPressure,
             DeviceType.HeartRate,
+        ),
+        selectedDeviceMap = mutableMapOf(
+            DeviceType.ShangXiaZhi to BleScanInfo("上下肢名称", "AA:AA")
         )
     )
 }
@@ -61,7 +62,6 @@ fun SelectDeviceScreen(
     selectedDeviceMap: MutableMap<DeviceType, BleScanInfo>? = null,
     onConfirmClick: (Map<DeviceType, BleScanInfo>) -> Unit = {},
 ) {
-    val navController = LocalNavController.current
     val context = LocalContext.current
     Surface(
         shape = RoundedCornerShape(10.dp),
@@ -104,7 +104,6 @@ fun SelectDeviceScreen(
                     onClick = {
                         if (selectedDeviceMap?.containsKey(DeviceType.ShangXiaZhi) == true) {
                             onConfirmClick(selectedDeviceMap)
-                            navController.navigateUp()
                         } else {
                             context.showToast("请先选择上下肢设备")
                         }
@@ -151,7 +150,7 @@ private fun Item(name: String, des: String, onItemClick: () -> Unit = {}, onClea
                             .height(40.dp),
                         contentDescription = null,
                         painter = painterResource(id = R.drawable.ic_close),
-                        tint = if (isPressed || isFocused) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.onPrimary
+                        tint = if (isPressed || isFocused) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
