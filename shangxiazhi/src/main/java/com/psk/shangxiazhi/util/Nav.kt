@@ -8,7 +8,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
@@ -78,15 +77,11 @@ fun NavGraphBuilder.mainGraph(mainViewModel: MainViewModel) {
         mainUiState.toastEvent?.getContentIfNotHandled()?.let {
             context.showToast(toastEvent = it)
         }
-        var time by remember {
-            mutableStateOf("")
-        }
-        time = mainUiState.time
         LaunchedEffect(true) {
             mainViewModel.init(context)
         }
         MainScreen(
-            time = time,
+            time = mainUiState.time,
             onAutonomyTrainingClick = {
                 TrainActivity.start()
             },
