@@ -1,5 +1,6 @@
 package com.psk.shangxiazhi.selectdevice
 
+import android.view.Gravity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +24,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -34,6 +36,7 @@ import com.like.common.util.showToast
 import com.psk.device.data.model.DeviceType
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.customui.BoxButton
+import com.psk.shangxiazhi.customui.Dialog
 import com.psk.shangxiazhi.customui.Title
 import com.psk.shangxiazhi.data.model.BleScanInfo
 
@@ -56,6 +59,7 @@ private fun SelectDeviceScreenPreview() {
 /**
  * 设置界面
  */
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SelectDeviceScreen(
     deviceTypes: Array<DeviceType>,
@@ -63,57 +67,67 @@ fun SelectDeviceScreen(
     onConfirmClick: (Map<DeviceType, BleScanInfo>) -> Unit = {},
 ) {
     val context = LocalContext.current
-    Surface(
-        shape = RoundedCornerShape(10.dp),
-        shadowElevation = 10.dp,
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 48.dp, vertical = 27.dp),
+    Dialog {
+        val displayMetrics = context.resources.displayMetrics
+        // 设置窗口的宽度和高度，这段代码Dialog源码中就有哦，可以自己去查看
+        it.setLayout(
+            (displayMetrics.widthPixels * 0.5).toInt() - 1,
+            displayMetrics.heightPixels
+        )
+        it.setGravity(Gravity.START)
+        it.setDimAmount(0.6f)
+        Surface(
+            shape = RoundedCornerShape(10.dp),
+            shadowElevation = 10.dp,
+            modifier = Modifier.fillMaxSize()
         ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Title("选择设备")
-                deviceTypes.forEach {
-                    var name by remember {
-                        mutableStateOf(selectedDeviceMap?.get(it)?.name ?: "")
-                    }
-                    Item(
-                        name = name,
-                        des = it.des,
-                        onItemClick = {
-                            ScanDeviceDialogFragment.newInstance(it).apply {
-                                onSelected = { bleSanInfo ->
-                                    selectedDeviceMap?.set(it, bleSanInfo)
-                                    name = bleSanInfo.name
-                                }
-                            }.show(context as FragmentActivity)
-                        },
-                        onClearClick = {
-                            name = ""
-                            selectedDeviceMap?.remove(it)
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 48.dp, vertical = 27.dp),
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Title("选择设备")
+                    deviceTypes.forEach {
+                        var name by remember {
+                            mutableStateOf(selectedDeviceMap?.get(it)?.name ?: "")
                         }
-                    )
-                }
-                Spacer(modifier = Modifier.height(100.dp))
-                Button(
-                    modifier = Modifier
-                        .width(500.dp)
-                        .height(60.dp),
-                    onClick = {
-                        if (selectedDeviceMap?.containsKey(DeviceType.ShangXiaZhi) == true) {
-                            onConfirmClick(selectedDeviceMap)
-                        } else {
-                            context.showToast("请先选择上下肢设备")
-                        }
+                        Item(
+                            name = name,
+                            des = it.des,
+                            onItemClick = {
+                                ScanDeviceDialogFragment.newInstance(it).apply {
+                                    onSelected = { bleSanInfo ->
+                                        selectedDeviceMap?.set(it, bleSanInfo)
+                                        name = bleSanInfo.name
+                                    }
+                                }.show(context as FragmentActivity)
+                            },
+                            onClearClick = {
+                                name = ""
+                                selectedDeviceMap?.remove(it)
+                            }
+                        )
                     }
-                ) {
-                    Text(text = "确定", fontSize = 20.sp)
+                    Spacer(modifier = Modifier.height(100.dp))
+                    Button(
+                        modifier = Modifier
+                            .width(500.dp)
+                            .height(60.dp),
+                        onClick = {
+                            if (selectedDeviceMap?.containsKey(DeviceType.ShangXiaZhi) == true) {
+                                onConfirmClick(selectedDeviceMap)
+                            } else {
+                                context.showToast("请先选择上下肢设备")
+                            }
+                        }
+                    ) {
+                        Text(text = "确定", fontSize = 20.sp)
+                    }
                 }
             }
-        }
 
+        }
     }
 
 }
