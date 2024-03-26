@@ -37,11 +37,11 @@ import com.psk.shangxiazhi.data.model.BleScanInfo
 
 @Preview(widthDp = 1920, heightDp = 1080)
 @Composable
-private fun PrepareTrainingScreenPreview() {
+private fun TrainScreenPreview() {
     var bloodPressureMeasureType by remember {
         mutableStateOf(0)
     }
-    PrepareTrainingScreen(
+    TrainScreen(
         selectedDeviceMap = mapOf(
             DeviceType.ShangXiaZhi to BleScanInfo("上下肢", "AA"),
             DeviceType.HeartRate to BleScanInfo("心电仪", "BB"),
@@ -60,7 +60,7 @@ private fun PrepareTrainingScreenPreview() {
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PrepareTrainingScreen(
+fun TrainScreen(
     selectedDeviceMap: Map<DeviceType, BleScanInfo>? = null,
     scene: String = "",
     weight: String = "",
