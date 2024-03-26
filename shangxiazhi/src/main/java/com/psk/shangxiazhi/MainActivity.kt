@@ -11,6 +11,7 @@ import com.psk.shangxiazhi.history.HistoryViewModel
 import com.psk.shangxiazhi.login.LoginViewModel
 import com.psk.shangxiazhi.main.MainViewModel
 import com.psk.shangxiazhi.theme.AppTheme
+import com.psk.shangxiazhi.train.TrainViewModel
 import com.psk.shangxiazhi.util.NavHost
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -22,6 +23,7 @@ class MainActivity : ComponentActivity() {
     private val mainViewModel: MainViewModel by viewModel()
     private val loginViewModel: LoginViewModel by viewModel()
     private val historyViewModel: HistoryViewModel by viewModel()
+    private val trainViewModel: TrainViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +33,8 @@ class MainActivity : ComponentActivity() {
                     NavHost(
                         mainViewModel = mainViewModel,
                         loginViewModel = loginViewModel,
-                        historyViewModel = historyViewModel
+                        historyViewModel = historyViewModel,
+                        trainViewModel = trainViewModel
                     )
                 }
             }

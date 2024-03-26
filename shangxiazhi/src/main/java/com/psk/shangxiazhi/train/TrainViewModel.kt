@@ -28,7 +28,6 @@ import com.psk.shangxiazhi.measure.MeasureBloodPressureDialogFragment
 import com.psk.shangxiazhi.measure.MeasureTargetHeartRateDialogFragment
 import com.psk.shangxiazhi.report.ReportActivity
 import com.psk.shangxiazhi.scene.SceneActivity
-import com.psk.shangxiazhi.selectdevice.SelectDeviceDialogFragment
 import com.twsz.twsystempre.TrainScene
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -80,16 +79,16 @@ class TrainViewModel(
     fun selectDevices(activity: FragmentActivity) {
         activity.lifecycleScope.launch {
             if (PermissionUtils.requestScanEnvironment(activity)) {
-                SelectDeviceDialogFragment.newInstance(_uiState.value.deviceMap).apply {
-                    onSelected = { deviceMap ->
-                        // 选择设备后，清空当前已经存在的数据。重新开始一个新的流程。
-                        _uiState.update {
-                            it.copy(
-                                isTrainCompleted = false, deviceMap = deviceMap, healthInfo = HealthInfo(), scene = null, reports = null
-                            )
-                        }
-                    }
-                }.show(activity)
+//                SelectDeviceDialogFragment.newInstance(_uiState.value.deviceMap).apply {
+//                    onSelected = { deviceMap ->
+//                        // 选择设备后，清空当前已经存在的数据。重新开始一个新的流程。
+//                        _uiState.update {
+//                            it.copy(
+//                                isTrainCompleted = false, deviceMap = deviceMap, healthInfo = HealthInfo(), scene = null, reports = null
+//                            )
+//                        }
+//                    }
+//                }.show(activity)
             } else {
                 _uiState.update {
                     it.copy(

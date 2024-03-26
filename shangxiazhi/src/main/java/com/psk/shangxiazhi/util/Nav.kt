@@ -1,18 +1,24 @@
 package com.psk.shangxiazhi.util
 
+import android.view.KeyEvent
 import androidx.activity.compose.BackHandler
+import androidx.appcompat.app.AlertDialog
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.like.common.util.showToast
+import com.psk.device.data.model.DeviceType
 import com.psk.shangxiazhi.LocalNavController
 import com.psk.shangxiazhi.history.HistoryScreen
 import com.psk.shangxiazhi.history.HistoryViewModel
@@ -22,7 +28,8 @@ import com.psk.shangxiazhi.main.MainScreen
 import com.psk.shangxiazhi.main.MainViewModel
 import com.psk.shangxiazhi.report.ReportActivity
 import com.psk.shangxiazhi.setting.SettingScreen
-import com.psk.shangxiazhi.train.TrainActivity
+import com.psk.shangxiazhi.train.TrainScreen
+import com.psk.shangxiazhi.train.TrainViewModel
 import kotlinx.coroutines.launch
 
 /**
@@ -33,13 +40,15 @@ sealed class Screen(val route: String) {
     object Main : Screen("main_screen")
     object Setting : Screen("setting_screen")
     object History : Screen("history_screen")
+    object Train : Screen("train_screen")
 }
 
 @Composable
 fun NavHost(
     mainViewModel: MainViewModel,
     loginViewModel: LoginViewModel,
-    historyViewModel: HistoryViewModel
+    historyViewModel: HistoryViewModel,
+    trainViewModel: TrainViewModel
 ) {
     val navController = LocalNavController.current
     val mainUiState = mainViewModel.uiState.collectAsState().value
@@ -60,6 +69,7 @@ fun NavHost(
             loginGraph(loginViewModel)
             settingGraph()
             historyGraph(historyViewModel)
+            trainGraph(trainViewModel)
         }
     }
     val context = LocalContext.current
@@ -83,7 +93,7 @@ fun NavGraphBuilder.mainGraph(mainViewModel: MainViewModel) {
         MainScreen(
             time = mainUiState.time,
             onAutonomyTrainingClick = {
-                TrainActivity.start()
+                navController.navigate(Screen.Train.route)
             },
             onTrainingRecordsClick = {
                 navController.navigate(Screen.History.route)
@@ -156,6 +166,103 @@ fun NavGraphBuilder.historyGraph(historyViewModel: HistoryViewModel) {
         )
         BackHandler {
             navController.navigateUp()
+        }
+    }
+}
+
+fun NavGraphBuilder.trainGraph(trainViewModel: TrainViewModel) {
+    composable(Screen.Train.route) {
+        val trainUiState = trainViewModel.uiState.collectAsState().value
+        val navController = LocalNavController.current
+        val context = LocalContext.current
+        trainUiState.toastEvent?.getContentIfNotHandled()?.let {
+            context.showToast(toastEvent = it)
+        }
+        DisposableEffect(true) {
+            trainViewModel.bindGameManagerService(context)
+            onDispose {
+                trainViewModel.unbindGameManagerService(context)
+            }
+        }
+        var bloodPressureMeasureType by remember {
+            mutableStateOf(0)
+        }
+        TrainScreen(
+            selectedDeviceMap = trainUiState.deviceMap,
+            scene = trainUiState.scene?.des ?: "",
+            weight = if (trainUiState.healthInfo == null || trainUiState.healthInfo.weight == 0) {
+                ""
+            } else {
+                trainUiState.healthInfo.weight.toString()
+            },
+            age = if (trainUiState.healthInfo == null || trainUiState.healthInfo.age == 0) {
+                ""
+            } else {
+                trainUiState.healthInfo.age.toString()
+            },
+            targetHeartRate = if (trainUiState.healthInfo == null || trainUiState.healthInfo.minTargetHeartRate == 0 || trainUiState.healthInfo.maxTargetHeartRate == 0) {
+                ""
+            } else {
+                "${trainUiState.healthInfo.minTargetHeartRate}~${trainUiState.healthInfo.maxTargetHeartRate}"
+            },
+            bloodPressureBefore = trainUiState.healthInfo?.bloodPressureBefore?.toString() ?: "",
+            bloodPressureMeasureType = bloodPressureMeasureType,
+            onDeviceClick = {
+                trainViewModel.selectDevices(context as FragmentActivity)
+            },
+            onSceneClick = {
+                trainViewModel.selectTrainScene(context as FragmentActivity)
+            },
+            onWeightChanged = {
+                trainViewModel.setWeight(it.toIntOrNull() ?: 0)
+            },
+            onAgeChanged = {
+                trainViewModel.setAge(it.toIntOrNull() ?: 0)
+            },
+            onTargetHeartRateClick = {
+                trainViewModel.measureTargetHeart(context as FragmentActivity)
+            },
+            onBloodPressureBeforeClick = {
+                trainViewModel.measureBloodPressureBefore(context as FragmentActivity)
+            },
+            onBloodPressureMeasureTypeChanged = {
+                bloodPressureMeasureType = it
+            },
+            onTrainClick = {
+                trainViewModel.train(bloodPressureMeasureType)
+            }
+        )
+        BackHandler {
+            navController.navigateUp()
+        }
+        if (trainUiState.isTrainCompleted) {
+            // 训练完成
+            // 如果没有血压仪
+            if (trainUiState.deviceMap?.containsKey(DeviceType.BloodPressure) != true) {
+                trainViewModel.report()
+                navController.navigateUp()
+                return@composable
+            }
+            // 如果有血压仪
+            val dialog =
+                AlertDialog.Builder(context).setMessage("是否进行运动后血压测试?").setNegativeButton("取消") { _, _ ->
+                    trainViewModel.report()
+                    navController.navigateUp()
+                }.setPositiveButton("去测量") { _, _ ->
+                    trainViewModel.measureBloodPressureAfter(context as FragmentActivity) {
+                        trainViewModel.report()
+                        navController.navigateUp()
+                    }
+                }.create()
+            dialog.setOnKeyListener { dialog, keyCode, event ->
+                // 返回键点击事件处理
+                if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
+                    trainViewModel.report()
+                    navController.navigateUp()
+                }
+                false
+            }
+            dialog.show()
         }
     }
 }

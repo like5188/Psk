@@ -57,6 +57,8 @@ private fun TrainScreenPreview() {
 
 /**
  * 准备训练界面
+ *
+ * @param bloodPressureMeasureType  运动中血压测量方式。0：未选择；1：手动测量；2：自动测量
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
