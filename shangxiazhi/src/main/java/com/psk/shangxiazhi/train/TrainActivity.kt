@@ -92,6 +92,7 @@ class TrainActivity : AppCompatActivity() {
                 mBinding.targetHeartRateCardView.gone()
                 mBinding.bloodPressureMeasureTypeCardView.gone()
                 if (it.isNullOrEmpty()) {
+                    mBinding.tvDevice.text = ""
                     return@collectDistinctProperty
                 }
                 mBinding.sceneCardView.visible()
