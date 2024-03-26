@@ -38,7 +38,7 @@ class HistoryViewModel(
             return
         }
         val cur = _uiState.value.showTime
-        if (cur.isNullOrEmpty()) {
+        if (cur.isEmpty()) {
             return
         }
         val dates = datas.keys.toList()
@@ -65,7 +65,7 @@ class HistoryViewModel(
             return
         }
         val cur = _uiState.value.showTime
-        if (cur.isNullOrEmpty()) {
+        if (cur.isEmpty()) {
             return
         }
         val dates = datas.keys.toList()
