@@ -55,7 +55,7 @@ private fun SelectDeviceScreenPreview() {
 }
 
 /**
- * 设置界面
+ * 选择设备对话框界面
  */
 @Composable
 fun SelectDeviceScreen(
