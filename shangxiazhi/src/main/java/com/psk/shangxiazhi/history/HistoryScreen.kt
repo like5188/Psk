@@ -51,7 +51,7 @@ private fun HistoryScreenPreview() {
 }
 
 /**
- * 设置界面
+ * 历史记录界面
  */
 @Composable
 fun HistoryScreen(
