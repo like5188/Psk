@@ -51,7 +51,7 @@ fun LoginScreen(
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Title("软件激活")
                 Spacer(modifier = Modifier.height(50.dp))
-                Row(modifier = Modifier.padding(horizontal = 15.dp), verticalAlignment = Alignment.CenterVertically) {
+                Row(modifier = Modifier.padding(horizontal = 30.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = "序列号：",
                         style = MaterialTheme.typography.headlineSmall,
@@ -64,7 +64,7 @@ fun LoginScreen(
                     )
                 }
                 Spacer(modifier = Modifier.height(50.dp))
-                Row(modifier = Modifier.padding(horizontal = 15.dp), verticalAlignment = Alignment.CenterVertically) {
+                Row(modifier = Modifier.padding(horizontal = 30.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = "激活码：",
                         style = MaterialTheme.typography.headlineSmall,
