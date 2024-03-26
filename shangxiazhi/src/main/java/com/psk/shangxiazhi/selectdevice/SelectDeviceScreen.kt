@@ -1,6 +1,5 @@
 package com.psk.shangxiazhi.selectdevice
 
-import android.view.Gravity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -68,14 +67,6 @@ fun SelectDeviceScreen(
 ) {
     val context = LocalContext.current
     Dialog {
-        val displayMetrics = context.resources.displayMetrics
-        // 设置窗口的宽度和高度，这段代码Dialog源码中就有哦，可以自己去查看
-        it.setLayout(
-            (displayMetrics.widthPixels * 0.5).toInt() - 1,
-            displayMetrics.heightPixels
-        )
-        it.setGravity(Gravity.START)
-        it.setDimAmount(0.6f)
         Surface(
             shape = RoundedCornerShape(10.dp),
             shadowElevation = 10.dp,
