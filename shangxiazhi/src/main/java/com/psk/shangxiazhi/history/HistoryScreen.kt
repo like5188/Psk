@@ -1,6 +1,7 @@
 package com.psk.shangxiazhi.history
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,7 +45,7 @@ private fun HistoryScreenPreview() {
         listOf(
             OrderInfo(0, System.currentTimeMillis() - 1000, 0),
             OrderInfo(1, System.currentTimeMillis() - 2000, 1),
-            OrderInfo(2, System.currentTimeMillis() - 3000, 2),
+            OrderInfo(2, System.currentTimeMillis() - 3000 * 60 * 60 * 24 * 30, 2),
         )
     )
 }
@@ -57,7 +58,8 @@ fun HistoryScreen(
     showTime: String = "",
     orderInfoList: List<OrderInfo>? = null,
     onPreClick: () -> Unit = {},
-    onNextClick: () -> Unit = {}
+    onNextClick: () -> Unit = {},
+    onItemClick: (OrderInfo) -> Unit = {}
 ) {
     Bg(contentAlignment = Alignment.Center) {
         Surface(
@@ -134,7 +136,7 @@ fun HistoryScreen(
                     }
                     Spacer(modifier = Modifier.width(40.dp))
                 }
-                List(orderInfoList)
+                List(orderInfoList, onItemClick)
             }
         }
     }
@@ -142,7 +144,7 @@ fun HistoryScreen(
 }
 
 @Composable
-private fun List(orderInfoList: List<OrderInfo>? = null) {
+private fun List(orderInfoList: List<OrderInfo>? = null, onItemClick: (OrderInfo) -> Unit = {}) {
     if (orderInfoList.isNullOrEmpty()) {
         return
     }
@@ -155,7 +157,9 @@ private fun List(orderInfoList: List<OrderInfo>? = null) {
     LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         for (orderInfo in orderInfoList) {
             item {
-                Column {
+                Column(modifier = Modifier.clickable {
+                    onItemClick(orderInfo)
+                }) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()

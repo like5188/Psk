@@ -15,11 +15,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.like.common.util.showToast
 import com.psk.shangxiazhi.LocalNavController
-import com.psk.shangxiazhi.history.HistoryActivity
+import com.psk.shangxiazhi.history.HistoryScreen
+import com.psk.shangxiazhi.history.HistoryViewModel
 import com.psk.shangxiazhi.login.LoginScreen
 import com.psk.shangxiazhi.login.LoginViewModel
 import com.psk.shangxiazhi.main.MainScreen
 import com.psk.shangxiazhi.main.MainViewModel
+import com.psk.shangxiazhi.report.ReportActivity
 import com.psk.shangxiazhi.setting.SettingScreen
 import com.psk.shangxiazhi.train.TrainActivity
 import kotlinx.coroutines.launch
@@ -31,12 +33,14 @@ sealed class Screen(val route: String) {
     object Login : Screen("login_screen")
     object Main : Screen("main_screen")
     object Setting : Screen("setting_screen")
+    object History : Screen("history_screen")
 }
 
 @Composable
 fun NavHost(
     mainViewModel: MainViewModel,
-    loginViewModel: LoginViewModel
+    loginViewModel: LoginViewModel,
+    historyViewModel: HistoryViewModel
 ) {
     val navController = LocalNavController.current
     val mainUiState = mainViewModel.uiState.collectAsState().value
@@ -56,6 +60,7 @@ fun NavHost(
             mainGraph(mainViewModel)
             loginGraph(loginViewModel)
             settingGraph()
+            historyGraph(historyViewModel)
         }
     }
     val context = LocalContext.current
@@ -86,7 +91,7 @@ fun NavGraphBuilder.mainGraph(mainViewModel: MainViewModel) {
                 TrainActivity.start()
             },
             onTrainingRecordsClick = {
-                HistoryActivity.start()
+                navController.navigate(Screen.History.route)
             },
             onSettingClick = {
                 navController.navigate(Screen.Setting.route)
@@ -130,6 +135,30 @@ fun NavGraphBuilder.settingGraph() {
             mutableStateOf(context.packageManager.getPackageInfo(context.packageName, 0).versionName)
         }
         SettingScreen(version)
+        BackHandler {
+            navController.navigateUp()
+        }
+    }
+}
+
+fun NavGraphBuilder.historyGraph(historyViewModel: HistoryViewModel) {
+    composable(Screen.History.route) {
+        val historyUiState = historyViewModel.uiState.collectAsState().value
+        val navController = LocalNavController.current
+        LaunchedEffect(true) {
+            historyViewModel.getHistory()
+        }
+        HistoryScreen(showTime = historyUiState.showTime, orderInfoList = historyUiState.orderInfoList,
+            onPreClick = {
+                historyViewModel.getPreTime()
+            },
+            onNextClick = {
+                historyViewModel.getNextTime()
+            },
+            onItemClick = {
+                ReportActivity.start(it.orderId)
+            }
+        )
         BackHandler {
             navController.navigateUp()
         }

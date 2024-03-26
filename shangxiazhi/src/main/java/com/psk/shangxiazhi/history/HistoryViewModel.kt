@@ -1,14 +1,11 @@
 package com.psk.shangxiazhi.history
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.psk.shangxiazhi.data.model.OrderInfo
 import com.psk.shangxiazhi.data.source.OrderInfoRepository
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 
 class HistoryViewModel(
@@ -19,22 +16,20 @@ class HistoryViewModel(
     private lateinit var datas: Map<String, List<OrderInfo>>// key:年月
     private val sdf = SimpleDateFormat("yyyy年MM月")
 
-    init {
-        viewModelScope.launch(Dispatchers.IO) {
-            val orderList = orderInfoRepository.getAll()
-            if (orderList.isNullOrEmpty()) {
-                return@launch
-            }
-            datas = orderList.groupBy {
-                sdf.format(it.createTime)
-            }
-            _uiState.update {
-                val key = datas.keys.lastOrNull()
-                val value = datas[key]
-                it.copy(
-                    showTime = key, orderInfoList = value
-                )
-            }
+    suspend fun getHistory() {
+        val orderList = orderInfoRepository.getAll()
+        if (orderList.isNullOrEmpty()) {
+            return
+        }
+        datas = orderList.groupBy {
+            sdf.format(it.createTime)
+        }
+        _uiState.update {
+            val key = datas.keys.lastOrNull() ?: ""
+            val value = datas[key]
+            it.copy(
+                showTime = key, orderInfoList = value
+            )
         }
     }
 

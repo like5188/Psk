@@ -42,10 +42,6 @@
             android:exported="false"
             android:screenOrientation="landscape" />
         <activity
-            android:name=".history.HistoryActivity"
-            android:exported="false"
-            android:screenOrientation="landscape" />
-        <activity
             android:name=".train.TrainActivity"
             android:exported="false"
             android:screenOrientation="landscape" />
