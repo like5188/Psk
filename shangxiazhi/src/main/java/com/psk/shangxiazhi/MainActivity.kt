@@ -1,10 +1,10 @@
 package com.psk.shangxiazhi
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.psk.shangxiazhi.history.HistoryViewModel
@@ -19,7 +19,7 @@ val LocalNavController = staticCompositionLocalOf<NavHostController> {
     error("no NavController provided!")
 }
 
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
     private val mainViewModel: MainViewModel by viewModel()
     private val loginViewModel: LoginViewModel by viewModel()
     private val historyViewModel: HistoryViewModel by viewModel()

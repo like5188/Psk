@@ -12,12 +12,11 @@ import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
-import com.like.ble.central.util.PermissionUtils
 import com.like.common.util.ToastEvent
 import com.like.common.util.mvi.Event
 import com.psk.device.data.model.DeviceType
+import com.psk.shangxiazhi.data.model.BleScanInfo
 import com.psk.shangxiazhi.data.model.HealthInfo
 import com.psk.shangxiazhi.data.model.OrderInfo
 import com.psk.shangxiazhi.data.model.ShangXiaZhiReport
@@ -76,26 +75,12 @@ class TrainViewModel(
         }
     }
 
-    fun selectDevices(activity: FragmentActivity) {
-        activity.lifecycleScope.launch {
-            if (PermissionUtils.requestScanEnvironment(activity)) {
-//                SelectDeviceDialogFragment.newInstance(_uiState.value.deviceMap).apply {
-//                    onSelected = { deviceMap ->
-//                        // 选择设备后，清空当前已经存在的数据。重新开始一个新的流程。
-//                        _uiState.update {
-//                            it.copy(
-//                                isTrainCompleted = false, deviceMap = deviceMap, healthInfo = HealthInfo(), scene = null, reports = null
-//                            )
-//                        }
-//                    }
-//                }.show(activity)
-            } else {
-                _uiState.update {
-                    it.copy(
-                        toastEvent = Event(ToastEvent(text = "无法选择设备！缺少扫描蓝牙设备需要的权限：位置信息、查找连接附近设备"))
-                    )
-                }
-            }
+    fun selectDevices(deviceMap: Map<DeviceType, BleScanInfo>) {
+        // 选择设备后，清空当前已经存在的数据。重新开始一个新的流程。
+        _uiState.update {
+            it.copy(
+                isTrainCompleted = false, deviceMap = deviceMap, healthInfo = HealthInfo(), scene = null, reports = null
+            )
         }
     }
 

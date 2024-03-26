@@ -17,6 +17,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.like.ble.central.util.PermissionUtils
 import com.like.common.util.showToast
 import com.psk.device.data.model.DeviceType
 import com.psk.shangxiazhi.LocalNavController
@@ -27,6 +28,7 @@ import com.psk.shangxiazhi.login.LoginViewModel
 import com.psk.shangxiazhi.main.MainScreen
 import com.psk.shangxiazhi.main.MainViewModel
 import com.psk.shangxiazhi.report.ReportActivity
+import com.psk.shangxiazhi.selectdevice.SelectDeviceScreen
 import com.psk.shangxiazhi.setting.SettingScreen
 import com.psk.shangxiazhi.train.TrainScreen
 import com.psk.shangxiazhi.train.TrainViewModel
@@ -41,6 +43,7 @@ sealed class Screen(val route: String) {
     object Setting : Screen("setting_screen")
     object History : Screen("history_screen")
     object Train : Screen("train_screen")
+    object SelectDevice : Screen("select_device_screen")
 }
 
 @Composable
@@ -70,6 +73,7 @@ fun NavHost(
             settingGraph()
             historyGraph(historyViewModel)
             trainGraph(trainViewModel)
+            selectDeviceGraph(trainViewModel)
         }
     }
     val context = LocalContext.current
@@ -172,6 +176,7 @@ fun NavGraphBuilder.historyGraph(historyViewModel: HistoryViewModel) {
 
 fun NavGraphBuilder.trainGraph(trainViewModel: TrainViewModel) {
     composable(Screen.Train.route) {
+        val scope = rememberCoroutineScope()
         val trainUiState = trainViewModel.uiState.collectAsState().value
         val navController = LocalNavController.current
         val context = LocalContext.current
@@ -208,7 +213,13 @@ fun NavGraphBuilder.trainGraph(trainViewModel: TrainViewModel) {
             bloodPressureBefore = trainUiState.healthInfo?.bloodPressureBefore?.toString() ?: "",
             bloodPressureMeasureType = bloodPressureMeasureType,
             onDeviceClick = {
-                trainViewModel.selectDevices(context as FragmentActivity)
+                scope.launch {
+                    if (PermissionUtils.requestScanEnvironment(context as FragmentActivity)) {
+                        navController.navigate(Screen.SelectDevice.route)
+                    } else {
+                        context.showToast("无法选择设备！缺少扫描蓝牙设备需要的权限：位置信息、查找连接附近设备")
+                    }
+                }
             },
             onSceneClick = {
                 trainViewModel.selectTrainScene(context as FragmentActivity)
@@ -263,6 +274,31 @@ fun NavGraphBuilder.trainGraph(trainViewModel: TrainViewModel) {
                 false
             }
             dialog.show()
+        }
+    }
+}
+
+fun NavGraphBuilder.selectDeviceGraph(trainViewModel: TrainViewModel) {
+    composable(Screen.SelectDevice.route) {
+        val navController = LocalNavController.current
+        val deviceTypes by remember {
+            mutableStateOf(
+                arrayOf(
+                    DeviceType.ShangXiaZhi,
+                    DeviceType.BloodOxygen,
+                    DeviceType.BloodPressure,
+                    DeviceType.HeartRate,
+                )
+            )
+        }
+        SelectDeviceScreen(
+            deviceTypes = deviceTypes,
+            selectedDeviceMap = trainViewModel.uiState.collectAsState().value.deviceMap?.toMutableMap()
+        ) {
+            trainViewModel.selectDevices(it)
+        }
+        BackHandler {
+            navController.navigateUp()
         }
     }
 }
