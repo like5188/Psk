@@ -51,7 +51,7 @@ fun SettingScreen(
                 Row(
                     modifier = Modifier
                         .clickable {}
-                        .padding(horizontal = 15.dp, vertical = 30.dp),
+                        .padding(horizontal = 30.dp, vertical = 30.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
