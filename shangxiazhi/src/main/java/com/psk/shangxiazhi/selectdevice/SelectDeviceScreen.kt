@@ -26,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -35,7 +36,6 @@ import com.psk.device.data.model.DeviceType
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.customui.BoxButton
 import com.psk.shangxiazhi.customui.Dialog
-import com.psk.shangxiazhi.customui.Title
 import com.psk.shangxiazhi.data.model.BleScanInfo
 
 @Preview(widthDp = 1920, heightDp = 1080)
@@ -76,7 +76,25 @@ fun SelectDeviceScreen(
                     .padding(horizontal = 48.dp, vertical = 27.dp),
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Title("选择设备")
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(
+                                text = "选择设备",
+                                style = MaterialTheme.typography.titleLarge,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                        Divider()
+                    }
                     deviceTypes.forEach {
                         var name by remember {
                             mutableStateOf(selectedDeviceMap?.get(it)?.name ?: "")
@@ -98,11 +116,11 @@ fun SelectDeviceScreen(
                             }
                         )
                     }
-                    Spacer(modifier = Modifier.height(100.dp))
+                    Spacer(modifier = Modifier.height(60.dp))
                     Button(
                         modifier = Modifier
-                            .width(500.dp)
-                            .height(60.dp),
+                            .width(300.dp)
+                            .height(40.dp),
                         onClick = {
                             if (selectedDeviceMap?.containsKey(DeviceType.ShangXiaZhi) == true) {
                                 onConfirmClick(selectedDeviceMap)
@@ -111,7 +129,7 @@ fun SelectDeviceScreen(
                             }
                         }
                     ) {
-                        Text(text = "确定", fontSize = 20.sp)
+                        Text(text = "确定", fontSize = 16.sp)
                     }
                 }
             }
@@ -129,28 +147,28 @@ private fun Item(name: String, des: String, onItemClick: () -> Unit = {}, onClea
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 30.dp, vertical = 30.dp),
+                .padding(horizontal = 15.dp, vertical = 15.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
                 modifier = Modifier.weight(1f),
                 text = des,
-                style = MaterialTheme.typography.headlineSmall,
+                style = MaterialTheme.typography.bodyLarge,
             )
             Text(
                 text = name.ifEmpty { "去选择 >" },
-                style = MaterialTheme.typography.headlineSmall,
+                style = MaterialTheme.typography.bodyLarge,
             )
             if (name.isNotEmpty()) {
-                Spacer(modifier = Modifier.width(20.dp))
+                Spacer(modifier = Modifier.width(10.dp))
                 BoxButton(
                     contentAlignment = Alignment.Center,
                     onClick = onClearClick,
                 ) { isPressed, isFocused ->
                     Icon(
                         modifier = Modifier
-                            .width(40.dp)
-                            .height(40.dp),
+                            .width(20.dp)
+                            .height(20.dp),
                         contentDescription = null,
                         painter = painterResource(id = R.drawable.ic_close),
                         tint = if (isPressed || isFocused) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface
