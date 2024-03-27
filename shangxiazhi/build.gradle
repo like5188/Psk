@@ -55,7 +55,7 @@ android {
 
     android.applicationVariants.all { variant ->
         variant.outputs.all {
-            outputFileName = "康复机系统-${defaultConfig.versionName}.apk"
+            outputFileName = "康复机系统-${defaultConfig.versionName}-${releaseTime()}.apk"
         }
     }
 
@@ -66,7 +66,9 @@ android {
     }
 }
 
-
+static def releaseTime() {
+    return new Date().format("yyyyMMddHHmmss", TimeZone.getTimeZone("GMT+8"))
+}
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
