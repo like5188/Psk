@@ -258,14 +258,15 @@ fun NavGraphBuilder.trainGraph(trainViewModel: TrainViewModel) {
                 )
             )
         }
-        SelectDeviceScreen(
-            showDialog = showSelectDeviceDialog,
-            onDismissRequest = { showSelectDeviceDialog = false },
-            deviceTypes = deviceTypes,
-            selectedDeviceMap = trainViewModel.uiState.collectAsState().value.deviceMap
-        ) {
-            showSelectDeviceDialog = it.isEmpty()
-            trainViewModel.selectDevices(it)
+        if (showSelectDeviceDialog) {
+            SelectDeviceScreen(
+                onDismissRequest = { showSelectDeviceDialog = false },
+                deviceTypes = deviceTypes,
+                selectedDeviceMap = trainViewModel.uiState.collectAsState().value.deviceMap
+            ) {
+                showSelectDeviceDialog = it.isEmpty()
+                trainViewModel.selectDevices(it)
+            }
         }
         if (trainUiState.isTrainCompleted) {
             // 训练完成

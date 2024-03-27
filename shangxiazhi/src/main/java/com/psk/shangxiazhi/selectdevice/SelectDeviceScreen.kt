@@ -42,7 +42,6 @@ import com.psk.shangxiazhi.data.model.BleScanInfo
 @Composable
 private fun SelectDeviceScreenPreview() {
     SelectDeviceScreen(
-        showDialog = true,
         deviceTypes = arrayOf(
             DeviceType.ShangXiaZhi,
             DeviceType.BloodOxygen,
@@ -60,15 +59,11 @@ private fun SelectDeviceScreenPreview() {
  */
 @Composable
 fun SelectDeviceScreen(
-    showDialog: Boolean,
     onDismissRequest: () -> Unit = {},
     deviceTypes: Array<DeviceType>,
     selectedDeviceMap: Map<DeviceType, BleScanInfo>? = null,
     onConfirmClick: (Map<DeviceType, BleScanInfo>) -> Unit = {},
 ) {
-    if (!showDialog) {
-        return
-    }
     val context = LocalContext.current
     val deviceMap by remember(selectedDeviceMap) {
         mutableStateOf(selectedDeviceMap?.toMutableMap() ?: mutableMapOf())
