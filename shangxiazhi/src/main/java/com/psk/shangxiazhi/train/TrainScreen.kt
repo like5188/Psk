@@ -79,7 +79,7 @@ fun TrainScreen(
     onBloodPressureMeasureTypeChanged: (Int) -> Unit = {},
     onTrainClick: () -> Unit = {},
 ) {
-    val devices by remember {
+    val devices by remember(selectedDeviceMap) {
         val sb = StringBuilder()
         selectedDeviceMap?.forEach {
             val deviceType = it.key
@@ -120,6 +120,7 @@ fun TrainScreen(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Spacer(modifier = Modifier.width(15.dp))
+                    println("devices: $devices")
                     Text(
                         modifier = Modifier.fillMaxWidth(),
                         text = devices.ifEmpty { "去选择 >" },

@@ -43,7 +43,6 @@ sealed class Screen(val route: String) {
     object Setting : Screen("setting_screen")
     object History : Screen("history_screen")
     object Train : Screen("train_screen")
-    object SelectDevice : Screen("select_device_screen")
 }
 
 @Composable
@@ -73,7 +72,6 @@ fun NavHost(
             settingGraph()
             historyGraph(historyViewModel)
             trainGraph(trainViewModel)
-            selectDeviceGraph(trainViewModel)
         }
     }
     val context = LocalContext.current
@@ -192,6 +190,9 @@ fun NavGraphBuilder.trainGraph(trainViewModel: TrainViewModel) {
         var bloodPressureMeasureType by remember {
             mutableStateOf(0)
         }
+        var showSelectDeviceDialog by remember {
+            mutableStateOf(false)
+        }
         TrainScreen(
             selectedDeviceMap = trainUiState.deviceMap,
             scene = trainUiState.scene?.des ?: "",
@@ -215,8 +216,9 @@ fun NavGraphBuilder.trainGraph(trainViewModel: TrainViewModel) {
             onDeviceClick = {
                 scope.launch {
                     if (PermissionUtils.requestScanEnvironment(context as FragmentActivity)) {
-                        navController.navigate(Screen.SelectDevice.route)
+                        showSelectDeviceDialog = true
                     } else {
+                        showSelectDeviceDialog = false
                         context.showToast("无法选择设备！缺少扫描蓝牙设备需要的权限：位置信息、查找连接附近设备")
                     }
                 }
@@ -246,6 +248,25 @@ fun NavGraphBuilder.trainGraph(trainViewModel: TrainViewModel) {
         BackHandler {
             navController.navigateUp()
         }
+        val deviceTypes by remember {
+            mutableStateOf(
+                arrayOf(
+                    DeviceType.ShangXiaZhi,
+                    DeviceType.BloodOxygen,
+                    DeviceType.BloodPressure,
+                    DeviceType.HeartRate,
+                )
+            )
+        }
+        SelectDeviceScreen(
+            showDialog = showSelectDeviceDialog,
+            onDismissRequest = { showSelectDeviceDialog = false },
+            deviceTypes = deviceTypes,
+            selectedDeviceMap = trainViewModel.uiState.collectAsState().value.deviceMap
+        ) {
+            showSelectDeviceDialog = it.isEmpty()
+            trainViewModel.selectDevices(it)
+        }
         if (trainUiState.isTrainCompleted) {
             // 训练完成
             // 如果没有血压仪
@@ -274,31 +295,6 @@ fun NavGraphBuilder.trainGraph(trainViewModel: TrainViewModel) {
                 false
             }
             dialog.show()
-        }
-    }
-}
-
-fun NavGraphBuilder.selectDeviceGraph(trainViewModel: TrainViewModel) {
-    composable(Screen.SelectDevice.route) {
-        val navController = LocalNavController.current
-        val deviceTypes by remember {
-            mutableStateOf(
-                arrayOf(
-                    DeviceType.ShangXiaZhi,
-                    DeviceType.BloodOxygen,
-                    DeviceType.BloodPressure,
-                    DeviceType.HeartRate,
-                )
-            )
-        }
-        SelectDeviceScreen(
-            deviceTypes = deviceTypes,
-            selectedDeviceMap = trainViewModel.uiState.collectAsState().value.deviceMap?.toMutableMap()
-        ) {
-            trainViewModel.selectDevices(it)
-        }
-        BackHandler {
-            navController.navigateUp()
         }
     }
 }

@@ -42,6 +42,7 @@ import com.psk.shangxiazhi.data.model.BleScanInfo
 @Composable
 private fun SelectDeviceScreenPreview() {
     SelectDeviceScreen(
+        showDialog = true,
         deviceTypes = arrayOf(
             DeviceType.ShangXiaZhi,
             DeviceType.BloodOxygen,
@@ -59,12 +60,20 @@ private fun SelectDeviceScreenPreview() {
  */
 @Composable
 fun SelectDeviceScreen(
+    showDialog: Boolean,
+    onDismissRequest: () -> Unit = {},
     deviceTypes: Array<DeviceType>,
-    selectedDeviceMap: MutableMap<DeviceType, BleScanInfo>? = null,
+    selectedDeviceMap: Map<DeviceType, BleScanInfo>? = null,
     onConfirmClick: (Map<DeviceType, BleScanInfo>) -> Unit = {},
 ) {
+    if (!showDialog) {
+        return
+    }
     val context = LocalContext.current
-    Dialog {
+    val deviceMap by remember(selectedDeviceMap) {
+        mutableStateOf(selectedDeviceMap?.toMutableMap() ?: mutableMapOf())
+    }
+    Dialog(onDismissRequest = onDismissRequest) {
         Surface(
             shape = RoundedCornerShape(10.dp),
             shadowElevation = 10.dp,
@@ -97,7 +106,7 @@ fun SelectDeviceScreen(
                     }
                     deviceTypes.forEach {
                         var name by remember {
-                            mutableStateOf(selectedDeviceMap?.get(it)?.name ?: "")
+                            mutableStateOf(deviceMap[it]?.name ?: "")
                         }
                         Item(
                             name = name,
@@ -105,14 +114,14 @@ fun SelectDeviceScreen(
                             onItemClick = {
                                 ScanDeviceDialogFragment.newInstance(it).apply {
                                     onSelected = { bleSanInfo ->
-                                        selectedDeviceMap?.set(it, bleSanInfo)
+                                        deviceMap[it] = bleSanInfo
                                         name = bleSanInfo.name
                                     }
                                 }.show(context as FragmentActivity)
                             },
                             onClearClick = {
                                 name = ""
-                                selectedDeviceMap?.remove(it)
+                                deviceMap.remove(it)
                             }
                         )
                     }
@@ -122,8 +131,8 @@ fun SelectDeviceScreen(
                             .width(300.dp)
                             .height(40.dp),
                         onClick = {
-                            if (selectedDeviceMap?.containsKey(DeviceType.ShangXiaZhi) == true) {
-                                onConfirmClick(selectedDeviceMap)
+                            if (deviceMap.containsKey(DeviceType.ShangXiaZhi)) {
+                                onConfirmClick(deviceMap)
                             } else {
                                 context.showToast("请先选择上下肢设备")
                             }
@@ -136,7 +145,6 @@ fun SelectDeviceScreen(
 
         }
     }
-
 }
 
 @Composable
