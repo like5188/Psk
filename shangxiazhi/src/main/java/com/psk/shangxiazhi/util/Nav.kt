@@ -18,6 +18,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.like.ble.central.util.PermissionUtils
 import com.like.common.util.showToast
 import com.psk.device.data.model.DeviceType
@@ -34,6 +35,7 @@ import com.psk.shangxiazhi.selectdevice.SelectDeviceScreen
 import com.psk.shangxiazhi.setting.SettingScreen
 import com.psk.shangxiazhi.train.TrainScreen
 import com.psk.shangxiazhi.train.TrainViewModel
+import com.twsz.twsystempre.TrainScene
 import kotlinx.coroutines.launch
 
 /**
@@ -45,7 +47,9 @@ sealed class Screen(val route: String) {
     object Setting : Screen("setting_screen")
     object History : Screen("history_screen")
     object Train : Screen("train_screen")
-    object Scene : Screen("scene_screen")
+    object Scene : Screen("scene_screen?selectedScene={selectedScene}") {
+        fun argsRoute(selectedScene: TrainScene?) = "scene_screen?selectedScene=$selectedScene"
+    }
 }
 
 @Composable
@@ -228,7 +232,7 @@ fun NavGraphBuilder.trainGraph(trainViewModel: TrainViewModel) {
                 }
             },
             onSceneClick = {
-                navController.navigate(Screen.Scene.route)
+                navController.navigate(Screen.Scene.argsRoute(trainUiState.scene))
             },
             onWeightChanged = {
                 trainViewModel.setWeight(it.toIntOrNull() ?: 0)
@@ -323,9 +327,20 @@ fun NavGraphBuilder.trainGraph(trainViewModel: TrainViewModel) {
 }
 
 fun NavGraphBuilder.sceneGraph(trainViewModel: TrainViewModel) {
-    composable(Screen.Scene.route) {
+    composable(
+        route = Screen.Scene.route,
+        arguments = listOf(navArgument("selectedScene") {})
+    ) {
         val navController = LocalNavController.current
-        SceneScreen {
+        SceneScreen(
+            selectedScene = when (it.arguments?.getString("selectedScene")) {
+                TrainScene.sea.name -> TrainScene.sea
+                TrainScene.dust.name -> TrainScene.dust
+                TrainScene.country.name -> TrainScene.country
+                TrainScene.lasa.name -> TrainScene.lasa
+                else -> null
+            }
+        ) {
             navController.navigateUp()
             trainViewModel.selectTrainScene(it)
         }

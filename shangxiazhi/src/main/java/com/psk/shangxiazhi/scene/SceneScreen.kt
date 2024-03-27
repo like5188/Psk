@@ -33,6 +33,7 @@ private fun SceneScreenPreview() {
  */
 @Composable
 fun SceneScreen(
+    selectedScene: TrainScene? = null,
     onClick: (TrainScene) -> Unit = {}
 ) {
     Bg(contentAlignment = Alignment.Center) {
@@ -51,7 +52,7 @@ fun SceneScreen(
                             .width(480.dp)
                             .height(340.dp),
                         painter = painterResource(
-                            id = if (isPressed || isFocused) R.drawable.scene_choose_01 else R.drawable.scene_normal_01
+                            id = if (isPressed || isFocused || selectedScene == TrainScene.country) R.drawable.scene_choose_01 else R.drawable.scene_normal_01
                         ),
                         contentScale = ContentScale.FillBounds,
                         contentDescription = null
@@ -73,7 +74,7 @@ fun SceneScreen(
                             .width(480.dp)
                             .height(340.dp),
                         painter = painterResource(
-                            id = if (isPressed || isFocused) R.drawable.scene_choose_02 else R.drawable.scene_normal_02
+                            id = if (isPressed || isFocused || selectedScene == TrainScene.dust) R.drawable.scene_choose_02 else R.drawable.scene_normal_02
                         ),
                         contentScale = ContentScale.FillBounds,
                         contentDescription = null
@@ -101,7 +102,7 @@ fun SceneScreen(
                             .width(480.dp)
                             .height(340.dp),
                         painter = painterResource(
-                            id = if (isPressed || isFocused) R.drawable.scene_choose_03 else R.drawable.scene_normal_03
+                            id = if (isPressed || isFocused || selectedScene == TrainScene.lasa) R.drawable.scene_choose_03 else R.drawable.scene_normal_03
                         ),
                         contentScale = ContentScale.FillBounds,
                         contentDescription = null
@@ -123,7 +124,7 @@ fun SceneScreen(
                             .width(480.dp)
                             .height(340.dp),
                         painter = painterResource(
-                            id = if (isPressed || isFocused) R.drawable.scene_choose_04 else R.drawable.scene_normal_04
+                            id = if (isPressed || isFocused || selectedScene == TrainScene.sea) R.drawable.scene_choose_04 else R.drawable.scene_normal_04
                         ),
                         contentScale = ContentScale.FillBounds,
                         contentDescription = null
