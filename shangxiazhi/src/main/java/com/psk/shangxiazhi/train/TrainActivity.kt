@@ -6,6 +6,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.lifecycleScope
 import com.like.common.util.gone
 import com.like.common.util.mvi.propertyCollector
 import com.like.common.util.showToast
@@ -15,6 +16,7 @@ import com.psk.common.CommonApplication
 import com.psk.device.data.model.DeviceType
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.databinding.ActivityTrainBinding
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
@@ -143,29 +145,31 @@ class TrainActivity : AppCompatActivity() {
                 if (!it) {
                     return@collectDistinctProperty
                 }
+                fun reportAndFinish() {
+                    lifecycleScope.launch {
+                        mViewModel.report()
+                        finish()
+                    }
+                }
                 // 训练完成
                 // 如果没有血压仪
                 if (mViewModel.uiState.value.deviceMap?.containsKey(DeviceType.BloodPressure) != true) {
-                    mViewModel.report()
-                    finish()
+                    reportAndFinish()
                     return@collectDistinctProperty
                 }
                 // 如果有血压仪
                 val dialog =
                     AlertDialog.Builder(this@TrainActivity).setMessage("是否进行运动后血压测试?").setNegativeButton("取消") { _, _ ->
-                        mViewModel.report()
-                        finish()
+                        reportAndFinish()
                     }.setPositiveButton("去测量") { _, _ ->
                         mViewModel.measureBloodPressureAfter(this@TrainActivity) {
-                            mViewModel.report()
-                            finish()
+                            reportAndFinish()
                         }
                     }.create()
                 dialog.setOnKeyListener { dialog, keyCode, event ->
                     // 返回键点击事件处理
                     if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
-                        mViewModel.report()
-                        finish()
+                        reportAndFinish()
                     }
                     false
                 }

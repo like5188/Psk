@@ -30,10 +30,12 @@ import com.psk.shangxiazhi.report.ReportActivity
 import com.psk.shangxiazhi.scene.SceneActivity
 import com.psk.shangxiazhi.selectdevice.SelectDeviceDialogFragment
 import com.twsz.twsystempre.TrainScene
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 
@@ -247,14 +249,14 @@ class TrainViewModel(
         }
     }
 
-    fun report() {
+    suspend fun report() = withContext(Dispatchers.IO) {
         if (!_uiState.value.isTrainCompleted) {
             _uiState.update {
                 it.copy(
                     toastEvent = Event(ToastEvent(text = "请先进行训练"))
                 )
             }
-            return
+            return@withContext
         }
         // 计算mets值
         val reports = _uiState.value.reports
@@ -279,12 +281,10 @@ class TrainViewModel(
                 )
             }
         }
-        viewModelScope.launch {
-            _uiState.value.healthInfo?.let {
-                orderInfoRepository.insert(OrderInfo(orderId = it.orderId))
-                healthInfoRepository.insert(it)
-                ReportActivity.start(it.orderId)
-            }
+        _uiState.value.healthInfo?.let {
+            orderInfoRepository.insert(OrderInfo(orderId = it.orderId))
+            healthInfoRepository.insert(it)
+            ReportActivity.start(it.orderId)
         }
     }
 
