@@ -1,8 +1,9 @@
 package com.psk.shangxiazhi.util
 
-import android.view.KeyEvent
 import androidx.activity.compose.BackHandler
-import androidx.appcompat.app.AlertDialog
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -268,34 +269,52 @@ fun NavGraphBuilder.trainGraph(trainViewModel: TrainViewModel) {
                 trainViewModel.selectDevices(it)
             }
         }
+        var showBloodPressureAfterDialog by remember(trainUiState.deviceMap) {
+            mutableStateOf(trainUiState.deviceMap?.containsKey(DeviceType.BloodPressure) == true)
+        }
+
+        fun report() {
+            trainViewModel.report()
+            navController.navigateUp()
+        }
         if (trainUiState.isTrainCompleted) {
             // 训练完成
             // 如果没有血压仪
-            if (trainUiState.deviceMap?.containsKey(DeviceType.BloodPressure) != true) {
-                trainViewModel.report()
-                navController.navigateUp()
-                return@composable
-            }
-            // 如果有血压仪
-            val dialog =
-                AlertDialog.Builder(context).setMessage("是否进行运动后血压测试?").setNegativeButton("取消") { _, _ ->
-                    trainViewModel.report()
-                    navController.navigateUp()
-                }.setPositiveButton("去测量") { _, _ ->
-                    trainViewModel.measureBloodPressureAfter(context as FragmentActivity) {
-                        trainViewModel.report()
-                        navController.navigateUp()
+            if (!showBloodPressureAfterDialog) {
+                report()
+            } else {
+                AlertDialog(
+                    title = {
+                        Text(text = "是否进行运动后血压测试?")
+                    },
+                    onDismissRequest = {
+                        showBloodPressureAfterDialog = false
+                        report()
+                    },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                showBloodPressureAfterDialog = false
+                                trainViewModel.measureBloodPressureAfter(context as FragmentActivity) {
+                                    report()
+                                }
+                            }
+                        ) {
+                            Text("去测量")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(
+                            onClick = {
+                                showBloodPressureAfterDialog = false
+                                report()
+                            }
+                        ) {
+                            Text("取消")
+                        }
                     }
-                }.create()
-            dialog.setOnKeyListener { dialog, keyCode, event ->
-                // 返回键点击事件处理
-                if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
-                    trainViewModel.report()
-                    navController.navigateUp()
-                }
-                false
+                )
             }
-            dialog.show()
         }
     }
 }
