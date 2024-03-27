@@ -7,9 +7,11 @@ import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -118,6 +120,32 @@ fun BoxButton(
             .focusable(interactionSource = isFocusedInteractionSource),
         contentAlignment = contentAlignment,
         propagateMinConstraints = propagateMinConstraints
+    ) {
+        content(isPressedInteractionSource.collectIsPressedAsState().value, isFocusedInteractionSource.collectIsFocusedAsState().value)
+    }
+}
+
+@Composable
+fun ColumnButton(
+    modifier: Modifier = Modifier,
+    verticalArrangement: Arrangement.Vertical = Arrangement.Top,
+    horizontalAlignment: Alignment.Horizontal = Alignment.Start,
+    onClick: () -> Unit = {},
+    content: @Composable ColumnScope.(Boolean, Boolean) -> Unit
+) {
+    // 获取按钮的状态
+    val isPressedInteractionSource = remember {
+        MutableInteractionSource()
+    }
+    val isFocusedInteractionSource = remember {
+        MutableInteractionSource()
+    }
+    Column(
+        modifier = modifier
+            .clickable(interactionSource = isPressedInteractionSource, indication = null, onClick = onClick)
+            .focusable(interactionSource = isFocusedInteractionSource),
+        verticalArrangement = verticalArrangement,
+        horizontalAlignment = horizontalAlignment
     ) {
         content(isPressedInteractionSource.collectIsPressedAsState().value, isFocusedInteractionSource.collectIsFocusedAsState().value)
     }

@@ -29,6 +29,7 @@ import com.psk.shangxiazhi.login.LoginViewModel
 import com.psk.shangxiazhi.main.MainScreen
 import com.psk.shangxiazhi.main.MainViewModel
 import com.psk.shangxiazhi.report.ReportActivity
+import com.psk.shangxiazhi.scene.SceneScreen
 import com.psk.shangxiazhi.selectdevice.SelectDeviceScreen
 import com.psk.shangxiazhi.setting.SettingScreen
 import com.psk.shangxiazhi.train.TrainScreen
@@ -44,6 +45,7 @@ sealed class Screen(val route: String) {
     object Setting : Screen("setting_screen")
     object History : Screen("history_screen")
     object Train : Screen("train_screen")
+    object Scene : Screen("scene_screen")
 }
 
 @Composable
@@ -73,6 +75,7 @@ fun NavHost(
             settingGraph()
             historyGraph(historyViewModel)
             trainGraph(trainViewModel)
+            sceneGraph(trainViewModel)
         }
     }
     val context = LocalContext.current
@@ -225,7 +228,7 @@ fun NavGraphBuilder.trainGraph(trainViewModel: TrainViewModel) {
                 }
             },
             onSceneClick = {
-                trainViewModel.selectTrainScene(context as FragmentActivity)
+                navController.navigate(Screen.Scene.route)
             },
             onWeightChanged = {
                 trainViewModel.setWeight(it.toIntOrNull() ?: 0)
@@ -315,6 +318,19 @@ fun NavGraphBuilder.trainGraph(trainViewModel: TrainViewModel) {
                     }
                 )
             }
+        }
+    }
+}
+
+fun NavGraphBuilder.sceneGraph(trainViewModel: TrainViewModel) {
+    composable(Screen.Scene.route) {
+        val navController = LocalNavController.current
+        SceneScreen {
+            navController.navigateUp()
+            trainViewModel.selectTrainScene(it)
+        }
+        BackHandler {
+            navController.navigateUp()
         }
     }
 }

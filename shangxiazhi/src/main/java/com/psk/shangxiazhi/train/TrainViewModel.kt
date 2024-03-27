@@ -1,14 +1,12 @@
 package com.psk.shangxiazhi.train
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
 import android.util.Log
-import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
@@ -26,7 +24,6 @@ import com.psk.shangxiazhi.game.GameManagerService
 import com.psk.shangxiazhi.measure.MeasureBloodPressureDialogFragment
 import com.psk.shangxiazhi.measure.MeasureTargetHeartRateDialogFragment
 import com.psk.shangxiazhi.report.ReportActivity
-import com.psk.shangxiazhi.scene.SceneActivity
 import com.twsz.twsystempre.TrainScene
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -84,16 +81,11 @@ class TrainViewModel(
         }
     }
 
-    fun selectTrainScene(activity: ComponentActivity) {
-        SceneActivity.start(activity) { activityResult ->
-            if (activityResult.resultCode != Activity.RESULT_OK) {
-                return@start
-            }
-            _uiState.update {
-                it.copy(
-                    scene = activityResult.data?.getSerializableExtra(SceneActivity.KEY_SCENE) as? TrainScene
-                )
-            }
+    fun selectTrainScene(scene: TrainScene) {
+        _uiState.update {
+            it.copy(
+                scene = scene
+            )
         }
     }
 

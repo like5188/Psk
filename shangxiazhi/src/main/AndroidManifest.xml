@@ -34,10 +34,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".scene.SceneActivity"
-            android:exported="false"
-            android:screenOrientation="landscape" />
-        <activity
             android:name=".report.ReportActivity"
             android:exported="false"
             android:screenOrientation="landscape" />
