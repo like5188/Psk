@@ -10,7 +10,7 @@ android {
         minSdkVersion 23
         targetSdkVersion 33
         versionCode 1
-        versionName "1.0.0"
+        versionName "1.0.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -28,7 +28,7 @@ android {
 
     android.libraryVariants.all { variant ->
         variant.outputs.all {
-            outputFileName = "${model.name}-${defaultConfig.versionName}.aar"
+            outputFileName = "ecg-${defaultConfig.versionName}.aar"
         }
     }
 

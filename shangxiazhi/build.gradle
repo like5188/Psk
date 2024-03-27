@@ -12,7 +12,7 @@ android {
         minSdk 25// remotecommands-release 要求
         targetSdk 32
         versionCode 1
-        versionName "V1.0.0"
+        versionName "V1.0.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -66,6 +66,8 @@ android {
     }
 }
 
+
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
@@ -73,7 +75,7 @@ dependencies {
     // room
     kapt 'androidx.room:room-compiler:2.4.3'
 
-    implementation(name: 'game-aidl-1.0.0', ext: 'aar')
+    implementation(name: 'game-aidl-1.0.1', ext: 'aar')
     implementation(name: 'Pad1601Pwd-debug', ext: 'aar')
 
     implementation 'me.jessyan:autosize:1.2.1'
