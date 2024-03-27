@@ -48,7 +48,7 @@ private fun SelectDeviceScreenPreview() {
             DeviceType.BloodPressure,
             DeviceType.HeartRate,
         ),
-        selectedDeviceMap = mutableMapOf(
+        selectedDeviceMap = mapOf(
             DeviceType.ShangXiaZhi to BleScanInfo("上下肢名称", "AA:AA")
         )
     )
