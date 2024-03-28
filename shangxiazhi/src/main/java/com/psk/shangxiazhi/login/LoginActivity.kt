@@ -3,6 +3,7 @@ package com.psk.shangxiazhi.login
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import com.like.common.util.SoftKeyboardUtils
 import com.like.common.util.mvi.propertyCollector
 import com.like.common.util.showToast
 import com.like.common.util.startActivity
@@ -34,6 +35,9 @@ class LoginActivity : AppCompatActivity() {
             val serialNumber = mBinding.tvSerialNumber.text.toString().trim()
             val code = mBinding.etCode.text.toString().trim()
             mViewModel.login(serialNumber, code)
+        }
+        mBinding.etCode.setOnClickListener {
+            SoftKeyboardUtils.show(mBinding.etCode)
         }
         collectUiState()
     }
