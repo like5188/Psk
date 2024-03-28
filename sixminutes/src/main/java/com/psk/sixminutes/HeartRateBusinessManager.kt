@@ -36,7 +36,7 @@ class HeartRateBusinessManager {
         activity.lifecycleScope.launch {
             PermissionUtils.requestConnectEnvironment(activity)
             heartRateRepository.connect(activity.lifecycleScope, 0L, {
-                activity.showToast("心电仪连接成功，开始测量")
+                activity.showToast("心电仪连接成功")
                 heartRateJob = activity.lifecycleScope.launch {
                     heartRateRepository.fetch().filterNotNull().map {
                         it.coorYValues
@@ -46,7 +46,7 @@ class HeartRateBusinessManager {
                     }
                 }
             }) {
-                activity.showToast("心电仪连接失败，无法进行测量")
+                activity.showToast("心电仪连接失败")
                 heartRateJob?.cancel()
                 heartRateJob = null
             }
