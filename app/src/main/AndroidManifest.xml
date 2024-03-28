@@ -20,6 +20,9 @@
         <activity
             android:name="com.psk.app.pdf.PdfActivity"
             android:exported="false" />
+        <activity
+            android:name="com.psk.app.sixminutes.SixMinutesActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

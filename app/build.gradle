@@ -57,4 +57,5 @@ dependencies {
     implementation project(':device')
     implementation project(':pdf')
     implementation project(':ecg')
+    implementation project(':sixminutes')
 }

@@ -13,6 +13,7 @@ import com.like.common.util.dp
 import com.like.common.util.showToast
 import com.psk.app.databinding.ActivityMainBinding
 import com.psk.app.pdf.PdfActivity
+import com.psk.app.sixminutes.SixMinutesActivity
 import com.psk.device.DeviceRepositoryManager
 import com.psk.device.data.model.DeviceType
 import com.psk.device.data.source.HeartRateRepository
@@ -37,6 +38,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        mBinding.btnSixMinutes.setOnClickListener {
+            startActivity(Intent(this, SixMinutesActivity::class.java))
+        }
         mBinding.btnPdf.setOnClickListener {
             startActivity(Intent(this, PdfActivity::class.java))
         }
