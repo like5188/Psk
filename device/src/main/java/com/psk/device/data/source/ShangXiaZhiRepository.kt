@@ -25,6 +25,9 @@ class ShangXiaZhiRepository : BaseBleDeviceRepository<BaseShangXiaZhiDataSource>
         return dbDataSource.getByOrderId(orderId)
     }
 
+    /**
+     * 注意返回的是热流
+     */
     fun getFlow(scope: CoroutineScope, orderId: Long): Flow<ShangXiaZhi> {
         scope.launch(Dispatchers.IO) {
             bleDeviceDataSource.fetch(orderId).collect {
@@ -34,6 +37,9 @@ class ShangXiaZhiRepository : BaseBleDeviceRepository<BaseShangXiaZhiDataSource>
         return dbDataSource.listenLatest(System.currentTimeMillis()).filterNotNull()
     }
 
+    /**
+     * 注意返回的是冷流
+     */
     fun fetch(): Flow<ShangXiaZhi> {
         return bleDeviceDataSource.fetch(-1)
     }

@@ -23,6 +23,9 @@ class HeartRateRepository : BaseBleDeviceRepository<BaseHeartRateDataSource>(Dev
         return dbDataSource.getByOrderId(orderId)
     }
 
+    /**
+     * 注意返回的是热流
+     */
     fun getFlow(scope: CoroutineScope, orderId: Long): Flow<HeartRate> {
         scope.launch(Dispatchers.IO) {
             bleDeviceDataSource.fetch(orderId).collect {
@@ -32,6 +35,9 @@ class HeartRateRepository : BaseBleDeviceRepository<BaseHeartRateDataSource>(Dev
         return dbDataSource.listenLatest(System.currentTimeMillis()).filterNotNull()
     }
 
+    /**
+     * 注意返回的是冷流
+     */
     fun fetch(): Flow<HeartRate> {
         return bleDeviceDataSource.fetch(-1)
     }

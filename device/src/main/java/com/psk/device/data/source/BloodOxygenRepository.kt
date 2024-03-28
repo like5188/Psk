@@ -25,6 +25,9 @@ class BloodOxygenRepository : BaseBleDeviceRepository<BaseBloodOxygenDataSource>
         return dbDataSource.getByOrderId(orderId)
     }
 
+    /**
+     * 注意返回的是热流
+     */
     fun getFlow(scope: CoroutineScope, orderId: Long, interval: Long): Flow<BloodOxygen> {
         scope.launch(Dispatchers.IO) {
             while (isActive) {

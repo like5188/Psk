@@ -25,6 +25,9 @@ class BloodPressureRepository : BaseBleDeviceRepository<BaseBloodPressureDataSou
         return dbDataSource.getByOrderId(orderId)
     }
 
+    /**
+     * 注意返回的是热流
+     */
     fun getFetchFlow(scope: CoroutineScope, orderId: Long, interval: Long): Flow<BloodPressure> {
         scope.launch(Dispatchers.IO) {
             while (isActive) {
@@ -38,6 +41,9 @@ class BloodPressureRepository : BaseBleDeviceRepository<BaseBloodPressureDataSou
         return dbDataSource.listenLatest(System.currentTimeMillis()).filterNotNull()
     }
 
+    /**
+     * 注意返回的是热流
+     */
     fun getMeasureFlow(scope: CoroutineScope, orderId: Long, interval: Long): Flow<BloodPressure> {
         scope.launch(Dispatchers.IO) {
             delay(100)// 这里必须延迟一下，否则在机顶盒上，会出现连接成功开始测量失败。
