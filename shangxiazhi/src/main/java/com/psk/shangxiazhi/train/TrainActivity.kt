@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
+import com.like.common.util.SoftKeyboardUtils
 import com.like.common.util.gone
 import com.like.common.util.mvi.propertyCollector
 import com.like.common.util.showToast
@@ -76,6 +77,12 @@ class TrainActivity : AppCompatActivity() {
             if (hasFocus) {
                 mBinding.etAge.requestFocus()
             }
+        }
+        mBinding.etWeight.setOnClickListener {
+            SoftKeyboardUtils.show(mBinding.etWeight)
+        }
+        mBinding.etAge.setOnClickListener {
+            SoftKeyboardUtils.show(mBinding.etAge)
         }
         mBinding.deviceCardView.requestFocus()// 避免 NestedScrollView 抢焦点
         collectUiState()
