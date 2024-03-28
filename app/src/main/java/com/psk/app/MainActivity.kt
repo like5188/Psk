@@ -115,7 +115,9 @@ class MainActivity : AppCompatActivity() {
 //            repository.init(this, "ER1 0514", "CB:5D:19:C4:C3:A5")
             repository.init(this, "C00228000695", "C0:02:28:00:06:95")
             lifecycleScope.launch {
-                PermissionUtils.requestConnectEnvironment(this@MainActivity)
+                if (!PermissionUtils.requestConnectEnvironment(this@MainActivity)) {
+                    return@launch
+                }
                 repository.connect(lifecycleScope, 0L, {
                     showToast("心电仪连接成功，开始测量")
                     job = lifecycleScope.launch {

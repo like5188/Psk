@@ -1,9 +1,7 @@
 package com.psk.sixminutes
 
 import android.content.Context
-import androidx.activity.ComponentActivity
-import androidx.lifecycle.lifecycleScope
-import com.like.ble.central.util.PermissionUtils
+import androidx.lifecycle.LifecycleCoroutineScope
 import com.like.common.util.showToast
 import com.psk.device.DeviceRepositoryManager
 import com.psk.device.data.model.DeviceType
@@ -31,13 +29,12 @@ class HeartRateBusinessManager {
         return heartRateRepository.getSampleRate()
     }
 
-    fun connect(activity: ComponentActivity, onResult: (List<List<Float>>) -> Unit) {
+    fun connect(context: Context, lifecycleScope: LifecycleCoroutineScope, onResult: (List<List<Float>>) -> Unit) {
         checkInit()
-        activity.lifecycleScope.launch {
-            PermissionUtils.requestConnectEnvironment(activity)
-            heartRateRepository.connect(activity.lifecycleScope, 0L, {
-                activity.showToast("心电仪连接成功")
-                heartRateJob = activity.lifecycleScope.launch {
+        lifecycleScope.launch {
+            heartRateRepository.connect(lifecycleScope, 0L, {
+                context.showToast("心电仪连接成功")
+                heartRateJob = lifecycleScope.launch {
                     heartRateRepository.fetch().filterNotNull().map {
                         it.coorYValues
                     }.buffer(Int.MAX_VALUE).collect {
@@ -46,7 +43,7 @@ class HeartRateBusinessManager {
                     }
                 }
             }) {
-                activity.showToast("心电仪连接失败")
+                context.showToast("心电仪连接失败")
                 heartRateJob?.cancel()
                 heartRateJob = null
             }
@@ -54,10 +51,13 @@ class HeartRateBusinessManager {
     }
 
     fun disconnect() {
-        checkInit()
         heartRateJob?.cancel()
         heartRateJob = null
-        heartRateRepository.close()
+        // 避免未初始化时调用报错
+        try {
+            heartRateRepository.close()
+        } catch (e: Exception) {
+        }
     }
 
     private fun checkInit() {

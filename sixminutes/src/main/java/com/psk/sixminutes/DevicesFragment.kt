@@ -10,7 +10,9 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
+import com.like.ble.central.util.PermissionUtils
 import com.like.common.base.BaseLazyFragment
+import com.like.common.util.Logger
 import com.like.common.util.dp
 import com.psk.device.DeviceRepositoryManager
 import com.psk.device.data.model.DeviceType
@@ -49,10 +51,6 @@ class DevicesFragment : BaseLazyFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_devices, container, false)
-        lifecycleScope.launch {
-            DeviceRepositoryManager.init(requireContext())
-        }
-
         mBinding.tv.text = "25 mm/s    10mm/mV"
         mBinding.ecgChartView.apply {
             setGridSize(10f.dp)
@@ -87,16 +85,34 @@ class DevicesFragment : BaseLazyFragment() {
     }
 
     override fun onLazyLoadData() {
-        arguments?.getLong(KEY_ID)?.apply {
-            println("id: $this")
+        val id = arguments?.getLong(KEY_ID)
+        val devices = (arguments?.getSerializable(KEY_DEVICES) as? Map<DeviceType, Pair<String, String>>)
+        if (id == null || devices.isNullOrEmpty()) {
+            return
         }
-        (arguments?.getSerializable(KEY_DEVICES) as? Map<DeviceType, Pair<String, String>>)?.forEach {
-            println("${it.key} -> ${it.value.first} - ${it.value.second}")
-            if (it.key == DeviceType.HeartRate) {
-                heartRateBusinessManager.init(requireContext(), it.value.first, it.value.second)
-                mBinding.ecgChartView.setSampleRate(heartRateBusinessManager.getSampleRate())
-                heartRateBusinessManager.connect(requireActivity()) {
-                    mBinding.ecgChartView.addData(it)
+        Logger.i("id=$id")
+        lifecycleScope.launch {
+            if (!PermissionUtils.requestConnectEnvironment(requireActivity())) {
+                return@launch
+            }
+            DeviceRepositoryManager.init(requireContext())
+            devices.forEach {
+                val deviceType = it.key
+                val name = it.value.first
+                val address = it.value.second
+                Logger.i("deviceType=$deviceType, name=$name, address=$address")
+                when (deviceType) {
+                    DeviceType.HeartRate -> {
+                        heartRateBusinessManager.init(requireContext(), name, address)
+                        mBinding.ecgChartView.setSampleRate(heartRateBusinessManager.getSampleRate())
+                        heartRateBusinessManager.connect(requireContext(), lifecycleScope) {
+                            mBinding.ecgChartView.addData(it)
+                        }
+                    }
+
+                    else -> {
+                        Logger.e("不支持的设备类型: $deviceType")
+                    }
                 }
             }
         }
