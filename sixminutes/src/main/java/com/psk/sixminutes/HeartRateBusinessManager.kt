@@ -8,6 +8,7 @@ import com.psk.device.data.model.DeviceType
 import com.psk.device.data.source.HeartRateRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.buffer
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -29,17 +30,31 @@ class HeartRateBusinessManager {
         return repository.getSampleRate()
     }
 
-    fun connect(context: Context, lifecycleScope: LifecycleCoroutineScope, onResult: (List<List<Float>>) -> Unit) {
+    fun connect(
+        context: Context,
+        orderId: Long,
+        lifecycleScope: LifecycleCoroutineScope,
+        onHeartRateResult: (Int) -> Unit,
+        onEcgResult: (List<List<Float>>) -> Unit
+    ) {
         checkInit()
         lifecycleScope.launch {
             repository.connect(lifecycleScope, 0L, {
                 context.showToast("心电仪连接成功")
+                val flow = repository.getFlow(lifecycleScope, orderId).filterNotNull()
                 job = lifecycleScope.launch {
-                    repository.fetch().filterNotNull().map {
+                    launch {
+                        flow.map {
+                            it.value
+                        }.distinctUntilChanged().collect { value ->
+                            onHeartRateResult(value)
+                        }
+                    }
+                    flow.map {
                         it.coorYValues
                     }.buffer(Int.MAX_VALUE).collect {
                         // 取反，因为如果不处理，画出的波形图是反的
-                        onResult(listOf(it.map { -it }))
+                        onEcgResult(listOf(it.map { -it }))
                     }
                 }
             }) {

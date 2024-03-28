@@ -51,8 +51,8 @@ class DevicesFragment : BaseLazyFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_devices, container, false)
-        mBinding.tv.text = "25 mm/s    10mm/mV"
-        mBinding.ecgChartView.apply {
+        mBinding.tvEcgParams.text = "25 mm/s    10mm/mV"
+        mBinding.ecgView.apply {
             setGridSize(10f.dp)
             setBgPainter(BgPainter(Paint().apply {
                 color = Color.parseColor("#00a7ff")
@@ -104,9 +104,11 @@ class DevicesFragment : BaseLazyFragment() {
                 when (deviceType) {
                     DeviceType.HeartRate -> {
                         heartRateBusinessManager.init(requireContext(), name, address)
-                        mBinding.ecgChartView.setSampleRate(heartRateBusinessManager.getSampleRate())
-                        heartRateBusinessManager.connect(requireContext(), lifecycleScope) {
-                            mBinding.ecgChartView.addData(it)
+                        mBinding.ecgView.setSampleRate(heartRateBusinessManager.getSampleRate())
+                        heartRateBusinessManager.connect(requireContext(), id, lifecycleScope, onHeartRateResult = {
+                            mBinding.tvHeartRate.text = it.toString()
+                        }) {
+                            mBinding.ecgView.addData(it)
                         }
                     }
 
