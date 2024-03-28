@@ -48,6 +48,9 @@ class DevicesFragment : BaseLazyFragment() {
     private val heartRateBusinessManager by lazy {
         HeartRateBusinessManager()
     }
+    private val bloodOxygenBusinessManager by lazy {
+        BloodOxygenBusinessManager()
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_devices, container, false)
@@ -109,6 +112,13 @@ class DevicesFragment : BaseLazyFragment() {
                             mBinding.tvHeartRate.text = it.toString()
                         }) {
                             mBinding.ecgView.addData(it)
+                        }
+                    }
+
+                    DeviceType.BloodOxygen -> {
+                        bloodOxygenBusinessManager.init(requireContext(), name, address)
+                        bloodOxygenBusinessManager.connect(requireContext(), id, lifecycleScope) {
+                            mBinding.tvBloodOxygen.text = it.toString()
                         }
                     }
 
