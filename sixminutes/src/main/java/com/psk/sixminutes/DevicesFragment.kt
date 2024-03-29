@@ -51,6 +51,9 @@ class DevicesFragment : BaseLazyFragment() {
     private val bloodOxygenBusinessManager by lazy {
         BloodOxygenBusinessManager()
     }
+    private val bloodPressureBusinessManager by lazy {
+        BloodPressureBusinessManager()
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_devices, container, false)
@@ -83,6 +86,17 @@ class DevicesFragment : BaseLazyFragment() {
                 )
             )
             setLeadsNames(listOf("I", "II", "III", "aVR", "aVL", "aVF", "V1", "V2", "V3", "V4", "V5", "V6"))
+        }
+        mBinding.btnBloodPressure.setOnClickListener {
+            lifecycleScope.launch {
+                if (!PermissionUtils.requestConnectEnvironment(requireActivity())) {
+                    return@launch
+                }
+                bloodPressureBusinessManager.connect(requireContext(), lifecycleScope) { sbp, dbp ->
+                    mBinding.tvBloodPressureSbp.text = sbp.toString()
+                    mBinding.tvBloodPressureDbp.text = dbp.toString()
+                }
+            }
         }
         return mBinding.root
     }
@@ -120,6 +134,10 @@ class DevicesFragment : BaseLazyFragment() {
                         bloodOxygenBusinessManager.connect(requireContext(), id, lifecycleScope) {
                             mBinding.tvBloodOxygen.text = it.toString()
                         }
+                    }
+
+                    DeviceType.BloodPressure -> {
+                        bloodPressureBusinessManager.init(requireContext(), name, address)
                     }
 
                     else -> {
