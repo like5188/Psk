@@ -87,15 +87,23 @@ class DevicesFragment : BaseLazyFragment() {
             )
             setLeadsNames(listOf("I", "II", "III", "aVR", "aVL", "aVF", "V1", "V2", "V3", "V4", "V5", "V6"))
         }
-        mBinding.btnBloodPressure.setOnClickListener {
+        mBinding.btnBloodPressureStart.setOnClickListener {
             lifecycleScope.launch {
                 if (!PermissionUtils.requestConnectEnvironment(requireActivity())) {
                     return@launch
                 }
-                bloodPressureBusinessManager.connect(requireContext(), lifecycleScope) { sbp, dbp ->
+                bloodPressureBusinessManager.measure(requireContext(), lifecycleScope) { sbp, dbp ->
                     mBinding.tvBloodPressureSbp.text = sbp.toString()
                     mBinding.tvBloodPressureDbp.text = dbp.toString()
                 }
+            }
+        }
+        mBinding.btnBloodPressureStop.setOnClickListener {
+            lifecycleScope.launch {
+                if (!PermissionUtils.requestConnectEnvironment(requireActivity())) {
+                    return@launch
+                }
+                bloodPressureBusinessManager.stopMeasure()
             }
         }
         return mBinding.root
@@ -152,6 +160,7 @@ class DevicesFragment : BaseLazyFragment() {
         super.onDestroy()
         heartRateBusinessManager.disconnect()
         bloodOxygenBusinessManager.disconnect()
+        bloodPressureBusinessManager.disconnect()
     }
 
 }

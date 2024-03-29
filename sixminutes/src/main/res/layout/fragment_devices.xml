@@ -27,11 +27,19 @@
                 android:textSize="24sp" />
 
             <Button
-                android:id="@+id/btnBloodPressure"
+                android:id="@+id/btnBloodPressureStart"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="开始测量血压"
+                android:textSize="24sp" />
+
+            <Button
+                android:id="@+id/btnBloodPressureStop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="停止测量血压"
                 android:textSize="24sp" />
         </LinearLayout>
 

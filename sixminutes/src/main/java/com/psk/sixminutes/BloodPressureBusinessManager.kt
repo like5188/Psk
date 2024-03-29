@@ -6,9 +6,12 @@ import com.like.common.util.showToast
 import com.psk.device.DeviceRepositoryManager
 import com.psk.device.data.model.DeviceType
 import com.psk.device.data.source.BloodPressureRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
 
 class BloodPressureBusinessManager {
@@ -22,7 +25,7 @@ class BloodPressureBusinessManager {
         }
     }
 
-    fun connect(
+    fun measure(
         context: Context,
         lifecycleScope: LifecycleCoroutineScope,
         onBloodPressureResult: (Int, Int) -> Unit,
@@ -42,6 +45,13 @@ class BloodPressureBusinessManager {
                 }
             }
         }
+    }
+
+    suspend fun stopMeasure() = withContext(Dispatchers.IO) {
+        job?.cancelAndJoin()// 这里必须等待上一条命令执行完毕，否则会导致stopMeasure失败
+        job = null
+        delay(100)
+        repository.stopMeasure()
     }
 
     private fun startJob(context: Context, lifecycleScope: LifecycleCoroutineScope, onBloodPressureResult: (Int, Int) -> Unit) {
