@@ -10,6 +10,8 @@ android {
     defaultConfig {
         minSdk 23
         targetSdk 32
+        versionCode 1
+        versionName "1.0.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -23,6 +25,13 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    android.libraryVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "device-${defaultConfig.versionName}.aar"
+        }
+    }
+
     repositories {
         flatDir {
             dirs 'libs'
