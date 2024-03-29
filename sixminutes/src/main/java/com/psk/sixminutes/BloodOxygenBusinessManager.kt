@@ -33,7 +33,7 @@ class BloodOxygenBusinessManager {
         lifecycleScope.launch {
             repository.connect(lifecycleScope, 0L, {
                 context.showToast("血氧仪连接成功")
-                val flow = repository.getFlow(this, orderId, 1000)
+                val flow = repository.getFlow(lifecycleScope, orderId, 1000)
                 job = lifecycleScope.launch {
                     flow.distinctUntilChanged().conflate().collect { value ->
                         onBloodOxygenResult(value.value)

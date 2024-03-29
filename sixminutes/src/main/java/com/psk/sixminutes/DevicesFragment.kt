@@ -133,6 +133,7 @@ class DevicesFragment : BaseLazyFragment() {
     override fun onDestroy() {
         super.onDestroy()
         heartRateBusinessManager.disconnect()
+        bloodOxygenBusinessManager.disconnect()
     }
 
 }
