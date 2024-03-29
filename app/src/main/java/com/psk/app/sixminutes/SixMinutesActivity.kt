@@ -22,7 +22,7 @@ class SixMinutesActivity : AppCompatActivity() {
             mapOf(
 //                DeviceType.HeartRate to ("ER1 0455" to "E3:93:39:05:53:94"),
 //                DeviceType.BloodOxygen to ("O2 0382" to "C8:0C:CA:B3:E9:16"),
-                DeviceType.BloodPressure to ("BP0282A2210040460" to "A4:C1:38:54:12:2D"),
+                DeviceType.BloodPressure to ("BP0282A2210040254" to "A4:C1:38:43:1F:8B"),
             )
         )
         addFragments(R.id.flContainer, 0, devicesFragment)
