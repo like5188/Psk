@@ -10,11 +10,9 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
-import com.like.ble.central.util.PermissionUtils
 import com.like.common.base.BaseLazyFragment
 import com.like.common.util.Logger
 import com.like.common.util.dp
-import com.psk.device.DeviceRepositoryManager
 import com.psk.device.data.model.DeviceType
 import com.psk.ecg.effect.CirclePathEffect
 import com.psk.ecg.painter.BgPainter
@@ -45,14 +43,8 @@ class DevicesFragment : BaseLazyFragment() {
     }
 
     private lateinit var mBinding: FragmentDevicesBinding
-    private val heartRateBusinessManager by lazy {
-        HeartRateBusinessManager()
-    }
-    private val bloodOxygenBusinessManager by lazy {
-        BloodOxygenBusinessManager()
-    }
-    private val bloodPressureBusinessManager by lazy {
-        BloodPressureBusinessManager()
+    private val multiBusinessManager by lazy {
+        MultiBusinessManager()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -89,10 +81,7 @@ class DevicesFragment : BaseLazyFragment() {
         }
         mBinding.btnBloodPressureStart.setOnClickListener {
             lifecycleScope.launch {
-                if (!PermissionUtils.requestConnectEnvironment(requireActivity())) {
-                    return@launch
-                }
-                bloodPressureBusinessManager.measure(requireContext(), lifecycleScope) { sbp, dbp ->
+                multiBusinessManager.bloodPressureBusinessManager.measure(requireContext(), lifecycleScope) { sbp, dbp ->
                     mBinding.tvBloodPressureSbp.text = sbp.toString()
                     mBinding.tvBloodPressureDbp.text = dbp.toString()
                 }
@@ -100,10 +89,7 @@ class DevicesFragment : BaseLazyFragment() {
         }
         mBinding.btnBloodPressureStop.setOnClickListener {
             lifecycleScope.launch {
-                if (!PermissionUtils.requestConnectEnvironment(requireActivity())) {
-                    return@launch
-                }
-                bloodPressureBusinessManager.stopMeasure()
+                multiBusinessManager.bloodPressureBusinessManager.stopMeasure()
             }
         }
         return mBinding.root
@@ -117,20 +103,12 @@ class DevicesFragment : BaseLazyFragment() {
         }
         Logger.i("id=$id")
         lifecycleScope.launch {
-            if (!PermissionUtils.requestConnectEnvironment(requireActivity())) {
-                return@launch
-            }
-            DeviceRepositoryManager.init(requireContext())
+            multiBusinessManager.init(requireActivity(), devices)
             devices.forEach {
-                val deviceType = it.key
-                val name = it.value.first
-                val address = it.value.second
-                Logger.i("deviceType=$deviceType, name=$name, address=$address")
-                when (deviceType) {
+                when (it.key) {
                     DeviceType.HeartRate -> {
-                        heartRateBusinessManager.init(requireContext(), name, address)
-                        mBinding.ecgView.setSampleRate(heartRateBusinessManager.getSampleRate())
-                        heartRateBusinessManager.connect(requireContext(), id, lifecycleScope, onHeartRateResult = {
+                        mBinding.ecgView.setSampleRate(multiBusinessManager.heartRateBusinessManager.getSampleRate())
+                        multiBusinessManager.heartRateBusinessManager.connect(requireContext(), id, lifecycleScope, onHeartRateResult = {
                             mBinding.tvHeartRate.text = it.toString()
                         }) {
                             mBinding.ecgView.addData(it)
@@ -138,19 +116,12 @@ class DevicesFragment : BaseLazyFragment() {
                     }
 
                     DeviceType.BloodOxygen -> {
-                        bloodOxygenBusinessManager.init(requireContext(), name, address)
-                        bloodOxygenBusinessManager.connect(requireContext(), id, lifecycleScope) {
+                        multiBusinessManager.bloodOxygenBusinessManager.connect(requireContext(), id, lifecycleScope) {
                             mBinding.tvBloodOxygen.text = it.toString()
                         }
                     }
 
-                    DeviceType.BloodPressure -> {
-                        bloodPressureBusinessManager.init(requireContext(), name, address)
-                    }
-
-                    else -> {
-                        Logger.e("不支持的设备类型: $deviceType")
-                    }
+                    else -> {}
                 }
             }
         }
@@ -158,9 +129,7 @@ class DevicesFragment : BaseLazyFragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        heartRateBusinessManager.disconnect()
-        bloodOxygenBusinessManager.disconnect()
-        bloodPressureBusinessManager.disconnect()
+        multiBusinessManager.destroy()
     }
 
 }
