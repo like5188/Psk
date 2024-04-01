@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
 
-class BloodPressureBusinessManager {
+class BleBloodPressureBusinessManager {
     private val repository = DeviceRepositoryManager.createBleDeviceRepository<BloodPressureRepository>(DeviceType.BloodPressure)
     private var job: Job? = null
     private val isInitialized = AtomicBoolean(false)

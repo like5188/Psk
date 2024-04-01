@@ -34,6 +34,10 @@ abstract class BaseSocketDeviceDataSource {
      */
     private var onMessage: ((message: ByteBuffer?) -> Unit)? = null
 
+    /**
+     * @param hostName  本服务器开放的地址。默认为 null，表示需要连接的设备与本服务器处于局域网。
+     * @param port      本服务器开放的端口号。默认为 7777。
+     */
     fun init(hostName: String?, port: Int) {
         val address = if (hostName.isNullOrEmpty()) {
             InetSocketAddress(port)

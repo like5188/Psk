@@ -27,12 +27,9 @@ class DevicesFragment : BaseLazyFragment() {
 
         /**
          * @param id        此次运动唯一id。
-         * @param devices   设备信息。key:设备类型，value:设备名称和地址。
+         * @param devices   设备信息
          */
-        fun newInstance(
-            id: Long,
-            devices: Map<DeviceType, Pair<String, String>>
-        ): DevicesFragment {
+        fun newInstance(id: Long, devices: List<Info>): DevicesFragment {
             return DevicesFragment().apply {
                 arguments = bundleOf(
                     KEY_ID to id,
@@ -67,21 +64,10 @@ class DevicesFragment : BaseLazyFragment() {
                 textSize = 18f
                 color = Color.RED
             }))
-            setDataPainters(
-                listOf(
-                    DynamicDataPainter(CirclePathEffect(), Paint().apply {
-                        color = Color.parseColor("#44C71E")
-                        strokeWidth = 3f
-                        style = Paint.Style.STROKE
-                        isAntiAlias = true
-                    })
-                )
-            )
-            setLeadsNames(listOf("I", "II", "III", "aVR", "aVL", "aVF", "V1", "V2", "V3", "V4", "V5", "V6"))
         }
         mBinding.btnBloodPressureBeforeStart.setOnClickListener {
             lifecycleScope.launch {
-                multiBusinessManager.bloodPressureBusinessManager.measure(requireContext(), lifecycleScope) { sbp, dbp ->
+                multiBusinessManager.bleBloodPressureBusinessManager.measure(requireContext(), lifecycleScope) { sbp, dbp ->
                     mBinding.tvBloodPressureBeforeSbp.text = sbp.toString()
                     mBinding.tvBloodPressureBeforeDbp.text = dbp.toString()
                 }
@@ -89,12 +75,12 @@ class DevicesFragment : BaseLazyFragment() {
         }
         mBinding.btnBloodPressureBeforeStop.setOnClickListener {
             lifecycleScope.launch {
-                multiBusinessManager.bloodPressureBusinessManager.stopMeasure()
+                multiBusinessManager.bleBloodPressureBusinessManager.stopMeasure()
             }
         }
         mBinding.btnBloodPressureAfterStart.setOnClickListener {
             lifecycleScope.launch {
-                multiBusinessManager.bloodPressureBusinessManager.measure(requireContext(), lifecycleScope) { sbp, dbp ->
+                multiBusinessManager.bleBloodPressureBusinessManager.measure(requireContext(), lifecycleScope) { sbp, dbp ->
                     mBinding.tvBloodPressureAfterSbp.text = sbp.toString()
                     mBinding.tvBloodPressureAfterDbp.text = dbp.toString()
                 }
@@ -102,7 +88,7 @@ class DevicesFragment : BaseLazyFragment() {
         }
         mBinding.btnBloodPressureAfterStop.setOnClickListener {
             lifecycleScope.launch {
-                multiBusinessManager.bloodPressureBusinessManager.stopMeasure()
+                multiBusinessManager.bleBloodPressureBusinessManager.stopMeasure()
             }
         }
         return mBinding.root
@@ -110,7 +96,7 @@ class DevicesFragment : BaseLazyFragment() {
 
     override fun onLazyLoadData() {
         val id = arguments?.getLong(KEY_ID)
-        val devices = (arguments?.getSerializable(KEY_DEVICES) as? Map<DeviceType, Pair<String, String>>)
+        val devices = arguments?.getSerializable(KEY_DEVICES) as? List<Info>
         if (id == null || devices.isNullOrEmpty()) {
             return
         }
@@ -118,23 +104,91 @@ class DevicesFragment : BaseLazyFragment() {
         lifecycleScope.launch {
             multiBusinessManager.init(requireActivity(), devices)
             devices.forEach {
-                when (it.key) {
-                    DeviceType.HeartRate -> {
-                        mBinding.ecgView.setSampleRate(multiBusinessManager.heartRateBusinessManager.getSampleRate())
-                        multiBusinessManager.heartRateBusinessManager.connect(requireContext(), id, lifecycleScope, onHeartRateResult = {
-                            mBinding.tvHeartRate.text = it.toString()
-                        }) {
-                            mBinding.ecgView.addData(it)
+                when (it) {
+                    is BleInfo -> {
+                        when (it.deviceType) {
+                            DeviceType.HeartRate -> {
+                                mBinding.ecgView.setDataPainters(
+                                    listOf(
+                                        DynamicDataPainter(CirclePathEffect(), Paint().apply {
+                                            color = Color.parseColor("#44C71E")
+                                            strokeWidth = 3f
+                                            style = Paint.Style.STROKE
+                                            isAntiAlias = true
+                                        })
+                                    )
+                                )
+                                mBinding.ecgView.setLeadsNames(listOf("I"))
+                                mBinding.ecgView.setSampleRate(multiBusinessManager.bleHeartRateBusinessManager.getSampleRate())
+                                multiBusinessManager.bleHeartRateBusinessManager.connect(
+                                    requireContext(),
+                                    id,
+                                    lifecycleScope,
+                                    onHeartRateResult = {
+                                        mBinding.tvHeartRate.text = it.toString()
+                                    }) {
+                                    mBinding.ecgView.addData(it)
+                                }
+                            }
+
+                            DeviceType.BloodOxygen -> {
+                                multiBusinessManager.bleBloodOxygenBusinessManager.connect(requireContext(), id, lifecycleScope) {
+                                    mBinding.tvBloodOxygen.text = it.toString()
+                                }
+                            }
+
+                            DeviceType.BloodPressure -> {
+                            }
+
+                            else -> {
+                            }
                         }
                     }
 
-                    DeviceType.BloodOxygen -> {
-                        multiBusinessManager.bloodOxygenBusinessManager.connect(requireContext(), id, lifecycleScope) {
-                            mBinding.tvBloodOxygen.text = it.toString()
-                        }
-                    }
+                    is SocketInfo -> {
+                        when (it.deviceType) {
+                            DeviceType.HeartRate -> {
+                                mBinding.ecgView.setDataPainters((0 until 12).map {
+                                    DynamicDataPainter(CirclePathEffect(), Paint().apply {
+                                        color = Color.parseColor("#44C71E")
+                                        strokeWidth = 3f
+                                        style = Paint.Style.STROKE
+                                        isAntiAlias = true
+                                    })
+                                })
+                                mBinding.ecgView.setLeadsNames(
+                                    listOf(
+                                        "I",
+                                        "II",
+                                        "III",
+                                        "aVR",
+                                        "aVL",
+                                        "aVF",
+                                        "V1",
+                                        "V2",
+                                        "V3",
+                                        "V4",
+                                        "V5",
+                                        "V6"
+                                    )
+                                )
+                                mBinding.ecgView.setSampleRate(multiBusinessManager.socketHeartRateBusinessManager.getSampleRate())
+                                multiBusinessManager.socketHeartRateBusinessManager.connect(
+                                    requireContext(),
+                                    id,
+                                    lifecycleScope,
+                                    onHeartRateResult = {
+                                        mBinding.tvHeartRate.text = it.toString()
+                                    }) {
+                                    mBinding.ecgView.addData(it)
+                                }
+                            }
 
-                    else -> {}
+                            else -> {
+                            }
+                        }
+
+                    }
                 }
             }
         }

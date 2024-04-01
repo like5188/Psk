@@ -1,9 +1,9 @@
-package com.psk.device.socket.remote.base
+package com.psk.device.socket.remote
 
 import android.content.Context
 import com.like.common.util.getSubclasses
 import com.psk.device.data.model.DeviceType
-import com.psk.device.data.source.remote.base.BaseBleDeviceDataSource
+import com.psk.device.socket.remote.base.BaseSocketDeviceDataSource
 
 /**
  * Socket设备数据源工厂

@@ -7,7 +7,9 @@ import com.like.common.base.addFragments
 import com.psk.app.R
 import com.psk.app.databinding.ActivitySixMinutesBinding
 import com.psk.device.data.model.DeviceType
+import com.psk.sixminutes.BleInfo
 import com.psk.sixminutes.DevicesFragment
+import com.psk.sixminutes.SocketInfo
 
 class SixMinutesActivity : AppCompatActivity() {
     private val mBinding: ActivitySixMinutesBinding by lazy {
@@ -19,10 +21,11 @@ class SixMinutesActivity : AppCompatActivity() {
         mBinding
         val devicesFragment = DevicesFragment.newInstance(
             1,
-            mapOf(
-                DeviceType.HeartRate to ("ER1 0455" to "E3:93:39:05:53:94"),
-//                DeviceType.BloodOxygen to ("O2 0382" to "C8:0C:CA:B3:E9:16"),
-//                DeviceType.BloodPressure to ("BP0282A2210040460" to "A4:C1:38:54:12:2D"),
+            listOf(
+                SocketInfo(DeviceType.HeartRate, "ICV200A", null, 7777),
+//                BleInfo(DeviceType.HeartRate, "ER1 0455", "E3:93:39:05:53:94"),
+//                BleInfo(DeviceType.BloodOxygen, "O2 0382", "C8:0C:CA:B3:E9:16"),
+//                BleInfo(DeviceType.BloodPressure, "BP0282A2210040460", "A4:C1:38:54:12:2D"),
             )
         )
         addFragments(R.id.flContainer, 0, devicesFragment)

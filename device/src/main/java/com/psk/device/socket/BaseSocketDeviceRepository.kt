@@ -2,7 +2,7 @@ package com.psk.device.socket
 
 import com.psk.device.data.model.DeviceType
 import com.psk.device.socket.remote.base.BaseSocketDeviceDataSource
-import com.psk.device.socket.remote.base.SocketDataSourceFactory
+import com.psk.device.socket.remote.SocketDataSourceFactory
 import kotlinx.coroutines.CoroutineScope
 
 abstract class BaseSocketDeviceRepository<SocketDeviceDataSource : BaseSocketDeviceDataSource>(

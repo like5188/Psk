@@ -8,7 +8,7 @@ import com.psk.device.data.model.DeviceType
 import com.psk.device.data.source.BaseBleDeviceRepository
 import com.psk.device.data.source.remote.BleDataSourceFactory
 import com.psk.device.socket.BaseSocketDeviceRepository
-import com.psk.device.socket.remote.base.SocketDataSourceFactory
+import com.psk.device.socket.remote.SocketDataSourceFactory
 import kotlin.collections.set
 
 /**
@@ -54,7 +54,7 @@ object DeviceRepositoryManager {
             socketDeviceRepositories[deviceType]
         } else {
             // 根据设备类型反射创建仓库
-            val className = "${BaseSocketDeviceRepository::class.java.`package`?.name}.${deviceType.name}Repository"
+            val className = "${BaseSocketDeviceRepository::class.java.`package`?.name}.Socket${deviceType.name}Repository"
             val clazz = Class.forName(className)
             (clazz.newInstance() as BaseSocketDeviceRepository<*>).apply {
                 socketDeviceRepositories[deviceType] = this
