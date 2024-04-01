@@ -7,7 +7,8 @@ import com.psk.device.data.db.DeviceDatabaseManager
 import com.psk.device.data.model.DeviceType
 import com.psk.device.data.source.BaseBleDeviceRepository
 import com.psk.device.data.source.remote.BleDataSourceFactory
-import com.psk.device.socket.SocketHeartRateRepository
+import com.psk.device.socket.BaseSocketDeviceRepository
+import com.psk.device.socket.remote.base.SocketDataSourceFactory
 import kotlin.collections.set
 
 /**
@@ -20,11 +21,13 @@ import kotlin.collections.set
  */
 object DeviceRepositoryManager {
     private val bleDeviceRepositories = mutableMapOf<DeviceType, BaseBleDeviceRepository<*>>()
+    private val socketDeviceRepositories = mutableMapOf<DeviceType, BaseSocketDeviceRepository<*>>()
 
     suspend fun init(context: Context) {
         DeviceDatabaseManager.init(context.applicationContext)
         // [BleDataSourceFactory]必须放在扫描之前初始化，否则扫描时，如果要用到[DeviceType.containsDevice]方法就没效果。
         BleDataSourceFactory.init(context.applicationContext)
+        SocketDataSourceFactory.init(context.applicationContext)
     }
 
     /**
@@ -43,8 +46,20 @@ object DeviceRepositoryManager {
         } as T
     }
 
-    fun createSocketHeartRateRepository(): SocketHeartRateRepository {
-        return SocketHeartRateRepository()
+    /**
+     * 根据Socket设备类型创建仓库
+     */
+    fun <T : BaseSocketDeviceRepository<*>> createSocketDeviceRepository(deviceType: DeviceType): T {
+        return if (socketDeviceRepositories.containsKey(deviceType)) {
+            socketDeviceRepositories[deviceType]
+        } else {
+            // 根据设备类型反射创建仓库
+            val className = "${BaseSocketDeviceRepository::class.java.`package`?.name}.${deviceType.name}Repository"
+            val clazz = Class.forName(className)
+            (clazz.newInstance() as BaseSocketDeviceRepository<*>).apply {
+                socketDeviceRepositories[deviceType] = this
+            }
+        } as T
     }
 
 }

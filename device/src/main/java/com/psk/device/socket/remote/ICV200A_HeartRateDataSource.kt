@@ -1,7 +1,8 @@
-package com.psk.device.socket
+package com.psk.device.socket.remote
 
 import com.like.common.util.Logger
 import com.psk.device.data.model.HeartRate
+import com.psk.device.socket.remote.base.BaseSocketHeartRateDataSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow

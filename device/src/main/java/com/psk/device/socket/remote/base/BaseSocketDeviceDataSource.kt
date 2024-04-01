@@ -1,4 +1,4 @@
-package com.psk.device.socket
+package com.psk.device.socket.remote.base
 
 import android.annotation.SuppressLint
 import com.like.common.util.Logger

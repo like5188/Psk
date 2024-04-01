@@ -1,8 +1,10 @@
 package com.psk.device.socket
 
 import com.psk.device.data.db.DeviceDatabaseManager
+import com.psk.device.data.model.DeviceType
 import com.psk.device.data.model.HeartRate
 import com.psk.device.data.source.local.HeartRateDbDataSource
+import com.psk.device.socket.remote.base.BaseSocketHeartRateDataSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -12,12 +14,9 @@ import kotlinx.coroutines.launch
 /**
  * Socket心率数据仓库
  */
-class SocketHeartRateRepository {
+class SocketHeartRateRepository : BaseSocketDeviceRepository<BaseSocketHeartRateDataSource>(DeviceType.HeartRate) {
     private val dbDataSource by lazy {
         HeartRateDbDataSource(DeviceDatabaseManager.db.heartRateDao())
-    }
-    private val socketDeviceDataSource by lazy {
-        ICV200A_HeartRateDataSource()
     }
 
     suspend fun getListByOrderId(orderId: Long): List<HeartRate>? {
