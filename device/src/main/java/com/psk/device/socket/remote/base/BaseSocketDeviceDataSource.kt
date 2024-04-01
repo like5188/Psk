@@ -113,7 +113,7 @@ abstract class BaseSocketDeviceDataSource {
         }
     }
 
-    fun setOnMessageCallback(onMessage: (message: ByteBuffer?) -> Unit) {
+    fun setOnMessageCallback(onMessage: ((message: ByteBuffer?) -> Unit)?) {
         this.onMessage = onMessage
     }
 
