@@ -79,15 +79,28 @@ class DevicesFragment : BaseLazyFragment() {
             )
             setLeadsNames(listOf("I", "II", "III", "aVR", "aVL", "aVF", "V1", "V2", "V3", "V4", "V5", "V6"))
         }
-        mBinding.btnBloodPressureStart.setOnClickListener {
+        mBinding.btnBloodPressureBeforeStart.setOnClickListener {
             lifecycleScope.launch {
                 multiBusinessManager.bloodPressureBusinessManager.measure(requireContext(), lifecycleScope) { sbp, dbp ->
-                    mBinding.tvBloodPressureSbp.text = sbp.toString()
-                    mBinding.tvBloodPressureDbp.text = dbp.toString()
+                    mBinding.tvBloodPressureBeforeSbp.text = sbp.toString()
+                    mBinding.tvBloodPressureBeforeDbp.text = dbp.toString()
                 }
             }
         }
-        mBinding.btnBloodPressureStop.setOnClickListener {
+        mBinding.btnBloodPressureBeforeStop.setOnClickListener {
+            lifecycleScope.launch {
+                multiBusinessManager.bloodPressureBusinessManager.stopMeasure()
+            }
+        }
+        mBinding.btnBloodPressureAfterStart.setOnClickListener {
+            lifecycleScope.launch {
+                multiBusinessManager.bloodPressureBusinessManager.measure(requireContext(), lifecycleScope) { sbp, dbp ->
+                    mBinding.tvBloodPressureAfterSbp.text = sbp.toString()
+                    mBinding.tvBloodPressureAfterDbp.text = dbp.toString()
+                }
+            }
+        }
+        mBinding.btnBloodPressureAfterStop.setOnClickListener {
             lifecycleScope.launch {
                 multiBusinessManager.bloodPressureBusinessManager.stopMeasure()
             }
