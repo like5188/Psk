@@ -7,6 +7,7 @@ import com.psk.device.data.db.DeviceDatabaseManager
 import com.psk.device.data.model.DeviceType
 import com.psk.device.data.source.BaseBleDeviceRepository
 import com.psk.device.data.source.remote.BleDataSourceFactory
+import com.psk.device.socket.SocketHeartRateRepository
 import kotlin.collections.set
 
 /**
@@ -40,6 +41,10 @@ object DeviceRepositoryManager {
                 bleDeviceRepositories[deviceType] = this
             }
         } as T
+    }
+
+    fun createSocketHeartRateRepository(): SocketHeartRateRepository {
+        return SocketHeartRateRepository()
     }
 
 }
