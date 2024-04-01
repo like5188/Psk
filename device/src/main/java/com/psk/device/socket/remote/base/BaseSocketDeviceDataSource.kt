@@ -15,22 +15,27 @@ abstract class BaseSocketDeviceDataSource {
     private lateinit var webSocketServer: WebSocketServer
 
     /**
-     * 连接成功
+     * 启动服务成功
+     */
+    private var onStart: (() -> Unit)? = null
+
+    /**
+     * 客户端连接本服务成功
      */
     private var onOpen: ((address: String?) -> Unit)? = null
 
     /**
-     * 连接关闭
+     * 客户端连接本服务关闭
      */
     private var onClose: ((code: Int, reason: String?) -> Unit)? = null
 
     /**
-     * 服务器发生错误
+     * 发生错误
      */
     private var onError: ((e: Exception?) -> Unit)? = null
 
     /**
-     * 接收到消息
+     * 接收到客户端发来的消息
      */
     private var onMessage: ((message: ByteBuffer?) -> Unit)? = null
 
@@ -47,10 +52,12 @@ abstract class BaseSocketDeviceDataSource {
         webSocketServer = object : WebSocketServer(address) {
             override fun onOpen(conn: WebSocket?, handshake: ClientHandshake?) {
                 onOpen?.invoke(conn?.remoteSocketAddress?.address?.hostAddress)
+                Logger.d("onOpen")
             }
 
             override fun onClose(conn: WebSocket?, code: Int, reason: String?, remote: Boolean) {
                 onClose?.invoke(code, reason)
+                Logger.d("onClose")
             }
 
             override fun onMessage(conn: WebSocket?, message: String?) {
@@ -58,14 +65,18 @@ abstract class BaseSocketDeviceDataSource {
 
             override fun onMessage(conn: WebSocket?, message: ByteBuffer?) {
                 super.onMessage(conn, message)
+                Logger.d("onMessage")
                 onMessage?.invoke(message)
             }
 
             override fun onError(conn: WebSocket?, ex: java.lang.Exception?) {
+                Logger.d("onError")
                 onError?.invoke(ex)
             }
 
             override fun onStart() {
+                Logger.d("onStart")
+                onStart?.invoke()
             }
         }
 
@@ -83,10 +94,12 @@ abstract class BaseSocketDeviceDataSource {
     @SuppressLint("MissingPermission")
     fun run(
         scope: CoroutineScope,
+        onStart: (() -> Unit)? = null,
         onOpen: ((address: String?) -> Unit)? = null,
         onClose: ((code: Int, reason: String?) -> Unit)? = null,
         onError: ((e: Exception?) -> Unit)? = null,
     ) {
+        this.onStart = onStart
         this.onOpen = onOpen
         this.onClose = onClose
         this.onError = onError

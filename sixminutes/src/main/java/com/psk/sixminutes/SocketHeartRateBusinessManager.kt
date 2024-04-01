@@ -39,8 +39,10 @@ class SocketHeartRateBusinessManager {
     ) {
         checkInit()
         lifecycleScope.launch {
-            repository.run(lifecycleScope, onOpen = { address ->
-                context.showToast("心电仪服务器启动成功，等待客户端连接并发送消息过来")
+            repository.run(lifecycleScope, onStart = {
+                context.showToast("心电仪服务器启动成功")
+            }, onOpen = { address ->
+                context.showToast("心电仪连接成功")
                 val flow = repository.getFlow(lifecycleScope, orderId).filterNotNull()
                 job = lifecycleScope.launch {
                     launch {
@@ -74,11 +76,11 @@ class SocketHeartRateBusinessManager {
                     }
                 }
             }, onClose = { code, reason ->
-                context.showToast("心电仪服务器启动失败")
+                context.showToast("心电仪连接失败")
                 job?.cancel()
                 job = null
             }, onError = {
-                context.showToast("心电仪服务器启动失败")
+                context.showToast("心电仪连接失败")
                 job?.cancel()
                 job = null
             })
