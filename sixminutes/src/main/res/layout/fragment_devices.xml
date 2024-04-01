@@ -6,12 +6,13 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#999999">
+        android:background="#cccccc">
 
         <com.psk.ecg.DynamicEcgView
             android:id="@+id/ecgView"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:background="#ffffff"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/llHeartRate"
             app:layout_constraintHorizontal_weight="3"
@@ -34,7 +35,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginStart="5dp"
-            android:background="#cccccc"
+            android:background="#ffffff"
             android:orientation="vertical"
             android:padding="5dp"
             app:layout_constraintBottom_toTopOf="@id/llBloodPressureBefore"
@@ -59,15 +60,15 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textSize="50sp"
-                    tools:text="88" />
+                    android:text="---"
+                    android:textSize="50sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:text="BPM"
-                    android:textSize="40sp" />
+                    android:textSize="30sp" />
 
             </LinearLayout>
 
@@ -78,7 +79,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginStart="5dp"
-            android:background="#cccccc"
+            android:background="#ffffff"
             android:orientation="vertical"
             android:padding="5dp"
             app:layout_constraintBottom_toBottomOf="@id/llHeartRate"
@@ -103,15 +104,15 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textSize="50sp"
-                    tools:text="88" />
+                    android:text="---"
+                    android:textSize="50sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:text="%"
-                    android:textSize="40sp" />
+                    android:textSize="30sp" />
 
             </LinearLayout>
         </LinearLayout>
@@ -122,7 +123,7 @@
             android:layout_height="0dp"
             android:layout_marginStart="5dp"
             android:layout_marginTop="5dp"
-            android:background="#cccccc"
+            android:background="#ffffff"
             android:orientation="vertical"
             android:padding="5dp"
             app:layout_constraintBottom_toTopOf="@id/llBloodPressureAfter"
@@ -146,15 +147,15 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textSize="50sp"
-                    tools:text="888" />
+                    android:text="---"
+                    android:textSize="50sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:text="mmHg"
-                    android:textSize="40sp" />
+                    android:textSize="30sp" />
 
                 <Button
                     android:id="@+id/btnBloodPressureBeforeStart"
@@ -179,15 +180,15 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textSize="50sp"
-                    tools:text="888" />
+                    android:text="---"
+                    android:textSize="50sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:text="mmHg"
-                    android:textSize="40sp" />
+                    android:textSize="30sp" />
 
                 <Button
                     android:id="@+id/btnBloodPressureBeforeStop"
@@ -206,8 +207,9 @@
             android:id="@+id/llBloodPressureAfter"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_marginStart="5dp"
             android:layout_marginTop="5dp"
-            android:background="#cccccc"
+            android:background="#ffffff"
             android:orientation="vertical"
             android:padding="5dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -231,15 +233,15 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textSize="50sp"
-                    tools:text="888" />
+                    android:text="---"
+                    android:textSize="50sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:text="mmHg"
-                    android:textSize="40sp" />
+                    android:textSize="30sp" />
 
                 <Button
                     android:id="@+id/btnBloodPressureAfterStart"
@@ -264,15 +266,15 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textSize="50sp"
-                    tools:text="888" />
+                    android:text="---"
+                    android:textSize="50sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:text="mmHg"
-                    android:textSize="40sp" />
+                    android:textSize="30sp" />
 
                 <Button
                     android:id="@+id/btnBloodPressureAfterStop"
