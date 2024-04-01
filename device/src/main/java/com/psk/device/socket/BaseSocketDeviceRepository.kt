@@ -20,21 +20,21 @@ abstract class BaseSocketDeviceRepository<SocketDeviceDataSource : BaseSocketDev
         socketDeviceDataSource.init(hostName, port)
     }
 
-    fun connect(
+    fun run(
         scope: CoroutineScope,
         onOpen: ((address: String?) -> Unit)? = null,
         onClose: ((code: Int, reason: String?) -> Unit)? = null,
         onError: ((e: Exception?) -> Unit)? = null,
     ) {
-        socketDeviceDataSource.connect(scope, onOpen, onClose, onError)
+        socketDeviceDataSource.run(scope, onOpen, onClose, onError)
     }
 
-    fun isConnected(): Boolean {
-        return socketDeviceDataSource.isConnected()
+    fun isOpen(): Boolean {
+        return socketDeviceDataSource.isOpen()
     }
 
-    fun close() {
-        socketDeviceDataSource.close()
+    fun stop() {
+        socketDeviceDataSource.stop()
     }
 
 }

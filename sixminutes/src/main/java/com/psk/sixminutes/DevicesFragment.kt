@@ -173,7 +173,7 @@ class DevicesFragment : BaseLazyFragment() {
                                     )
                                 )
                                 mBinding.ecgView.setSampleRate(multiBusinessManager.socketHeartRateBusinessManager.getSampleRate())
-                                multiBusinessManager.socketHeartRateBusinessManager.connect(
+                                multiBusinessManager.socketHeartRateBusinessManager.run(
                                     requireContext(),
                                     id,
                                     lifecycleScope,

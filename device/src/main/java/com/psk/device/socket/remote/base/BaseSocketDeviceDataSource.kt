@@ -76,12 +76,12 @@ abstract class BaseSocketDeviceDataSource {
         webSocketServer.isReuseAddr = true
     }
 
-    fun isConnected(): Boolean {
+    fun isOpen(): Boolean {
         return webSocketServer.connections.firstOrNull()?.isOpen == true
     }
 
     @SuppressLint("MissingPermission")
-    fun connect(
+    fun run(
         scope: CoroutineScope,
         onOpen: ((address: String?) -> Unit)? = null,
         onClose: ((code: Int, reason: String?) -> Unit)? = null,
@@ -104,7 +104,7 @@ abstract class BaseSocketDeviceDataSource {
         this.onMessage = onMessage
     }
 
-    fun close() {
+    fun stop() {
         try {
             webSocketServer.stop()
         } catch (e: Exception) {

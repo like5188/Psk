@@ -69,7 +69,7 @@ class MultiBusinessManager {
 
     fun destroy() {
         bleHeartRateBusinessManager.disconnect()
-        socketHeartRateBusinessManager.disconnect()
+        socketHeartRateBusinessManager.stop()
         bleBloodOxygenBusinessManager.disconnect()
         bleBloodPressureBusinessManager.disconnect()
     }
