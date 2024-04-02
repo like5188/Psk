@@ -24,8 +24,10 @@ class MultiBusinessManager {
         activity: ComponentActivity,
         devices: List<Info>
     ) {
-        if (!PermissionUtils.requestConnectEnvironment(activity)) {
-            return
+        if (devices.any { it is BleInfo }) {
+            if (!PermissionUtils.requestConnectEnvironment(activity)) {
+                return
+            }
         }
         DeviceRepositoryManager.init(activity.applicationContext)
         devices.forEach {
