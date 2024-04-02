@@ -75,14 +75,15 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
     }
 
     /**
-     * @param dataPainters      数据绘制者集合，有几个导联就需要几个绘制者。库中默认实现为[DynamicDataPainter]、[StaticDataPainter]
+     * @param dataPainters          数据绘制者集合，有几个导联就需要几个绘制者。库中默认实现为[DynamicDataPainter]、[StaticDataPainter]
      * 可以自己实现[IDynamicDataPainter]或者[IStaticDataPainter]接口，或者自己创建[DynamicDataPainter]或者[StaticDataPainter]实例。
+     * @param onLeadClickListener   导联单击事件，导联索引从0开始。
      */
-    fun setDataPainters(dataPainters: List<IDataPainter>) {
+    fun setDataPainters(dataPainters: List<IDataPainter>, onLeadClickListener: ((Int) -> Unit)? = null) {
         this.dataPainters = dataPainters
         this.leadsCount = dataPainters.size
-        gesture.init(leadsCount) {
-            println("第 ${it + 1} 导联被单击")
+        onLeadClickListener?.let {
+            gesture.init(leadsCount, it)
         }
         calcParams()
     }
