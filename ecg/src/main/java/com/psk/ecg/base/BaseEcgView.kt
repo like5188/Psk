@@ -13,6 +13,7 @@ import com.psk.ecg.painter.BgPainter
 import com.psk.ecg.painter.IBgPainter
 import com.psk.ecg.painter.IDataPainter
 import com.psk.ecg.painter.IDynamicDataPainter
+import com.psk.ecg.util.Gesture
 import com.psk.ecg.util.TAG
 
 /*
@@ -46,6 +47,10 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
     protected var initialized = false
         private set
 
+    private val gesture by lazy {
+        Gesture(this)
+    }
+
     init {
         // 画布透明处理
         this.setZOrderOnTop(true)
@@ -76,6 +81,9 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
     fun setDataPainters(dataPainters: List<IDataPainter>) {
         this.dataPainters = dataPainters
         this.leadsCount = dataPainters.size
+        gesture.init(leadsCount) {
+            println("第 ${it + 1} 导联被单击")
+        }
         calcParams()
     }
 
