@@ -159,7 +159,9 @@ class DevicesFragment : BaseLazyFragment() {
                                         style = Paint.Style.STROKE
                                         isAntiAlias = true
                                     })
-                                })
+                                }) {
+                                    println("第${it + 1}导联被单击")
+                                }
                                 mBinding.ecgView.setLeadsNames(
                                     listOf(
                                         "I",
