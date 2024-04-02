@@ -40,12 +40,12 @@ class SingleEcgDialogFragment private constructor() : BaseDialogFragment() {
         val sampleRate = arguments?.getInt(KEY_SAMPLE_RATE) ?: 0
         val leadsName = arguments?.getString(KEY_LEADS_NAME) ?: ""
         val params = arguments?.getString(KEY_PARAMS) ?: ""
+        mBinding.tvLeadsName.text = leadsName
         mBinding.tvEcgParams.text = params
         mBinding.ecgView.apply {
-            setGridSize(10f.dp)
+            setGridSize(15f.dp)
             setBgPainter(createBgPainter())
             setDataPainters(listOf(createDynamicDataPainter()))
-            setLeadsNames(listOf(leadsName))
             mBinding.ecgView.setSampleRate(sampleRate)
         }
         return mBinding.root
