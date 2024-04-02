@@ -13,7 +13,7 @@ class Gesture(private val view: BaseEcgView) {
             override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
                 for (i in 0 until rects.size) {
                     if (rects[i].contains(e.x, e.y)) {
-                        onLeadClickListener?.invoke(i)
+                        onLeadsClickListener?.invoke(i)
                         break
                     }
                 }
@@ -27,16 +27,16 @@ class Gesture(private val view: BaseEcgView) {
         })
     }
     private val rects = mutableListOf<RectF>()
-    private var onLeadClickListener: ((Int) -> Unit)? = null
+    private var onLeadsClickListener: ((Int) -> Unit)? = null
 
-    fun init(leadsCount: Int, onLeadClickListener: (Int) -> Unit) {
+    fun init(leadsCount: Int, onLeadsClickListener: (Int) -> Unit) {
         if (leadsCount <= 0) {
             return
         }
         view.setOnTouchListener { v, event ->
             gestureDetector.onTouchEvent(event)
         }
-        this.onLeadClickListener = onLeadClickListener
+        this.onLeadsClickListener = onLeadsClickListener
         rects.clear()
         val height = view.height
         val left = view.left
