@@ -15,7 +15,7 @@ import com.psk.sixminutes.util.createBgPainter
 import com.psk.sixminutes.util.createDynamicDataPainter
 
 /**
- * 独立ECG放大视图
+ * 某个ECG导联放大的动态视图
  */
 class SingleEcgDialogFragment private constructor() : BaseDialogFragment() {
     companion object {
