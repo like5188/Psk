@@ -78,12 +78,12 @@ class SocketHeartRateBusinessManager {
                 }
             },
             onClose = { code, reason ->
-                context.showToast("心电仪连接失败")
+                context.showToast("心电仪连接断开")
                 job?.cancel()
                 job = null
             },
             onError = {
-                context.showToast("心电仪连接失败")
+                context.showToast("心电仪连接异常")
                 job?.cancel()
                 job = null
             })
