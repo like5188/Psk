@@ -1,4 +1,4 @@
-package com.psk.device.socket.remote.base
+package com.psk.device.data.source.remote.socket.base
 
 import com.like.common.util.Logger
 import org.java_websocket.WebSocket

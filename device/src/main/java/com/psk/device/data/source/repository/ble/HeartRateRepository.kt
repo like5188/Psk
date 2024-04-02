@@ -1,10 +1,10 @@
-package com.psk.device.socket
+package com.psk.device.data.source.repository.ble
 
 import com.psk.device.data.db.DeviceDatabaseManager
 import com.psk.device.data.model.DeviceType
 import com.psk.device.data.model.HeartRate
 import com.psk.device.data.source.local.HeartRateDbDataSource
-import com.psk.device.socket.remote.base.BaseSocketHeartRateDataSource
+import com.psk.device.data.source.remote.ble.base.BaseHeartRateDataSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -12,9 +12,9 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 
 /**
- * Socket心率数据仓库
+ * 心率数据仓库
  */
-class SocketHeartRateRepository : BaseSocketDeviceRepository<BaseSocketHeartRateDataSource>(DeviceType.HeartRate) {
+class HeartRateRepository : BaseBleDeviceRepository<BaseHeartRateDataSource>(DeviceType.HeartRate) {
     private val dbDataSource by lazy {
         HeartRateDbDataSource(DeviceDatabaseManager.db.heartRateDao())
     }
@@ -28,7 +28,7 @@ class SocketHeartRateRepository : BaseSocketDeviceRepository<BaseSocketHeartRate
      */
     fun getFlow(scope: CoroutineScope, orderId: Long): Flow<HeartRate> {
         scope.launch(Dispatchers.IO) {
-            socketDeviceDataSource.fetch(orderId).collect {
+            bleDeviceDataSource.fetch(orderId).collect {
                 dbDataSource.insert(it)
             }
         }
@@ -39,11 +39,11 @@ class SocketHeartRateRepository : BaseSocketDeviceRepository<BaseSocketHeartRate
      * 注意返回的是冷流
      */
     fun fetch(): Flow<HeartRate> {
-        return socketDeviceDataSource.fetch(-1)
+        return bleDeviceDataSource.fetch(-1)
     }
 
     fun getSampleRate(): Int {
-        return socketDeviceDataSource.getSampleRate()
+        return bleDeviceDataSource.getSampleRate()
     }
 
 }

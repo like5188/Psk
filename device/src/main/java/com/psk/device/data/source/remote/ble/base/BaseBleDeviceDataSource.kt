@@ -1,4 +1,4 @@
-package com.psk.device.data.source.remote.base
+package com.psk.device.data.source.remote.ble.base
 
 import android.annotation.SuppressLint
 import android.content.Context

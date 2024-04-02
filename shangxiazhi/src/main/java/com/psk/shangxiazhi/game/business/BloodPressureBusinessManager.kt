@@ -2,7 +2,7 @@ package com.psk.shangxiazhi.game.business
 
 import android.util.Log
 import com.psk.device.data.model.DeviceType
-import com.psk.device.data.source.BloodPressureRepository
+import com.psk.device.data.source.repository.ble.BloodPressureRepository
 import com.psk.shangxiazhi.data.model.BloodPressureReport
 import com.psk.shangxiazhi.data.model.IReport
 import kotlinx.coroutines.CoroutineScope

@@ -4,7 +4,7 @@ import com.like.common.util.Logger
 import com.psk.common.CommonApplication
 import com.psk.device.DeviceRepositoryManager
 import com.psk.device.data.model.DeviceType
-import com.psk.device.data.source.BaseBleDeviceRepository
+import com.psk.device.data.source.repository.ble.BaseBleDeviceRepository
 import com.psk.shangxiazhi.data.model.IReport
 import com.twsz.twsystempre.GameController
 import kotlinx.coroutines.CoroutineScope

@@ -2,7 +2,7 @@ package com.psk.shangxiazhi.game.business
 
 import android.util.Log
 import com.psk.device.data.model.DeviceType
-import com.psk.device.data.source.BloodOxygenRepository
+import com.psk.device.data.source.repository.ble.BloodOxygenRepository
 import com.psk.shangxiazhi.data.model.BloodOxygenReport
 import com.psk.shangxiazhi.data.model.IReport
 import kotlinx.coroutines.CoroutineScope

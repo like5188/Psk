@@ -1,8 +1,8 @@
-package com.psk.device.socket.remote
+package com.psk.device.data.source.remote.socket
 
 import com.like.common.util.Logger
 import com.psk.device.data.model.HeartRate
-import com.psk.device.socket.remote.base.BaseSocketHeartRateDataSource
+import com.psk.device.data.source.remote.socket.base.BaseHeartRateDataSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.flowOn
  * iCV200A心电图仪数据源
  * 模拟数据时每秒收到25次回调，每次回调包含12导心电数据为240 byte，所以某个导联的数据量为 240/12/2(2个字节一个数据)=10，所以采样率为25*10=250
  */
-class ICV200A_HeartRateDataSource : BaseSocketHeartRateDataSource() {
+class ICV200A_HeartRateDataSource : BaseHeartRateDataSource() {
 
     override fun fetch(orderId: Long): Flow<HeartRate> = callbackFlow {
         setOnMessageCallback { message ->

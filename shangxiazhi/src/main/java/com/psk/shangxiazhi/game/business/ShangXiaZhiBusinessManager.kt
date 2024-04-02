@@ -2,7 +2,7 @@ package com.psk.shangxiazhi.game.business
 
 import android.util.Log
 import com.psk.device.data.model.DeviceType
-import com.psk.device.data.source.ShangXiaZhiRepository
+import com.psk.device.data.source.repository.ble.ShangXiaZhiRepository
 import com.psk.shangxiazhi.data.model.IReport
 import com.psk.shangxiazhi.data.model.ShangXiaZhiReport
 import kotlinx.coroutines.CoroutineScope

@@ -1,8 +1,8 @@
-package com.psk.device.socket
+package com.psk.device.data.source.repository.socket
 
 import com.psk.device.data.model.DeviceType
-import com.psk.device.socket.remote.SocketDataSourceFactory
-import com.psk.device.socket.remote.base.BaseSocketDeviceDataSource
+import com.psk.device.data.source.remote.socket.SocketDataSourceFactory
+import com.psk.device.data.source.remote.socket.base.BaseSocketDeviceDataSource
 
 abstract class BaseSocketDeviceRepository<SocketDeviceDataSource : BaseSocketDeviceDataSource>(
     private val deviceType: DeviceType

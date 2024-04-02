@@ -1,7 +1,6 @@
 package com.psk.device.data.model
 
 import com.like.ble.util.toUUID
-import java.io.Serializable
 import java.util.UUID
 
 /**
@@ -28,11 +27,4 @@ data class Protocol(
         return "Protocol(serviceUUID=$serviceUUID, notifyUUID=$notifyUUID, writeUUID=$writeUUID)"
     }
 
-}
-
-/**
- * 设备类型
- */
-enum class DeviceType(val des: String) : Serializable {
-    BloodOxygen("血氧仪"), BloodPressure("血压计"), HeartRate("心电仪"), ShangXiaZhi("上下肢");
 }

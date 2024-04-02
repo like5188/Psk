@@ -18,7 +18,7 @@ import com.psk.common.customview.ProgressDialog
 import com.psk.device.DeviceRepositoryManager
 import com.psk.device.data.model.BloodPressure
 import com.psk.device.data.model.DeviceType
-import com.psk.device.data.source.BloodPressureRepository
+import com.psk.device.data.source.repository.ble.BloodPressureRepository
 import com.psk.shangxiazhi.R
 import com.psk.shangxiazhi.databinding.DialogFragmentMeasureBloodPressureBinding
 import kotlinx.coroutines.Dispatchers

@@ -1,9 +1,9 @@
-package com.psk.device.data.source
+package com.psk.device.data.source.repository.ble
 
 import android.content.Context
 import com.psk.device.data.model.DeviceType
-import com.psk.device.data.source.remote.BleDataSourceFactory
-import com.psk.device.data.source.remote.base.BaseBleDeviceDataSource
+import com.psk.device.data.source.remote.ble.BleDataSourceFactory
+import com.psk.device.data.source.remote.ble.base.BaseBleDeviceDataSource
 import kotlinx.coroutines.CoroutineScope
 
 abstract class BaseBleDeviceRepository<BleDeviceDataSource : BaseBleDeviceDataSource>(

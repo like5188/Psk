@@ -1,12 +1,12 @@
-package com.psk.device.data.source
+package com.psk.device.data.source.repository.ble
 
 import com.psk.device.data.db.DeviceDatabaseManager
 import com.psk.device.data.model.DeviceType
 import com.psk.device.data.model.ShangXiaZhi
 import com.psk.device.data.model.ShangXiaZhiParams
 import com.psk.device.data.source.local.ShangXiaZhiDbDataSource
-import com.psk.device.data.source.remote.RKF_ShangXiaZhiDataSource
-import com.psk.device.data.source.remote.base.BaseShangXiaZhiDataSource
+import com.psk.device.data.source.remote.ble.RKF_ShangXiaZhiDataSource
+import com.psk.device.data.source.remote.ble.base.BaseShangXiaZhiDataSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

@@ -3,10 +3,10 @@ package com.psk.shangxiazhi.report
 import androidx.lifecycle.ViewModel
 import com.psk.device.DeviceRepositoryManager
 import com.psk.device.data.model.DeviceType
-import com.psk.device.data.source.BloodOxygenRepository
-import com.psk.device.data.source.BloodPressureRepository
-import com.psk.device.data.source.HeartRateRepository
-import com.psk.device.data.source.ShangXiaZhiRepository
+import com.psk.device.data.source.repository.ble.BloodOxygenRepository
+import com.psk.device.data.source.repository.ble.BloodPressureRepository
+import com.psk.device.data.source.repository.ble.HeartRateRepository
+import com.psk.device.data.source.repository.ble.ShangXiaZhiRepository
 import com.psk.shangxiazhi.data.model.BloodOxygenReport
 import com.psk.shangxiazhi.data.model.BloodPressureReport
 import com.psk.shangxiazhi.data.model.HealthInfo

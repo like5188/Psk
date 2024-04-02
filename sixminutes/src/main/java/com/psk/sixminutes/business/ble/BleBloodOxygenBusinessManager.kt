@@ -5,7 +5,7 @@ import androidx.lifecycle.LifecycleCoroutineScope
 import com.like.common.util.showToast
 import com.psk.device.DeviceRepositoryManager
 import com.psk.device.data.model.DeviceType
-import com.psk.device.data.source.BloodOxygenRepository
+import com.psk.device.data.source.repository.ble.BloodOxygenRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged

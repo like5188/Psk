@@ -2,7 +2,7 @@ package com.psk.shangxiazhi.game.business
 
 import android.util.Log
 import com.psk.device.data.model.DeviceType
-import com.psk.device.data.source.HeartRateRepository
+import com.psk.device.data.source.repository.ble.HeartRateRepository
 import com.psk.shangxiazhi.data.model.HeartRateReport
 import com.psk.shangxiazhi.data.model.IReport
 import kotlinx.coroutines.CoroutineScope

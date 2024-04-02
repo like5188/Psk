@@ -1,9 +1,9 @@
-package com.psk.device.data.source.remote
+package com.psk.device.data.source.remote.ble
 
 import com.like.common.util.Logger
 import com.psk.device.data.model.HeartRate
 import com.psk.device.data.model.Protocol
-import com.psk.device.data.source.remote.base.BaseHeartRateDataSource
+import com.psk.device.data.source.remote.ble.base.BaseHeartRateDataSource
 import com.psk.device.util.BleCRC
 import com.psk.device.util.BtResponse
 import kotlinx.coroutines.Dispatchers

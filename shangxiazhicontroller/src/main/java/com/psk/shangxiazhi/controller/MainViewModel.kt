@@ -11,7 +11,7 @@ import com.psk.device.DeviceRepositoryManager
 import com.psk.device.ScanManager
 import com.psk.device.data.model.DeviceType
 import com.psk.device.data.model.ShangXiaZhiParams
-import com.psk.device.data.source.ShangXiaZhiRepository
+import com.psk.device.data.source.repository.ble.ShangXiaZhiRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

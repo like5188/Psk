@@ -12,7 +12,7 @@ import com.like.common.util.Logger
 import com.psk.device.ScanManager.init
 import com.psk.device.ScanManager.startScan
 import com.psk.device.data.model.DeviceType
-import com.psk.device.data.source.remote.BleDataSourceFactory
+import com.psk.device.data.source.remote.ble.BleDataSourceFactory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.conflate

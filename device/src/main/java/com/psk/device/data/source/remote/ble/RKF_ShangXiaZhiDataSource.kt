@@ -1,10 +1,10 @@
-package com.psk.device.data.source.remote
+package com.psk.device.data.source.remote.ble
 
 import com.like.common.util.Logger
 import com.psk.device.data.model.Protocol
 import com.psk.device.data.model.ShangXiaZhi
 import com.psk.device.data.model.ShangXiaZhiParams
-import com.psk.device.data.source.remote.base.BaseShangXiaZhiDataSource
+import com.psk.device.data.source.remote.ble.base.BaseShangXiaZhiDataSource
 import com.psk.device.util.ShangXiaZhiDataParser
 import com.psk.device.util.ShangXiaZhiReceiver
 import com.twsz.remotecommands.RemoteCommand
