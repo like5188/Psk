@@ -40,8 +40,14 @@ class StaticEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(contex
     }
 
     override fun startDraw() {
-        if (!initialized) return
-        if (!isSurfaceCreated) return
+        if (!initialized) {
+            Log.e(TAG, "startDraw failure, initialized false")
+            return
+        }
+        if (!isSurfaceCreated) {
+            Log.e(TAG, "startDraw failure, isSurfaceCreated false")
+            return
+        }
         Log.w(TAG, "startDraw")
         ViewTreeLifecycleOwner.get(this)?.lifecycleScope?.launch(Dispatchers.IO) {
             var canvas: Canvas? = null

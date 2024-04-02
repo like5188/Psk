@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.transform
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlin.math.max
 
@@ -57,11 +56,21 @@ class DynamicEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(conte
     }
 
     override fun startDraw() {
-        if (!initialized) return
-        if (!isSurfaceCreated) return
-        if (job != null) return
+        if (!initialized) {
+            Log.e(TAG, "startDraw failure, initialized false")
+            return
+        }
+        if (!isSurfaceCreated) {
+            Log.e(TAG, "startDraw failure, isSurfaceCreated false")
+            return
+        }
+        if (job != null) {
+            Log.e(TAG, "startDraw failure, job already start")
+            return
+        }
         val period = getPeriod()// 当第一次回调surfaceCreated()时，有可能没有此值。但是添加数据后会再次启动任务，所以这里不用使用阻塞。
         if (period <= 0L) {
+            Log.e(TAG, "startDraw failure, period <= 0")
             return
         }
         Log.w(TAG, "startDraw period=$period")
