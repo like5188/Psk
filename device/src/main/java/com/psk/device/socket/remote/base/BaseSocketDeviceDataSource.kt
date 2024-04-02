@@ -1,10 +1,6 @@
 package com.psk.device.socket.remote.base
 
-import android.annotation.SuppressLint
 import com.like.common.util.Logger
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.java_websocket.WebSocket
 import org.java_websocket.handshake.ClientHandshake
 import org.java_websocket.server.WebSocketServer
@@ -91,9 +87,11 @@ abstract class BaseSocketDeviceDataSource {
         return webSocketServer.connections.firstOrNull()?.isOpen == true
     }
 
-    @SuppressLint("MissingPermission")
-    fun run(
-        scope: CoroutineScope,
+    fun setOnMessageCallback(onMessage: ((message: ByteBuffer?) -> Unit)?) {
+        this.onMessage = onMessage
+    }
+
+    fun start(
         onStart: (() -> Unit)? = null,
         onOpen: ((address: String?) -> Unit)? = null,
         onClose: ((code: Int, reason: String?) -> Unit)? = null,
@@ -103,18 +101,11 @@ abstract class BaseSocketDeviceDataSource {
         this.onOpen = onOpen
         this.onClose = onClose
         this.onError = onError
-        scope.launch(Dispatchers.IO) {
-            try {
-                webSocketServer.run()// 阻塞
-            } catch (e: Exception) {
-                Logger.e("connect 失败：${e.message}")
-                onError?.invoke(e)
-            }
+        try {
+            webSocketServer.start()
+        } catch (e: IllegalStateException) {
+            Logger.e("start 失败：${e.message}")
         }
-    }
-
-    fun setOnMessageCallback(onMessage: ((message: ByteBuffer?) -> Unit)?) {
-        this.onMessage = onMessage
     }
 
     fun stop() {

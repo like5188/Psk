@@ -3,7 +3,6 @@ package com.psk.device.socket
 import com.psk.device.data.model.DeviceType
 import com.psk.device.socket.remote.SocketDataSourceFactory
 import com.psk.device.socket.remote.base.BaseSocketDeviceDataSource
-import kotlinx.coroutines.CoroutineScope
 
 abstract class BaseSocketDeviceRepository<SocketDeviceDataSource : BaseSocketDeviceDataSource>(
     private val deviceType: DeviceType
@@ -20,14 +19,13 @@ abstract class BaseSocketDeviceRepository<SocketDeviceDataSource : BaseSocketDev
         socketDeviceDataSource.init(hostName, port)
     }
 
-    fun run(
-        scope: CoroutineScope,
+    fun start(
         onStart: (() -> Unit)? = null,
         onOpen: ((address: String?) -> Unit)? = null,
         onClose: ((code: Int, reason: String?) -> Unit)? = null,
         onError: ((e: Exception?) -> Unit)? = null,
     ) {
-        socketDeviceDataSource.run(scope, onStart, onOpen, onClose, onError)
+        socketDeviceDataSource.start(onStart, onOpen, onClose, onError)
     }
 
     fun isOpen(): Boolean {

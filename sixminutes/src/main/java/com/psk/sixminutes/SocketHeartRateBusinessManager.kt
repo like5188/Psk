@@ -30,7 +30,7 @@ class SocketHeartRateBusinessManager {
         return repository.getSampleRate()
     }
 
-    fun run(
+    fun start(
         context: Context,
         orderId: Long,
         lifecycleScope: LifecycleCoroutineScope,
@@ -38,10 +38,11 @@ class SocketHeartRateBusinessManager {
         onEcgResult: (List<List<Float>>) -> Unit
     ) {
         checkInit()
-        lifecycleScope.launch {
-            repository.run(lifecycleScope, onStart = {
+        repository.start(
+            onStart = {
                 context.showToast("心电仪服务器启动成功")
-            }, onOpen = { address ->
+            },
+            onOpen = { address ->
                 context.showToast("心电仪连接成功")
                 val flow = repository.getFlow(lifecycleScope, orderId).filterNotNull()
                 job = lifecycleScope.launch {
@@ -75,16 +76,17 @@ class SocketHeartRateBusinessManager {
                         onEcgResult(it)
                     }
                 }
-            }, onClose = { code, reason ->
+            },
+            onClose = { code, reason ->
                 context.showToast("心电仪连接失败")
                 job?.cancel()
                 job = null
-            }, onError = {
+            },
+            onError = {
                 context.showToast("心电仪连接失败")
                 job?.cancel()
                 job = null
             })
-        }
     }
 
     fun stop() {
