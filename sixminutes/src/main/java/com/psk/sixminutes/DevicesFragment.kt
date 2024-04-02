@@ -17,7 +17,11 @@ import com.psk.device.data.model.DeviceType
 import com.psk.ecg.effect.CirclePathEffect
 import com.psk.ecg.painter.BgPainter
 import com.psk.ecg.painter.DynamicDataPainter
+import com.psk.sixminutes.business.MultiBusinessManager
 import com.psk.sixminutes.databinding.FragmentDevicesBinding
+import com.psk.sixminutes.model.BleInfo
+import com.psk.sixminutes.model.Info
+import com.psk.sixminutes.model.SocketInfo
 import kotlinx.coroutines.launch
 
 class DevicesFragment : BaseLazyFragment() {

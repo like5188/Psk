@@ -1,4 +1,4 @@
-package com.psk.sixminutes
+package com.psk.sixminutes.business.socket
 
 import android.content.Context
 import androidx.lifecycle.LifecycleCoroutineScope

@@ -1,21 +1,19 @@
-package com.psk.sixminutes
+package com.psk.sixminutes.business.ble
 
 import android.content.Context
 import androidx.lifecycle.LifecycleCoroutineScope
 import com.like.common.util.showToast
 import com.psk.device.DeviceRepositoryManager
 import com.psk.device.data.model.DeviceType
-import com.psk.device.data.source.HeartRateRepository
+import com.psk.device.data.source.BloodOxygenRepository
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.buffer
+import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicBoolean
 
-class BleHeartRateBusinessManager {
-    private val repository = DeviceRepositoryManager.createBleDeviceRepository<HeartRateRepository>(DeviceType.HeartRate)
+class BleBloodOxygenBusinessManager {
+    private val repository = DeviceRepositoryManager.createBleDeviceRepository<BloodOxygenRepository>(DeviceType.BloodOxygen)
     private var job: Job? = null
     private val isInitialized = AtomicBoolean(false)
 
@@ -25,40 +23,24 @@ class BleHeartRateBusinessManager {
         }
     }
 
-    fun getSampleRate(): Int {
-        checkInit()
-        return repository.getSampleRate()
-    }
-
     fun connect(
         context: Context,
         orderId: Long,
         lifecycleScope: LifecycleCoroutineScope,
-        onHeartRateResult: (Int) -> Unit,
-        onEcgResult: (List<List<Float>>) -> Unit
+        onBloodOxygenResult: (Int) -> Unit,
     ) {
         checkInit()
         lifecycleScope.launch {
             repository.connect(lifecycleScope, 0L, {
-                context.showToast("心电仪连接成功")
-                val flow = repository.getFlow(lifecycleScope, orderId).filterNotNull()
+                context.showToast("血氧仪连接成功")
+                val flow = repository.getFlow(lifecycleScope, orderId, 1000)
                 job = lifecycleScope.launch {
-                    launch {
-                        flow.map {
-                            it.value
-                        }.distinctUntilChanged().collect { value ->
-                            onHeartRateResult(value)
-                        }
-                    }
-                    flow.map {
-                        it.coorYValues
-                    }.buffer(Int.MAX_VALUE).collect {
-                        // 取反，因为如果不处理，画出的波形图是反的
-                        onEcgResult(listOf(it.map { -it }))
+                    flow.distinctUntilChanged().conflate().collect { value ->
+                        onBloodOxygenResult(value.value)
                     }
                 }
             }) {
-                context.showToast("心电仪连接失败")
+                context.showToast("血氧仪连接失败")
                 job?.cancel()
                 job = null
             }

@@ -1,10 +1,17 @@
-package com.psk.sixminutes
+package com.psk.sixminutes.business
 
 import androidx.activity.ComponentActivity
 import com.like.ble.central.util.PermissionUtils
 import com.like.common.util.Logger
 import com.psk.device.DeviceRepositoryManager
 import com.psk.device.data.model.DeviceType
+import com.psk.sixminutes.business.ble.BleBloodOxygenBusinessManager
+import com.psk.sixminutes.business.ble.BleBloodPressureBusinessManager
+import com.psk.sixminutes.business.ble.BleHeartRateBusinessManager
+import com.psk.sixminutes.business.socket.SocketHeartRateBusinessManager
+import com.psk.sixminutes.model.BleInfo
+import com.psk.sixminutes.model.Info
+import com.psk.sixminutes.model.SocketInfo
 
 class MultiBusinessManager {
     val bleHeartRateBusinessManager by lazy {

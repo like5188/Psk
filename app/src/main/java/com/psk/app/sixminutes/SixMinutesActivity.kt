@@ -7,9 +7,8 @@ import com.like.common.base.addFragments
 import com.psk.app.R
 import com.psk.app.databinding.ActivitySixMinutesBinding
 import com.psk.device.data.model.DeviceType
-import com.psk.sixminutes.BleInfo
 import com.psk.sixminutes.DevicesFragment
-import com.psk.sixminutes.SocketInfo
+import com.psk.sixminutes.model.SocketInfo
 
 class SixMinutesActivity : AppCompatActivity() {
     private val mBinding: ActivitySixMinutesBinding by lazy {
