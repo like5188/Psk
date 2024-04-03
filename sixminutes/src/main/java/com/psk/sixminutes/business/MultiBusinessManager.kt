@@ -1,6 +1,7 @@
 package com.psk.sixminutes.business
 
 import androidx.activity.ComponentActivity
+import androidx.lifecycle.lifecycleScope
 import com.like.ble.central.util.PermissionUtils
 import com.like.common.util.Logger
 import com.psk.device.DeviceRepositoryManager
@@ -12,6 +13,7 @@ import com.psk.sixminutes.business.socket.SocketHeartRateBusinessManager
 import com.psk.sixminutes.model.BleInfo
 import com.psk.sixminutes.model.Info
 import com.psk.sixminutes.model.SocketInfo
+import kotlinx.coroutines.launch
 
 class MultiBusinessManager {
     val bleHeartRateBusinessManager by lazy {
@@ -27,50 +29,71 @@ class MultiBusinessManager {
         BleBloodPressureBusinessManager()
     }
 
-    suspend fun init(
+    fun init(
         activity: ComponentActivity,
-        devices: List<Info>
+        devices: List<Info>?
     ) {
-        if (devices.any { it is BleInfo }) {
-            if (!PermissionUtils.requestConnectEnvironment(activity)) {
-                return
-            }
+        if (devices.isNullOrEmpty()) {
+            return
         }
-        DeviceRepositoryManager.init(activity.applicationContext)
-        devices.forEach {
-            Logger.i(it)
-            when (it) {
-                is BleInfo -> {
-                    when (it.deviceType) {
-                        DeviceType.HeartRate -> {
-                            bleHeartRateBusinessManager.init(activity.applicationContext, it.name, it.address)
-                        }
-
-                        DeviceType.BloodOxygen -> {
-                            bleBloodOxygenBusinessManager.init(activity.applicationContext, it.name, it.address)
-                        }
-
-                        DeviceType.BloodPressure -> {
-                            bleBloodPressureBusinessManager.init(activity.applicationContext, it.name, it.address)
-                        }
-
-                        else -> {
-                            Logger.e("不支持的设备类型: ${it.deviceType}")
-                        }
-                    }
+        activity.lifecycleScope.launch {
+            if (devices.any { it is BleInfo }) {
+                if (!PermissionUtils.requestConnectEnvironment(activity)) {
+                    return@launch
                 }
+            }
+            DeviceRepositoryManager.init(activity.applicationContext)
+            devices.forEach {
+                Logger.i(it)
+                when (it) {
+                    is BleInfo -> {
+                        when (it.deviceType) {
+                            DeviceType.HeartRate -> {
+                                bleHeartRateBusinessManager.init(activity.applicationContext, activity.lifecycleScope, it.name, it.address)
+                            }
 
-                is SocketInfo -> {
-                    when (it.deviceType) {
-                        DeviceType.HeartRate -> {
-                            socketHeartRateBusinessManager.init(it.name, it.hostName, it.port)
-                        }
+                            DeviceType.BloodOxygen -> {
+                                bleBloodOxygenBusinessManager.init(
+                                    activity.applicationContext,
+                                    activity.lifecycleScope,
+                                    it.name,
+                                    it.address
+                                )
+                            }
 
-                        else -> {
-                            Logger.e("不支持的设备类型: ${it.deviceType}")
+                            DeviceType.BloodPressure -> {
+                                bleBloodPressureBusinessManager.init(
+                                    activity.applicationContext,
+                                    activity.lifecycleScope,
+                                    it.name,
+                                    it.address
+                                )
+                            }
+
+                            else -> {
+                                Logger.e("不支持的设备类型: ${it.deviceType}")
+                            }
                         }
                     }
 
+                    is SocketInfo -> {
+                        when (it.deviceType) {
+                            DeviceType.HeartRate -> {
+                                socketHeartRateBusinessManager.init(
+                                    activity.applicationContext,
+                                    activity.lifecycleScope,
+                                    it.name,
+                                    it.hostName,
+                                    it.port
+                                )
+                            }
+
+                            else -> {
+                                Logger.e("不支持的设备类型: ${it.deviceType}")
+                            }
+                        }
+
+                    }
                 }
             }
         }

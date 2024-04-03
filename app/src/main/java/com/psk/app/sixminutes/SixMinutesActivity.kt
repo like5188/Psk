@@ -22,10 +22,10 @@ class SixMinutesActivity : AppCompatActivity() {
         val devicesFragment = DevicesFragment.newInstance(
             1,
             listOf(
-                SocketInfo(DeviceType.HeartRate, "ICV200A", null, 7777),
+//                SocketInfo(DeviceType.HeartRate, "ICV200A", null, 7777),
 //                BleInfo(DeviceType.HeartRate, "ER1 0455", "E3:93:39:05:53:94"),
 //                BleInfo(DeviceType.BloodOxygen, "O2 0382", "C8:0C:CA:B3:E9:16"),
-//                BleInfo(DeviceType.BloodPressure, "BP0282A2210040460", "A4:C1:38:54:12:2D"),
+                BleInfo(DeviceType.BloodPressure, "BP0282A2210040460", "A4:C1:38:54:12:2D"),
             )
         )
         addFragments(R.id.flContainer, 0, devicesFragment)

@@ -18,9 +18,13 @@ class BleHeartRateBusinessManager {
     private val repository = DeviceRepositoryManager.createBleDeviceRepository<HeartRateRepository>(DeviceType.HeartRate)
     private var job: Job? = null
     private val isInitialized = AtomicBoolean(false)
+    private lateinit var lifecycleScope: LifecycleCoroutineScope
+    private lateinit var context: Context
 
-    fun init(context: Context, name: String, address: String) {
+    fun init(context: Context, lifecycleScope: LifecycleCoroutineScope, name: String, address: String) {
         if (isInitialized.compareAndSet(false, true)) {
+            this.context = context
+            this.lifecycleScope = lifecycleScope
             repository.init(context, name, address)
         }
     }
@@ -31,9 +35,7 @@ class BleHeartRateBusinessManager {
     }
 
     fun connect(
-        context: Context,
         orderId: Long,
-        lifecycleScope: LifecycleCoroutineScope,
         onHeartRateResult: (Int) -> Unit,
         onEcgResult: (List<List<Float>>) -> Unit
     ) {

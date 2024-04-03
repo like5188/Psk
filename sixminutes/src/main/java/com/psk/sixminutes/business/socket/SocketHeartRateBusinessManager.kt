@@ -18,9 +18,13 @@ class SocketHeartRateBusinessManager {
     private val repository = DeviceRepositoryManager.createSocketDeviceRepository<HeartRateRepository>(DeviceType.HeartRate)
     private var job: Job? = null
     private val isInitialized = AtomicBoolean(false)
+    private lateinit var lifecycleScope: LifecycleCoroutineScope
+    private lateinit var context: Context
 
-    fun init(name: String, hostName: String?, port: Int) {
+    fun init(context: Context, lifecycleScope: LifecycleCoroutineScope, name: String, hostName: String?, port: Int) {
         if (isInitialized.compareAndSet(false, true)) {
+            this.context = context
+            this.lifecycleScope = lifecycleScope
             repository.init(name, hostName, port)
         }
     }
@@ -31,9 +35,7 @@ class SocketHeartRateBusinessManager {
     }
 
     fun start(
-        context: Context,
         orderId: Long,
-        lifecycleScope: LifecycleCoroutineScope,
         onHeartRateResult: (Int) -> Unit,
         onEcgResult: (List<List<Float>>) -> Unit
     ) {
