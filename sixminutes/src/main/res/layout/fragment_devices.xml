@@ -34,7 +34,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
+                android:layout_marginStart="20dp"
                 android:text="年龄："
                 android:textSize="16sp" />
 
@@ -48,7 +48,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
+                android:layout_marginStart="20dp"
                 android:text="性别："
                 android:textSize="16sp" />
 
@@ -62,7 +62,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
+                android:layout_marginStart="20dp"
                 android:text="身高："
                 android:textSize="16sp" />
 
@@ -76,7 +76,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
+                android:layout_marginStart="20dp"
                 android:text="体重："
                 android:textSize="16sp" />
 
@@ -91,7 +91,7 @@
                 android:id="@+id/tvDate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
+                android:layout_marginStart="20dp"
                 android:gravity="end"
                 android:textSize="16sp"
                 tools:text="2022-12-12 12:00:00 星期一" />
@@ -124,7 +124,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
-            android:layout_marginTop="5dp"
             android:background="#ffffff"
             android:orientation="vertical"
             android:padding="5dp"
@@ -257,7 +256,6 @@
             android:padding="5dp"
             app:layout_constraintBottom_toBottomOf="@id/clHeartRate"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_weight="1"
             app:layout_constraintStart_toEndOf="@id/clHeartRate"
             app:layout_constraintTop_toTopOf="@id/clHeartRate">
 
