@@ -1,5 +1,6 @@
 package com.psk.sixminutes
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -120,6 +121,18 @@ class DevicesFragment : BaseLazyFragment() {
                                 mBinding.ecgView.setSampleRate(multiBusinessManager.bleHeartRateBusinessManager.getSampleRate())
                                 multiBusinessManager.bleHeartRateBusinessManager.connect(
                                     id,
+                                    onStatus = {
+                                        mBinding.tvHeartRateStatus.text = it
+                                        when (it) {
+                                            "已连接" -> {
+                                                mBinding.tvHeartRateStatus.setTextColor(Color.GREEN)
+                                            }
+
+                                            "已断开" -> {
+                                                mBinding.tvHeartRateStatus.setTextColor(Color.RED)
+                                            }
+                                        }
+                                    },
                                     onHeartRateResult = {
                                         mBinding.tvHeartRate.text = it.toString()
                                     }) {
@@ -128,7 +141,21 @@ class DevicesFragment : BaseLazyFragment() {
                             }
 
                             DeviceType.BloodOxygen -> {
-                                multiBusinessManager.bleBloodOxygenBusinessManager.connect(id) {
+                                multiBusinessManager.bleBloodOxygenBusinessManager.connect(
+                                    id,
+                                    onStatus = {
+                                        mBinding.tvBloodOxygenStatus.text = it
+                                        when (it) {
+                                            "已连接" -> {
+                                                mBinding.tvBloodOxygenStatus.setTextColor(Color.GREEN)
+                                            }
+
+                                            "已断开" -> {
+                                                mBinding.tvBloodOxygenStatus.setTextColor(Color.RED)
+                                            }
+                                        }
+                                    }
+                                ) {
                                     mBinding.tvBloodOxygen.text = it.toString()
                                 }
                             }
@@ -169,6 +196,18 @@ class DevicesFragment : BaseLazyFragment() {
                                 mBinding.ecgView.setSampleRate(sampleRate)
                                 multiBusinessManager.socketHeartRateBusinessManager.start(
                                     id,
+                                    onStatus = {
+                                        mBinding.tvHeartRateStatus.text = it
+                                        when (it) {
+                                            "已连接" -> {
+                                                mBinding.tvHeartRateStatus.setTextColor(Color.GREEN)
+                                            }
+
+                                            "已断开" -> {
+                                                mBinding.tvHeartRateStatus.setTextColor(Color.RED)
+                                            }
+                                        }
+                                    },
                                     onHeartRateResult = {
                                         mBinding.tvHeartRate.text = it.toString()
                                     }) {

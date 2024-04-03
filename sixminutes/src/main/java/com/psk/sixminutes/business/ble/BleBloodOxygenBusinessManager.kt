@@ -29,9 +29,10 @@ class BleBloodOxygenBusinessManager {
         }
     }
 
-    fun connect(orderId: Long, onBloodOxygenResult: (Int) -> Unit) {
+    fun connect(orderId: Long, onStatus: (String) -> Unit, onBloodOxygenResult: (Int) -> Unit) {
         checkInit()
         repository.connect(lifecycleScope, 0L, {
+            onStatus("已连接")
             context.showToast("血氧仪连接成功")
             val flow = repository.getFlow(lifecycleScope, orderId, 1000)
             job = lifecycleScope.launch {
@@ -40,6 +41,7 @@ class BleBloodOxygenBusinessManager {
                 }
             }
         }) {
+            onStatus("已断开")
             context.showToast("血氧仪连接失败")
             job?.cancel()
             job = null

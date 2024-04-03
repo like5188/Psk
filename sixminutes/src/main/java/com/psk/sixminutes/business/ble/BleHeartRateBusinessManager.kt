@@ -38,11 +38,13 @@ class BleHeartRateBusinessManager {
 
     fun connect(
         orderId: Long,
+        onStatus: (String) -> Unit,
         onHeartRateResult: (Int) -> Unit,
         onEcgResult: (List<List<Float>>) -> Unit
     ) {
         checkInit()
         repository.connect(lifecycleScope, 0L, {
+            onStatus("已连接")
             context.showToast("心电仪连接成功")
             val flow = repository.getFlow(lifecycleScope, orderId).filterNotNull()
             job = lifecycleScope.launch {
@@ -61,6 +63,7 @@ class BleHeartRateBusinessManager {
                 }
             }
         }) {
+            onStatus("已断开")
             context.showToast("心电仪连接失败")
             job?.cancel()
             job = null

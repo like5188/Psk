@@ -38,6 +38,7 @@ class SocketHeartRateBusinessManager {
 
     fun start(
         orderId: Long,
+        onStatus: (String) -> Unit,
         onHeartRateResult: (Int) -> Unit,
         onEcgResult: (List<List<Float>>) -> Unit
     ) {
@@ -47,6 +48,7 @@ class SocketHeartRateBusinessManager {
                 context.showToast("心电仪服务器启动成功")
             },
             onOpen = { address ->
+                onStatus("已连接")
                 context.showToast("心电仪连接成功")
                 val flow = repository.getFlow(lifecycleScope, orderId).filterNotNull()
                 job = lifecycleScope.launch {
@@ -82,11 +84,13 @@ class SocketHeartRateBusinessManager {
                 }
             },
             onClose = { code, reason ->
+                onStatus("已断开")
                 context.showToast("心电仪连接断开")
                 job?.cancel()
                 job = null
             },
             onError = {
+                onStatus("已断开")
                 context.showToast("心电仪连接异常")
                 job?.cancel()
                 job = null
