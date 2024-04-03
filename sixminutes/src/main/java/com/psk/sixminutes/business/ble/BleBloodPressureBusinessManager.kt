@@ -34,12 +34,7 @@ class BleBloodPressureBusinessManager {
             mProgressDialog = ProgressDialog(activity, "正在连接血压仪，请稍后……")
             mCountDownTimerProgressDialog =
                 CountDownTimerProgressDialog(activity, "正在测量血压，请稍后！", countDownTime = 0L, onCanceled = {
-                    lifecycleScope.launch(Dispatchers.IO) {
-                        job?.cancelAndJoin()// 这里必须等待上一条命令执行完毕，否则会导致stopMeasure失败
-                        job = null
-                        delay(100)
-                        repository.stopMeasure()
-                    }
+                    stopMeasure()
                 })
         }
     }
@@ -50,18 +45,16 @@ class BleBloodPressureBusinessManager {
             startJob(context, lifecycleScope, onBloodPressureResult)
         } else {
             mProgressDialog.show()
-            lifecycleScope.launch {
-                repository.connect(lifecycleScope, 0L, {
-                    mProgressDialog.dismiss()
-                    context.showToast("血压仪连接成功，开始测量")
-                    startJob(context, lifecycleScope, onBloodPressureResult)
-                }) {
-                    mCountDownTimerProgressDialog.dismiss()
-                    mProgressDialog.dismiss()
-                    context.showToast("血压仪连接失败，无法进行测量")
-                    job?.cancel()
-                    job = null
-                }
+            repository.connect(lifecycleScope, 0L, {
+                mProgressDialog.dismiss()
+                context.showToast("血压仪连接成功，开始测量")
+                startJob(context, lifecycleScope, onBloodPressureResult)
+            }) {
+                mCountDownTimerProgressDialog.dismiss()
+                mProgressDialog.dismiss()
+                context.showToast("血压仪连接失败，无法进行测量")
+                job?.cancel()
+                job = null
             }
         }
     }

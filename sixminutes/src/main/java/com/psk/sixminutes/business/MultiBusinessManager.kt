@@ -29,9 +29,7 @@ class MultiBusinessManager {
         BleBloodPressureBusinessManager()
     }
 
-    fun init(
-        activity: ComponentActivity, devices: List<Info>?
-    ) {
+    fun init(activity: ComponentActivity, devices: List<Info>?) {
         if (devices.isNullOrEmpty()) {
             return
         }
@@ -52,15 +50,11 @@ class MultiBusinessManager {
                             }
 
                             DeviceType.BloodOxygen -> {
-                                bleBloodOxygenBusinessManager.init(
-                                    activity, it.name, it.address
-                                )
+                                bleBloodOxygenBusinessManager.init(activity, it.name, it.address)
                             }
 
                             DeviceType.BloodPressure -> {
-                                bleBloodPressureBusinessManager.init(
-                                    activity, it.name, it.address
-                                )
+                                bleBloodPressureBusinessManager.init(activity, it.name, it.address)
                             }
 
                             else -> {
@@ -72,9 +66,7 @@ class MultiBusinessManager {
                     is SocketInfo -> {
                         when (it.deviceType) {
                             DeviceType.HeartRate -> {
-                                socketHeartRateBusinessManager.init(
-                                    activity, it.name, it.hostName, it.port
-                                )
+                                socketHeartRateBusinessManager.init(activity, it.name, it.hostName, it.port)
                             }
 
                             else -> {

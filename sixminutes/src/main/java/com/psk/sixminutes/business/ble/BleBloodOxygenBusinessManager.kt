@@ -31,20 +31,18 @@ class BleBloodOxygenBusinessManager {
 
     fun connect(orderId: Long, onBloodOxygenResult: (Int) -> Unit) {
         checkInit()
-        lifecycleScope.launch {
-            repository.connect(lifecycleScope, 0L, {
-                context.showToast("血氧仪连接成功")
-                val flow = repository.getFlow(lifecycleScope, orderId, 1000)
-                job = lifecycleScope.launch {
-                    flow.distinctUntilChanged().conflate().collect { value ->
-                        onBloodOxygenResult(value.value)
-                    }
+        repository.connect(lifecycleScope, 0L, {
+            context.showToast("血氧仪连接成功")
+            val flow = repository.getFlow(lifecycleScope, orderId, 1000)
+            job = lifecycleScope.launch {
+                flow.distinctUntilChanged().conflate().collect { value ->
+                    onBloodOxygenResult(value.value)
                 }
-            }) {
-                context.showToast("血氧仪连接失败")
-                job?.cancel()
-                job = null
             }
+        }) {
+            context.showToast("血氧仪连接失败")
+            job?.cancel()
+            job = null
         }
     }
 

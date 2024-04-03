@@ -42,30 +42,28 @@ class BleHeartRateBusinessManager {
         onEcgResult: (List<List<Float>>) -> Unit
     ) {
         checkInit()
-        lifecycleScope.launch {
-            repository.connect(lifecycleScope, 0L, {
-                context.showToast("心电仪连接成功")
-                val flow = repository.getFlow(lifecycleScope, orderId).filterNotNull()
-                job = lifecycleScope.launch {
-                    launch {
-                        flow.map {
-                            it.value
-                        }.distinctUntilChanged().collect { value ->
-                            onHeartRateResult(value)
-                        }
-                    }
+        repository.connect(lifecycleScope, 0L, {
+            context.showToast("心电仪连接成功")
+            val flow = repository.getFlow(lifecycleScope, orderId).filterNotNull()
+            job = lifecycleScope.launch {
+                launch {
                     flow.map {
-                        it.coorYValues
-                    }.buffer(Int.MAX_VALUE).collect {
-                        // 取反，因为如果不处理，画出的波形图是反的
-                        onEcgResult(listOf(it.map { -it }))
+                        it.value
+                    }.distinctUntilChanged().collect { value ->
+                        onHeartRateResult(value)
                     }
                 }
-            }) {
-                context.showToast("心电仪连接失败")
-                job?.cancel()
-                job = null
+                flow.map {
+                    it.coorYValues
+                }.buffer(Int.MAX_VALUE).collect {
+                    // 取反，因为如果不处理，画出的波形图是反的
+                    onEcgResult(listOf(it.map { -it }))
+                }
             }
+        }) {
+            context.showToast("心电仪连接失败")
+            job?.cancel()
+            job = null
         }
     }
 
