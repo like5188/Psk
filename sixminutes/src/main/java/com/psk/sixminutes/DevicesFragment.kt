@@ -52,30 +52,32 @@ class DevicesFragment : BaseLazyFragment() {
             setGridSize(10f.dp)
             setBgPainter(createBgPainter())
         }
-        mBinding.btnBloodPressureBeforeStart.setOnClickListener {
-            lifecycleScope.launch {
-                multiBusinessManager.bleBloodPressureBusinessManager.measure(requireContext(), lifecycleScope) { sbp, dbp ->
-                    mBinding.tvBloodPressureBeforeSbp.text = sbp.toString()
-                    mBinding.tvBloodPressureBeforeDbp.text = dbp.toString()
+        mBinding.btnBloodPressureBefore.setOnClickListener {
+            if (mBinding.btnBloodPressureBefore.text == "开始测量") {
+                lifecycleScope.launch {
+                    multiBusinessManager.bleBloodPressureBusinessManager.measure(requireContext(), lifecycleScope) { sbp, dbp ->
+                        mBinding.tvBloodPressureBeforeSbp.text = sbp.toString()
+                        mBinding.tvBloodPressureBeforeDbp.text = dbp.toString()
+                    }
+                }
+            } else {
+                lifecycleScope.launch {
+                    multiBusinessManager.bleBloodPressureBusinessManager.stopMeasure()
                 }
             }
         }
-        mBinding.btnBloodPressureBeforeStop.setOnClickListener {
-            lifecycleScope.launch {
-                multiBusinessManager.bleBloodPressureBusinessManager.stopMeasure()
-            }
-        }
-        mBinding.btnBloodPressureAfterStart.setOnClickListener {
-            lifecycleScope.launch {
-                multiBusinessManager.bleBloodPressureBusinessManager.measure(requireContext(), lifecycleScope) { sbp, dbp ->
-                    mBinding.tvBloodPressureAfterSbp.text = sbp.toString()
-                    mBinding.tvBloodPressureAfterDbp.text = dbp.toString()
+        mBinding.btnBloodPressureAfter.setOnClickListener {
+            if (mBinding.btnBloodPressureAfter.text == "开始测量") {
+                lifecycleScope.launch {
+                    multiBusinessManager.bleBloodPressureBusinessManager.measure(requireContext(), lifecycleScope) { sbp, dbp ->
+                        mBinding.tvBloodPressureAfterSbp.text = sbp.toString()
+                        mBinding.tvBloodPressureAfterDbp.text = dbp.toString()
+                    }
                 }
-            }
-        }
-        mBinding.btnBloodPressureAfterStop.setOnClickListener {
-            lifecycleScope.launch {
-                multiBusinessManager.bleBloodPressureBusinessManager.stopMeasure()
+            } else {
+                lifecycleScope.launch {
+                    multiBusinessManager.bleBloodPressureBusinessManager.stopMeasure()
+                }
             }
         }
         return mBinding.root
