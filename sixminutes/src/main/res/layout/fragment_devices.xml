@@ -122,13 +122,12 @@
         <LinearLayout
             android:id="@+id/llTime"
             android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
             android:layout_marginTop="5dp"
             android:background="#ffffff"
             android:orientation="vertical"
             android:padding="5dp"
-            app:layout_constraintBottom_toTopOf="@id/llHeartRate"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/ecgView"
             app:layout_constraintTop_toBottomOf="@id/llTitle">
@@ -168,13 +167,13 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/tvTime"
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
                     android:textSize="30sp"
@@ -196,13 +195,12 @@
         <LinearLayout
             android:id="@+id/llHeartRate"
             android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
             android:layout_marginTop="5dp"
             android:background="#ffffff"
             android:orientation="vertical"
             android:padding="5dp"
-            app:layout_constraintBottom_toTopOf="@id/llBloodPressureBefore"
             app:layout_constraintEnd_toStartOf="@id/llBloodOxygen"
             app:layout_constraintHorizontal_weight="1"
             app:layout_constraintStart_toEndOf="@id/ecgView"
@@ -232,7 +230,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:text="BPM"
-                    android:textSize="24sp" />
+                    android:textSize="20sp" />
 
             </LinearLayout>
 
@@ -276,7 +274,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:text="%"
-                    android:textSize="24sp" />
+                    android:textSize="20sp" />
 
             </LinearLayout>
         </LinearLayout>
@@ -284,13 +282,12 @@
         <LinearLayout
             android:id="@+id/llBloodPressureBefore"
             android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
             android:layout_marginTop="5dp"
             android:background="#ffffff"
             android:orientation="vertical"
             android:padding="5dp"
-            app:layout_constraintBottom_toTopOf="@id/llBloodPressureAfter"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/ecgView"
             app:layout_constraintTop_toBottomOf="@id/llHeartRate">
@@ -319,7 +316,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:text="mmHg"
-                    android:textSize="24sp" />
+                    android:textSize="20sp" />
 
                 <Button
                     android:id="@+id/btnBloodPressureBeforeStart"
@@ -352,7 +349,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:text="mmHg"
-                    android:textSize="24sp" />
+                    android:textSize="20sp" />
 
                 <Button
                     android:id="@+id/btnBloodPressureBeforeStop"
@@ -370,13 +367,12 @@
         <LinearLayout
             android:id="@+id/llBloodPressureAfter"
             android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
             android:layout_marginTop="5dp"
             android:background="#ffffff"
             android:orientation="vertical"
             android:padding="5dp"
-            app:layout_constraintBottom_toTopOf="@id/llLap"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/ecgView"
             app:layout_constraintTop_toBottomOf="@id/llBloodPressureBefore">
@@ -405,7 +401,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:text="mmHg"
-                    android:textSize="24sp" />
+                    android:textSize="20sp" />
 
                 <Button
                     android:id="@+id/btnBloodPressureAfterStart"
@@ -438,7 +434,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:text="mmHg"
-                    android:textSize="24sp" />
+                    android:textSize="20sp" />
 
                 <Button
                     android:id="@+id/btnBloodPressureAfterStop"
@@ -492,7 +488,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:text="m"
-                    android:textSize="24sp" />
+                    android:textSize="20sp" />
 
                 <TextView
                     android:id="@+id/tvLapCount"
@@ -508,7 +504,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:text="圈"
-                    android:textSize="24sp" />
+                    android:textSize="20sp" />
 
             </LinearLayout>
 
