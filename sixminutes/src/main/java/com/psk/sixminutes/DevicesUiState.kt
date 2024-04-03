@@ -14,5 +14,8 @@ data class DevicesUiState(
     val ecgDatas: List<List<Float>>? = null,
     val bloodOxygenStatus: String = "未连接",
     val bloodOxygen: Int = 0,
+    val lapStatus: String = "未连接",
+    val lapMeters: Int = 0,
+    val lapCount: Int = 0,
     val toastEvent: Event<ToastEvent>? = null,
 )

@@ -246,6 +246,15 @@ class DevicesFragment : BaseLazyFragment() {
             collectDistinctProperty(DevicesUiState::bloodOxygen) {
                 mBinding.tvBloodOxygen.text = it.toString()
             }
+            collectDistinctProperty(DevicesUiState::lapStatus) {
+                mBinding.tvLapStatus.text = it
+            }
+            collectDistinctProperty(DevicesUiState::lapMeters) {
+                mBinding.tvLapMeters.text = it.toString()
+            }
+            collectDistinctProperty(DevicesUiState::lapCount) {
+                mBinding.tvLapCount.text = it.toString()
+            }
             collectNotHandledEventProperty(DevicesUiState::toastEvent) {
                 requireContext().showToast(toastEvent = it)
             }
