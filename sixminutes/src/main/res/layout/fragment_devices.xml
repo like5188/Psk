@@ -185,7 +185,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="5dp"
-                android:layout_weight="1"
                 android:gravity="center"
                 android:textSize="30sp"
                 app:layout_constraintEnd_toStartOf="@id/btnStart"
@@ -206,7 +205,7 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/llHeartRate"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -221,36 +220,34 @@
             app:layout_constraintTop_toBottomOf="@id/llTime">
 
             <TextView
+                android:id="@+id/tv3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="心率"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
+            <TextView
+                android:id="@+id/tvHeartRate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="---"
+                android:textSize="30sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv3" />
 
-                <TextView
-                    android:id="@+id/tvHeartRate"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="---"
-                    android:textSize="30sp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="BPM"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toBottomOf="@id/tvHeartRate"
+                app:layout_constraintEnd_toEndOf="parent" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:text="BPM"
-                    android:textSize="20sp" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/llBloodOxygen"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -265,35 +262,33 @@
             app:layout_constraintTop_toTopOf="@id/llHeartRate">
 
             <TextView
+                android:id="@+id/tv4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="血氧"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
+            <TextView
+                android:id="@+id/tvBloodOxygen"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="---"
+                android:textSize="30sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv4" />
 
-                <TextView
-                    android:id="@+id/tvBloodOxygen"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="---"
-                    android:textSize="30sp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="%"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toBottomOf="@id/tvBloodOxygen"
+                app:layout_constraintEnd_toEndOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:text="%"
-                    android:textSize="20sp" />
-
-            </LinearLayout>
-        </LinearLayout>
-
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/llBloodPressureBefore"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -307,78 +302,64 @@
             app:layout_constraintTop_toBottomOf="@id/llHeartRate">
 
             <TextView
+                android:id="@+id/tv5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="运动前血压"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/tvBloodPressureBeforeSbp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:text="---"
+                android:textSize="30sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv5" />
 
-                <TextView
-                    android:id="@+id/tvBloodPressureBeforeSbp"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="---"
-                    android:textSize="30sp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:text="mmHg"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toBottomOf="@id/tvBloodPressureBeforeSbp"
+                app:layout_constraintEnd_toStartOf="@id/btnBloodPressureBefore" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:text="mmHg"
-                    android:textSize="20sp" />
+            <TextView
+                android:id="@+id/tvBloodPressureBeforeDbp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="---"
+                android:textSize="30sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvBloodPressureBeforeSbp" />
 
-                <Button
-                    android:id="@+id/btnBloodPressureBeforeStart"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="20dp"
-                    android:gravity="center"
-                    android:text="开始测量"
-                    android:textSize="16sp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:text="mmHg"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toBottomOf="@id/tvBloodPressureBeforeDbp"
+                app:layout_constraintEnd_toStartOf="@id/btnBloodPressureBefore" />
 
-            </LinearLayout>
+            <Button
+                android:id="@+id/btnBloodPressureBefore"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="开始测量"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tvBloodPressureBeforeSbp" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:orientation="horizontal">
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <TextView
-                    android:id="@+id/tvBloodPressureBeforeDbp"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="---"
-                    android:textSize="30sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:text="mmHg"
-                    android:textSize="20sp" />
-
-                <Button
-                    android:id="@+id/btnBloodPressureBeforeStop"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="20dp"
-                    android:gravity="center"
-                    android:text="停止测量"
-                    android:textSize="16sp" />
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/llBloodPressureAfter"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -392,79 +373,65 @@
             app:layout_constraintTop_toBottomOf="@id/llBloodPressureBefore">
 
             <TextView
+                android:id="@+id/tv6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="运动后血压"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/tvBloodPressureAfterSbp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:text="---"
+                android:textSize="30sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv6" />
 
-                <TextView
-                    android:id="@+id/tvBloodPressureAfterSbp"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="---"
-                    android:textSize="30sp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:text="mmHg"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toBottomOf="@id/tvBloodPressureAfterSbp"
+                app:layout_constraintEnd_toStartOf="@id/btnBloodPressureAfter" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:text="mmHg"
-                    android:textSize="20sp" />
+            <TextView
+                android:id="@+id/tvBloodPressureAfterDbp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="---"
+                android:textSize="30sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvBloodPressureAfterSbp" />
 
-                <Button
-                    android:id="@+id/btnBloodPressureAfterStart"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="20dp"
-                    android:gravity="center"
-                    android:text="开始测量"
-                    android:textSize="16sp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:text="mmHg"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toBottomOf="@id/tvBloodPressureAfterDbp"
+                app:layout_constraintEnd_toStartOf="@id/btnBloodPressureAfter" />
 
-            </LinearLayout>
+            <Button
+                android:id="@+id/btnBloodPressureAfter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="开始测量"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tvBloodPressureAfterSbp" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/tvBloodPressureAfterDbp"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="---"
-                    android:textSize="30sp" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:text="mmHg"
-                    android:textSize="20sp" />
-
-                <Button
-                    android:id="@+id/btnBloodPressureAfterStop"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="20dp"
-                    android:gravity="center"
-                    android:text="停止测量"
-                    android:textSize="16sp" />
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/llLap"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -479,49 +446,58 @@
             app:layout_constraintTop_toBottomOf="@id/llBloodPressureAfter">
 
             <TextView
+                android:id="@+id/tv7"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="记距设备"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                app:layout_constraintEnd_toStartOf="@id/tvLapMeters"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/tvLapMeters"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:text="---"
+                android:textSize="30sp"
+                app:layout_constraintEnd_toStartOf="@id/tv8"
+                app:layout_constraintHorizontal_weight="1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv7" />
 
-                <TextView
-                    android:id="@+id/tvLapMeters"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="---"
-                    android:textSize="30sp" />
+            <TextView
+                android:id="@+id/tv8"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="m"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toBottomOf="@id/tvLapMeters"
+                app:layout_constraintEnd_toStartOf="@id/tvLapCount"
+                app:layout_constraintStart_toEndOf="@id/tvLapMeters" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:text="m"
-                    android:textSize="20sp" />
+            <TextView
+                android:id="@+id/tvLapCount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                android:text="---"
+                android:textSize="30sp"
+                app:layout_constraintEnd_toStartOf="@id/tv9"
+                app:layout_constraintHorizontal_weight="1"
+                app:layout_constraintStart_toEndOf="@id/tv8"
+                app:layout_constraintTop_toBottomOf="@id/tv7" />
 
-                <TextView
-                    android:id="@+id/tvLapCount"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="80dp"
-                    android:layout_weight="1"
-                    android:text="---"
-                    android:textSize="30sp" />
+            <TextView
+                android:id="@+id/tv9"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="圈"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toBottomOf="@id/tvLapCount"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/tvLapCount" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:text="圈"
-                    android:textSize="20sp" />
-
-            </LinearLayout>
-
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
