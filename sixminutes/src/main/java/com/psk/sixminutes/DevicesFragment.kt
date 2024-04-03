@@ -207,6 +207,11 @@ class DevicesFragment : BaseLazyFragment() {
             collectDistinctProperty(DevicesUiState::time) {
                 mBinding.tvTime.text = it
             }
+            collectDistinctProperty(DevicesUiState::finish) {
+                if (it) {
+                    requireContext().showToast("运动完毕")
+                }
+            }
             collectDistinctProperty(DevicesUiState::sbpBefore) {
                 mBinding.tvBloodPressureBeforeSbp.text = it
             }
@@ -234,7 +239,7 @@ class DevicesFragment : BaseLazyFragment() {
             collectDistinctProperty(DevicesUiState::heartRate) {
                 mBinding.tvHeartRate.text = it
             }
-            collectDistinctProperty(DevicesUiState::ecgDatas) {
+            collectProperty(DevicesUiState::ecgDatas) {
                 it?.let {
                     mBinding.ecgView.addData(it)
                     singleEcgDialogFragment?.addData(it[leadsIndex])

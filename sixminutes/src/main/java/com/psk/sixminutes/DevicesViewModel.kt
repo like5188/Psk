@@ -31,10 +31,19 @@ class DevicesViewModel : ViewModel() {
     private val mSecondsTimer by lazy {
         SecondsTimer().apply {
             onTick = { seconds ->
-                _uiState.update {
-                    it.copy(
-                        time = "${decimalFormat.format(seconds / 60)}:${decimalFormat.format(seconds % 60)}"
-                    )
+                if (seconds > 8 * 60L) {
+                    stop()
+                    _uiState.update {
+                        it.copy(
+                            finish = true
+                        )
+                    }
+                } else {
+                    _uiState.update {
+                        it.copy(
+                            time = "${decimalFormat.format(seconds / 60)}:${decimalFormat.format(seconds % 60)}"
+                        )
+                    }
                 }
             }
         }

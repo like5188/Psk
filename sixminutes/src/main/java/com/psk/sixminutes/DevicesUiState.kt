@@ -6,6 +6,7 @@ import com.like.common.util.mvi.Event
 data class DevicesUiState(
     val date: String = "",
     val time: String = "--:--",
+    val finish: Boolean = false,
     val sbpBefore: String = "--",
     val dbpBefore: String = "--",
     val sbpAfter: String = "--",
