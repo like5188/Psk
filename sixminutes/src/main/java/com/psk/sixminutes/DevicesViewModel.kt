@@ -62,7 +62,7 @@ class DevicesViewModel : ViewModel() {
                                 onHeartRateResult = { heartRate ->
                                     _uiState.update {
                                         it.copy(
-                                            heartRate = heartRate
+                                            heartRate = heartRate.toString()
                                         )
                                     }
                                 }) { ecgDatas ->
@@ -87,7 +87,7 @@ class DevicesViewModel : ViewModel() {
                             ) { bloodOxygen ->
                                 _uiState.update {
                                     it.copy(
-                                        bloodOxygen = bloodOxygen
+                                        bloodOxygen = bloodOxygen.toString()
                                     )
                                 }
                             }
@@ -112,7 +112,7 @@ class DevicesViewModel : ViewModel() {
                                 onHeartRateResult = { heartRate ->
                                     _uiState.update {
                                         it.copy(
-                                            heartRate = heartRate
+                                            heartRate = heartRate.toString()
                                         )
                                     }
                                 }) { ecgDatas ->
@@ -136,8 +136,8 @@ class DevicesViewModel : ViewModel() {
         multiBusinessManager.bleBloodPressureBusinessManager.measure { sbp, dbp ->
             _uiState.update {
                 it.copy(
-                    sbpBefore = sbp,
-                    dbpBefore = dbp
+                    sbpBefore = sbp.toString(),
+                    dbpBefore = dbp.toString()
                 )
             }
         }
@@ -147,8 +147,8 @@ class DevicesViewModel : ViewModel() {
         multiBusinessManager.bleBloodPressureBusinessManager.measure { sbp, dbp ->
             _uiState.update {
                 it.copy(
-                    sbpAfter = sbp,
-                    dbpAfter = dbp
+                    sbpAfter = sbp.toString(),
+                    dbpAfter = dbp.toString()
                 )
             }
         }

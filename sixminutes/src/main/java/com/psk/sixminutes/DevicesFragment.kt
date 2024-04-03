@@ -199,16 +199,16 @@ class DevicesFragment : BaseLazyFragment() {
                 mBinding.tvDate.text = it
             }
             collectDistinctProperty(DevicesUiState::sbpBefore) {
-                mBinding.tvBloodPressureBeforeSbp.text = it.toString()
+                mBinding.tvBloodPressureBeforeSbp.text = it
             }
             collectDistinctProperty(DevicesUiState::dbpBefore) {
-                mBinding.tvBloodPressureBeforeDbp.text = it.toString()
+                mBinding.tvBloodPressureBeforeDbp.text = it
             }
             collectDistinctProperty(DevicesUiState::sbpAfter) {
-                mBinding.tvBloodPressureAfterSbp.text = it.toString()
+                mBinding.tvBloodPressureAfterSbp.text = it
             }
             collectDistinctProperty(DevicesUiState::dbpAfter) {
-                mBinding.tvBloodPressureAfterDbp.text = it.toString()
+                mBinding.tvBloodPressureAfterDbp.text = it
             }
             collectDistinctProperty(DevicesUiState::heartRateStatus) {
                 mBinding.tvHeartRateStatus.text = it
@@ -223,7 +223,7 @@ class DevicesFragment : BaseLazyFragment() {
                 }
             }
             collectDistinctProperty(DevicesUiState::heartRate) {
-                mBinding.tvHeartRate.text = it.toString()
+                mBinding.tvHeartRate.text = it
             }
             collectDistinctProperty(DevicesUiState::ecgDatas) {
                 it?.let {
@@ -244,16 +244,16 @@ class DevicesFragment : BaseLazyFragment() {
                 }
             }
             collectDistinctProperty(DevicesUiState::bloodOxygen) {
-                mBinding.tvBloodOxygen.text = it.toString()
+                mBinding.tvBloodOxygen.text = it
             }
             collectDistinctProperty(DevicesUiState::lapStatus) {
                 mBinding.tvLapStatus.text = it
             }
             collectDistinctProperty(DevicesUiState::lapMeters) {
-                mBinding.tvLapMeters.text = it.toString()
+                mBinding.tvLapMeters.text = it
             }
             collectDistinctProperty(DevicesUiState::lapCount) {
-                mBinding.tvLapCount.text = it.toString()
+                mBinding.tvLapCount.text = it
             }
             collectNotHandledEventProperty(DevicesUiState::toastEvent) {
                 requireContext().showToast(toastEvent = it)

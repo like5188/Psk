@@ -256,11 +256,11 @@
                 android:id="@+id/tvHeartRate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="---"
                 android:textSize="30sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv3" />
+                app:layout_constraintTop_toBottomOf="@id/tv3"
+                tools:text="---" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -321,11 +321,11 @@
                 android:id="@+id/tvBloodOxygen"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="---"
                 android:textSize="30sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv4" />
+                app:layout_constraintTop_toBottomOf="@id/tv4"
+                tools:text="---" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -386,13 +386,13 @@
                 android:id="@+id/tvLapMeters"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="---"
                 android:textSize="30sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/tv8"
                 app:layout_constraintHorizontal_weight="1"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv7" />
+                app:layout_constraintTop_toBottomOf="@id/tv7"
+                tools:text="---" />
 
             <TextView
                 android:id="@+id/tv8"
@@ -410,12 +410,12 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:text="---"
                 android:textSize="30sp"
                 app:layout_constraintBottom_toBottomOf="@id/tvLapMeters"
                 app:layout_constraintEnd_toStartOf="@id/tv9"
                 app:layout_constraintHorizontal_weight="1"
-                app:layout_constraintStart_toEndOf="@id/tv8" />
+                app:layout_constraintStart_toEndOf="@id/tv8"
+                tools:text="---" />
 
             <TextView
                 android:id="@+id/tv9"
@@ -468,10 +468,10 @@
                 android:id="@+id/tvBloodPressureBeforeSbp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="---"
                 android:textSize="30sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv5" />
+                app:layout_constraintTop_toBottomOf="@id/tv5"
+                tools:text="---" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -487,10 +487,10 @@
                 android:id="@+id/tvBloodPressureBeforeDbp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="---"
                 android:textSize="30sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvBloodPressureBeforeSbp" />
+                app:layout_constraintTop_toBottomOf="@id/tvBloodPressureBeforeSbp"
+                tools:text="---" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -542,10 +542,10 @@
                 android:id="@+id/tvBloodPressureAfterSbp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="---"
                 android:textSize="30sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv6" />
+                app:layout_constraintTop_toBottomOf="@id/tv6"
+                tools:text="---" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -561,10 +561,10 @@
                 android:id="@+id/tvBloodPressureAfterDbp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="---"
                 android:textSize="30sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvBloodPressureAfterSbp" />
+                app:layout_constraintTop_toBottomOf="@id/tvBloodPressureAfterSbp"
+                tools:text="---" />
 
             <TextView
                 android:layout_width="wrap_content"
