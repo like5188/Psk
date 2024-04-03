@@ -89,23 +89,15 @@ class DevicesFragment : BaseLazyFragment() {
             setBgPainter(createBgPainter())
         }
         mBinding.btnBloodPressureBefore.setOnClickListener {
-            if (mBinding.btnBloodPressureBefore.text == "开始测量") {
-                multiBusinessManager.bleBloodPressureBusinessManager.measure { sbp, dbp ->
-                    mBinding.tvBloodPressureBeforeSbp.text = sbp.toString()
-                    mBinding.tvBloodPressureBeforeDbp.text = dbp.toString()
-                }
-            } else {
-                multiBusinessManager.bleBloodPressureBusinessManager.stopMeasure()
+            multiBusinessManager.bleBloodPressureBusinessManager.measure { sbp, dbp ->
+                mBinding.tvBloodPressureBeforeSbp.text = sbp.toString()
+                mBinding.tvBloodPressureBeforeDbp.text = dbp.toString()
             }
         }
         mBinding.btnBloodPressureAfter.setOnClickListener {
-            if (mBinding.btnBloodPressureAfter.text == "开始测量") {
-                multiBusinessManager.bleBloodPressureBusinessManager.measure { sbp, dbp ->
-                    mBinding.tvBloodPressureAfterSbp.text = sbp.toString()
-                    mBinding.tvBloodPressureAfterDbp.text = dbp.toString()
-                }
-            } else {
-                multiBusinessManager.bleBloodPressureBusinessManager.stopMeasure()
+            multiBusinessManager.bleBloodPressureBusinessManager.measure { sbp, dbp ->
+                mBinding.tvBloodPressureAfterSbp.text = sbp.toString()
+                mBinding.tvBloodPressureAfterDbp.text = dbp.toString()
             }
         }
         mBinding.btnStart.setOnClickListener {
