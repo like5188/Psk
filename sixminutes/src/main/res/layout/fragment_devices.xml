@@ -184,10 +184,11 @@
                 android:id="@+id/tvTime"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
                 android:gravity="center"
                 android:textSize="30sp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/btnStart"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/linearProgressIndicator"
@@ -235,6 +236,7 @@
                 android:layout_height="wrap_content"
                 android:text="---"
                 android:textSize="30sp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv3" />
 
@@ -242,6 +244,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="BPM"
+                android:textColor="#999999"
                 android:textSize="20sp"
                 app:layout_constraintBottom_toBottomOf="@id/tvHeartRate"
                 app:layout_constraintEnd_toEndOf="parent" />
@@ -276,6 +279,7 @@
                 android:layout_height="wrap_content"
                 android:text="---"
                 android:textSize="30sp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv4" />
 
@@ -283,6 +287,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="%"
+                android:textColor="#999999"
                 android:textSize="20sp"
                 app:layout_constraintBottom_toBottomOf="@id/tvBloodOxygen"
                 app:layout_constraintEnd_toEndOf="parent" />
@@ -317,6 +322,7 @@
                 android:layout_height="wrap_content"
                 android:text="---"
                 android:textSize="30sp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/tv8"
                 app:layout_constraintHorizontal_weight="1"
                 app:layout_constraintStart_toStartOf="parent"
@@ -327,6 +333,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="m"
+                android:textColor="#999999"
                 android:textSize="20sp"
                 app:layout_constraintBottom_toBottomOf="@id/tvLapMeters"
                 app:layout_constraintEnd_toStartOf="@id/tvLapCount"
@@ -339,18 +346,19 @@
                 android:layout_marginStart="40dp"
                 android:text="---"
                 android:textSize="30sp"
+                app:layout_constraintBottom_toBottomOf="@id/tvLapMeters"
                 app:layout_constraintEnd_toStartOf="@id/tv9"
                 app:layout_constraintHorizontal_weight="1"
-                app:layout_constraintStart_toEndOf="@id/tv8"
-                app:layout_constraintTop_toBottomOf="@id/tv7" />
+                app:layout_constraintStart_toEndOf="@id/tv8" />
 
             <TextView
                 android:id="@+id/tv9"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="圈"
+                android:textColor="#999999"
                 android:textSize="20sp"
-                app:layout_constraintBottom_toBottomOf="@id/tvLapCount"
+                app:layout_constraintBottom_toBottomOf="@id/tvLapMeters"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/tvLapCount" />
 
@@ -393,6 +401,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="20dp"
                 android:text="mmHg"
+                android:textColor="#999999"
                 android:textSize="20sp"
                 app:layout_constraintBottom_toBottomOf="@id/tvBloodPressureBeforeSbp"
                 app:layout_constraintEnd_toStartOf="@id/btnBloodPressureBefore" />
@@ -411,6 +420,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="20dp"
                 android:text="mmHg"
+                android:textColor="#999999"
                 android:textSize="20sp"
                 app:layout_constraintBottom_toBottomOf="@id/tvBloodPressureBeforeDbp"
                 app:layout_constraintEnd_toStartOf="@id/btnBloodPressureBefore" />
@@ -465,6 +475,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="20dp"
                 android:text="mmHg"
+                android:textColor="#999999"
                 android:textSize="20sp"
                 app:layout_constraintBottom_toBottomOf="@id/tvBloodPressureAfterSbp"
                 app:layout_constraintEnd_toStartOf="@id/btnBloodPressureAfter" />
@@ -483,6 +494,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="20dp"
                 android:text="mmHg"
+                android:textColor="#999999"
                 android:textSize="20sp"
                 app:layout_constraintBottom_toBottomOf="@id/tvBloodPressureAfterDbp"
                 app:layout_constraintEnd_toStartOf="@id/btnBloodPressureAfter" />
