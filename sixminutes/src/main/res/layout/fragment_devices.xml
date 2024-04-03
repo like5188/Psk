@@ -246,6 +246,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="未连接"
+                android:textColor="#666666"
                 android:textSize="12sp"
                 app:layout_constraintBottom_toBottomOf="@id/tv3"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -310,6 +311,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="未连接"
+                android:textColor="#666666"
                 android:textSize="12sp"
                 app:layout_constraintBottom_toBottomOf="@id/tv4"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -374,6 +376,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="未连接"
+                android:textColor="#666666"
                 android:textSize="12sp"
                 app:layout_constraintBottom_toBottomOf="@id/tv7"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -449,6 +452,17 @@
                 android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvBloodPressureName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#999999"
+                android:textSize="10sp"
+                app:layout_constraintBottom_toBottomOf="@id/tv5"
+                app:layout_constraintStart_toEndOf="@id/tv5"
+                app:layout_constraintTop_toTopOf="@id/tv5"
+                tools:text="(xxx)" />
 
             <TextView
                 android:id="@+id/tvBloodPressureBeforeSbp"

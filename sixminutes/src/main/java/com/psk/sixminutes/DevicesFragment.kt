@@ -194,6 +194,38 @@ class DevicesFragment : BaseLazyFragment() {
             }
         }
         multiBusinessManager.init(requireActivity(), devices)
+        devices?.forEach {
+            when (it) {
+                is BleInfo -> {
+                    when (it.deviceType) {
+                        DeviceType.HeartRate -> {
+                            mBinding.tvHeartRateName.text = "(${it.name})"
+                        }
+
+                        DeviceType.BloodOxygen -> {
+                            mBinding.tvBloodOxygenName.text = "(${it.name})"
+                        }
+
+                        DeviceType.BloodPressure -> {
+                            mBinding.tvBloodPressureName.text = "(${it.name})"
+                        }
+
+                        else -> {}
+                    }
+                }
+
+                is SocketInfo -> {
+                    when (it.deviceType) {
+                        DeviceType.HeartRate -> {
+                            mBinding.tvHeartRateName.text = "(${it.name})"
+                        }
+
+                        else -> {}
+                    }
+
+                }
+            }
+        }
     }
 
     override fun onDestroy() {
