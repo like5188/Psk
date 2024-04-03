@@ -231,13 +231,25 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
+                android:id="@+id/tvHeartRateName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#999999"
+                android:textSize="10sp"
+                app:layout_constraintBottom_toBottomOf="@id/tv3"
+                app:layout_constraintStart_toEndOf="@id/tv3"
+                app:layout_constraintTop_toTopOf="@id/tv3"
+                tools:text="(xxx)" />
+
+            <TextView
                 android:id="@+id/tvHeartRateStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="未连接"
-                android:textSize="16sp"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="@id/tv3"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="@id/tv3" />
 
             <TextView
                 android:id="@+id/tvHeartRate"
@@ -283,13 +295,25 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
+                android:id="@+id/tvBloodOxygenName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#999999"
+                android:textSize="10sp"
+                app:layout_constraintBottom_toBottomOf="@id/tv4"
+                app:layout_constraintStart_toEndOf="@id/tv4"
+                app:layout_constraintTop_toTopOf="@id/tv4"
+                tools:text="(xxx)" />
+
+            <TextView
                 android:id="@+id/tvBloodOxygenStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="未连接"
-                android:textSize="16sp"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="@id/tv4"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="@id/tv4" />
 
             <TextView
                 android:id="@+id/tvBloodOxygen"
@@ -335,13 +359,25 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
+                android:id="@+id/tvLapName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#999999"
+                android:textSize="10sp"
+                app:layout_constraintBottom_toBottomOf="@id/tv7"
+                app:layout_constraintStart_toEndOf="@id/tv7"
+                app:layout_constraintTop_toTopOf="@id/tv7"
+                tools:text="(xxx)" />
+
+            <TextView
                 android:id="@+id/tvLapStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="未连接"
-                android:textSize="16sp"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="@id/tv7"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="@id/tv7" />
 
             <TextView
                 android:id="@+id/tvLapMeters"
