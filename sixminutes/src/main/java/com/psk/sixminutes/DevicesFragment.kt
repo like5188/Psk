@@ -8,18 +8,19 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.like.common.base.BaseLazyFragment
 import com.like.common.util.dp
 import com.like.common.util.mvi.propertyCollector
 import com.like.common.util.showToast
 import com.psk.device.data.model.DeviceType
-import com.psk.sixminutes.business.MultiBusinessManager
 import com.psk.sixminutes.databinding.FragmentDevicesBinding
 import com.psk.sixminutes.model.BleInfo
 import com.psk.sixminutes.model.Info
 import com.psk.sixminutes.model.SocketInfo
 import com.psk.sixminutes.util.createBgPainter
 import com.psk.sixminutes.util.createDynamicDataPainter
+import kotlinx.coroutines.launch
 
 class DevicesFragment : BaseLazyFragment() {
     companion object {
@@ -62,18 +63,49 @@ class DevicesFragment : BaseLazyFragment() {
         ViewModelProvider(this).get(DevicesViewModel::class.java)
     }
     private lateinit var mBinding: FragmentDevicesBinding
-    private val multiBusinessManager by lazy {
-        MultiBusinessManager()
-    }
     private val params = "25 mm/s    10mm/mV"
     private var id: Long = 0L
     private var devices: List<Info>? = null
+    private var singleEcgDialogFragment: SingleEcgDialogFragment? = null
+    private var leadsIndex = 0
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_devices, container, false)
         arguments?.let {
             id = it.getLong(KEY_ID)
             devices = it.getSerializable(KEY_DEVICES) as? List<Info>
+            devices?.forEach {
+                when (it) {
+                    is BleInfo -> {
+                        when (it.deviceType) {
+                            DeviceType.HeartRate -> {
+                                mBinding.tvHeartRateName.text = "(${it.name})"
+                            }
+
+                            DeviceType.BloodOxygen -> {
+                                mBinding.tvBloodOxygenName.text = "(${it.name})"
+                            }
+
+                            DeviceType.BloodPressure -> {
+                                mBinding.tvBloodPressureName.text = "(${it.name})"
+                            }
+
+                            else -> {}
+                        }
+                    }
+
+                    is SocketInfo -> {
+                        when (it.deviceType) {
+                            DeviceType.HeartRate -> {
+                                mBinding.tvHeartRateName.text = "(${it.name})"
+                            }
+
+                            else -> {}
+                        }
+
+                    }
+                }
+            }
             mBinding.tvName.text = it.getString(KEY_NAME, "")
             mBinding.tvAge.text = it.getString(KEY_AGE)
             mBinding.tvSex.text = it.getString(KEY_SEX, "")
@@ -89,161 +121,34 @@ class DevicesFragment : BaseLazyFragment() {
             setBgPainter(createBgPainter())
         }
         mBinding.btnBloodPressureBefore.setOnClickListener {
-            multiBusinessManager.bleBloodPressureBusinessManager.measure { sbp, dbp ->
-                mBinding.tvBloodPressureBeforeSbp.text = sbp.toString()
-                mBinding.tvBloodPressureBeforeDbp.text = dbp.toString()
-            }
+            mViewModel.measureBloodPressureBefore()
         }
         mBinding.btnBloodPressureAfter.setOnClickListener {
-            multiBusinessManager.bleBloodPressureBusinessManager.measure { sbp, dbp ->
-                mBinding.tvBloodPressureAfterSbp.text = sbp.toString()
-                mBinding.tvBloodPressureAfterDbp.text = dbp.toString()
-            }
+            mViewModel.measureBloodPressureAfter()
         }
         mBinding.btnStart.setOnClickListener {
-            devices?.forEach {
-                when (it) {
-                    is BleInfo -> {
-                        when (it.deviceType) {
-                            DeviceType.HeartRate -> {
-                                mBinding.ecgView.setDataPainters(listOf(createDynamicDataPainter()))
-                                mBinding.ecgView.setLeadsNames(listOf("I"))
-                                mBinding.ecgView.setSampleRate(multiBusinessManager.bleHeartRateBusinessManager.getSampleRate())
-                                multiBusinessManager.bleHeartRateBusinessManager.connect(
-                                    id,
-                                    onStatus = {
-                                        mBinding.tvHeartRateStatus.text = it
-                                        when (it) {
-                                            "已连接" -> {
-                                                mBinding.tvHeartRateStatus.setTextColor(Color.GREEN)
-                                            }
-
-                                            "已断开" -> {
-                                                mBinding.tvHeartRateStatus.setTextColor(Color.RED)
-                                            }
-                                        }
-                                    },
-                                    onHeartRateResult = {
-                                        mBinding.tvHeartRate.text = it.toString()
-                                    }) {
-                                    mBinding.ecgView.addData(it)
-                                }
-                            }
-
-                            DeviceType.BloodOxygen -> {
-                                multiBusinessManager.bleBloodOxygenBusinessManager.connect(
-                                    id,
-                                    onStatus = {
-                                        mBinding.tvBloodOxygenStatus.text = it
-                                        when (it) {
-                                            "已连接" -> {
-                                                mBinding.tvBloodOxygenStatus.setTextColor(Color.GREEN)
-                                            }
-
-                                            "已断开" -> {
-                                                mBinding.tvBloodOxygenStatus.setTextColor(Color.RED)
-                                            }
-                                        }
-                                    }
-                                ) {
-                                    mBinding.tvBloodOxygen.text = it.toString()
-                                }
-                            }
-
-                            else -> {}
-                        }
-                    }
-
-                    is SocketInfo -> {
-                        when (it.deviceType) {
-                            DeviceType.HeartRate -> {
-                                val sampleRate = multiBusinessManager.socketHeartRateBusinessManager.getSampleRate()
-                                val leadsNames = listOf(
-                                    "I",
-                                    "II",
-                                    "III",
-                                    "aVR",
-                                    "aVL",
-                                    "aVF",
-                                    "V1",
-                                    "V2",
-                                    "V3",
-                                    "V4",
-                                    "V5",
-                                    "V6"
-                                )
-                                var leadsIndex = 0
-                                var singleEcgDialogFragment: SingleEcgDialogFragment? = null
-                                mBinding.ecgView.setDataPainters((0 until 12).map { createDynamicDataPainter() }) {
-                                    leadsIndex = it
-                                    singleEcgDialogFragment = SingleEcgDialogFragment.newInstance(
-                                        sampleRate, leadsNames[it], params
-                                    ).apply {
-                                        show(this@DevicesFragment)
-                                    }
-                                }
-                                mBinding.ecgView.setLeadsNames(leadsNames)
-                                mBinding.ecgView.setSampleRate(sampleRate)
-                                multiBusinessManager.socketHeartRateBusinessManager.start(
-                                    id,
-                                    onStatus = {
-                                        mBinding.tvHeartRateStatus.text = it
-                                        when (it) {
-                                            "已连接" -> {
-                                                mBinding.tvHeartRateStatus.setTextColor(Color.GREEN)
-                                            }
-
-                                            "已断开" -> {
-                                                mBinding.tvHeartRateStatus.setTextColor(Color.RED)
-                                            }
-                                        }
-                                    },
-                                    onHeartRateResult = {
-                                        mBinding.tvHeartRate.text = it.toString()
-                                    }) {
-                                    mBinding.ecgView.addData(it)
-                                    singleEcgDialogFragment?.addData(it[leadsIndex])
-                                }
-                            }
-
-                            else -> {}
-                        }
-
-                    }
-                }
-            }
+            mViewModel.connect(id, devices)
         }
-        collectUiState()
         return mBinding.root
     }
 
-    private fun collectUiState() {
-        mViewModel.uiState.propertyCollector(this) {
-            collectDistinctProperty(DevicesUiState::date) {
-                mBinding.tvDate.text = it
-            }
-            collectNotHandledEventProperty(DevicesUiState::toastEvent) {
-                requireContext().showToast(toastEvent = it)
-            }
+    override fun onLazyLoadData() {
+        lifecycleScope.launch {
+            mViewModel.init(requireActivity(), devices)
+            initEcgView()
+            collectUiState()
         }
     }
 
-    override fun onLazyLoadData() {
-        multiBusinessManager.init(requireActivity(), devices)
+    private fun initEcgView() {
         devices?.forEach {
             when (it) {
                 is BleInfo -> {
                     when (it.deviceType) {
                         DeviceType.HeartRate -> {
-                            mBinding.tvHeartRateName.text = "(${it.name})"
-                        }
-
-                        DeviceType.BloodOxygen -> {
-                            mBinding.tvBloodOxygenName.text = "(${it.name})"
-                        }
-
-                        DeviceType.BloodPressure -> {
-                            mBinding.tvBloodPressureName.text = "(${it.name})"
+                            mBinding.ecgView.setDataPainters(listOf(createDynamicDataPainter()))
+                            mBinding.ecgView.setLeadsNames(listOf("I"))
+                            mBinding.ecgView.setSampleRate(mViewModel.getSampleRate())
                         }
 
                         else -> {}
@@ -253,7 +158,31 @@ class DevicesFragment : BaseLazyFragment() {
                 is SocketInfo -> {
                     when (it.deviceType) {
                         DeviceType.HeartRate -> {
-                            mBinding.tvHeartRateName.text = "(${it.name})"
+                            val sampleRate = mViewModel.getSampleRate()
+                            val leadsNames = listOf(
+                                "I",
+                                "II",
+                                "III",
+                                "aVR",
+                                "aVL",
+                                "aVF",
+                                "V1",
+                                "V2",
+                                "V3",
+                                "V4",
+                                "V5",
+                                "V6"
+                            )
+                            mBinding.ecgView.setDataPainters((0 until 12).map { createDynamicDataPainter() }) {
+                                leadsIndex = it
+                                singleEcgDialogFragment = SingleEcgDialogFragment.newInstance(
+                                    sampleRate, leadsNames[it], params
+                                ).apply {
+                                    show(this@DevicesFragment)
+                                }
+                            }
+                            mBinding.ecgView.setLeadsNames(leadsNames)
+                            mBinding.ecgView.setSampleRate(sampleRate)
                         }
 
                         else -> {}
@@ -264,9 +193,63 @@ class DevicesFragment : BaseLazyFragment() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        multiBusinessManager.destroy()
+    private fun collectUiState() {
+        mViewModel.uiState.propertyCollector(this) {
+            collectDistinctProperty(DevicesUiState::date) {
+                mBinding.tvDate.text = it
+            }
+            collectDistinctProperty(DevicesUiState::sbpBefore) {
+                mBinding.tvBloodPressureBeforeSbp.text = it.toString()
+            }
+            collectDistinctProperty(DevicesUiState::dbpBefore) {
+                mBinding.tvBloodPressureBeforeDbp.text = it.toString()
+            }
+            collectDistinctProperty(DevicesUiState::sbpAfter) {
+                mBinding.tvBloodPressureAfterSbp.text = it.toString()
+            }
+            collectDistinctProperty(DevicesUiState::dbpAfter) {
+                mBinding.tvBloodPressureAfterDbp.text = it.toString()
+            }
+            collectDistinctProperty(DevicesUiState::heartRateStatus) {
+                mBinding.tvHeartRateStatus.text = it
+                when (it) {
+                    "已连接" -> {
+                        mBinding.tvHeartRateStatus.setTextColor(Color.GREEN)
+                    }
+
+                    "已断开" -> {
+                        mBinding.tvHeartRateStatus.setTextColor(Color.RED)
+                    }
+                }
+            }
+            collectDistinctProperty(DevicesUiState::heartRate) {
+                mBinding.tvHeartRate.text = it.toString()
+            }
+            collectDistinctProperty(DevicesUiState::ecgDatas) {
+                it?.let {
+                    mBinding.ecgView.addData(it)
+                    singleEcgDialogFragment?.addData(it[leadsIndex])
+                }
+            }
+            collectDistinctProperty(DevicesUiState::bloodOxygenStatus) {
+                mBinding.tvBloodOxygenStatus.text = it
+                when (it) {
+                    "已连接" -> {
+                        mBinding.tvBloodOxygenStatus.setTextColor(Color.GREEN)
+                    }
+
+                    "已断开" -> {
+                        mBinding.tvBloodOxygenStatus.setTextColor(Color.RED)
+                    }
+                }
+            }
+            collectDistinctProperty(DevicesUiState::bloodOxygen) {
+                mBinding.tvBloodOxygen.text = it.toString()
+            }
+            collectNotHandledEventProperty(DevicesUiState::toastEvent) {
+                requireContext().showToast(toastEvent = it)
+            }
+        }
     }
 
 }

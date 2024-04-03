@@ -1,7 +1,6 @@
 package com.psk.sixminutes.business
 
 import androidx.activity.ComponentActivity
-import androidx.lifecycle.lifecycleScope
 import com.like.ble.central.util.PermissionUtils
 import com.like.common.util.Logger
 import com.psk.device.DeviceRepositoryManager
@@ -13,7 +12,6 @@ import com.psk.sixminutes.business.socket.SocketHeartRateBusinessManager
 import com.psk.sixminutes.model.BleInfo
 import com.psk.sixminutes.model.Info
 import com.psk.sixminutes.model.SocketInfo
-import kotlinx.coroutines.launch
 
 class MultiBusinessManager {
     val bleHeartRateBusinessManager by lazy {
@@ -29,52 +27,50 @@ class MultiBusinessManager {
         BleBloodPressureBusinessManager()
     }
 
-    fun init(activity: ComponentActivity, devices: List<Info>?) {
+    suspend fun init(activity: ComponentActivity, devices: List<Info>?) {
         if (devices.isNullOrEmpty()) {
             return
         }
-        activity.lifecycleScope.launch {
-            if (devices.any { it is BleInfo }) {
-                if (!PermissionUtils.requestConnectEnvironment(activity)) {
-                    return@launch
-                }
+        if (devices.any { it is BleInfo }) {
+            if (!PermissionUtils.requestConnectEnvironment(activity)) {
+                return
             }
-            DeviceRepositoryManager.init(activity.applicationContext)
-            devices.forEach {
-                Logger.i(it)
-                when (it) {
-                    is BleInfo -> {
-                        when (it.deviceType) {
-                            DeviceType.HeartRate -> {
-                                bleHeartRateBusinessManager.init(activity, it.name, it.address)
-                            }
+        }
+        DeviceRepositoryManager.init(activity.applicationContext)
+        devices.forEach {
+            Logger.i(it)
+            when (it) {
+                is BleInfo -> {
+                    when (it.deviceType) {
+                        DeviceType.HeartRate -> {
+                            bleHeartRateBusinessManager.init(activity, it.name, it.address)
+                        }
 
-                            DeviceType.BloodOxygen -> {
-                                bleBloodOxygenBusinessManager.init(activity, it.name, it.address)
-                            }
+                        DeviceType.BloodOxygen -> {
+                            bleBloodOxygenBusinessManager.init(activity, it.name, it.address)
+                        }
 
-                            DeviceType.BloodPressure -> {
-                                bleBloodPressureBusinessManager.init(activity, it.name, it.address)
-                            }
+                        DeviceType.BloodPressure -> {
+                            bleBloodPressureBusinessManager.init(activity, it.name, it.address)
+                        }
 
-                            else -> {
-                                Logger.e("不支持的设备类型: ${it.deviceType}")
-                            }
+                        else -> {
+                            Logger.e("不支持的设备类型: ${it.deviceType}")
+                        }
+                    }
+                }
+
+                is SocketInfo -> {
+                    when (it.deviceType) {
+                        DeviceType.HeartRate -> {
+                            socketHeartRateBusinessManager.init(activity, it.name, it.hostName, it.port)
+                        }
+
+                        else -> {
+                            Logger.e("不支持的设备类型: ${it.deviceType}")
                         }
                     }
 
-                    is SocketInfo -> {
-                        when (it.deviceType) {
-                            DeviceType.HeartRate -> {
-                                socketHeartRateBusinessManager.init(activity, it.name, it.hostName, it.port)
-                            }
-
-                            else -> {
-                                Logger.e("不支持的设备类型: ${it.deviceType}")
-                            }
-                        }
-
-                    }
                 }
             }
         }
