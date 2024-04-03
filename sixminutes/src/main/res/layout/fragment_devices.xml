@@ -287,6 +287,74 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clLap"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
+            android:background="#ffffff"
+            android:orientation="vertical"
+            android:padding="5dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/ecgView"
+            app:layout_constraintTop_toBottomOf="@id/clBloodOxygen">
+
+            <TextView
+                android:id="@+id/tv7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="记距设备"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toStartOf="@id/tvLapMeters"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvLapMeters"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="---"
+                android:textSize="30sp"
+                app:layout_constraintEnd_toStartOf="@id/tv8"
+                app:layout_constraintHorizontal_weight="1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv7" />
+
+            <TextView
+                android:id="@+id/tv8"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="m"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toBottomOf="@id/tvLapMeters"
+                app:layout_constraintEnd_toStartOf="@id/tvLapCount"
+                app:layout_constraintStart_toEndOf="@id/tvLapMeters" />
+
+            <TextView
+                android:id="@+id/tvLapCount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                android:text="---"
+                android:textSize="30sp"
+                app:layout_constraintEnd_toStartOf="@id/tv9"
+                app:layout_constraintHorizontal_weight="1"
+                app:layout_constraintStart_toEndOf="@id/tv8"
+                app:layout_constraintTop_toBottomOf="@id/tv7" />
+
+            <TextView
+                android:id="@+id/tv9"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="圈"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toBottomOf="@id/tvLapCount"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/tvLapCount" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clBloodPressureBefore"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -297,7 +365,7 @@
             android:padding="5dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/ecgView"
-            app:layout_constraintTop_toBottomOf="@id/clHeartRate">
+            app:layout_constraintTop_toBottomOf="@id/clLap">
 
             <TextView
                 android:id="@+id/tv5"
@@ -426,75 +494,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/tvBloodPressureAfterSbp" />
 
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/clLap"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="5dp"
-            android:background="#ffffff"
-            android:orientation="vertical"
-            android:padding="5dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/ecgView"
-            app:layout_constraintTop_toBottomOf="@id/clBloodPressureAfter">
-
-            <TextView
-                android:id="@+id/tv7"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="记距设备"
-                android:textSize="16sp"
-                app:layout_constraintEnd_toStartOf="@id/tvLapMeters"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/tvLapMeters"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="---"
-                android:textSize="30sp"
-                app:layout_constraintEnd_toStartOf="@id/tv8"
-                app:layout_constraintHorizontal_weight="1"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv7" />
-
-            <TextView
-                android:id="@+id/tv8"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="m"
-                android:textSize="20sp"
-                app:layout_constraintBottom_toBottomOf="@id/tvLapMeters"
-                app:layout_constraintEnd_toStartOf="@id/tvLapCount"
-                app:layout_constraintStart_toEndOf="@id/tvLapMeters" />
-
-            <TextView
-                android:id="@+id/tvLapCount"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="40dp"
-                android:text="---"
-                android:textSize="30sp"
-                app:layout_constraintEnd_toStartOf="@id/tv9"
-                app:layout_constraintHorizontal_weight="1"
-                app:layout_constraintStart_toEndOf="@id/tv8"
-                app:layout_constraintTop_toBottomOf="@id/tv7" />
-
-            <TextView
-                android:id="@+id/tv9"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="圈"
-                android:textSize="20sp"
-                app:layout_constraintBottom_toBottomOf="@id/tvLapCount"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/tvLapCount" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
