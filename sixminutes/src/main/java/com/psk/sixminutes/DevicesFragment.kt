@@ -21,16 +21,34 @@ class DevicesFragment : BaseLazyFragment() {
     companion object {
         private const val KEY_ID = "key_id"
         private const val KEY_DEVICES = "key_devices"
+        private const val KEY_NAME = "key_name"
+        private const val KEY_AGE = "key_age"
+        private const val KEY_SEX = "key_sex"
+        private const val KEY_HEIGHT = "key_height"
+        private const val KEY_WEIGHT = "key_weight"
 
         /**
          * @param id        此次运动唯一id。
          * @param devices   设备信息
          */
-        fun newInstance(id: Long, devices: List<Info>): DevicesFragment {
+        fun newInstance(
+            id: Long,
+            devices: List<Info>,
+            name: String,
+            age: String,
+            sex: String,
+            height: String,
+            weight: String
+        ): DevicesFragment {
             return DevicesFragment().apply {
                 arguments = bundleOf(
                     KEY_ID to id,
-                    KEY_DEVICES to devices
+                    KEY_DEVICES to devices,
+                    KEY_NAME to name,
+                    KEY_AGE to age,
+                    KEY_SEX to sex,
+                    KEY_HEIGHT to height,
+                    KEY_WEIGHT to weight
                 )
             }
         }
@@ -46,8 +64,15 @@ class DevicesFragment : BaseLazyFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_devices, container, false)
-        id = arguments?.getLong(KEY_ID) ?: 0L
-        devices = arguments?.getSerializable(KEY_DEVICES) as? List<Info>
+        arguments?.let {
+            id = it.getLong(KEY_ID)
+            devices = it.getSerializable(KEY_DEVICES) as? List<Info>
+            mBinding.tvName.text = it.getString(KEY_NAME, "")
+            mBinding.tvAge.text = it.getString(KEY_AGE)
+            mBinding.tvSex.text = it.getString(KEY_SEX, "")
+            mBinding.tvHeight.text = it.getString(KEY_HEIGHT)
+            mBinding.tvWeight.text = it.getString(KEY_WEIGHT)
+        }
         if (id == 0L || devices.isNullOrEmpty()) {
             return null
         }

@@ -9,7 +9,6 @@ import com.psk.app.databinding.ActivitySixMinutesBinding
 import com.psk.device.data.model.DeviceType
 import com.psk.sixminutes.DevicesFragment
 import com.psk.sixminutes.model.BleInfo
-import com.psk.sixminutes.model.SocketInfo
 
 class SixMinutesActivity : AppCompatActivity() {
     private val mBinding: ActivitySixMinutesBinding by lazy {
@@ -26,7 +25,8 @@ class SixMinutesActivity : AppCompatActivity() {
 //                BleInfo(DeviceType.HeartRate, "ER1 0455", "E3:93:39:05:53:94"),
                 BleInfo(DeviceType.BloodOxygen, "O2 0214", "DF:04:89:AA:31:23"),
                 BleInfo(DeviceType.BloodPressure, "BP0282A2210040311", "A4:C1:38:50:10:F1"),
-            )
+            ),
+            "like", "18", "男", "173cm", "75kg"
         )
         addFragments(R.id.flContainer, 0, devicesFragment)
     }
