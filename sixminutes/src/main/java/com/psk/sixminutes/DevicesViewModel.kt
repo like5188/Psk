@@ -3,6 +3,7 @@ package com.psk.sixminutes
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.like.common.util.SecondsTimer
 import com.psk.common.util.scheduleFlow
 import com.psk.device.data.model.DeviceType
 import com.psk.sixminutes.business.MultiBusinessManager
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -22,8 +24,20 @@ class DevicesViewModel : ViewModel() {
     private val sdf: SimpleDateFormat by lazy {
         SimpleDateFormat("yyyy-MM-dd HH:mm:ss EEEE")
     }
+    private val decimalFormat = DecimalFormat("00")
     private val multiBusinessManager by lazy {
         MultiBusinessManager()
+    }
+    private val mSecondsTimer by lazy {
+        SecondsTimer().apply {
+            onTick = { seconds ->
+                _uiState.update {
+                    it.copy(
+                        time = "${decimalFormat.format(seconds / 60)}:${decimalFormat.format(seconds % 60)}"
+                    )
+                }
+            }
+        }
     }
 
     init {
@@ -40,6 +54,10 @@ class DevicesViewModel : ViewModel() {
 
     suspend fun init(activity: ComponentActivity, devices: List<Info>?) {
         multiBusinessManager.init(activity, devices)
+    }
+
+    fun startTimer() {
+        mSecondsTimer.start()
     }
 
     fun getSampleRate() = multiBusinessManager.bleHeartRateBusinessManager.getSampleRate()
@@ -157,6 +175,7 @@ class DevicesViewModel : ViewModel() {
     override fun onCleared() {
         super.onCleared()
         multiBusinessManager.destroy()
+        mSecondsTimer.stop()
     }
 
 }

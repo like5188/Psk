@@ -127,7 +127,13 @@ class DevicesFragment : BaseLazyFragment() {
             mViewModel.measureBloodPressureAfter()
         }
         mBinding.btnStart.setOnClickListener {
-            mViewModel.connect(id, devices)
+            if (mBinding.btnStart.text == "开始") {
+                mBinding.btnStart.text = "紧急停止"
+                mViewModel.startTimer()
+                mViewModel.connect(id, devices)
+            } else {
+                requireActivity().finish()
+            }
         }
         return mBinding.root
     }
