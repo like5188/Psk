@@ -156,7 +156,6 @@ class DevicesViewModel : ViewModel() {
 
     override fun onCleared() {
         super.onCleared()
-        println("DevicesViewModel onCleared")
         multiBusinessManager.destroy()
     }
 
