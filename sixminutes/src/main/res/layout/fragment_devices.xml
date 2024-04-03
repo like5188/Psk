@@ -308,7 +308,6 @@
                 android:layout_height="wrap_content"
                 android:text="记距设备"
                 android:textSize="16sp"
-                app:layout_constraintEnd_toStartOf="@id/tvLapMeters"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
