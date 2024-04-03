@@ -122,11 +122,12 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clTime"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_marginStart="5dp"
             android:background="#ffffff"
             android:orientation="vertical"
             android:padding="5dp"
+            app:layout_constraintBottom_toTopOf="@id/clHeartRate"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_weight="2"
             app:layout_constraintStart_toEndOf="@id/ecgView"
@@ -208,12 +209,13 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clHeartRate"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_marginStart="5dp"
             android:layout_marginTop="5dp"
             android:background="#ffffff"
             android:orientation="vertical"
             android:padding="5dp"
+            app:layout_constraintBottom_toTopOf="@id/clLap"
             app:layout_constraintEnd_toStartOf="@id/clBloodOxygen"
             app:layout_constraintStart_toEndOf="@id/ecgView"
             app:layout_constraintTop_toBottomOf="@id/clTime">
@@ -289,12 +291,13 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clLap"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_marginStart="5dp"
             android:layout_marginTop="5dp"
             android:background="#ffffff"
             android:orientation="vertical"
             android:padding="5dp"
+            app:layout_constraintBottom_toTopOf="@id/clBloodPressureBefore"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/ecgView"
             app:layout_constraintTop_toBottomOf="@id/clHeartRate">
@@ -363,6 +366,7 @@
             android:background="#ffffff"
             android:orientation="vertical"
             android:padding="5dp"
+            app:layout_constraintBottom_toTopOf="@id/clBloodPressureAfter"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/ecgView"
             app:layout_constraintTop_toBottomOf="@id/clLap">
@@ -434,6 +438,7 @@
             android:background="#ffffff"
             android:orientation="vertical"
             android:padding="5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/ecgView"
             app:layout_constraintTop_toBottomOf="@id/clBloodPressureBefore">
