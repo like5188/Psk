@@ -7,10 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.ViewModelProvider
 import com.like.common.base.BaseLazyFragment
 import com.like.common.util.dp
-import com.psk.common.util.scheduleFlow
+import com.like.common.util.mvi.propertyCollector
+import com.like.common.util.showToast
 import com.psk.device.data.model.DeviceType
 import com.psk.sixminutes.business.MultiBusinessManager
 import com.psk.sixminutes.databinding.FragmentDevicesBinding
@@ -19,9 +20,6 @@ import com.psk.sixminutes.model.Info
 import com.psk.sixminutes.model.SocketInfo
 import com.psk.sixminutes.util.createBgPainter
 import com.psk.sixminutes.util.createDynamicDataPainter
-import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Date
 
 class DevicesFragment : BaseLazyFragment() {
     companion object {
@@ -60,12 +58,12 @@ class DevicesFragment : BaseLazyFragment() {
         }
     }
 
+    private val mViewModel: DevicesViewModel by lazy {
+        ViewModelProvider(this).get(DevicesViewModel::class.java)
+    }
     private lateinit var mBinding: FragmentDevicesBinding
     private val multiBusinessManager by lazy {
         MultiBusinessManager()
-    }
-    private val sdf: SimpleDateFormat by lazy {
-        SimpleDateFormat("yyyy-MM-dd HH:mm:ss EEEE")
     }
     private val params = "25 mm/s    10mm/mV"
     private var id: Long = 0L
@@ -223,15 +221,22 @@ class DevicesFragment : BaseLazyFragment() {
                 }
             }
         }
+        collectUiState()
         return mBinding.root
     }
 
-    override fun onLazyLoadData() {
-        lifecycleScope.launch {
-            scheduleFlow(0, 1000).collect {
-                mBinding.tvDate.text = sdf.format(Date())
+    private fun collectUiState() {
+        mViewModel.uiState.propertyCollector(this) {
+            collectDistinctProperty(DevicesUiState::date) {
+                mBinding.tvDate.text = it
+            }
+            collectNotHandledEventProperty(DevicesUiState::toastEvent) {
+                requireContext().showToast(toastEvent = it)
             }
         }
+    }
+
+    override fun onLazyLoadData() {
         multiBusinessManager.init(requireActivity(), devices)
         devices?.forEach {
             when (it) {
