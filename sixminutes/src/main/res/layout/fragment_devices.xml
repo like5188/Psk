@@ -103,7 +103,7 @@
             android:layout_height="0dp"
             android:background="#ffffff"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/llTime"
+            app:layout_constraintEnd_toStartOf="@id/clTime"
             app:layout_constraintHorizontal_weight="5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/llTitle" />
@@ -120,7 +120,7 @@
             tools:text="25 mm/s    10mm/mV" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/llTime"
+            android:id="@+id/clTime"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
@@ -207,7 +207,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/llHeartRate"
+            android:id="@+id/clHeartRate"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
@@ -215,9 +215,9 @@
             android:background="#ffffff"
             android:orientation="vertical"
             android:padding="5dp"
-            app:layout_constraintEnd_toStartOf="@id/llBloodOxygen"
+            app:layout_constraintEnd_toStartOf="@id/clBloodOxygen"
             app:layout_constraintStart_toEndOf="@id/ecgView"
-            app:layout_constraintTop_toBottomOf="@id/llTime">
+            app:layout_constraintTop_toBottomOf="@id/clTime">
 
             <TextView
                 android:id="@+id/tv3"
@@ -248,18 +248,18 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/llBloodOxygen"
+            android:id="@+id/clBloodOxygen"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginStart="5dp"
             android:background="#ffffff"
             android:orientation="vertical"
             android:padding="5dp"
-            app:layout_constraintBottom_toBottomOf="@id/llHeartRate"
+            app:layout_constraintBottom_toBottomOf="@id/clHeartRate"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_weight="1"
-            app:layout_constraintStart_toEndOf="@id/llHeartRate"
-            app:layout_constraintTop_toTopOf="@id/llHeartRate">
+            app:layout_constraintStart_toEndOf="@id/clHeartRate"
+            app:layout_constraintTop_toTopOf="@id/clHeartRate">
 
             <TextView
                 android:id="@+id/tv4"
@@ -289,7 +289,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/llBloodPressureBefore"
+            android:id="@+id/clBloodPressureBefore"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
@@ -299,7 +299,7 @@
             android:padding="5dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/ecgView"
-            app:layout_constraintTop_toBottomOf="@id/llHeartRate">
+            app:layout_constraintTop_toBottomOf="@id/clHeartRate">
 
             <TextView
                 android:id="@+id/tv5"
@@ -360,7 +360,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/llBloodPressureAfter"
+            android:id="@+id/clBloodPressureAfter"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
@@ -370,7 +370,7 @@
             android:padding="5dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/ecgView"
-            app:layout_constraintTop_toBottomOf="@id/llBloodPressureBefore">
+            app:layout_constraintTop_toBottomOf="@id/clBloodPressureBefore">
 
             <TextView
                 android:id="@+id/tv6"
@@ -432,7 +432,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/llLap"
+            android:id="@+id/clLap"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginStart="5dp"
@@ -443,7 +443,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/ecgView"
-            app:layout_constraintTop_toBottomOf="@id/llBloodPressureAfter">
+            app:layout_constraintTop_toBottomOf="@id/clBloodPressureAfter">
 
             <TextView
                 android:id="@+id/tv7"
