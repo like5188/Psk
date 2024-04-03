@@ -30,8 +30,7 @@ class MultiBusinessManager {
     }
 
     fun init(
-        activity: ComponentActivity,
-        devices: List<Info>?
+        activity: ComponentActivity, devices: List<Info>?
     ) {
         if (devices.isNullOrEmpty()) {
             return
@@ -49,24 +48,18 @@ class MultiBusinessManager {
                     is BleInfo -> {
                         when (it.deviceType) {
                             DeviceType.HeartRate -> {
-                                bleHeartRateBusinessManager.init(activity.applicationContext, activity.lifecycleScope, it.name, it.address)
+                                bleHeartRateBusinessManager.init(activity, it.name, it.address)
                             }
 
                             DeviceType.BloodOxygen -> {
                                 bleBloodOxygenBusinessManager.init(
-                                    activity.applicationContext,
-                                    activity.lifecycleScope,
-                                    it.name,
-                                    it.address
+                                    activity, it.name, it.address
                                 )
                             }
 
                             DeviceType.BloodPressure -> {
                                 bleBloodPressureBusinessManager.init(
-                                    activity.applicationContext,
-                                    activity.lifecycleScope,
-                                    it.name,
-                                    it.address
+                                    activity, it.name, it.address
                                 )
                             }
 
@@ -80,11 +73,7 @@ class MultiBusinessManager {
                         when (it.deviceType) {
                             DeviceType.HeartRate -> {
                                 socketHeartRateBusinessManager.init(
-                                    activity.applicationContext,
-                                    activity.lifecycleScope,
-                                    it.name,
-                                    it.hostName,
-                                    it.port
+                                    activity, it.name, it.hostName, it.port
                                 )
                             }
 

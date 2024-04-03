@@ -1,7 +1,9 @@
 package com.psk.sixminutes.business.socket
 
 import android.content.Context
+import androidx.activity.ComponentActivity
 import androidx.lifecycle.LifecycleCoroutineScope
+import androidx.lifecycle.lifecycleScope
 import com.like.common.util.showToast
 import com.psk.device.DeviceRepositoryManager
 import com.psk.device.data.model.DeviceType
@@ -21,10 +23,10 @@ class SocketHeartRateBusinessManager {
     private lateinit var lifecycleScope: LifecycleCoroutineScope
     private lateinit var context: Context
 
-    fun init(context: Context, lifecycleScope: LifecycleCoroutineScope, name: String, hostName: String?, port: Int) {
+    fun init(activity: ComponentActivity, name: String, hostName: String?, port: Int) {
         if (isInitialized.compareAndSet(false, true)) {
-            this.context = context
-            this.lifecycleScope = lifecycleScope
+            this.context = activity.applicationContext
+            this.lifecycleScope = activity.lifecycleScope
             repository.init(name, hostName, port)
         }
     }

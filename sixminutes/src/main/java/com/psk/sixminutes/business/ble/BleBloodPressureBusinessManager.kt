@@ -1,7 +1,9 @@
 package com.psk.sixminutes.business.ble
 
 import android.content.Context
+import androidx.activity.ComponentActivity
 import androidx.lifecycle.LifecycleCoroutineScope
+import androidx.lifecycle.lifecycleScope
 import com.like.common.util.showToast
 import com.psk.common.customview.CountDownTimerProgressDialog
 import com.psk.common.customview.ProgressDialog
@@ -24,20 +26,21 @@ class BleBloodPressureBusinessManager {
     private lateinit var lifecycleScope: LifecycleCoroutineScope
     private lateinit var context: Context
 
-    fun init(context: Context, lifecycleScope: LifecycleCoroutineScope, name: String, address: String) {
+    fun init(activity: ComponentActivity, name: String, address: String) {
         if (isInitialized.compareAndSet(false, true)) {
-            this.context = context
-            this.lifecycleScope = lifecycleScope
+            this.context = activity.applicationContext
+            this.lifecycleScope = activity.lifecycleScope
             repository.init(context, name, address)
-            mProgressDialog = ProgressDialog(context, "正在连接血压仪，请稍后……")
-            mCountDownTimerProgressDialog = CountDownTimerProgressDialog(context, "正在测量血压，请稍后！", countDownTime = 0L, onCanceled = {
-                lifecycleScope.launch(Dispatchers.IO) {
-                    job?.cancelAndJoin()// 这里必须等待上一条命令执行完毕，否则会导致stopMeasure失败
-                    job = null
-                    delay(100)
-                    repository.stopMeasure()
-                }
-            })
+            mProgressDialog = ProgressDialog(activity, "正在连接血压仪，请稍后……")
+            mCountDownTimerProgressDialog =
+                CountDownTimerProgressDialog(activity, "正在测量血压，请稍后！", countDownTime = 0L, onCanceled = {
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        job?.cancelAndJoin()// 这里必须等待上一条命令执行完毕，否则会导致stopMeasure失败
+                        job = null
+                        delay(100)
+                        repository.stopMeasure()
+                    }
+                })
         }
     }
 
