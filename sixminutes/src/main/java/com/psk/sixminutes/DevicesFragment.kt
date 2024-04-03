@@ -198,6 +198,9 @@ class DevicesFragment : BaseLazyFragment() {
             collectDistinctProperty(DevicesUiState::date) {
                 mBinding.tvDate.text = it
             }
+            collectDistinctProperty(DevicesUiState::time) {
+                mBinding.tvTime.text = it
+            }
             collectDistinctProperty(DevicesUiState::sbpBefore) {
                 mBinding.tvBloodPressureBeforeSbp.text = it
             }
