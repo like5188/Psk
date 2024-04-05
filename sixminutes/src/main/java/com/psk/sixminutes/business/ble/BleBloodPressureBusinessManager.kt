@@ -45,7 +45,7 @@ class BleBloodPressureBusinessManager {
             startJob(context, lifecycleScope, onBloodPressureResult)
         } else {
             mProgressDialog.show()
-            repository.connect(lifecycleScope, 0L, {
+            repository.connect(lifecycleScope, onConnected = {
                 mProgressDialog.dismiss()
                 context.showToast("血压仪连接成功，开始测量")
                 startJob(context, lifecycleScope, onBloodPressureResult)

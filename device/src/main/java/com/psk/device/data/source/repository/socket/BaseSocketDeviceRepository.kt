@@ -19,6 +19,10 @@ abstract class BaseSocketDeviceRepository<SocketDeviceDataSource : BaseSocketDev
         socketDeviceDataSource.init(hostName, port)
     }
 
+    /**
+     * 启动socket服务
+     * 注意：没有重连功能，因为只是启动了服务器，然后等待客户端来主动连接。所以没办法做自动重连。
+     */
     fun start(
         onStart: (() -> Unit)? = null,
         onOpen: ((address: String?) -> Unit)? = null,

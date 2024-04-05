@@ -43,7 +43,7 @@ class BleHeartRateBusinessManager {
         onEcgResult: (List<List<Float>>) -> Unit
     ) {
         checkInit()
-        repository.connect(lifecycleScope, 0L, {
+        repository.connect(lifecycleScope, onConnected = {
             onStatus("已连接")
             context.showToast("心电仪连接成功")
             val flow = repository.getFlow(lifecycleScope, orderId).filterNotNull()

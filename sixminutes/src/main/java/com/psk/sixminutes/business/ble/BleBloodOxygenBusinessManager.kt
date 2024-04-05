@@ -31,7 +31,7 @@ class BleBloodOxygenBusinessManager {
 
     fun connect(orderId: Long, onStatus: (String) -> Unit, onBloodOxygenResult: (Int) -> Unit) {
         checkInit()
-        repository.connect(lifecycleScope, 0L, {
+        repository.connect(lifecycleScope, onConnected = {
             onStatus("已连接")
             context.showToast("血氧仪连接成功")
             val flow = repository.getFlow(lifecycleScope, orderId, 1000)
