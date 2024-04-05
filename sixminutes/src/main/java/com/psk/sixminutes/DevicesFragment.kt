@@ -68,6 +68,7 @@ class DevicesFragment : BaseLazyFragment() {
     private var devices: List<Info>? = null
     private var singleEcgDialogFragment: SingleEcgDialogFragment? = null
     private var leadsIndex = 0
+    private var onTick: ((Int) -> Unit)? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_devices, container, false)
@@ -208,7 +209,8 @@ class DevicesFragment : BaseLazyFragment() {
                 mBinding.tvTime.text = it
             }
             collectDistinctProperty(DevicesUiState::progress) {
-                mBinding.pb.setProgress(it, true)
+                mBinding.pb.progress = it
+                onTick?.invoke(it)
             }
             collectDistinctProperty(DevicesUiState::finish) {
                 if (it) {
@@ -263,19 +265,45 @@ class DevicesFragment : BaseLazyFragment() {
             collectDistinctProperty(DevicesUiState::bloodOxygen) {
                 mBinding.tvBloodOxygen.text = it
             }
-            collectDistinctProperty(DevicesUiState::lapStatus) {
-                mBinding.tvLapStatus.text = it
-            }
-            collectDistinctProperty(DevicesUiState::lapMeters) {
-                mBinding.tvLapMeters.text = it
-            }
-            collectDistinctProperty(DevicesUiState::lapCount) {
-                mBinding.tvLapCount.text = it
-            }
             collectNotHandledEventProperty(DevicesUiState::toastEvent) {
                 requireContext().showToast(toastEvent = it)
             }
         }
     }
 
+    /**
+     * 设置秒数回调监听
+     */
+    fun setOnTickListener(onTick: (Int) -> Unit) {
+        this.onTick = onTick
+    }
+
+    /**
+     * 设置记圈设备名称
+     */
+    fun setLapName(name: String) {
+        mBinding.tvLapName.text = "($name)"
+    }
+
+    /**
+     * 更新记圈设备连接状态
+     * @param status 连接状态。包括："未连接"、"已连接"、"已断开"
+     */
+    fun updateLapStatus(status: String) {
+        mBinding.tvLapStatus.text = status
+    }
+
+    /**
+     * 更新记圈设备米数
+     */
+    fun updateLapMeters(meters: String) {
+        mBinding.tvLapMeters.text = meters
+    }
+
+    /**
+     * 更新记圈设备圈数
+     */
+    fun updateLapCount(count: String) {
+        mBinding.tvLapCount.text = count
+    }
 }

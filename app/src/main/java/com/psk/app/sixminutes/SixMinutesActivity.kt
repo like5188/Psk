@@ -3,13 +3,16 @@ package com.psk.app.sixminutes
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.lifecycleScope
 import com.like.common.base.addFragments
 import com.psk.app.R
 import com.psk.app.databinding.ActivitySixMinutesBinding
 import com.psk.device.data.model.DeviceType
 import com.psk.sixminutes.DevicesFragment
-import com.psk.sixminutes.model.BleInfo
 import com.psk.sixminutes.model.SocketInfo
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 
 class SixMinutesActivity : AppCompatActivity() {
     private val mBinding: ActivitySixMinutesBinding by lazy {
@@ -30,6 +33,25 @@ class SixMinutesActivity : AppCompatActivity() {
             "like", "18", "男", "173cm", "75kg"
         )
         addFragments(R.id.flContainer, 0, devicesFragment)
+        devicesFragment.setOnTickListener {
+            println(it)
+        }
+        lifecycleScope.launch {
+            delay(1000)
+            devicesFragment.setLapName("xxxxxxxxx")
+            devicesFragment.updateLapStatus("未连接")
+            delay(3000)
+            devicesFragment.updateLapStatus("已连接")
+            var lapCount = 0
+            var lapMeters = 0
+            while (isActive) {
+                lapCount++
+                lapMeters++
+                devicesFragment.updateLapCount(lapCount.toString())
+                devicesFragment.updateLapMeters(lapMeters.toString())
+                delay(1000)
+            }
+        }
     }
 
 }
