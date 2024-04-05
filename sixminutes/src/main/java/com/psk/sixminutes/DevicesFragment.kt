@@ -84,6 +84,12 @@ class DevicesFragment : BaseLazyFragment() {
 
                             DeviceType.BloodOxygen -> {
                                 mBinding.tvBloodOxygenName.text = "(${it.name})"
+                                mBinding.btnBloodPressureBefore.setOnClickListener {
+                                    mViewModel.measureBloodPressureBefore()
+                                }
+                                mBinding.btnBloodPressureAfter.setOnClickListener {
+                                    mViewModel.measureBloodPressureAfter()
+                                }
                             }
 
                             DeviceType.BloodPressure -> {
@@ -119,12 +125,6 @@ class DevicesFragment : BaseLazyFragment() {
         mBinding.ecgView.apply {
             setGridSize(10f.dp)
             setBgPainter(createBgPainter())
-        }
-        mBinding.btnBloodPressureBefore.setOnClickListener {
-            mViewModel.measureBloodPressureBefore()
-        }
-        mBinding.btnBloodPressureAfter.setOnClickListener {
-            mViewModel.measureBloodPressureAfter()
         }
         mBinding.btnStart.setOnClickListener {
             if (mBinding.btnStart.text == "开始") {
