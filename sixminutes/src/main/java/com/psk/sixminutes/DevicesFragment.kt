@@ -135,6 +135,10 @@ class DevicesFragment : BaseLazyFragment() {
                 requireActivity().finish()
             }
         }
+        mBinding.linearProgressIndicator.apply {
+            max = 480
+            setIndicatorColor(Color.RED, Color.GREEN, Color.BLUE)
+        }
         return mBinding.root
     }
 
@@ -206,6 +210,9 @@ class DevicesFragment : BaseLazyFragment() {
             }
             collectDistinctProperty(DevicesUiState::time) {
                 mBinding.tvTime.text = it
+            }
+            collectDistinctProperty(DevicesUiState::progress) {
+                mBinding.linearProgressIndicator.progress = it
             }
             collectDistinctProperty(DevicesUiState::finish) {
                 if (it) {

@@ -44,7 +44,8 @@ class DevicesViewModel : ViewModel() {
                     } else {
                         _uiState.update {
                             it.copy(
-                                time = "${decimalFormat.format(seconds / 60)}:${decimalFormat.format(seconds % 60)}"
+                                time = "${decimalFormat.format(seconds / 60)}:${decimalFormat.format(seconds % 60)}",
+                                progress = seconds
                             )
                         }
                     }
