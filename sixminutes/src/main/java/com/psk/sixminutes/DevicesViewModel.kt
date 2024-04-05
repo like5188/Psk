@@ -69,7 +69,13 @@ class DevicesViewModel : ViewModel() {
         mSecondsTimer.start()
     }
 
-    fun getSampleRate() = multiBusinessManager.bleHeartRateBusinessManager.getSampleRate()
+    fun getSampleRate(info: Info) = if (info is BleInfo && info.deviceType == DeviceType.HeartRate) {
+        multiBusinessManager.bleHeartRateBusinessManager.getSampleRate()
+    } else if (info is SocketInfo && info.deviceType == DeviceType.HeartRate) {
+        multiBusinessManager.socketHeartRateBusinessManager.getSampleRate()
+    } else {
+        0
+    }
 
     fun connect(id: Long, devices: List<Info>?) {
         devices?.forEach {

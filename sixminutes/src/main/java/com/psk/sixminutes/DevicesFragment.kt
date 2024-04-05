@@ -154,7 +154,7 @@ class DevicesFragment : BaseLazyFragment() {
                         DeviceType.HeartRate -> {
                             mBinding.ecgView.setDataPainters(listOf(createDynamicDataPainter()))
                             mBinding.ecgView.setLeadsNames(listOf("I"))
-                            mBinding.ecgView.setSampleRate(mViewModel.getSampleRate())
+                            mBinding.ecgView.setSampleRate(mViewModel.getSampleRate(it))
                         }
 
                         else -> {}
@@ -164,7 +164,7 @@ class DevicesFragment : BaseLazyFragment() {
                 is SocketInfo -> {
                     when (it.deviceType) {
                         DeviceType.HeartRate -> {
-                            val sampleRate = mViewModel.getSampleRate()
+                            val sampleRate = mViewModel.getSampleRate(it)
                             val leadsNames = listOf(
                                 "I",
                                 "II",
