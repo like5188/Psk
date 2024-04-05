@@ -3,7 +3,6 @@ package com.psk.sixminutes
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.like.common.util.SecondsTimer
 import com.psk.common.util.scheduleFlow
 import com.psk.device.data.model.DeviceType
 import com.psk.sixminutes.business.MultiBusinessManager
@@ -28,30 +27,28 @@ class DevicesViewModel : ViewModel() {
     private val multiBusinessManager by lazy {
         MultiBusinessManager()
     }
-    private val mSecondsTimer by lazy {
-        SecondsTimer().apply {
-            onTick = { seconds ->
-                if (seconds > 8 * 60L) {
-                    stop()
-                    _uiState.update {
-                        it.copy(
-                            finish = true
-                        )
-                    }
-                } else {
-                    _uiState.update {
-                        it.copy(
-                            time = "${decimalFormat.format(seconds / 60)}:${decimalFormat.format(seconds % 60)}"
-                        )
-                    }
-                }
-            }
-        }
-    }
+    private var startTimer = false
+    private var seconds = 0
 
     init {
         viewModelScope.launch {
             scheduleFlow(0, 1000).collect {
+                if (startTimer) {
+                    seconds++
+                    if (seconds > 8 * 60) {// 8分钟
+                        _uiState.update {
+                            it.copy(
+                                finish = true
+                            )
+                        }
+                    } else {
+                        _uiState.update {
+                            it.copy(
+                                time = "${decimalFormat.format(seconds / 60)}:${decimalFormat.format(seconds % 60)}"
+                            )
+                        }
+                    }
+                }
                 _uiState.update {
                     it.copy(
                         date = sdf.format(Date())
@@ -66,7 +63,7 @@ class DevicesViewModel : ViewModel() {
     }
 
     fun startTimer() {
-        mSecondsTimer.start()
+        startTimer = true
     }
 
     fun getSampleRate(info: Info) = if (info is BleInfo && info.deviceType == DeviceType.HeartRate) {
@@ -190,7 +187,6 @@ class DevicesViewModel : ViewModel() {
     override fun onCleared() {
         super.onCleared()
         multiBusinessManager.destroy()
-        mSecondsTimer.stop()
     }
 
 }
