@@ -45,7 +45,7 @@ class SocketHeartRateBusinessManager {
         checkInit()
         repository.start(
             onStart = {
-                context.showToast("心电仪服务器启动成功")
+                context.showToast("心电仪服务器启动成功，等待客户端连接……")
             },
             onOpen = { address ->
                 onStatus("已连接")
