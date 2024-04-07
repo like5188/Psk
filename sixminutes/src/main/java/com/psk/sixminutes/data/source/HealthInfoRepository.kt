@@ -18,10 +18,13 @@ class HealthInfoRepository {
 
     suspend fun insertOrUpdate(data: HealthInfo) {
         val orderId = data.orderId
-        if (getByOrderId(orderId) == null) {
-            println(dbDataSource.insert(data))
+        val oldData = getByOrderId(orderId)
+        if (oldData == null) {
+            dbDataSource.insert(data)
         } else {
-            println(dbDataSource.update(data))
+            // 因为 update 方法是根据 id 来进行更新的。
+            val dataWithId = data.copy(id = oldData.id)
+            dbDataSource.update(dataWithId)
         }
     }
 
