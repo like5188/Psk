@@ -153,9 +153,18 @@ class DevicesFragment : BaseLazyFragment() {
                 is BleInfo -> {
                     when (it.deviceType) {
                         DeviceType.HeartRate -> {
-                            mBinding.ecgView.setDataPainters(listOf(createDynamicDataPainter()))
-                            mBinding.ecgView.setLeadsNames(listOf("I"))
-                            mBinding.ecgView.setSampleRate(mViewModel.getSampleRate(it))
+                            val sampleRate = mViewModel.getSampleRate(it)
+                            val leadsNames = listOf("I")
+                            mBinding.ecgView.setDataPainters(listOf(createDynamicDataPainter())) {
+                                leadsIndex = it
+                                singleEcgDialogFragment = SingleEcgDialogFragment.newInstance(
+                                    sampleRate, leadsNames[it], params
+                                ).apply {
+                                    show(this@DevicesFragment)
+                                }
+                            }
+                            mBinding.ecgView.setLeadsNames(leadsNames)
+                            mBinding.ecgView.setSampleRate(sampleRate)
                         }
 
                         else -> {}
