@@ -19,7 +19,7 @@ class SixMinutesActivity : AppCompatActivity() {
     private val mBinding: ActivitySixMinutesBinding by lazy {
         DataBindingUtil.setContentView(this, R.layout.activity_six_minutes)
     }
-    private var orderId = 3L
+    private var orderId = 1L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
