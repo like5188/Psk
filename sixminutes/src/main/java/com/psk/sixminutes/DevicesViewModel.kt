@@ -35,6 +35,7 @@ class DevicesViewModel : ViewModel() {
     }
     private var startTimer = false
     private var seconds = 0
+    private var devices: List<Info>? = null
 
     init {
         viewModelScope.launch {
@@ -67,24 +68,9 @@ class DevicesViewModel : ViewModel() {
         }
     }
 
-    suspend fun init(activity: ComponentActivity, devices: List<Info>?) {
+    suspend fun init(activity: ComponentActivity, orderId: Long, devices: List<Info>?) {
         multiBusinessManager.init(activity, devices)
         SixMinutesDatabaseManager.init(activity.applicationContext)
-    }
-
-    fun startTimer() {
-        startTimer = true
-    }
-
-    fun getSampleRate(info: Info) = if (info is BleInfo && info.deviceType == DeviceType.HeartRate) {
-        multiBusinessManager.bleHeartRateBusinessManager.getSampleRate()
-    } else if (info is SocketInfo && info.deviceType == DeviceType.HeartRate) {
-        multiBusinessManager.socketHeartRateBusinessManager.getSampleRate()
-    } else {
-        0
-    }
-
-    fun connect(orderId: Long, devices: List<Info>?) {
         _uiState.update {
             it.copy(
                 healthInfo = it.healthInfo.copy(
@@ -92,6 +78,26 @@ class DevicesViewModel : ViewModel() {
                 )
             )
         }
+        this.devices = devices
+    }
+
+    fun startTimer() {
+        startTimer = true
+    }
+
+    fun getSampleRate(): Int {
+        devices?.forEach {
+            if (it is BleInfo && it.deviceType == DeviceType.HeartRate) {
+                return multiBusinessManager.bleHeartRateBusinessManager.getSampleRate()
+            } else if (it is SocketInfo && it.deviceType == DeviceType.HeartRate) {
+                return multiBusinessManager.socketHeartRateBusinessManager.getSampleRate()
+            }
+        }
+        return 0
+    }
+
+    fun connect() {
+        val orderId = _uiState.value.healthInfo.orderId
         devices?.forEach {
             when (it) {
                 is BleInfo -> {

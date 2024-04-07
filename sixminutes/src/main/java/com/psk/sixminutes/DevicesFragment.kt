@@ -127,7 +127,7 @@ class DevicesFragment : BaseLazyFragment() {
             if (mBinding.btnStart.text == "开始") {
                 mBinding.btnStart.text = "紧急停止"
                 mViewModel.startTimer()
-                mViewModel.connect(orderId, devices)
+                mViewModel.connect()
             } else {
                 onStop?.invoke()
             }
@@ -137,7 +137,7 @@ class DevicesFragment : BaseLazyFragment() {
 
     override fun onLazyLoadData() {
         lifecycleScope.launch {
-            mViewModel.init(requireActivity(), devices)
+            mViewModel.init(requireActivity(), orderId, devices)
             initEcgView()
             collectUiState()
         }
@@ -149,7 +149,7 @@ class DevicesFragment : BaseLazyFragment() {
                 is BleInfo -> {
                     when (it.deviceType) {
                         DeviceType.HeartRate -> {
-                            val sampleRate = mViewModel.getSampleRate(it)
+                            val sampleRate = mViewModel.getSampleRate()
                             val leadsNames = listOf("I")
                             mBinding.ecgView.setDataPainters(listOf(createDynamicDataPainter())) {
                                 leadsIndex = it
@@ -170,7 +170,7 @@ class DevicesFragment : BaseLazyFragment() {
                 is SocketInfo -> {
                     when (it.deviceType) {
                         DeviceType.HeartRate -> {
-                            val sampleRate = mViewModel.getSampleRate(it)
+                            val sampleRate = mViewModel.getSampleRate()
                             val leadsNames = listOf(
                                 "I", "II", "III", "aVR", "aVL", "aVF", "V1", "V2", "V3", "V4", "V5", "V6"
                             )

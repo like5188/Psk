@@ -19,7 +19,7 @@ class SixMinutesActivity : AppCompatActivity() {
     private val mBinding: ActivitySixMinutesBinding by lazy {
         DataBindingUtil.setContentView(this, R.layout.activity_six_minutes)
     }
-    private var orderId = 1L
+    private var orderId = 111L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,10 +71,10 @@ class SixMinutesActivity : AppCompatActivity() {
                 println("heartRateList: $this")
             }
             ReportUtils.getInstance().getBloodPressureBeforeByOrderId(orderId).apply {
-                println("bloodPressureBefore: $this")
+                println("bloodPressureBefore: orderId=$orderId $this")
             }
             ReportUtils.getInstance().getBloodPressureAfterByOrderId(orderId).apply {
-                println("bloodPressureAfter: $this")
+                println("bloodPressureAfter: orderId=$orderId $this")
             }
         }
     }
