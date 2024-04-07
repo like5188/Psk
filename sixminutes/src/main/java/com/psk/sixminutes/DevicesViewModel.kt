@@ -185,7 +185,7 @@ class DevicesViewModel : ViewModel() {
                 bloodPressureBefore = bloodPressure
             )
             viewModelScope.launch(Dispatchers.IO) {
-                healthInfoRepository.insert(healthInfo)
+                healthInfoRepository.insertOrUpdate(healthInfo)
                 _uiState.update {
                     it.copy(
                         healthInfo = healthInfo,
@@ -201,7 +201,7 @@ class DevicesViewModel : ViewModel() {
                 bloodPressureAfter = bloodPressure
             )
             viewModelScope.launch(Dispatchers.IO) {
-                healthInfoRepository.insert(healthInfo)
+                healthInfoRepository.insertOrUpdate(healthInfo)
                 _uiState.update {
                     it.copy(
                         healthInfo = healthInfo,

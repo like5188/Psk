@@ -13,4 +13,8 @@ class HealthInfoDbDataSource(private val healthInfoDao: HealthInfoDao) {
         healthInfoDao.insert(data)
     }
 
+    suspend fun update(data: HealthInfo) {
+        healthInfoDao.update(data)
+    }
+
 }

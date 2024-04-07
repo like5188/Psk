@@ -16,9 +16,13 @@ class HealthInfoRepository {
         return dbDataSource.getByOrderId(orderId)?.firstOrNull()
     }
 
-    // todo insertOrUpdate
-    suspend fun insert(data: HealthInfo) {
-        dbDataSource.insert(data)
+    suspend fun insertOrUpdate(data: HealthInfo) {
+        val orderId = data.orderId
+        if (dbDataSource.getByOrderId(orderId) != null) {
+            dbDataSource.update(data)
+        } else {
+            dbDataSource.insert(data)
+        }
     }
 
 }
