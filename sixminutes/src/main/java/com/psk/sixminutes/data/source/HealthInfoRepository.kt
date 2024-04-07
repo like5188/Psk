@@ -18,10 +18,10 @@ class HealthInfoRepository {
 
     suspend fun insertOrUpdate(data: HealthInfo) {
         val orderId = data.orderId
-        if (dbDataSource.getByOrderId(orderId) != null) {
-            dbDataSource.update(data)
+        if (getByOrderId(orderId) == null) {
+            println(dbDataSource.insert(data))
         } else {
-            dbDataSource.insert(data)
+            println(dbDataSource.update(data))
         }
     }
 
