@@ -6,9 +6,12 @@ import androidx.lifecycle.viewModelScope
 import com.psk.common.util.scheduleFlow
 import com.psk.device.data.model.DeviceType
 import com.psk.sixminutes.business.MultiBusinessManager
-import com.psk.sixminutes.model.BleInfo
-import com.psk.sixminutes.model.Info
-import com.psk.sixminutes.model.SocketInfo
+import com.psk.sixminutes.data.db.SixMinutesDatabaseManager
+import com.psk.sixminutes.data.model.BleInfo
+import com.psk.sixminutes.data.model.Info
+import com.psk.sixminutes.data.model.SocketInfo
+import com.psk.sixminutes.data.source.HealthInfoRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -27,6 +30,9 @@ class DevicesViewModel : ViewModel() {
     private val multiBusinessManager by lazy {
         MultiBusinessManager()
     }
+    private val healthInfoRepository: HealthInfoRepository by lazy {
+        HealthInfoRepository()
+    }
     private var startTimer = false
     private var seconds = 0
 
@@ -35,18 +41,20 @@ class DevicesViewModel : ViewModel() {
             scheduleFlow(0, 1000).collect {
                 if (startTimer) {
                     seconds++
-                    if (seconds > 8 * 60) {// 8分钟
-                        _uiState.update {
-                            it.copy(
-                                finish = true
-                            )
-                        }
-                    } else {
+                    if (seconds <= 60 * 8) {// 8分钟
                         _uiState.update {
                             it.copy(
                                 time = "${decimalFormat.format(seconds / 60)}:${decimalFormat.format(seconds % 60)}",
                                 progress = seconds
                             )
+                        }
+                    } else {
+                        if (!_uiState.value.completed && _uiState.value.healthInfo.bloodPressureAfter != null) {
+                            _uiState.update {
+                                it.copy(
+                                    completed = true
+                                )
+                            }
                         }
                     }
                 }
@@ -61,6 +69,7 @@ class DevicesViewModel : ViewModel() {
 
     suspend fun init(activity: ComponentActivity, devices: List<Info>?) {
         multiBusinessManager.init(activity, devices)
+        SixMinutesDatabaseManager.init(activity.applicationContext)
     }
 
     fun startTimer() {
@@ -75,14 +84,21 @@ class DevicesViewModel : ViewModel() {
         0
     }
 
-    fun connect(id: Long, devices: List<Info>?) {
+    fun connect(orderId: Long, devices: List<Info>?) {
+        _uiState.update {
+            it.copy(
+                healthInfo = it.healthInfo.copy(
+                    orderId = orderId
+                )
+            )
+        }
         devices?.forEach {
             when (it) {
                 is BleInfo -> {
                     when (it.deviceType) {
                         DeviceType.HeartRate -> {
                             multiBusinessManager.bleHeartRateBusinessManager.connect(
-                                id,
+                                orderId,
                                 onStatus = { status ->
                                     _uiState.update {
                                         it.copy(
@@ -107,7 +123,7 @@ class DevicesViewModel : ViewModel() {
 
                         DeviceType.BloodOxygen -> {
                             multiBusinessManager.bleBloodOxygenBusinessManager.connect(
-                                id,
+                                orderId,
                                 onStatus = { status ->
                                     _uiState.update {
                                         it.copy(
@@ -132,7 +148,7 @@ class DevicesViewModel : ViewModel() {
                     when (it.deviceType) {
                         DeviceType.HeartRate -> {
                             multiBusinessManager.socketHeartRateBusinessManager.start(
-                                id,
+                                orderId,
                                 onStatus = { status ->
                                     _uiState.update {
                                         it.copy(
@@ -164,23 +180,33 @@ class DevicesViewModel : ViewModel() {
     }
 
     fun measureBloodPressureBefore() {
-        multiBusinessManager.bleBloodPressureBusinessManager.measure { sbp, dbp ->
-            _uiState.update {
-                it.copy(
-                    sbpBefore = sbp.toString(),
-                    dbpBefore = dbp.toString()
-                )
+        multiBusinessManager.bleBloodPressureBusinessManager.measure { bloodPressure ->
+            val healthInfo = _uiState.value.healthInfo.copy(
+                bloodPressureBefore = bloodPressure
+            )
+            viewModelScope.launch(Dispatchers.IO) {
+                healthInfoRepository.insert(healthInfo)
+                _uiState.update {
+                    it.copy(
+                        healthInfo = healthInfo,
+                    )
+                }
             }
         }
     }
 
     fun measureBloodPressureAfter() {
-        multiBusinessManager.bleBloodPressureBusinessManager.measure { sbp, dbp ->
-            _uiState.update {
-                it.copy(
-                    sbpAfter = sbp.toString(),
-                    dbpAfter = dbp.toString()
-                )
+        multiBusinessManager.bleBloodPressureBusinessManager.measure { bloodPressure ->
+            val healthInfo = _uiState.value.healthInfo.copy(
+                bloodPressureAfter = bloodPressure
+            )
+            viewModelScope.launch(Dispatchers.IO) {
+                healthInfoRepository.insert(healthInfo)
+                _uiState.update {
+                    it.copy(
+                        healthInfo = healthInfo,
+                    )
+                }
             }
         }
     }

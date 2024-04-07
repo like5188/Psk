@@ -5,11 +5,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.like.common.base.addFragments
+import com.like.common.util.showToast
 import com.psk.app.R
 import com.psk.app.databinding.ActivitySixMinutesBinding
 import com.psk.device.data.model.DeviceType
 import com.psk.sixminutes.DevicesFragment
-import com.psk.sixminutes.model.SocketInfo
+import com.psk.sixminutes.data.model.SocketInfo
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -35,6 +36,12 @@ class SixMinutesActivity : AppCompatActivity() {
         addFragments(R.id.flContainer, 0, devicesFragment)
         devicesFragment.setOnTickListener {
             println(it)
+        }
+        devicesFragment.setOnCompletedListener {
+            showToast("OnCompleted")
+        }
+        devicesFragment.setOnStopListener {
+            showToast("OnStop")
         }
         lifecycleScope.launch {
             delay(1000)

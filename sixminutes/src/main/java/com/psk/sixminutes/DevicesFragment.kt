@@ -14,17 +14,17 @@ import com.like.common.util.dp
 import com.like.common.util.mvi.propertyCollector
 import com.like.common.util.showToast
 import com.psk.device.data.model.DeviceType
+import com.psk.sixminutes.data.model.BleInfo
+import com.psk.sixminutes.data.model.Info
+import com.psk.sixminutes.data.model.SocketInfo
 import com.psk.sixminutes.databinding.FragmentDevicesBinding
-import com.psk.sixminutes.model.BleInfo
-import com.psk.sixminutes.model.Info
-import com.psk.sixminutes.model.SocketInfo
 import com.psk.sixminutes.util.createBgPainter
 import com.psk.sixminutes.util.createDynamicDataPainter
 import kotlinx.coroutines.launch
 
 class DevicesFragment : BaseLazyFragment() {
     companion object {
-        private const val KEY_ID = "key_id"
+        private const val KEY_ORDER_ID = "key_order_id"
         private const val KEY_DEVICES = "key_devices"
         private const val KEY_NAME = "key_name"
         private const val KEY_AGE = "key_age"
@@ -33,21 +33,15 @@ class DevicesFragment : BaseLazyFragment() {
         private const val KEY_WEIGHT = "key_weight"
 
         /**
-         * @param id        此次运动唯一id。
+         * @param orderId   此次运动唯一id。
          * @param devices   设备信息
          */
         fun newInstance(
-            id: Long,
-            devices: List<Info>,
-            name: String,
-            age: String,
-            sex: String,
-            height: String,
-            weight: String
+            orderId: Long, devices: List<Info>, name: String, age: String, sex: String, height: String, weight: String
         ): DevicesFragment {
             return DevicesFragment().apply {
                 arguments = bundleOf(
-                    KEY_ID to id,
+                    KEY_ORDER_ID to orderId,
                     KEY_DEVICES to devices,
                     KEY_NAME to name,
                     KEY_AGE to age,
@@ -64,16 +58,18 @@ class DevicesFragment : BaseLazyFragment() {
     }
     private lateinit var mBinding: FragmentDevicesBinding
     private val params = "25 mm/s    10mm/mV"
-    private var id: Long = 0L
+    private var orderId: Long = 0L
     private var devices: List<Info>? = null
     private var singleEcgDialogFragment: SingleEcgDialogFragment? = null
     private var leadsIndex = 0
     private var onTick: ((Int) -> Unit)? = null
+    private var onStop: (() -> Unit)? = null
+    private var onCompleted: (() -> Unit)? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_devices, container, false)
         arguments?.let {
-            id = it.getLong(KEY_ID)
+            orderId = it.getLong(KEY_ORDER_ID)
             devices = it.getSerializable(KEY_DEVICES) as? List<Info>
             devices?.forEach {
                 when (it) {
@@ -85,16 +81,16 @@ class DevicesFragment : BaseLazyFragment() {
 
                             DeviceType.BloodOxygen -> {
                                 mBinding.tvBloodOxygenName.text = "(${it.name})"
+                            }
+
+                            DeviceType.BloodPressure -> {
+                                mBinding.tvBloodPressureName.text = "(${it.name})"
                                 mBinding.btnBloodPressureBefore.setOnClickListener {
                                     mViewModel.measureBloodPressureBefore()
                                 }
                                 mBinding.btnBloodPressureAfter.setOnClickListener {
                                     mViewModel.measureBloodPressureAfter()
                                 }
-                            }
-
-                            DeviceType.BloodPressure -> {
-                                mBinding.tvBloodPressureName.text = "(${it.name})"
                             }
 
                             else -> {}
@@ -119,7 +115,7 @@ class DevicesFragment : BaseLazyFragment() {
             mBinding.tvHeight.text = it.getString(KEY_HEIGHT)
             mBinding.tvWeight.text = it.getString(KEY_WEIGHT)
         }
-        if (id == 0L || devices.isNullOrEmpty()) {
+        if (orderId == 0L || devices.isNullOrEmpty()) {
             return null
         }
         mBinding.tvEcgParams.text = params
@@ -131,9 +127,9 @@ class DevicesFragment : BaseLazyFragment() {
             if (mBinding.btnStart.text == "开始") {
                 mBinding.btnStart.text = "紧急停止"
                 mViewModel.startTimer()
-                mViewModel.connect(id, devices)
+                mViewModel.connect(orderId, devices)
             } else {
-                requireActivity().finish()
+                onStop?.invoke()
             }
         }
         return mBinding.root
@@ -176,18 +172,7 @@ class DevicesFragment : BaseLazyFragment() {
                         DeviceType.HeartRate -> {
                             val sampleRate = mViewModel.getSampleRate(it)
                             val leadsNames = listOf(
-                                "I",
-                                "II",
-                                "III",
-                                "aVR",
-                                "aVL",
-                                "aVF",
-                                "V1",
-                                "V2",
-                                "V3",
-                                "V4",
-                                "V5",
-                                "V6"
+                                "I", "II", "III", "aVR", "aVL", "aVF", "V1", "V2", "V3", "V4", "V5", "V6"
                             )
                             mBinding.ecgView.setDataPainters((0 until 12).map { createDynamicDataPainter() }) {
                                 leadsIndex = it
@@ -221,22 +206,16 @@ class DevicesFragment : BaseLazyFragment() {
                 mBinding.pb.progress = it
                 onTick?.invoke(it)
             }
-            collectDistinctProperty(DevicesUiState::finish) {
+            collectDistinctProperty(DevicesUiState::completed) {
                 if (it) {
-                    requireContext().showToast("运动完毕")
+                    onCompleted?.invoke()
                 }
             }
-            collectDistinctProperty(DevicesUiState::sbpBefore) {
-                mBinding.tvBloodPressureBeforeSbp.text = it
-            }
-            collectDistinctProperty(DevicesUiState::dbpBefore) {
-                mBinding.tvBloodPressureBeforeDbp.text = it
-            }
-            collectDistinctProperty(DevicesUiState::sbpAfter) {
-                mBinding.tvBloodPressureAfterSbp.text = it
-            }
-            collectDistinctProperty(DevicesUiState::dbpAfter) {
-                mBinding.tvBloodPressureAfterDbp.text = it
+            collectDistinctProperty(DevicesUiState::healthInfo) {
+                mBinding.tvBloodPressureBeforeSbp.text = it.bloodPressureBefore?.sbp?.toString() ?: "---"
+                mBinding.tvBloodPressureBeforeDbp.text = it.bloodPressureBefore?.dbp?.toString() ?: "---"
+                mBinding.tvBloodPressureAfterSbp.text = it.bloodPressureAfter?.sbp?.toString() ?: "---"
+                mBinding.tvBloodPressureAfterDbp.text = it.bloodPressureAfter?.dbp?.toString() ?: "---"
             }
             collectDistinctProperty(DevicesUiState::heartRateStatus) {
                 mBinding.tvHeartRateStatus.text = it
@@ -278,6 +257,20 @@ class DevicesFragment : BaseLazyFragment() {
                 requireContext().showToast(toastEvent = it)
             }
         }
+    }
+
+    /**
+     * 运动完成监听
+     */
+    fun setOnCompletedListener(onCompleted: () -> Unit) {
+        this.onCompleted = onCompleted
+    }
+
+    /**
+     * 紧急停止按钮点击监听
+     */
+    fun setOnStopListener(onStop: () -> Unit) {
+        this.onStop = onStop
     }
 
     /**

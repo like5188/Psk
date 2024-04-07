@@ -9,9 +9,9 @@ import com.psk.sixminutes.business.ble.BleBloodOxygenBusinessManager
 import com.psk.sixminutes.business.ble.BleBloodPressureBusinessManager
 import com.psk.sixminutes.business.ble.BleHeartRateBusinessManager
 import com.psk.sixminutes.business.socket.SocketHeartRateBusinessManager
-import com.psk.sixminutes.model.BleInfo
-import com.psk.sixminutes.model.Info
-import com.psk.sixminutes.model.SocketInfo
+import com.psk.sixminutes.data.model.BleInfo
+import com.psk.sixminutes.data.model.Info
+import com.psk.sixminutes.data.model.SocketInfo
 
 class MultiBusinessManager {
     val bleHeartRateBusinessManager by lazy {

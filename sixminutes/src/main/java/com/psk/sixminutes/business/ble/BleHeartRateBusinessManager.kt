@@ -36,6 +36,16 @@ class BleHeartRateBusinessManager {
         return repository.getSampleRate()
     }
 
+    fun disconnect() {
+        job?.cancel()
+        job = null
+        // 避免未初始化时调用报错
+        try {
+            repository.close()
+        } catch (e: Exception) {
+        }
+    }
+
     fun connect(
         orderId: Long,
         onStatus: (String) -> Unit,
@@ -67,16 +77,6 @@ class BleHeartRateBusinessManager {
             context.showToast("心电仪连接失败")
             job?.cancel()
             job = null
-        }
-    }
-
-    fun disconnect() {
-        job?.cancel()
-        job = null
-        // 避免未初始化时调用报错
-        try {
-            repository.close()
-        } catch (e: Exception) {
         }
     }
 

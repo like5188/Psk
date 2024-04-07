@@ -1,4 +1,4 @@
-package com.psk.sixminutes.model
+package com.psk.sixminutes.data.model
 
 import com.psk.device.data.model.DeviceType
 import java.io.Serializable

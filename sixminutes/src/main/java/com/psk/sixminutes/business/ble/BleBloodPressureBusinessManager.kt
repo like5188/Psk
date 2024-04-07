@@ -8,6 +8,7 @@ import com.like.common.util.showToast
 import com.psk.common.customview.CountDownTimerProgressDialog
 import com.psk.common.customview.ProgressDialog
 import com.psk.device.DeviceRepositoryManager
+import com.psk.device.data.model.BloodPressure
 import com.psk.device.data.model.DeviceType
 import com.psk.device.data.source.repository.ble.BloodPressureRepository
 import kotlinx.coroutines.Dispatchers
@@ -39,7 +40,7 @@ class BleBloodPressureBusinessManager {
         }
     }
 
-    fun measure(onBloodPressureResult: (Int, Int) -> Unit) {
+    fun measure(onBloodPressureResult: (BloodPressure) -> Unit) {
         checkInit()
         if (repository.isConnected()) {
             startJob(context, lifecycleScope, onBloodPressureResult)
@@ -66,7 +67,7 @@ class BleBloodPressureBusinessManager {
         repository.stopMeasure()
     }
 
-    private fun startJob(context: Context, lifecycleScope: LifecycleCoroutineScope, onBloodPressureResult: (Int, Int) -> Unit) {
+    private fun startJob(context: Context, lifecycleScope: LifecycleCoroutineScope, onBloodPressureResult: (BloodPressure) -> Unit) {
         if (job != null) {
             context.showToast("正在测量，请稍后")
             return
@@ -79,7 +80,7 @@ class BleBloodPressureBusinessManager {
             if (bloodPressure == null) {
                 context.showToast("测量失败，请重新测量！")
             } else {
-                onBloodPressureResult(bloodPressure.sbp, bloodPressure.dbp)
+                onBloodPressureResult(bloodPressure)
             }
             job?.cancel()
             job = null
