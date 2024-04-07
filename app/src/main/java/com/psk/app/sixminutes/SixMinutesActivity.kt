@@ -62,7 +62,7 @@ class SixMinutesActivity : AppCompatActivity() {
         }
     }
 
-    fun report() {
+    private fun report() {
         lifecycleScope.launch {
             ReportUtils.getInstance().getBloodOxygenListByOrderId(orderId).apply {
                 println("bloodOxygenList: $this")
