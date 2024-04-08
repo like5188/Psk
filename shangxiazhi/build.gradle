@@ -5,12 +5,12 @@ plugins {
 }
 
 android {
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId "com.psk.shangxiazhi"
         minSdk 25// remotecommands-release 要求
-        targetSdk 32
+        targetSdk 33
         versionCode 1
         versionName "V1.0.1"
 
