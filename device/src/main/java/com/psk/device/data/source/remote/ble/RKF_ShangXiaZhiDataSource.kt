@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.flowOn
 
 /**
  * 瑞甲上下肢康复机数据源
+ * remotecommands-release.aar 控制上下肢康复机的命令
  */
 class RKF_ShangXiaZhiDataSource : BaseShangXiaZhiDataSource() {
     override val protocol = Protocol(

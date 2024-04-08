@@ -41,6 +41,7 @@ if (parsable instanceof EcgPack) {	// 或者 pack.cmd == CCmd.ECG
 */
 /**
  * SCI411C 心电仪数据源
+ * cbelt-release-v0.1.aar
  */
 class C0_HeartRateDataSource : BaseHeartRateDataSource() {
     override val protocol = Protocol(
