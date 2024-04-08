@@ -24,8 +24,10 @@ class SixMinutesActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mBinding
+        // DevicesFragment 是运动界面
         val devicesFragment = DevicesFragment.newInstance(
-            orderId,
+            orderId,// 此次运动唯一id。
+            // 需要接入的设备信息。BleInfo：说明是蓝牙设备；SocketInfo：说明是socket设备。
             listOf(
 //                SocketInfo(DeviceType.HeartRate, "ICV200A", null, 7777),
                 BleInfo(DeviceType.HeartRate, "A00213000316", "A0:02:13:00:03:16"),
@@ -36,44 +38,55 @@ class SixMinutesActivity : AppCompatActivity() {
             "like", "18", "男", "173cm", "75kg"
         )
         addFragments(R.id.flContainer, 0, devicesFragment)
+        // 计时监听：0~480
         devicesFragment.setOnTickListener {
             println(it)
         }
+        // 运动完成监听。计时完成并且运动后血压测量完成
         devicesFragment.setOnCompletedListener {
-            report()
+            getHistory()
+            finish()
         }
+        // 紧急停止点击监听
         devicesFragment.setOnStopListener {
-            report()
+            getHistory()
+            finish()
         }
+        // 记距设备设置
         lifecycleScope.launch {
             delay(1000)
-            devicesFragment.setLapName("xxxxxxxxx")
+            devicesFragment.setLapName("记距设备名称")
             devicesFragment.updateLapStatus("未连接")
             delay(3000)
             devicesFragment.updateLapStatus("已连接")
-            var lapCount = 0
-            var lapMeters = 0
+            var lapCount = 0// 圈数
+            var lapMeters = 0// 米数
             while (isActive) {
                 lapCount++
                 lapMeters++
-                devicesFragment.updateLapCount(lapCount.toString())
-                devicesFragment.updateLapMeters(lapMeters.toString())
+                devicesFragment.updateLapCount(lapCount.toString())// 更新圈数
+                devicesFragment.updateLapMeters(lapMeters.toString())// 更新米数
                 delay(1000)
             }
         }
     }
 
-    private fun report() {
+    // 获取历史数据
+    private fun getHistory() {
         lifecycleScope.launch {
+            // 获取血氧数据
             ReportUtils.getInstance().getBloodOxygenListByOrderId(orderId).apply {
                 println("bloodOxygenList: $this")
             }
+            // 获取心率数据
             ReportUtils.getInstance().getHeartRateListByOrderId(orderId).apply {
                 println("heartRateList: $this")
             }
+            // 获取运动前血压数据
             ReportUtils.getInstance().getBloodPressureBeforeByOrderId(orderId).apply {
                 println("bloodPressureBefore: orderId=$orderId $this")
             }
+            // 获取运动后血压数据
             ReportUtils.getInstance().getBloodPressureAfterByOrderId(orderId).apply {
                 println("bloodPressureAfter: orderId=$orderId $this")
             }
