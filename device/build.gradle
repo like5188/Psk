@@ -40,7 +40,7 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     // room
     kapt 'androidx.room:room-compiler:2.4.3'
@@ -50,4 +50,7 @@ dependencies {
     api 'org.java-websocket:Java-WebSocket:1.5.4'
 
     implementation project(':common')
+    implementation project(':aar:cbelt-release')
+    implementation project(':aar:remotecommands')
+    implementation project(':aar:stardata')
 }

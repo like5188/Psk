@@ -1,0 +1,4 @@
+configurations.maybeCreate("default")
+artifacts.add("default", file('cbelt-release'))
+artifacts.add("default", file('remotecommands'))
+artifacts.add("default", file('stardata'))
