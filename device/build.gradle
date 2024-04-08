@@ -31,16 +31,17 @@ android {
             outputFileName = "device-${defaultConfig.versionName}.aar"
         }
     }
+}
 
-    repositories {
-        flatDir {
-            dirs 'libs'
-        }
+repositories {
+    flatDir {
+        dirs 'libs'
     }
 }
 
 dependencies {
-    // 如果这里添加 '*.aar', 把模块打包aar文件时会报错：Direct local .aar file dependencies are not supported when building an AAR.
+    // 如果这里使用 implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar']) 来引用 aar 包,
+    // 那么把模块打包aar文件时会报错：Direct local .aar file dependencies are not supported when building an AAR.
     // 所以下面单独引用每个 aar 文件。
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     // 深圳星康医疗科技有限公司 SCI-311W 数据解析包。还要两外添加 libECGMonitor.so。
