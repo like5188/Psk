@@ -2,7 +2,6 @@ plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
-    id 'maven-publish'
 }
 
 android {
@@ -51,18 +50,4 @@ dependencies {
     api 'org.java-websocket:Java-WebSocket:1.5.4'
 
     implementation project(':common')
-}
-
-afterEvaluate {
-    publishing {
-        publications {
-            // Creates a Maven publication called "release".
-            release(MavenPublication) {
-                from components.release
-                groupId = 'com.github.like5188.Psk'
-                artifactId = 'device'
-                version = '0.0.3'
-            }
-        }
-    }
 }
