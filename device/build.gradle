@@ -40,7 +40,15 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+    // 如果这里添加 '*.aar', 把模块打包aar文件时会报错：Direct local .aar file dependencies are not supported when building an AAR.
+    // 所以下面单独引用每个 aar 文件。
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    // 深圳星康医疗科技有限公司 SCI-311W 数据解析包。还要两外添加 libECGMonitor.so。
+    implementation(name: 'stardata-release', ext: 'aar')
+    // 控制上下肢康复机的命令
+    implementation(name: 'remotecommands-release', ext: 'aar')
+    // SCI-411C
+    implementation(name: 'cbelt-release-v0.1', ext: 'aar')
 
     // room
     kapt 'androidx.room:room-compiler:2.4.3'

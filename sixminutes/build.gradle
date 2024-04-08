@@ -40,9 +40,16 @@ android {
     dataBinding {
         enabled true
     }
+
+    repositories {
+        flatDir {
+            dirs 'libs', '../device/libs'
+        }
+    }
 }
 
 dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
     implementation project(':common')
     implementation project(':device')
     implementation project(':ecg')
