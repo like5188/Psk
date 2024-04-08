@@ -58,21 +58,19 @@ android {
             outputFileName = "康复机系统-${defaultConfig.versionName}-${releaseTime()}.apk"
         }
     }
-
-    repositories {
-        flatDir {
-            dirs 'libs', '../device/libs'
-        }
-    }
 }
 
 static def releaseTime() {
     return new Date().format("yyyyMMddHHmmss", TimeZone.getTimeZone("GMT+8"))
 }
 
-dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+repositories {
+    flatDir {
+        dirs 'libs', '../device/libs'
+    }
+}
 
+dependencies {
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
     // room
     kapt 'androidx.room:room-compiler:2.4.3'

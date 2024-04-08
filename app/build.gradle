@@ -39,13 +39,12 @@ android {
     }
     repositories {
         flatDir {
-            dirs 'libs', '../device/libs'
+            dirs '../device/libs'
         }
     }
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
     implementation 'androidx.core:core-ktx:1.8.0'
     implementation 'androidx.appcompat:appcompat:1.4.1'
     implementation 'com.google.android.material:material:1.5.0'
