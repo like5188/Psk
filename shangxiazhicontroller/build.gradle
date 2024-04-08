@@ -52,10 +52,11 @@ android {
             outputFileName = "康复机监控软件-${defaultConfig.versionName}.apk"
         }
     }
-    repositories {
-        flatDir {
-            dirs '../device/libs'
-        }
+}
+
+repositories {
+    flatDir {
+        dirs '../device/libs'
     }
 }
 

@@ -37,10 +37,11 @@ android {
     dataBinding {
         enabled true
     }
-    repositories {
-        flatDir {
-            dirs '../device/libs'
-        }
+}
+
+repositories {
+    flatDir {
+        dirs '../device/libs'
     }
 }
 
