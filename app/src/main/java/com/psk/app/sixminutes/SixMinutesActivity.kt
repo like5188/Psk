@@ -37,6 +37,7 @@ class SixMinutesActivity : AppCompatActivity() {
             ),
             "like", "18", "男", "173cm", "75kg"
         )
+        // 把 DevicesFragment 界面添加到 Activity 中
         addFragments(R.id.flContainer, 0, devicesFragment)
         // 计时监听：0~480
         devicesFragment.setOnTickListener {
