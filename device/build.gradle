@@ -49,8 +49,9 @@ dependencies {
     api 'com.github.like5188.Ble:central:2.4.5'
     api 'org.java-websocket:Java-WebSocket:1.5.4'
 
+    api project(':aar:cbelt-release')
+    api project(':aar:remotecommands')
+    api project(':aar:stardata')
+
     implementation project(':common')
-    implementation project(':aar:cbelt-release')
-    implementation project(':aar:remotecommands')
-    implementation project(':aar:stardata')
 }
