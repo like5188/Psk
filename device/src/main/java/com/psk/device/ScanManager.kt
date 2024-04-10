@@ -14,6 +14,7 @@ import com.psk.device.ScanManager.startScan
 import com.psk.device.data.model.DeviceType
 import com.psk.device.data.source.remote.ble.BleDataSourceFactory
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.filter
@@ -55,30 +56,34 @@ object ScanManager {
      * 扫描指定设备类型的设备
      */
     @SuppressLint("MissingPermission")
-    fun startScan(deviceType: DeviceType): Flow<ScanResult> = scanExecutor.startScan().catch {
-        when (it) {
-            is BleExceptionCancelTimeout -> {
-                // 提前取消超时不做处理。因为这是调用 stopScan() 造成的，使用者可以直接在 stopScan() 方法结束后处理 UI 的显示，不需要此回调。
-            }
+    fun startScan(
+        deviceType: DeviceType,
+        catch: suspend FlowCollector<ScanResult>.(Throwable) -> Unit = {
+            when (it) {
+                is BleExceptionCancelTimeout -> {
+                    // 提前取消超时不做处理。因为这是调用 stopScan() 造成的，使用者可以直接在 stopScan() 方法结束后处理 UI 的显示，不需要此回调。
+                }
 
-            is BleExceptionBusy -> {
-                // 扫描中
-                Logger.w("扫描 失败：${it.message}")
-            }
+                is BleExceptionBusy -> {
+                    // 扫描中
+                    Logger.w("扫描 失败：${it.message}")
+                }
 
-            is BleExceptionTimeout -> {
-                // 扫描完成
-            }
+                is BleExceptionTimeout -> {
+                    // 扫描完成
+                }
 
-            else -> {
-                // 扫描出错
-                Logger.e("扫描 失败：${it.message}")
+                else -> {
+                    // 扫描出错
+                    Logger.e("扫描 失败：${it.message}")
+                }
             }
         }
-    }.conflate()// 如果消费者还在处理，则丢弃新的数据。然后消费者处理完后，再去获取生产者中的最新数据来处理。
+    ): Flow<ScanResult> = scanExecutor.startScan().catch(catch).conflate()// 如果消费者还在处理，则丢弃新的数据。然后消费者处理完后，再去获取生产者中的最新数据来处理。
         .filter {
             val name = it.device.name
             val address = it.device.address
+            println("name:$name,address:$address")
             !name.isNullOrEmpty() && !address.isNullOrEmpty() && deviceType.containsDevice(name)
         }
 

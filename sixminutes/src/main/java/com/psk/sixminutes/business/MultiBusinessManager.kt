@@ -4,6 +4,7 @@ import androidx.activity.ComponentActivity
 import com.like.ble.central.util.PermissionUtils
 import com.like.common.util.Logger
 import com.psk.device.DeviceRepositoryManager
+import com.psk.device.ScanManager
 import com.psk.device.data.model.DeviceType
 import com.psk.sixminutes.business.ble.BleBloodOxygenBusinessManager
 import com.psk.sixminutes.business.ble.BleBloodPressureBusinessManager
@@ -31,12 +32,24 @@ class MultiBusinessManager {
         if (devices.isNullOrEmpty()) {
             return
         }
-        if (devices.any { it is BleInfo }) {
-            if (!PermissionUtils.requestConnectEnvironment(activity)) {
-                return
+        val hasBleInfo = devices.any { it is BleInfo }
+        // 对于6分钟的机器，连接血氧需要先扫描，然后才能连接。
+        val hasBloodOxygen = devices.any { it is BleInfo && it.deviceType == DeviceType.BloodOxygen }
+        if (hasBleInfo) {
+            if (hasBloodOxygen) {
+                if (!PermissionUtils.requestScanEnvironment(activity)) {
+                    return
+                }
+            } else {
+                if (!PermissionUtils.requestConnectEnvironment(activity)) {
+                    return
+                }
             }
         }
         DeviceRepositoryManager.init(activity.applicationContext)
+        if (hasBloodOxygen) {
+            ScanManager.init(activity.applicationContext)
+        }
         devices.forEach {
             Logger.i(it)
             when (it) {
