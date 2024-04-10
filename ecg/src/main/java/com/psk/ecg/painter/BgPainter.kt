@@ -25,7 +25,11 @@ class BgPainter(
      * 创建背景图片
      */
     override fun init(w: Int, h: Int, gridSize: Float, mm_per_s: Int, mm_per_mv: Int, leadsCount: Int, leadsNames: List<String>?) {
-        bgBitmap?.recycle()
+        bgBitmap?.let {
+            if (!it.isRecycled) {
+                it.recycle()
+            }
+        }
         bgBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888).apply {
             val canvas = Canvas(this)
             drawHLine(canvas, (h / gridSize).toInt() + 1, w, gridSize)
