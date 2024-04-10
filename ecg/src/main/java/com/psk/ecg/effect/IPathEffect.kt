@@ -7,6 +7,8 @@ import java.util.LinkedList
  * 数据绘制效果
  */
 interface IPathEffect {
+    fun init()
+
     fun handleData(
         data: Float,
         drawDataList: LinkedList<Float>,

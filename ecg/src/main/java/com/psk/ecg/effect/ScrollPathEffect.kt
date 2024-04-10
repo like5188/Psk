@@ -7,6 +7,9 @@ import java.util.LinkedList
  * 滚动效果
  */
 class ScrollPathEffect : IPathEffect {
+    override fun init() {
+    }
+
     override fun handleData(data: Float, drawDataList: LinkedList<Float>, maxDataCount: Int) {
         // 最多只绘制 maxDataCount 个数据
         if (drawDataList.size == maxDataCount) {

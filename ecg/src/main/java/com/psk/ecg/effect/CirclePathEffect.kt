@@ -11,6 +11,11 @@ class CirclePathEffect(private val spaceDataCount: Int = 10) : IPathEffect {
     private var spaceIndex = 0// 循环效果时，不需要画线的数据的index。即视图中看起来是空白的部分。
     private var isFull = false// 是否是满数据状态
 
+    override fun init() {
+        spaceIndex = 0
+        isFull = false
+    }
+
     override fun handleData(data: Float, drawDataList: LinkedList<Float>, maxDataCount: Int) {
         isFull = drawDataList.size == maxDataCount
         // 最多只绘制 maxDataCount 个数据

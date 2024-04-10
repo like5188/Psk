@@ -61,6 +61,8 @@ class DynamicDataPainter(private val pathEffect: IPathEffect, private val paint:
             numbersOfEachDraw = sampleRate / circleTimesPerSecond
             Log.i(TAG, "period=$period circleTimesPerSecond=$circleTimesPerSecond numbersOfEachDraw=$numbersOfEachDraw")
         }
+        drawDataList.clear()
+        pathEffect.init()
     }
 
     override fun draw(canvas: Canvas) {
