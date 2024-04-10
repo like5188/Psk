@@ -7,9 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import com.like.common.base.BaseLazyFragment
 import com.like.common.util.dp
 import com.like.common.util.mvi.propertyCollector
 import com.like.common.util.showToast
@@ -22,7 +22,7 @@ import com.psk.sixminutes.util.createBgPainter
 import com.psk.sixminutes.util.createDynamicDataPainter
 import kotlinx.coroutines.launch
 
-class DevicesFragment : BaseLazyFragment() {
+class DevicesFragment : Fragment() {
     companion object {
         private const val KEY_ORDER_ID = "key_order_id"
         private const val KEY_DEVICES = "key_devices"
@@ -71,6 +71,32 @@ class DevicesFragment : BaseLazyFragment() {
         arguments?.let {
             orderId = it.getLong(KEY_ORDER_ID)
             devices = it.getSerializable(KEY_DEVICES) as? List<Info>
+            mBinding.tvName.text = it.getString(KEY_NAME, "")
+            mBinding.tvAge.text = it.getString(KEY_AGE)
+            mBinding.tvSex.text = it.getString(KEY_SEX, "")
+            mBinding.tvHeight.text = it.getString(KEY_HEIGHT)
+            mBinding.tvWeight.text = it.getString(KEY_WEIGHT)
+        }
+        if (orderId == 0L || devices.isNullOrEmpty()) {
+            return null
+        }
+        mBinding.tvEcgParams.text = params
+        mBinding.ecgView.apply {
+            setGridSize(10f.dp)
+            setBgPainter(createBgPainter())
+        }
+        lifecycleScope.launch {
+            mViewModel.init(requireActivity(), orderId, devices)
+            // 以下的代码都使用到了mViewModel，所以需要等待mViewModel初始化完成之后再执行
+            mBinding.btnStart.setOnClickListener {
+                if (mBinding.btnStart.text == "开始") {
+                    mBinding.btnStart.text = "紧急停止"
+                    mViewModel.startTimer()
+                    mViewModel.connect()
+                } else {
+                    onStop?.invoke()
+                }
+            }
             devices?.forEach {
                 when (it) {
                     is BleInfo -> {
@@ -109,38 +135,10 @@ class DevicesFragment : BaseLazyFragment() {
                     }
                 }
             }
-            mBinding.tvName.text = it.getString(KEY_NAME, "")
-            mBinding.tvAge.text = it.getString(KEY_AGE)
-            mBinding.tvSex.text = it.getString(KEY_SEX, "")
-            mBinding.tvHeight.text = it.getString(KEY_HEIGHT)
-            mBinding.tvWeight.text = it.getString(KEY_WEIGHT)
-        }
-        if (orderId == 0L || devices.isNullOrEmpty()) {
-            return null
-        }
-        mBinding.tvEcgParams.text = params
-        mBinding.ecgView.apply {
-            setGridSize(10f.dp)
-            setBgPainter(createBgPainter())
-        }
-        mBinding.btnStart.setOnClickListener {
-            if (mBinding.btnStart.text == "开始") {
-                mBinding.btnStart.text = "紧急停止"
-                mViewModel.startTimer()
-                mViewModel.connect()
-            } else {
-                onStop?.invoke()
-            }
-        }
-        return mBinding.root
-    }
-
-    override fun onLazyLoadData() {
-        lifecycleScope.launch {
-            mViewModel.init(requireActivity(), orderId, devices)
             initEcgView()
-            collectUiState()
         }
+        collectUiState()
+        return mBinding.root
     }
 
     private fun initEcgView() {
