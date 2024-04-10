@@ -61,6 +61,9 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
      * @param sampleRate        采样率。
      */
     fun setSampleRate(sampleRate: Int) {
+        if (this.sampleRate == sampleRate) {
+            return
+        }
         this.sampleRate = sampleRate
         calcParams()
     }
@@ -92,6 +95,9 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
      * @param mm_per_s          走速（速度）。默认为标准值：25mm/s
      */
     fun setMmPerS(mm_per_s: Int) {
+        if (this.mm_per_s == mm_per_s) {
+            return
+        }
         this.mm_per_s = mm_per_s
         calcParams()
     }
@@ -100,6 +106,9 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
      * @param mm_per_mv         增益（灵敏度）。默认为 1倍：10mm/mV
      */
     fun setMmPerMv(mm_per_mv: Int) {
+        if (this.mm_per_mv == mm_per_mv) {
+            return
+        }
         this.mm_per_mv = mm_per_mv
         calcParams()
     }
@@ -108,6 +117,9 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
      * @param gridSize          一个小格子对应的像素值。默认为设备屏幕上1mm对应的像素，即一个小格子为1mm。
      */
     fun setGridSize(gridSize: Float) {
+        if (this.gridSize == gridSize) {
+            return
+        }
         this.gridSize = gridSize
         calcParams()
     }
@@ -116,6 +128,9 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
      * @param leadsNames        导联名字集合。
      */
     fun setLeadsNames(leadsNames: List<String>) {
+        if (this.leadsNames == leadsNames) {
+            return
+        }
         this.leadsNames = leadsNames
         calcParams()
     }
@@ -136,6 +151,7 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
             TAG,
             "calcParams sampleRate=$sampleRate mm_per_s=$mm_per_s mm_per_mv=$mm_per_mv gridSize=$gridSize leadsCount=$leadsCount width=$width height=$height leadsNames=$leadsNames"
         )
+        cancelJob("init")
         bgPainter?.init(width, height, gridSize, mm_per_s, mm_per_mv, leadsCount, leadsNames)
         dataPainters?.forEachIndexed { index, dataPainter ->
             // 根据采样率计算
@@ -202,4 +218,6 @@ abstract class BaseEcgView(context: Context, attrs: AttributeSet?) : BaseSurface
     )
 
     protected abstract fun startDraw()
+
+    protected abstract fun cancelJob(cause: String)
 }

@@ -67,6 +67,9 @@ class StaticEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(contex
         }
     }
 
+    override fun cancelJob(cause: String) {
+    }
+
     override fun onInitData(
         dataPainter: IDataPainter,
         mm_per_mv: Int,

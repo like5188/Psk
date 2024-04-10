@@ -115,7 +115,7 @@ class DynamicEcgView(context: Context, attrs: AttributeSet?) : BaseEcgView(conte
         doDraw(canvas)
     }
 
-    private fun cancelJob(cause: String) {
+    override fun cancelJob(cause: String) {
         synchronized(this@DynamicEcgView) {
             Log.w(TAG, "cancelJob $cause")
             job?.cancel()
