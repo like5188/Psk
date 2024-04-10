@@ -2,6 +2,7 @@ package com.psk.sixminutes
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +11,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.like.common.base.BaseLazyFragment
-import com.like.common.util.dp
 import com.like.common.util.mvi.propertyCollector
 import com.like.common.util.showToast
 import com.psk.common.customview.ProgressDialog
@@ -85,7 +85,6 @@ class DevicesFragment : BaseLazyFragment() {
         }
         mBinding.tvEcgParams.text = getEcgParams()
         mBinding.ecgView.apply {
-            setGridSize(10f.dp)
             setBgPainter(createBgPainter())
         }
         mProgressDialog = ProgressDialog(requireContext(), "正在初始化，请稍后……")
@@ -161,7 +160,11 @@ class DevicesFragment : BaseLazyFragment() {
                             mBinding.ecgView.setDataPainters(listOf(createDynamicDataPainter())) {
                                 leadsIndex = it
                                 singleEcgDialogFragment = SingleEcgDialogFragment.newInstance(
-                                    sampleRate, leadsNames[it], mm_per_s, mm_per_mv, 10f
+                                    sampleRate,
+                                    leadsNames[it],
+                                    mm_per_s,
+                                    mm_per_mv,
+                                    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_MM, 1f, requireContext().resources.displayMetrics)
                                 ).apply {
                                     show(this@DevicesFragment)
                                 }
@@ -184,7 +187,11 @@ class DevicesFragment : BaseLazyFragment() {
                             mBinding.ecgView.setDataPainters((0 until 12).map { createDynamicDataPainter() }) {
                                 leadsIndex = it
                                 singleEcgDialogFragment = SingleEcgDialogFragment.newInstance(
-                                    sampleRate, leadsNames[it], mm_per_s, mm_per_mv, 10f
+                                    sampleRate,
+                                    leadsNames[it],
+                                    mm_per_s,
+                                    mm_per_mv,
+                                    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_MM, 1f, requireContext().resources.displayMetrics)
                                 ).apply {
                                     show(this@DevicesFragment)
                                 }
