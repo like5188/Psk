@@ -6,10 +6,10 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="?attr/colorOnPrimary"
+        android:background="#ffffff"
         android:padding="15dp">
 
-        <com.google.android.material.progressindicator.CircularProgressIndicator
+        <ProgressBar
             android:id="@+id/cpi"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -18,7 +18,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.textview.MaterialTextView
+        <TextView
             android:id="@+id/tvTicker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -28,7 +28,7 @@
             app:layout_constraintTop_toTopOf="@id/cpi"
             tools:text="60" />
 
-        <com.google.android.material.textview.MaterialTextView
+        <TextView
             android:id="@+id/tvContent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -38,7 +38,7 @@
             app:layout_constraintTop_toBottomOf="@id/cpi"
             tools:text="60" />
 
-        <com.google.android.material.button.MaterialButton
+        <Button
             android:id="@+id/btnCancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

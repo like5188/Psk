@@ -30,10 +30,10 @@ class SixMinutesActivity : AppCompatActivity() {
             // 需要接入的设备信息。BleInfo：说明是蓝牙设备；SocketInfo：说明是socket设备。
             listOf(
 //                SocketInfo(DeviceType.HeartRate, "ICV200A", null, 7777),
-                BleInfo(DeviceType.HeartRate, "A00213000316", "A0:02:13:00:03:16"),
+//                BleInfo(DeviceType.HeartRate, "A00213000316", "A0:02:13:00:03:16"),
 //                BleInfo(DeviceType.HeartRate, "ER1 0455", "E3:93:39:05:53:94"),
 //                BleInfo(DeviceType.BloodOxygen, "O2 0214", "DF:04:89:AA:31:23"),
-//                BleInfo(DeviceType.BloodPressure, "BP0282A2210040311", "A4:C1:38:50:10:F1"),
+                BleInfo(DeviceType.BloodPressure, "BP0282A2210040311", "A4:C1:38:50:10:F1"),
             ),
             "like", "18", "男", "173cm", "75kg"
         )
