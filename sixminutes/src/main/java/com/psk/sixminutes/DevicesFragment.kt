@@ -161,7 +161,7 @@ class DevicesFragment : BaseLazyFragment() {
                             mBinding.ecgView.setDataPainters(listOf(createDynamicDataPainter())) {
                                 leadsIndex = it
                                 singleEcgDialogFragment = SingleEcgDialogFragment.newInstance(
-                                    sampleRate, leadsNames[it], getEcgParams()
+                                    sampleRate, leadsNames[it], mm_per_s, mm_per_mv, 10f
                                 ).apply {
                                     show(this@DevicesFragment)
                                 }
@@ -184,7 +184,7 @@ class DevicesFragment : BaseLazyFragment() {
                             mBinding.ecgView.setDataPainters((0 until 12).map { createDynamicDataPainter() }) {
                                 leadsIndex = it
                                 singleEcgDialogFragment = SingleEcgDialogFragment.newInstance(
-                                    sampleRate, leadsNames[it], getEcgParams()
+                                    sampleRate, leadsNames[it], mm_per_s, mm_per_mv, 10f
                                 ).apply {
                                     show(this@DevicesFragment)
                                 }
