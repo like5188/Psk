@@ -58,7 +58,8 @@ class DevicesFragment : BaseLazyFragment() {
         ViewModelProvider(this).get(DevicesViewModel::class.java)
     }
     private lateinit var mBinding: FragmentDevicesBinding
-    private val params = "25 mm/s    10mm/mV"
+    private var mm_per_s = 25
+    private var mm_per_mv = 10
     private var orderId: Long = 0L
     private var devices: List<Info>? = null
     private var singleEcgDialogFragment: SingleEcgDialogFragment? = null
@@ -82,7 +83,7 @@ class DevicesFragment : BaseLazyFragment() {
         if (orderId == 0L || devices.isNullOrEmpty()) {
             return null
         }
-        mBinding.tvEcgParams.text = params
+        mBinding.tvEcgParams.text = getEcgParams()
         mBinding.ecgView.apply {
             setGridSize(10f.dp)
             setBgPainter(createBgPainter())
@@ -160,7 +161,7 @@ class DevicesFragment : BaseLazyFragment() {
                             mBinding.ecgView.setDataPainters(listOf(createDynamicDataPainter())) {
                                 leadsIndex = it
                                 singleEcgDialogFragment = SingleEcgDialogFragment.newInstance(
-                                    sampleRate, leadsNames[it], params
+                                    sampleRate, leadsNames[it], getEcgParams()
                                 ).apply {
                                     show(this@DevicesFragment)
                                 }
@@ -183,7 +184,7 @@ class DevicesFragment : BaseLazyFragment() {
                             mBinding.ecgView.setDataPainters((0 until 12).map { createDynamicDataPainter() }) {
                                 leadsIndex = it
                                 singleEcgDialogFragment = SingleEcgDialogFragment.newInstance(
-                                    sampleRate, leadsNames[it], params
+                                    sampleRate, leadsNames[it], getEcgParams()
                                 ).apply {
                                     show(this@DevicesFragment)
                                 }
@@ -265,6 +266,8 @@ class DevicesFragment : BaseLazyFragment() {
         }
     }
 
+    private fun getEcgParams() = "$mm_per_s mm/s    $mm_per_mv mm/mV"
+
     /**
      * 运动完成监听
      */
@@ -314,4 +317,23 @@ class DevicesFragment : BaseLazyFragment() {
     fun updateLapCount(count: String) {
         mBinding.tvLapCount.text = count
     }
+
+    /**
+     * 更新增益
+     */
+    fun updateMmPerMv(mm_per_mv: Int) {
+        this.mm_per_mv = mm_per_mv
+        mBinding.ecgView.setMmPerMv(mm_per_mv)
+        mBinding.tvEcgParams.text = getEcgParams()
+    }
+
+    /**
+     * 更新走纸速度
+     */
+    fun updateMmPerS(mm_per_s: Int) {
+        this.mm_per_s = mm_per_s
+        mBinding.ecgView.setMmPerS(mm_per_s)
+        mBinding.tvEcgParams.text = getEcgParams()
+    }
+
 }
