@@ -7,12 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.like.common.base.BaseLazyFragment
 import com.like.common.util.dp
 import com.like.common.util.mvi.propertyCollector
 import com.like.common.util.showToast
+import com.psk.common.customview.ProgressDialog
 import com.psk.device.data.model.DeviceType
 import com.psk.sixminutes.data.model.BleInfo
 import com.psk.sixminutes.data.model.Info
@@ -22,7 +23,7 @@ import com.psk.sixminutes.util.createBgPainter
 import com.psk.sixminutes.util.createDynamicDataPainter
 import kotlinx.coroutines.launch
 
-class DevicesFragment : Fragment() {
+class DevicesFragment : BaseLazyFragment() {
     companion object {
         private const val KEY_ORDER_ID = "key_order_id"
         private const val KEY_DEVICES = "key_devices"
@@ -65,6 +66,7 @@ class DevicesFragment : Fragment() {
     private var onTick: ((Int) -> Unit)? = null
     private var onStop: (() -> Unit)? = null
     private var onCompleted: (() -> Unit)? = null
+    private lateinit var mProgressDialog: ProgressDialog
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_devices, container, false)
@@ -85,7 +87,14 @@ class DevicesFragment : Fragment() {
             setGridSize(10f.dp)
             setBgPainter(createBgPainter())
         }
+        mProgressDialog = ProgressDialog(requireContext(), "正在初始化，请稍后……")
+        collectUiState()
+        return mBinding.root
+    }
+
+    override fun onLazyLoadData() {
         lifecycleScope.launch {
+            mProgressDialog.show()
             mViewModel.init(requireActivity(), orderId, devices)
             // 以下的代码都使用到了mViewModel，所以需要等待mViewModel初始化完成之后再执行
             mBinding.btnStart.setOnClickListener {
@@ -136,9 +145,8 @@ class DevicesFragment : Fragment() {
                 }
             }
             initEcgView()
+            mProgressDialog.dismiss()
         }
-        collectUiState()
-        return mBinding.root
     }
 
     private fun initEcgView() {
