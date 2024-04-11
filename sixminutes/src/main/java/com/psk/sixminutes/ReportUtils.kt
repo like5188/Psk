@@ -1,12 +1,15 @@
 package com.psk.sixminutes
 
+import android.content.Context
 import com.psk.device.DeviceRepositoryManager
+import com.psk.device.data.db.DeviceDatabaseManager
 import com.psk.device.data.model.BloodOxygen
 import com.psk.device.data.model.BloodPressure
 import com.psk.device.data.model.DeviceType
 import com.psk.device.data.model.HeartRate
 import com.psk.device.data.source.repository.ble.BloodOxygenRepository
 import com.psk.device.data.source.repository.ble.HeartRateRepository
+import com.psk.sixminutes.data.db.SixMinutesDatabaseManager
 import com.psk.sixminutes.data.source.HealthInfoRepository
 
 class ReportUtils private constructor() {
@@ -18,7 +21,10 @@ class ReportUtils private constructor() {
 
     companion object {
         @JvmStatic
-        fun getInstance(): ReportUtils {
+        fun getInstance(context: Context): ReportUtils {
+            // 只需要初始化数据库相关，不需要使用DeviceRepositoryManager.init(context.applicationContext)
+            DeviceDatabaseManager.init(context.applicationContext)
+            SixMinutesDatabaseManager.init(context.applicationContext)
             return Holder.instance
         }
     }
