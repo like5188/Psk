@@ -15,6 +15,7 @@ import com.psk.device.ScanManager
 import com.psk.device.data.model.DeviceType
 import com.psk.device.data.source.repository.ble.BloodOxygenRepository
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -62,6 +63,8 @@ class BleBloodOxygenBusinessManager {
                         // 扫描完成
                         onStatus("已断开")
                         context.showToast("血氧仪连接失败")
+                        delay(5000)
+                        connect(orderId, onStatus, onBloodOxygenResult)
                     }
 
                     else -> {
@@ -69,6 +72,8 @@ class BleBloodOxygenBusinessManager {
                         Logger.e("扫描 失败：${it.message}")
                         onStatus("已断开")
                         context.showToast("血氧仪连接失败")
+                        delay(5000)
+                        connect(orderId, onStatus, onBloodOxygenResult)
                     }
                 }
             }.collect {
