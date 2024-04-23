@@ -103,6 +103,7 @@ class DevicesFragment : BaseLazyFragment() {
                     mViewModel.startTimer()
                     mViewModel.connect()
                 } else {
+                    mViewModel.disconnect()
                     onStop?.invoke()
                 }
             }

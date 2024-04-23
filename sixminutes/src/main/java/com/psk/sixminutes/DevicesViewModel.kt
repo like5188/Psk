@@ -51,6 +51,7 @@ class DevicesViewModel : ViewModel() {
                         }
                     } else {
                         if (!_uiState.value.completed && _uiState.value.healthInfo.bloodPressureAfter != null) {
+                            disconnect()
                             _uiState.update {
                                 it.copy(
                                     completed = true
@@ -94,6 +95,10 @@ class DevicesViewModel : ViewModel() {
             }
         }
         return 0
+    }
+
+    fun disconnect() {
+        multiBusinessManager.destroy()
     }
 
     fun connect() {
@@ -219,7 +224,7 @@ class DevicesViewModel : ViewModel() {
 
     override fun onCleared() {
         super.onCleared()
-        multiBusinessManager.destroy()
+        disconnect()
     }
 
 }
