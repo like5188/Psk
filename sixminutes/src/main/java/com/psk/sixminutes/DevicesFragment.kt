@@ -343,4 +343,11 @@ class DevicesFragment : BaseLazyFragment() {
         mBinding.tvEcgParams.text = getEcgParams()
     }
 
+    /**
+     * 更新背景网格大小
+     */
+    fun updateGridSize(gridSize: Float) {
+        mBinding.ecgView.setGridSize(gridSize)
+    }
+
 }
