@@ -76,19 +76,19 @@ class SixMinutesActivity : AppCompatActivity() {
     private fun getHistory() {
         lifecycleScope.launch {
             // 获取血氧数据
-            ReportUtils.getInstance().getBloodOxygenListByOrderId(orderId).apply {
+            ReportUtils.getInstance(this@SixMinutesActivity).getBloodOxygenListByOrderId(orderId).apply {
                 println("bloodOxygenList: $this")
             }
             // 获取心率数据
-            ReportUtils.getInstance().getHeartRateListByOrderId(orderId).apply {
+            ReportUtils.getInstance(this@SixMinutesActivity).getHeartRateListByOrderId(orderId).apply {
                 println("heartRateList: $this")
             }
             // 获取运动前血压数据
-            ReportUtils.getInstance().getBloodPressureBeforeByOrderId(orderId).apply {
+            ReportUtils.getInstance(this@SixMinutesActivity).getBloodPressureBeforeByOrderId(orderId).apply {
                 println("bloodPressureBefore: orderId=$orderId $this")
             }
             // 获取运动后血压数据
-            ReportUtils.getInstance().getBloodPressureAfterByOrderId(orderId).apply {
+            ReportUtils.getInstance(this@SixMinutesActivity).getBloodPressureAfterByOrderId(orderId).apply {
                 println("bloodPressureAfter: orderId=$orderId $this")
             }
         }
